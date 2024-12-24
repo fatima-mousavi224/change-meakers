@@ -52,7 +52,7 @@ export default async function AdminLayout({
   children: React.ReactNode;
 }) {
   const user = await getCurrentUser();
-  if (user?.role === "ADMIN") redirect("/admin");
+  // if (user?.role === "ADMIN") redirect("/admin");
 
   return (
     <html lang="en">
