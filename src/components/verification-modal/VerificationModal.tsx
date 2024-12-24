@@ -36,8 +36,6 @@ export default function VerificationModal({
   const router = useRouter();
   const [signInLoading, setSignInLoading] = useState(false);
 
-  console.log("user data", userData);
-
   const {
     handleSubmit,
     register,
@@ -48,16 +46,19 @@ export default function VerificationModal({
   });
 
   const onSubmit = async (data: FieldValues) => {
+    const newData = {
+      name: userData.name,
+      email: userData.email,
+      password: userData.password,
+      verifyCode: data.verifyCode,
+    };
     try {
       const res = await fetch("/api/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          ...userData,
-          verifyCode: data.verifyCode,
-        }),
+        body: JSON.stringify(newData),
       });
       const registerData = await res.json();
       if (registerData.status === 400) {
