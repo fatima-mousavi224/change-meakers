@@ -61,7 +61,7 @@ export default function VerificationModal({
         },
         body: JSON.stringify({
           ...userData,
-          verifyCode: data.verifyCode,
+          verifyCode: data.verifyCode.toString().trim(),
         }),
       });
       const registerData = await res.json();
