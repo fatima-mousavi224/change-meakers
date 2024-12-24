@@ -115,37 +115,36 @@ export default function NavBarAndSidebar({
                 </div>
                 <nav className="flex flex-1 flex-col">
                   <ul role="list" className="flex flex-1 flex-col gap-y-7">
-                    <li>
-                      <ul role="list" className="-mx-2 space-y-1">
-                        {navigation.map((item) => (
-                          <li
-                            key={item.name}
-                            onClick={() => setSidebarOpen(false)}
+                    <ul role="list" className="-mx-2 space-y-1">
+                      {navigation.map((item) => (
+                        <li
+                          key={item.name}
+                          onClick={() => setSidebarOpen(false)}
+                        >
+                          <Link
+                            href={item.href}
+                            className={classNames(
+                              pathname === item.href
+                                ? "bg-gradient-to-r from-[#134C83] to-[#4497E8] text-white fill-white"
+                                : "text-paragraph_color hover:text-paragraph_color/80 ",
+                              "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6"
+                            )}
                           >
-                            <Link
-                              href={item.href}
+                            <item.icon
+                              aria-hidden="true"
                               className={classNames(
                                 pathname === item.href
-                                  ? "bg-gradient-to-r from-[#134C83] to-[#4497E8] text-white fill-white"
-                                  : "text-paragraph_color hover:text-paragraph_color/80 ",
-                                "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6"
+                                  ? "text-white"
+                                  : "text-paragraph_color",
+                                "h-6 w-6 shrink-0"
                               )}
-                            >
-                              <item.icon
-                                aria-hidden="true"
-                                className={classNames(
-                                  pathname === item.href
-                                    ? "text-white"
-                                    : "text-paragraph_color",
-                                  "h-6 w-6 shrink-0"
-                                )}
-                              />
-                              {item.name}
-                            </Link>
-                          </li>
-                        ))}
-                      </ul>
-                    </li>
+                            />
+                            {item.name}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+
                     <div className="mt-auto flex flex-col space-y-1">
                       <li>
                         <Link

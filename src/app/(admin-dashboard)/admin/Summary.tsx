@@ -1,10 +1,9 @@
 "use client";
-import Chart from "./_components/Chart";
-import ProfileCard from "./_components/ProfileCard";
-import { DonateTime, PaymentInfo } from "@prisma/client";
+import Chart from "@/app/(admin-dashboard)/admin/_components/Chart";
+import ProfileCard from "@/app/(admin-dashboard)/admin/_components/ProfileCard";
+import { DonateTime, PaymentInfo, User } from "@prisma/client";
 import Image from "next/image";
 import { useState } from "react";
-import { User } from "@prisma/client";
 
 interface SummaryProps {
   numUsers: number;
@@ -12,7 +11,7 @@ interface SummaryProps {
   numMembers: number;
   numAdmins: number;
   donations: PaymentInfo[];
-  currentUser:User | null
+  currentUser: User | null;
 }
 
 export default function Summary({
@@ -125,7 +124,7 @@ export default function Summary({
           <Chart donations={donations} selectedYear={selectedYear} />
         </div>
         <div className="col-span-3 lg:col-span-1 lg:h-[300px]">
-          <ProfileCard currentUser={currentUser}/>
+          <ProfileCard currentUser={currentUser} />
         </div>
       </div>
     </div>

@@ -46,6 +46,13 @@ export default function VerificationModal({
   });
 
   const onSubmit = async (data: FieldValues) => {
+    const newData = {
+      name: userData.name,
+      email: userData.email,
+      password: userData.password,
+      verifyCode: data.verifyCode,
+    };
+    console.log("new data", newData);
     try {
       const res = await fetch("/api/signup", {
         method: "POST",
