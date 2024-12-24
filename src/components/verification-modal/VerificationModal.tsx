@@ -36,6 +36,8 @@ export default function VerificationModal({
   const router = useRouter();
   const [signInLoading, setSignInLoading] = useState(false);
 
+  console.log("user data", userData);
+
   const {
     handleSubmit,
     register,
