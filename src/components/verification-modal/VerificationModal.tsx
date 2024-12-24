@@ -104,7 +104,7 @@ export default function VerificationModal({
               <div className="mt-3  sm:mt-5">
                 <DialogTitle
                   as="h3"
-                  className="text-base font-semibold text-gray-900 mb-4 text-center"
+                  className="text-base font-semibold text-gray-900 mb-5 text-center"
                 >
                   Verification code
                 </DialogTitle>
