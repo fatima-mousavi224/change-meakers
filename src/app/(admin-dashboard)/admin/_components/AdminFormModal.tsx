@@ -1,6 +1,6 @@
 "use client";
 
-import LinearWithValueLabel from "@/components/common/LinearProgressWithLabel";
+import LinearWithValueLabel from "../../../../components/common/LinearProgressWithLabel";
 import firebaseApp from "@/lib/firebase";
 import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react";
 import { PhotoIcon } from "@heroicons/react/24/outline";

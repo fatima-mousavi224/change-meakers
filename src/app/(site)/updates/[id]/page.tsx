@@ -29,12 +29,19 @@ export async function generateMetadata({
       id,
     },
   });
+
   if (post) {
+    // Strip HTML tags from the description
+    const stripHtmlTags = (html: string): string =>
+      html.replace(/<\/?[^>]+(>|$)/g, "");
+
+    const sanitizedDescription = stripHtmlTags(post.description);
+
     return {
-      title: ` ${post?.title}`,
-      description: ` ${post?.description}`,
+      title: ` ${post.title}`,
+      description: sanitizedDescription,
       openGraph: {
-        images: [post?.postImages[0]?.image],
+        images: [post.postImages[0]?.image],
       },
     };
   }

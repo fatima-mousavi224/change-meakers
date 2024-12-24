@@ -15,7 +15,7 @@ export async function POST(request: Request) {
     }
 
     const code = await prisma.code.findFirst({ where: { verifyCode } });
-    console.log("code in the api", code);
+    console.log("code", code);
     if (!code) {
       return NextResponse.json({
         message: "Invalid verification code",

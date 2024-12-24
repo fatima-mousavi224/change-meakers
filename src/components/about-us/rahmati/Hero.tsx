@@ -6,13 +6,13 @@ export default function Hero() {
   return (
     <div className="bg-bannerAbout bg-no-repeat overflow-visible bg-center bg-cover rounded-[20px] h-[506px] mt-20 flex items-center relative shadow-lg justify-between">
       {/* Left Section: Image */}
-      <div className="relative flex-shrink-0 lg:-left-10 -left-9 h-[120%] -translate-y-[50px] translate-x-9">
+      <div className="relative flex-shrink-0 lg:-left-10 sm:-left-9 -left-12 sm:h-[120%] h-[100%] sm:-translate-y-[50px] translate-x-9">
         <Image
           src={Massie}
           alt="Massie"
-          width={800}
+          width={1200}
           height={1200}
-          className="sm:w-full w-[320px] h-full rounded-bl-2xl object-cover"
+          className="w-full h-full rounded-bl-2xl sm:object-cover"
         />
       </div>
 
@@ -23,9 +23,7 @@ export default function Hero() {
           <p className="text-lg md:text-xl text-paragraph_color">
             Real Estate Investor and Author
           </p>
-          <p className="text-paragraph_color text-sm">
-            President - USA
-          </p>
+          <p className="text-paragraph_color text-sm">President - USA</p>
         </div>
       </div>
     </div>

@@ -1,11 +1,13 @@
 "use client";
-import { useRef } from "react";
-import ReactMarkdown from "react-markdown";
-import Image from "next/image";
 import { Post } from "@prisma/client";
-import Slider from "./Slider";
-import Button from "../common/Button";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useRef } from "react";
+import "swiper/css";
+import "swiper/css/pagination";
+import { Autoplay, Pagination } from "swiper/modules";
+import { Swiper, SwiperSlide } from "swiper/react";
+import Button from "../common/Button";
 
 export default function UpdateDetails({
   title,
@@ -27,6 +29,7 @@ export default function UpdateDetails({
         year: "numeric",
       })
     : null;
+  console.log("postImages", postImages);
   return (
     <section className="py-12 max-w-4xl mx-auto px-4">
       <button className="px-4 py-2 rounded-lg font-medium  bg-primary-50 text-white my-3 cursor-default">
@@ -54,8 +57,46 @@ export default function UpdateDetails({
       </div>
       <div className="mx-auto overflow-hidden" ref={contentRef}>
         {/* Images */}
-        <div className="relative w-full mt-5">
-          <Slider images={postImages.map((image) => image.image)} />
+        <div className="relative w-full sm:h-[500px] h-[250px] mt-5">
+          <div className="relative h-full w-full">
+            <Swiper
+              autoplay={{
+                delay: 8000,
+                disableOnInteraction: false,
+                pauseOnMouseEnter: false,
+              }}
+              pagination={{
+                clickable: true,
+                dynamicBullets: true,
+              }}
+              loop={true}
+              modules={[Autoplay, Pagination]}
+              className="h-full"
+            >
+              {postImages.map((item, index) => (
+                <SwiperSlide
+                  key={index}
+                  className="relative h-full w-full overflow-hidden"
+                >
+                  <div className="relative h-full w-full">
+                    <Image
+                      alt="slider-img"
+                      src={item.image || ""}
+                      width={1200}
+                      height={1200}
+                      className="h-full w-full self-center rounded-lg cursor-pointer"
+                      priority
+                    />
+                  </div>
+                </SwiperSlide>
+              ))}
+            </Swiper>
+            <style jsx>{`
+              :global(.swiper-pagination-bullet) {
+                background-color: white !important;
+              }
+            `}</style>
+          </div>
         </div>
         {/* Content */}
         <div className="p-6">

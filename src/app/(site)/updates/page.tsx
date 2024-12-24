@@ -11,7 +11,9 @@ export const metadata: Metadata = {
 
 export default async function UpdatePage() {
   const posts = await prisma.post.findMany({
-    orderBy: { createdAt: "desc" },
+    orderBy: {
+      createdAt: "desc",
+    },
     include: {
       Category: true,
     },

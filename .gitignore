@@ -2,3 +2,4 @@
 /.next
 /.env
 .env*
+__MACOSX

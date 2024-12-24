@@ -5,7 +5,7 @@ import React from "react";
 
 export default function About() {
   return (
-    <div className="pt-16">
+    <div className="mt-4">
       <div className="flex lg:flex-row flex-col-reverse gap-4 ">
         {/* Left Section */}
         <div className="flex flex-col justify-between rounded-lg shadow-1xl p-5 bg-light_gray lg:w-[60%]">
