@@ -22,9 +22,9 @@ export default withAuth(
 
     const isPublicPath = publicPaths.some((path) => pathname.startsWith(path));
 
-    if (!token && !isPublicPath) {
-      return NextResponse.redirect(new URL("/login", req.url));
-    }
+    // if (!token && !isPublicPath) {
+    //   return NextResponse.redirect(new URL("/login", req.url));
+    // }
   },
   {
     callbacks: {
