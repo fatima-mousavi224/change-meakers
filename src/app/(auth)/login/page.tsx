@@ -10,8 +10,8 @@ export const metadata: Metadata = {
 
 export default async function LoginPage() {
   const currentUser = await getCurrentUser();
-  // if (currentUser && currentUser.role === "ADMIN") redirect("/admin");
-  // if (currentUser && currentUser.role === "USER") redirect("/dashboard");
+  if (currentUser && currentUser.role === "ADMIN") redirect("/admin");
+  if (currentUser && currentUser.role === "USER") redirect("/dashboard");
 
   console.log("currentUser", currentUser);
 
