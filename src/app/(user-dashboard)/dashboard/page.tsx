@@ -9,7 +9,7 @@ export default function HomePage() {
           Welcome to your dashboard.
         </h1>
       </div>
-      <div className="flex  items-center xl:flex-row flex-col-reverse justify-center gap-4 mt-10">
+      <div className="flex  items-center xl:flex-row flex-col justify-center gap-4 mt-10">
         <div className="bg-white xl:w-1/2 px-4 py-10 rounded-lg">
           <div className="flex gap-4">
             <div className="flex items-center justify-center bg-slate-400 size-11 rounded-full">

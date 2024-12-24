@@ -2,7 +2,6 @@ import { Metadata } from "next";
 import * as React from "react";
 
 import "@/styles/globals.css";
-import "@/styles/colors.css";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import prisma from "@/lib/prismaDB";
 

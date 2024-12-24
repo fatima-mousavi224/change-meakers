@@ -11,7 +11,7 @@ import {
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { User } from "@prisma/client";
-import { Home, LogOut, UserRoundPen } from "lucide-react";
+import { ArrowLeft, Home, LogOut, UserRoundPen } from "lucide-react";
 import { signOut } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
@@ -145,24 +145,27 @@ export default function NavBarAndSidebar({
                           </li>
                         ))}
                       </ul>
-                      <Link
-                        href={"/"}
-                        className="-m-2.5 mt-2 text-center p-2 text-primary-50 block lg:hidden bg-[#F3F4F6] hover:bg-[#F3F4F6]/50 rounded-[10px] text-sm"
+                    </li>
+                    <div className="mt-auto flex flex-col space-y-1">
+                      <li>
+                        <Link
+                          href={"/"}
+                          className="-m-2.5 mt-2  p-2 font-semibold text-primary-50 items-center  gap-1 text-sm flex lg:hidden"
+                        >
+                          <ArrowLeft className="size-5" /> Back to Website
+                        </Link>
+                      </li>
+                      <li
+                        className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-paragraph_color  hover:text-paragraph_color/80  hover:cursor-pointer"
+                        onClick={() => signOut()}
                       >
-                        Back to Website
-                      </Link>
-                    </li>
-
-                    <li
-                      className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-paragraph_color hover:bg-primary-50 hover:text-paragraph_color/80 mt-auto hover:cursor-pointer"
-                      onClick={() => signOut()}
-                    >
-                      <LogOut
-                        aria-hidden="true"
-                        className="h-6 w-6 shrink-0 text-paragraph_color group-hover:text-paragraph_color/80"
-                      />
-                      Log out
-                    </li>
+                        <LogOut
+                          aria-hidden="true"
+                          className="h-6 w-6 shrink-0 text-paragraph_color group-hover:text-paragraph_color/80"
+                        />
+                        Log out
+                      </li>
+                    </div>
                   </ul>
                 </nav>
               </div>

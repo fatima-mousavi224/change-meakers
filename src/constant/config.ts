@@ -1,6 +1,6 @@
 export const siteConfig = {
-  title: 'Change makers of the world',
+  title: "Change Makers of the World",
   description:
-    'We work for all afghan people, we are the change makers of the world',
-  url: 'https://cmworld.org',
+    "We are a youth-led volunteer community committed to promoting quality education and human rights in Afghanistan. As the first and largest of its kind in the country, we’ve impacted over 10,000 lives through 186+ initiatives. From offering classes and materials to Afghan children affected by the Taliban’s ban on girls’ education to representing youth in global forums, our work champions hope and progress. We collaborate globally to empower Afghan refugees and advocate for human rights.",
+  url: "https://cmworld.org",
 };

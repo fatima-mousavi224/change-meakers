@@ -1,24 +1,41 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { infiniteBannerData } from "@/lib/data";
 import { cn } from "@/utilities/cn";
 
 interface InfiniteBannerProps {
   direction?: "left" | "right";
-  speed?: "fast" | "normal" | "slow";
   pauseOnHover?: boolean;
   className?: string;
 }
 
 export const InfiniteBanner: React.FC<InfiniteBannerProps> = ({
   direction = "left",
-  speed = "normal",
   pauseOnHover = true,
   className,
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const scrollerRef = useRef<HTMLUListElement | null>(null);
+
+  const [speed, setSpeed] = useState<"veryFast" | "fast">("veryFast");
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.matchMedia("(min-width: 1024px)").matches) {
+        setSpeed("fast"); // Large screens
+      } else {
+        setSpeed("veryFast"); // Mobile screens
+      }
+    };
+
+    handleResize(); // Set initial speed
+    window.addEventListener("resize", handleResize); // Update on resize
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -44,14 +61,12 @@ export const InfiniteBanner: React.FC<InfiniteBannerProps> = ({
 
   const getSpeedDuration = (speed: string) => {
     switch (speed) {
+      case "veryFast":
+        return 10;
       case "fast":
-        return 10; // Adjust as needed
-      case "normal":
-        return 20;
-      case "slow":
-        return 25;
+        return 20; // Adjust as needed
       default:
-        return 20;
+        return 10;
     }
   };
 

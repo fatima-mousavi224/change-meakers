@@ -11,7 +11,7 @@ import {
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { User } from "@prisma/client";
-import { Home, LogOut, UserRoundPen } from "lucide-react";
+import { ArrowLeft, Home, LogOut, MoveLeft, UserRoundPen } from "lucide-react";
 import { signOut } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
@@ -24,7 +24,7 @@ const navigation = [
   { name: "Home", href: "/dashboard", icon: Home },
   { name: "Donations", href: "/dashboard/donations", icon: TbHeartCheck },
   { name: "Account", href: "/dashboard/profile", icon: UserRoundPen },
-  { name: "Contact-us", href: "/dashboard/contact-us", icon: IoMailOutline },
+  { name: "Contact", href: "/dashboard/contact-us", icon: IoMailOutline },
 ];
 
 function classNames(...classes: any) {
@@ -90,11 +90,14 @@ export default function NavBarAndSidebarUserDashboard({
                   </Link>
                   <div className="text-primary-50">
                     <h2 className="text-xl font-bold ">Change Makers</h2>
-                    <p className="text-xs font-medium ">DASHBOARD</p>
+                    <p className="text-xs font-medium ">User Dashboard</p>
                   </div>
                 </div>
                 <nav className="flex flex-1 flex-col">
-                  <ul role="list" className="flex flex-1 flex-col gap-y-7">
+                  <ul
+                    role="list"
+                    className="flex flex-1 flex-col justify-between gap-y-7"
+                  >
                     <li>
                       <ul role="list" className="-mx-2 space-y-1">
                         {navigation.map((item) => (
@@ -125,24 +128,26 @@ export default function NavBarAndSidebarUserDashboard({
                           </li>
                         ))}
                       </ul>
+                    </li>
+                    <div className="flex flex-col gap-2">
                       <Link
                         href={"/"}
-                        className="-m-2.5 mt-2 text-center p-2 text-primary-50 block lg:hidden bg-[#F3F4F6] hover:bg-[#F3F4F6]/50 rounded-[10px] text-sm"
+                        className="-m-2.5 mt-2 flex p-2 font-semibold text-primary-50 items-center gap-1 lg:hidden text-sm"
                       >
-                        Back to Website
+                        <ArrowLeft className="size-5" /> Back to Website
                       </Link>
-                    </li>
 
-                    <li
-                      className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-paragraph_color hover:bg-primary-50 hover:text-paragraph_color/80 mt-auto hover:cursor-pointer"
-                      onClick={() => signOut()}
-                    >
-                      <LogOut
-                        aria-hidden="true"
-                        className="h-6 w-6 shrink-0 text-paragraph_color group-hover:text-paragraph_color/80"
-                      />
-                      Log out
-                    </li>
+                      <li
+                        className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-paragraph_color hover:text-paragraph_color/80 mt-auto hover:cursor-pointer"
+                        onClick={() => signOut()}
+                      >
+                        <LogOut
+                          aria-hidden="true"
+                          className="h-6 w-6 shrink-0 text-paragraph_color group-hover:text-paragraph_color/80"
+                        />
+                        Log out
+                      </li>
+                    </div>
                   </ul>
                 </nav>
               </div>
@@ -166,7 +171,7 @@ export default function NavBarAndSidebarUserDashboard({
               </Link>
               <div className="text-primary-50">
                 <h2 className="text-lg sm:text-xl font-bold ">Change Makers</h2>
-                <p className="text-xs font-medium ">USER DASHBOARD</p>
+                <p className="text-xs font-medium ">User Dashboard</p>
               </div>
             </div>
             <nav className="flex flex-1 flex-col">

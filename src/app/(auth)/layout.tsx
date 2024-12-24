@@ -1,6 +1,5 @@
 import { Plus_Jakarta_Sans } from "next/font/google";
 import "@/styles/globals.css";
-import "@/styles/colors.css";
 import { Toaster } from "react-hot-toast";
 
 export const metadata = {

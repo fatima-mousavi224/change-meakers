@@ -29,14 +29,13 @@ export const authOptions: AuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        console.log("Authorize method called with credentials:", credentials);
         if (!credentials?.email || !credentials.password) {
           throw new Error("Invalid credentials");
         }
         const user = await prisma.user.findUnique({
           where: { email: credentials.email },
         });
-
+        
         if (!user || !user.password) {
           throw new Error("Email or password is incorrect!");
         }
@@ -54,6 +53,7 @@ export const authOptions: AuthOptions = {
       },
     }),
   ],
+  pages: { signIn: "/login" },
   debug: process.env.NODE_ENV === "development",
   session: { strategy: "jwt" },
   secret: process.env.NEXTAUTH_SECRET,
@@ -87,5 +87,4 @@ export const authOptions: AuthOptions = {
       return session;
     },
   },
-  pages: { signIn: "/login" },
 };

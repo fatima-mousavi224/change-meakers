@@ -14,7 +14,7 @@ export default function NewsStories({ posts, categories }: NewsStoriesProps) {
 
   // function to handle category change and filter posts
   const handleCategoryChange = (category: Category) => {
-    if (category.id === "ALL") {
+    if (category.id === "Latest") {
       setFilteredPosts(posts); // Reset to all posts
     } else {
       const filteredPosts = posts.filter(

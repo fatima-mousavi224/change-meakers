@@ -27,9 +27,17 @@ const DashboardTable: React.FC<{ donations: Donation[] }> = ({ donations }) => {
   return (
     <div>
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold text-gray-900">
-          {showDonationForm ? "Contribute" : "Donations"}
-        </h1>
+        <div>
+          <h1 className="text-xl font-semibold text-gray-900">
+            {showDonationForm ? "Contribute" : "Donations"}
+          </h1>
+          {donations.length === 0 && (
+            <p className="text-base">
+              Your donation history will appear here after your first donation.
+            </p>
+          )}
+        </div>
+
         {donations.length !== 0 && (
           <button
             onClick={toggleView}
@@ -48,7 +56,7 @@ const DashboardTable: React.FC<{ donations: Donation[] }> = ({ donations }) => {
             </div>
           </div>
         ) : (
-          <div className="bg-white shadow-lg rounded-lg sm:px-0 px-4 lg:px-8">
+          <div className="bg-white shadow-lg rounded-lg px-4 lg:px-8">
             <div className="mt-8 flow-root ">
               <div className="-mx-4 -my-2 overflow-auto sm:-mx-6 lg:-mx-8">
                 {donations.length === 0 ? (

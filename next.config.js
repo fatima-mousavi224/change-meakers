@@ -1,4 +1,6 @@
 /** @type {import('next').NextConfig} */
+const path = require("path");
+
 const nextConfig = {
   eslint: {
     dirs: ["src"],
@@ -7,7 +9,6 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
 
-  // Uncoment to add domain whitelist
   images: {
     remotePatterns: [
       {
@@ -34,6 +35,9 @@ const nextConfig = {
   },
 
   webpack(config) {
+    // Add alias for @
+    config.resolve.alias["@"] = path.resolve(__dirname, "src");
+
     // Grab the existing rule that handles SVG imports
     const fileLoaderRule = config.module.rules.find((rule) =>
       rule.test?.test?.(".svg")

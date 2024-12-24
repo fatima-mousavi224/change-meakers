@@ -1,6 +1,7 @@
 import Summary from "./Summary";
 import { Metadata } from "next";
 import prisma from "@/lib/prismaDB";
+import { getCurrentUser } from "@/utilities/getCurrentUser";
 
 export const metadata: Metadata = {
   title: "Dashboard",
@@ -12,6 +13,7 @@ export default async function AdminDashboard() {
   const posts = await prisma.post.findMany();
   const members = await prisma.member.findMany();
   const donations = await prisma.paymentInfo.findMany();
+  const user = await getCurrentUser();
 
   return (
     <div className="min-h-screen">
@@ -24,6 +26,7 @@ export default async function AdminDashboard() {
         numMembers={members.length}
         numAdmins={users.filter((user) => user.role === "ADMIN").length}
         donations={donations}
+        currentUser={user}
       />
     </div>
   );
