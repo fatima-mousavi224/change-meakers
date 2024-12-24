@@ -46,7 +46,6 @@ export default function SignUpForm({
   });
   const [isLoading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const router = useRouter();
 
   const toggleShowPassword = () => {
     setShowPassword(!showPassword);
@@ -93,35 +92,6 @@ export default function SignUpForm({
           handleOpenModal();
         }
       }
-
-      // const registerRes = await fetch("/api/register", {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      //   body: JSON.stringify(data),
-      // });
-
-      // if (!registerRes.ok) {
-      //   throw new Error("Couldn't create an account");
-      // }
-
-      // const registerData = await registerRes.json();
-      // toast.success("account created successfully");
-      // reset();
-
-      // const result = await signIn("credentials", {
-      //   email: data.email,
-      //   password: data.password,
-      //   redirect: false,
-      // });
-
-      // if (result?.error) {
-      //   toast.error("Failed to sign in after registration");
-      //   router.push("/login");
-      // } else {
-      //   router.push(user?.role === "ADMIN" ? "/admin" : "/dashboard");
-      // }
     } catch (error: any) {
       toast.error(error.message);
       console.error(error);
