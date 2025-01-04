@@ -22,7 +22,6 @@ const BlogPosts = ({ posts, categories }: UpdateSectionProps) => {
     ...categories,
   ];
 
-  console.log(categories);
 
   // Separate categories into first five and remaining
   const visibleCategories = extendedCategories.slice(0, 5);

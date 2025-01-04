@@ -11,7 +11,6 @@ export default async function DonationsPage() {
     donated = await prisma.paymentInfo.findMany({
       where: { email: user.email || "" },
     });
-    console.log("donated", donated);
   }
   return (
     <div>

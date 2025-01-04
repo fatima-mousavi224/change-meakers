@@ -13,13 +13,13 @@ export default function Hero() {
   return (
     <div className="bg-bannerAbout bg-no-repeat overflow-visible bg-center bg-cover rounded-[20px] h-[506px] mt-20 flex items-center relative shadow-lg justify-between">
       {/* Left Section: Image */}
-      <div className="relative flex-shrink-0 lg:-left-10 -left-9 h-[120%] -translate-y-[50px] translate-x-9">
+      <div className="relative flex-shrink-0 lg:-left-10 sm:-left-9 -left-12  h-[108%] -translate-y-[21px] translate-x-12  sm:translate-x-9">
         <Image
           src={Hussaini}
           alt="Hussaini"
           width={800}
           height={1200}
-          className="sm:w-full w-[320px] h-full rounded-bl-2xl object-cover"
+          className="sm:w-full w-[340px] h-full rounded-bl-2xl object-cover"
         />
       </div>
 

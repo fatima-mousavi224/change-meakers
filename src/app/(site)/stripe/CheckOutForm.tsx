@@ -53,7 +53,6 @@ export default function CheckOutForm({
 
   const onSubmit = async (data: any) => {
     setLoading(true);
-    console.log(data);
 
     try {
       if (!stripe || !elements) {
@@ -70,7 +69,7 @@ export default function CheckOutForm({
         elements,
         clientSecret,
         confirmParams: {
-          return_url: `http://localhost:3000/donate`,
+          return_url: `https://www.cmworld.org/donate`,
         },
       });
 

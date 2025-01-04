@@ -63,7 +63,6 @@ export default function AdminFormModal({ open, setOpen }: AdminFormModalProps) {
       : []
   );
 
-  console.log("memberImagePreview", memberImagePreview);
 
   const params = useSearchParams();
   const memberId = params.get("memberId");
@@ -122,7 +121,6 @@ export default function AdminFormModal({ open, setOpen }: AdminFormModalProps) {
         const newPostImages: UploadImageType[] = [];
         const filesArray = Array.from(data.avatar);
         for (const item of filesArray) {
-          console.log("post images file name", item.name);
           const fileName = new Date().getTime() + "-" + item.name;
           const storage = getStorage(firebaseApp);
           const storageRef = ref(storage, `avatar/${fileName}`);
@@ -177,7 +175,6 @@ export default function AdminFormModal({ open, setOpen }: AdminFormModalProps) {
       avatar: postImages,
     };
 
-    console.log("memberData", memberData);
 
     if (memberId) {
       await axios

@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react";
 import { BadgeAlertIcon, ChevronLeft } from "lucide-react";
 
-
 import {
   PaymentElement,
   useElements,
@@ -138,7 +137,7 @@ export default function DonateModal({
         elements,
         clientSecret,
         confirmParams: {
-          return_url: `http://localhost:3000/success`,
+          return_url: `https://www.cmworld.org/success`,
         },
       });
       if (error) {

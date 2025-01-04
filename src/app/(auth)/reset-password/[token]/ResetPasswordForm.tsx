@@ -65,7 +65,6 @@ export default function ResetPasswordForm({
   }, [token, router, setError]);
 
   const onSubmit = async (data: TResetPasswordSchema) => {
-    console.log(data);
     try {
       const res = await fetch("/api/reset-password", {
         method: "POST",

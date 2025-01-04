@@ -11,7 +11,6 @@ interface SearchResultListProps {
 export default function SearchResultList({
   searchResults,
 }: SearchResultListProps) {
-  console.log(searchResults);
   const router = useRouter();
 
   return (

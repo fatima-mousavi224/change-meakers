@@ -149,7 +149,6 @@ export default function ProfileForm({ userProfile }: ProfileFormProps) {
   const onSubmit = async (data: any) => {
     const uploadedCoverImage: { image: string }[] = [];
     const uploadedProfileImage: { image: string }[] = [];
-    console.log('data', data);
     try {
       await handleUploadCoverPhoto(data.coverPhoto[0], uploadedCoverImage);
       await handleUploadProfilePhoto(

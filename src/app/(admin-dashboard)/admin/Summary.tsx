@@ -1,7 +1,7 @@
 "use client";
 import Chart from "@/app/(admin-dashboard)/admin/_components/Chart";
 import ProfileCard from "@/app/(admin-dashboard)/admin/_components/ProfileCard";
-import { DonateTime, PaymentInfo, User } from "@prisma/client";
+import { PaymentInfo, User } from "@prisma/client";
 import Image from "next/image";
 import { useState } from "react";
 
@@ -51,11 +51,9 @@ export default function Summary({
     {
       label: "Admin users",
       value: numMembers,
-      icon: "/images/icon (1).svg",
+      icon: "/images/Icon (1).svg",
     },
   ];
-
-  console.log(donations);
 
   return (
     <div>
@@ -105,13 +103,15 @@ export default function Summary({
             </div>
             <div className="flex gap-2 items-center">
               <select
-                className="border-none outline-none focus:outline-none focus:border-none focus:ring-0 text-[#A3AED0]"
+                className="border-none outline-none focus:outline-none focus:border-none focus:ring-0 text-[#A3AED0] hover:cursor-pointer"
                 value={selectedYear}
                 onChange={(e) => setSelectedYear(Number(e.target.value))}
               >
+                <option value="2025">2025</option>
                 <option value="2024">2024</option>
                 <option value="2023">2023</option>
                 <option value="2022">2022</option>
+                <option value="2021">2021</option>
               </select>
               <Image
                 src={"/images/Vector (6).svg"}

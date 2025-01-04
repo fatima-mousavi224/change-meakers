@@ -1,16 +1,9 @@
 "use client";
-import {
-  forgotPasswordSchema,
-  signUpSchema,
-  TForgotPasswordSchema,
-  TSignUpSchema,
-} from "@/lib/types";
+import { forgotPasswordSchema, TForgotPasswordSchema } from "@/lib/types";
 import { cn } from "@/utilities/cn";
 import { yupResolver } from "@hookform/resolvers/yup";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { FieldValues, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 
 interface ForgotPasswordFormProps {
@@ -29,10 +22,7 @@ export default function ForgotPasswordForm({
     resolver: yupResolver(forgotPasswordSchema),
   });
 
-  const router = useRouter();
-
   const onSubmit = async (data: TForgotPasswordSchema) => {
-    console.log(data);
     try {
       const res = await fetch("/api/forgot-password", {
         method: "POST",

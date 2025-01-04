@@ -7,8 +7,6 @@ export default function ProfileCard({
 }: {
   currentUser: User | null;
 }) {
-  console.log("currentUser herehhher", currentUser);
-
   return (
     <div className="flex flex-col divide-y divide-gray-200 rounded-[20px] bg-white text-center h-full">
       <div className="flex flex-1 flex-col p-8">

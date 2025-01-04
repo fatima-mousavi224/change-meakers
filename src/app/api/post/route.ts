@@ -46,8 +46,6 @@ export async function GET(request: Request) {
 
     // Check if categoryId is valid and not null or empty
     if (categoryId && categoryId.trim() !== "") {
-      console.log("Fetching posts by categoryId:", categoryId);
-
       const posts = await prisma.post.findMany({
         where: {
           categoryId, // categoryId is a string and not null

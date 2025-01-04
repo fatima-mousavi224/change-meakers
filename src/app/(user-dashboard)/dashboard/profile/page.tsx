@@ -3,7 +3,6 @@ import EditProfile from "./_components/EditProfile";
 
 export default async function ProfilePage() {
   const user = await getCurrentUser();
-  console.log("user", user);
   return (
     <div className="flex items-center justify-center w-full">
       <EditProfile user={user} />

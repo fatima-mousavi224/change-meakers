@@ -16,8 +16,6 @@ export const POST = async (request: NextRequest) => {
       },
     });
 
-    console.log("user", user);
-
     if (!user) {
       return new NextResponse("Invalid or expired token", { status: 400 });
     }

@@ -116,7 +116,7 @@ export default function ManagePostTable({
             />
           </div>
           <select
-            className="rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 border-gray-300 focus:outline-2 sm:text-sm/6 focus:border-primary-50"
+            className="rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 border-gray-300 focus:outline-2 sm:text-sm/6 focus:border-primary-50 cursor-pointer"
             onChange={(e) =>
               handleSortChange(e.target.value as "Date" | "Title" | "")
             }

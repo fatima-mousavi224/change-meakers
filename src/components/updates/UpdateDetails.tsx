@@ -29,7 +29,6 @@ export default function UpdateDetails({
         year: "numeric",
       })
     : null;
-  console.log("postImages", postImages);
   return (
     <section className="py-12 max-w-4xl mx-auto px-4">
       <button className="px-4 py-2 rounded-lg font-medium  bg-primary-50 text-white my-3 cursor-default">

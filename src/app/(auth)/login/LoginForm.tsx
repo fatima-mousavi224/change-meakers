@@ -36,7 +36,6 @@ export default function LoginForm({ className, user }: LoginFormProps) {
 
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     setLoading(true);
-    console.log(user);
 
     try {
       const rememberMe = data.rememberMe || false;

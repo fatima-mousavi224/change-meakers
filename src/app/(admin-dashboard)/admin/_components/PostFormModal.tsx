@@ -138,8 +138,6 @@ export default function PostFormModal({
     };
   }, [coverImagePreview, imagesPreview]);
 
-  console.log(data);
-
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     let postCoverImage =
       hasData && data[0]?.authorImage?.image
@@ -154,7 +152,6 @@ export default function PostFormModal({
         const item = data.authorImage[0];
         try {
           const fileName = new Date().getTime() + "-" + item.name;
-          console.log("author image file name", fileName);
           const storage = getStorage(firebaseApp);
           const storageRef = ref(storage, `authorImage/${fileName}`);
           const uploadTask = uploadBytesResumable(storageRef, item);
@@ -201,7 +198,6 @@ export default function PostFormModal({
         try {
           const newPostImages: UploadImageType[] = [];
           for (const item of data.postImages) {
-            console.log("post images file name", item.name);
             const fileName = new Date().getTime() + "-" + item.name;
             const storage = getStorage(firebaseApp);
             const storageRef = ref(storage, `postImages/${fileName}`);
