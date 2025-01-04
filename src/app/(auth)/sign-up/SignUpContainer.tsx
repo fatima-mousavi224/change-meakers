@@ -31,8 +31,6 @@ export default function SignUpContainer({ user }: SignUpContainerProps) {
     verifyCode: "",
   });
 
-  console.log("user data", userData);
-
   const handleSetUserData = (data: UserData) => {
     setUserData((prev) => ({ ...prev, ...data }));
   };

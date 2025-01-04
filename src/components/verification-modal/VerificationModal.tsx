@@ -52,7 +52,6 @@ export default function VerificationModal({
       password: userData.password,
       verifyCode: data.verifyCode,
     };
-    console.log("new data", newData);
     try {
       const res = await fetch("/api/signup", {
         method: "POST",

@@ -105,7 +105,6 @@ export default function MemberForm({ member }: MemberFormProps) {
     // upload post images to firebase
 
     await handleMemeberAvatarUpload();
-    console.log(uploadedMemberAvatar);
 
     const memberData = {
       ...data,

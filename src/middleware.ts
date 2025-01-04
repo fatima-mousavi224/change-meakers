@@ -18,8 +18,6 @@ export default withAuth(
     const pathname = nextUrl.pathname;
     const token = await getToken({ req, secret });
 
-    console.log("token", token);
-
     const isPublicPath = publicPaths.some((path) => pathname.startsWith(path));
 
     if (!token && !isPublicPath) {

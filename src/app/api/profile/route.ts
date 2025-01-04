@@ -5,20 +5,6 @@ import { getCurrentUser } from "@/utilities/getCurrentUser";
 export async function POST(request: NextRequest) {
   const { email, phone, country, city, coverPhoto, profilePhoto } =
     await request.json();
-  console.log(
-    "email",
-    email + "/n",
-    "phone",
-    phone + "/n",
-    "country",
-    country + "/n",
-    "city",
-    city + "/n",
-    "coverPhoto",
-    coverPhoto + "/n",
-    "profilePhoto",
-    profilePhoto + "/n"
-  );
 
   if (!email || !phone || !country || !city || !coverPhoto || !profilePhoto) {
     return NextResponse.json(
@@ -27,7 +13,6 @@ export async function POST(request: NextRequest) {
     );
   }
   const currentUser = await getCurrentUser();
-  console.log("currentUser", currentUser);
   if (!currentUser) {
     return NextResponse.error();
   }

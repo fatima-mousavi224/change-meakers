@@ -28,8 +28,6 @@ export default function SearchModal({ posts }: SearchModalProps) {
       post.title.toLowerCase().includes(query.toLowerCase())
     );
     setSearchResults(results);
-    console.log(searchResults);
-    console.log(results);
   };
 
   useEffect(() => {
