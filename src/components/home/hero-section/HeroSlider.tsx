@@ -3,20 +3,17 @@
 import Image, { StaticImageData } from "next/image";
 import React, { useEffect, useState, TouchEvent } from "react";
 import { RighArrow } from "../../icons/Icons";
-import image1 from "@/public/images/home-page/hero-section/image1.png";
-import image2 from "@/public/images/home-page/hero-section/image2.png";
-import image3 from "@/public/images/home-page/hero-section/image3.png";
 import Link from "next/link";
 
 interface Slide {
-  image: StaticImageData;
+  image: string;
   mobileImage?: StaticImageData;
 }
 
 const slides: Slide[] = [
-  { image: image1 },
-  { image: image2 },
-  { image: image3 },
+  { image: "/images/home-page/hero-section/image1.png" },
+  { image: "/images/home-page/hero-section/image2.png" },
+  { image: "/images/home-page/hero-section/image3.png" },
 ];
 
 const HeroSlider: React.FC = () => {
