@@ -3,7 +3,7 @@ User-agent: *
 Allow: /
 
 # Host
-Host: https://tsnext-tw.thcl.dev
+Host: cmworld.com
 
 # Sitemaps
-Sitemap: https://tsnext-tw.thcl.dev/sitemap.xml
+Sitemap: cmworld.com/sitemap.xml
