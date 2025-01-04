@@ -3,9 +3,9 @@
 import Image, { StaticImageData } from "next/image";
 import React, { useEffect, useState, TouchEvent } from "react";
 import { RighArrow } from "../../icons/Icons";
-import image1 from "/images/home-page/hero-section/image1.png";
-import image2 from "/images/home-page/hero-section/image2.png";
-import image3 from "/images/home-page/hero-section/image3.png";
+import image1 from "../../../../public/images/home-page/hero-section/image1.png";
+import image2 from "../../../../public/images/home-page/hero-section/image2.png";
+import image3 from "../../../../public/images/home-page/hero-section/image3.png";
 import Link from "next/link";
 
 interface Slide {
