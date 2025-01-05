@@ -1,13 +1,13 @@
 "use client";
 
-import Image, { StaticImageData } from "next/image";
-import React, { useEffect, useState, TouchEvent } from "react";
-import { RighArrow } from "../../icons/Icons";
+import Image from "next/image";
 import Link from "next/link";
+import React, { TouchEvent, useEffect, useState } from "react";
+import { RighArrow } from "../../icons/Icons";
 
 interface Slide {
   image: string;
-  mobileImage?: StaticImageData;
+  mobileImage?: string;
 }
 
 const slides: Slide[] = [
