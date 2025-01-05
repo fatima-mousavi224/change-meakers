@@ -83,7 +83,7 @@ export default function UpdateDetails({
                       src={item.image || ""}
                       width={1200}
                       height={1200}
-                      className="h-full w-full self-center rounded-lg cursor-pointer aspect-video object-cover"
+                      className="h-full w-full self-center rounded-lg cursor-pointer object-contain object-center"
                       priority
                     />
                   </div>
