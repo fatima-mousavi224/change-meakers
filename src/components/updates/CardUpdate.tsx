@@ -6,14 +6,16 @@ import Link from "next/link";
 export default function UpdateCard({
   id,
   author,
+  title,
   authorImage,
   description,
   postImages,
+  postDate,
   //@ts-ignore
   Category,
   createdAt,
 }: Post) {
-  const formattedDate = new Date(createdAt).toLocaleDateString("en-US", {
+  const formattedDate = new Date(postDate!).toLocaleDateString("en-US", {
     month: "short",
     day: "2-digit",
     year: "numeric",
@@ -36,13 +38,14 @@ export default function UpdateCard({
       </button>
 
       <div className="space-y-4 ">
+        <h2 className="text-lg font-semibold line-clamp-3">{title}</h2>
         <p className="text-sm leading-6 text-gray-400">
           <div
             dangerouslySetInnerHTML={{ __html: truncateText(description, 100) }}
           />
         </p>
 
-        <div className="flex items-center justify-between">
+        <div className="flex gap-2 flex-col-reverse">
           <div className="flex items-center gap-2 shrink-0">
             <Image
               src={authorImage?.image || ""}
@@ -56,7 +59,7 @@ export default function UpdateCard({
             </span>
           </div>
 
-          <span className="font-semibold text-[13px] text-gray-300">
+          <span className="font-semibold text-[13px] text-gray-400">
             {formattedDate}
           </span>
         </div>

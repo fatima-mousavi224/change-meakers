@@ -44,7 +44,7 @@ export default function NewStoriesImage({
                 <div className="flex items-center gap-2 bg-gradient-to-r from-[#15181E] to-transparent px-3 py-1.5 rounded-full w-fit">
                   <CalenderIcon />
                   <p className="text-sm font-medium text-white">
-                    {moment(filteredPosts[0]?.createdAt).format("DD.MM.YYYY")}
+                    {moment(filteredPosts[0]?.postDate).format("DD.MM.YYYY")}
                   </p>
                 </div>
                 <h2 className="md:text-2xl text-sm font-bold">
@@ -85,7 +85,7 @@ export default function NewStoriesImage({
                   <div className="flex items-center gap-2 bg-gradient-to-r from-[#15181E] to-transparent px-3 py-1.5 rounded-full w-fit">
                     <CalenderIcon />
                     <p className="text-sm font-medium text-white">
-                      {moment(filteredPosts[1]?.createdAt).format("DD.MM.YYYY")}
+                      {moment(filteredPosts[1]?.postDate).format("DD.MM.YYYY")}
                     </p>
                   </div>
                   <h3 className="text-lg font-bold">
@@ -128,7 +128,7 @@ export default function NewStoriesImage({
                     <div className="flex items-center gap-2 bg-gradient-to-r from-[#15181E] to-transparent px-3 py-1.5 rounded-full w-fit">
                       <CalenderIcon />
                       <p className="text-sm font-medium text-white">
-                        {moment(post?.createdAt).format("DD.MM.YYYY")}
+                        {moment(post?.postDate).format("DD.MM.YYYY")}
                       </p>
                     </div>
                     <h3 className="text-lg font-bold">{post?.title}</h3>
