@@ -1,19 +1,22 @@
 "use client";
 
-import Image from "next/image";
+import Image, { StaticImageData } from "next/image";
 import Link from "next/link";
 import React, { TouchEvent, useEffect, useState } from "react";
 import { RighArrow } from "../../icons/Icons";
+import image1 from "/public/images/home-page/hero-section/image1.png";
+import image2 from "/public/images/home-page/hero-section/image2.png";
+import image3 from "/public/images/home-page/hero-section/image3.png";
 
 interface Slide {
-  image: string;
-  mobileImage?: string;
+  image: StaticImageData;
+  mobileImage?: StaticImageData;
 }
 
 const slides: Slide[] = [
-  { image: "/public/images/home-page/hero-section/image1.png" },
-  { image: "/public/images/home-page/hero-section/image2.png" },
-  { image: "/public/images/home-page/hero-section/image3.png" },
+  { image: image1 },
+  { image: image2 },
+  { image: image3 },
 ];
 
 const HeroSlider: React.FC = () => {
