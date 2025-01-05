@@ -11,9 +11,9 @@ interface Slide {
 }
 
 const slides: Slide[] = [
-  { image: "/images/home-page/hero-section/image1.png" },
-  { image: "/images/home-page/hero-section/image2.png" },
-  { image: "/images/home-page/hero-section/image3.png" },
+  { image: "/public/images/home-page/hero-section/image1.png" },
+  { image: "/public/images/home-page/hero-section/image2.png" },
+  { image: "/public/images/home-page/hero-section/image3.png" },
 ];
 
 const HeroSlider: React.FC = () => {
