@@ -1,4 +1,5 @@
 import NavBarAndSidebarUserDashboard from "@/components/navbar/NavBar&SideBarUserDashboard";
+import { siteConfig } from "@/constant/config";
 import "@/styles/globals.css";
 import { getCurrentUser } from "@/utilities/getCurrentUser";
 import { Metadata } from "next";
@@ -7,43 +8,41 @@ import React from "react";
 import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
-  applicationName: "Change Makers",
-  authors: [
-    {
-      name: "Mars Coders",
-      url: "marscoder.com",
-    },
-  ],
-  creator: "MarsCoders",
-  description: "we make system and websites for companies.",
-  keywords: [
-    "Change Makers",
-    "Change Makers of the world",
-    "World Afghan Changers",
-    "Change Makers girl",
-    "Change Makers org",
-    "Help and Change with yout",
-    "Change Makers Youth",
-    "Change Makers in the world",
-  ],
-  openGraph: {
-    images: [
-      {
-        alt: "Changes Makers",
-        height: 630,
-        url: "./opengraph-image.png",
-        width: 1200,
-      },
-    ],
-  },
-  publisher: "Change Makers",
+  metadataBase: new URL(siteConfig.url),
   title: {
-    default: "Change Makers Of the World Dashboard",
-    template: "%s - Change Makers",
+    default: siteConfig.title,
+    template: `%s | ${siteConfig.title}`,
+  },
+  description: siteConfig.description,
+  keywords: siteConfig.keywords,
+  robots: { index: true, follow: true },
+  icons: {
+    icon: "/favicon/favicon.ico",
+    shortcut: "/favicon/favicon-16x16.png",
+    apple: "/favicon/apple-touch-icon.png",
+  },
+  manifest: `/favicon/site.webmanifest`,
+  openGraph: {
+    url: `${siteConfig.url}/images/og.jpg`,
+    title: siteConfig.title,
+    description: siteConfig.description,
+    siteName: siteConfig.title,
+    images: [`${siteConfig.url}/images/og.jpg`],
+    type: "website",
+    locale: "en_US",
   },
   twitter: {
     card: "summary_large_image",
+    title: siteConfig.title,
+    description: siteConfig.description,
+    images: [`${siteConfig.url}/images/og.jpg`],
   },
+  authors: [
+    {
+      name: "MarsCoders",
+      url: "https://github.com/MarsCoders",
+    },
+  ],
 };
 
 export default async function AdminLayout({

@@ -8,6 +8,7 @@ import Ourchanges from "@/components/home/our-changes/OurChanges";
 import WhoWeAre from "@/components/home/who-we-are/WhoWeAre";
 import "@/lib/env";
 import prisma from "@/lib/prismaDB";
+import { Suspense } from "react";
 
 export default async function HomePage() {
   // select the 4 latest posts
