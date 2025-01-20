@@ -1,6 +1,7 @@
-import React from "react";
+import React, { Suspense } from "react";
 import DonationForm from "./DonationForm";
 import ImageCompare from "./ImageCompare";
+import GoFundMeEmbed from "@/components/home/contribute/GoFundEmbed";
 
 export default function Contribute() {
   return (
@@ -17,12 +18,7 @@ export default function Contribute() {
         </p>
       </div>
       <div className="w-full flex lg:flex-row flex-col-reverse gap-4">
-        <div className="lg:w-1/2">
-          <DonationForm />
-        </div>
-        <div className="lg:w-1/2">
-          <ImageCompare />
-        </div>
+        <GoFundMeEmbed />
       </div>
     </div>
   );

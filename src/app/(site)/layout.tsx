@@ -24,6 +24,7 @@ export const metadata: Metadata = {
     template: `%s | ${siteConfig.title}`,
   },
   description: siteConfig.description,
+  keywords: siteConfig.keywords,
   robots: { index: true, follow: true },
   icons: {
     icon: "/favicon/favicon.ico",
@@ -32,7 +33,7 @@ export const metadata: Metadata = {
   },
   manifest: `/favicon/site.webmanifest`,
   openGraph: {
-    url: siteConfig.url,
+    url: `${siteConfig.url}/images/og.jpg`,
     title: siteConfig.title,
     description: siteConfig.description,
     siteName: siteConfig.title,
