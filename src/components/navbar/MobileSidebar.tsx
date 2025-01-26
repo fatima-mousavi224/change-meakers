@@ -170,8 +170,9 @@ export default function MobileSidebar({
                       <div className="flex items-center justify-center mt-5 w-full">
                         <div className="justify-center lg:hidden flex text-sm px-8 py-2 bg-primary-50 w-full rounded-md text-white duration-300 font-semibold  hover:bg-primary-200 transition-all cursor-pointer">
                           <Link
-                            href="/donate"
+                            href="https://www.gofundme.com/f/HelpAfghanGirlsLearn/donate?attribution_id=undefined&utm_campaign=unknown&utm_medium=customer&utm_source=website_widget"
                             className="flex items-center gap-2"
+                            target="_blank"
                           >
                             Donate
                             <DonateIcon />

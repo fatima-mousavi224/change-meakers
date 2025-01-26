@@ -61,10 +61,10 @@ export default function MainNavBar({
   }, [params]);
 
   const pathName = usePathname();
-  const dashboardTxt =
-    user?.role === "ADMIN" ? "Admin Dashboard" : "User Dashboard";
+  // const dashboardTxt =
+  //   user?.role === "ADMIN" ? "Admin Dashboard" : "User Dashboard";
 
-  const dashboardLink = user?.role === "ADMIN" ? "/admin" : "/dashboard";
+  // const dashboardLink = user?.role === "ADMIN" ? "/admin" : "/dashboard";
 
   const handleSearchClick = () => {
     if (!open) {
@@ -151,12 +151,14 @@ export default function MainNavBar({
                 >
                   <Search className="size-4  duration-150 hover:scale-105" />
                 </button>
-                <Link
-                  href={"/login"}
-                  className="text-sm font-bold duration-150 hover:scale-105 bg-[#F2F2F2] rounded-lg p-2 sm:size-[34px] size-[30px] flex items-center justify-center"
-                >
-                  <Profile className=" size-4 duration-150 hover:scale-105" />
-                </Link>
+                {user?.role === "ADMIN" && (
+                  <Link
+                    href={"/admin"}
+                    className="text-sm font-bold duration-150 hover:scale-105 bg-[#F2F2F2] rounded-lg p-2 sm:size-[34px] size-[30px] flex items-center justify-center"
+                  >
+                    <Profile className=" size-4 duration-150 hover:scale-105" />
+                  </Link>
+                )}
               </div>
               <button
                 className="text-sm font-bold duration-150 hover:scale-105 bg-[#F2F2F2] rounded-lg p-2 sm:size-[34px] size-[30px] flex items-center justify-center"
@@ -171,7 +173,10 @@ export default function MainNavBar({
                 {importantBtns.map((item: item, index: number) => (
                   <Link
                     key={index}
-                    href={item.href}
+                    href={
+                      "https://www.gofundme.com/f/HelpAfghanGirlsLearn/donate?attribution_id=undefined&utm_campaign=unknown&utm_medium=customer&utm_source=website_widget"
+                    }
+                    target="_blank"
                     className="flex items-center gap-2"
                   >
                     {item.name}
@@ -218,25 +223,12 @@ export default function MainNavBar({
             >
               <Instagram className="w-6 h-6 duration-150 hover:scale-105" />
             </Link>
-            {user !== null ? (
+            {user !== null && (
               <Link
-                href={dashboardLink}
+                href="/admin"
                 className="font-semibold text-sm text-primary-50 duration-150 hover:scale-105 bg-[#F2F2F2] rounded-lg w-full  p-2.5"
               >
-                {dashboardTxt}
-              </Link>
-            ) : (
-              <Link
-                href={"/login"}
-                className="text-sm font-bold duration-150 hover:scale-105 bg-[#F2F2F2] rounded-lg p-2 w-full flex items-center justify-center h-full"
-                aria-hidden="true"
-              >
-                <div className="flex items-center space-x-3">
-                  <p className="font-semibold text-sm text-primary-50">
-                    Sing in
-                  </p>
-                  <Profile className="size-6 duration-150 hover:scale-105" />
-                </div>
+                Admin Dashboard
               </Link>
             )}
           </div>

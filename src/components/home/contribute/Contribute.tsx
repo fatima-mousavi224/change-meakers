@@ -1,6 +1,3 @@
-import React, { Suspense } from "react";
-import DonationForm from "./DonationForm";
-import ImageCompare from "./ImageCompare";
 import GoFundMeEmbed from "@/components/home/contribute/GoFundEmbed";
 
 export default function Contribute() {

@@ -4,6 +4,7 @@ import { Divider } from "@/components/divider/Divider";
 import SocialButton from "@/components/social-button/SocialButton";
 import { cn } from "@/utilities/cn";
 import signInWithThirdParty from "@/utilities/signInWithThirdParty";
+import { LockClosedIcon } from "@heroicons/react/24/outline";
 import { User } from "@prisma/client";
 import { ArrowLeft } from "lucide-react";
 import { signIn } from "next-auth/react";
@@ -49,7 +50,7 @@ export default function LoginForm({ className, user }: LoginFormProps) {
         toast.error(res.error);
       } else if (res?.ok) {
         toast.success("Login successful");
-        router.push(user?.role === "ADMIN" ? "/admin" : "/dashboard");
+        router.push((user?.role === "ADMIN" && "/admin") || "/admin");
       }
     } catch (error: any) {
       toast.error(error.message);
@@ -64,7 +65,7 @@ export default function LoginForm({ className, user }: LoginFormProps) {
         className
       )}
     >
-      <div className="flex mt-6 lg:justify-end  justify-between items-center  flex-row  gap-4 mb-6 ">
+      {/* <div className="flex mt-6 lg:justify-end  justify-between items-center  flex-row  gap-4 mb-6 ">
         <Link
           href={"/"}
           className=" font-semibold text-primary-50 items-center justify-end gap-1 text-sm flex lg:hidden lg:opacity-0 lg:pointer-events-none "
@@ -81,7 +82,11 @@ export default function LoginForm({ className, user }: LoginFormProps) {
             Sign up
           </Link>
         </p>
-      </div>
+      </div> */}
+      <p className="mt-6 mb-12 max-w-md mx-auto w-full  text-red-500 flex items-center gap-2">
+        <LockClosedIcon className="size-6 inline-block stroke-red-500" />
+        <span className="font-semibold text-lg">Admin Access Only</span>
+      </p>
       <div className="mb-12 max-w-md mx-auto w-full">
         <h2 className="text-[32px] font-medium">Sign in</h2>
         <p className="text-dark_gray">
@@ -201,7 +206,7 @@ export default function LoginForm({ className, user }: LoginFormProps) {
           >
             {isLoading ? "Sign in..." : "Sign in"}
           </button>
-          <p className="text-xs md:text-sm text-slate-600 flex-1">
+          {/* <p className="text-xs md:text-sm text-slate-600 flex-1">
             Need an account?{" "}
             <Link
               href="/sign-up"
@@ -209,7 +214,7 @@ export default function LoginForm({ className, user }: LoginFormProps) {
             >
               Sign up
             </Link>
-          </p>
+          </p> */}
         </div>
         <Link
           href={"/"}

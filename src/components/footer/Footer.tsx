@@ -61,7 +61,8 @@ export default function Footer() {
             Contact
           </Link>
           <Link
-            href="/donate"
+            href="https://www.gofundme.com/f/HelpAfghanGirlsLearn/donate?attribution_id=undefined&utm_campaign=unknown&utm_medium=customer&utm_source=website_widget"
+            target="_blank"
             className="hover:text-opacity-80 duration-200 transition-all"
           >
             Donate
