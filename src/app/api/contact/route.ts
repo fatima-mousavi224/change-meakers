@@ -1,12 +1,11 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import { NextRequest, NextResponse } from 'next/server';
-import nodemailer, { Transporter } from 'nodemailer';
-import Mail from 'nodemailer/lib/mailer';
+import { NextRequest, NextResponse } from "next/server";
+import nodemailer, { Transporter } from "nodemailer";
+import Mail from "nodemailer/lib/mailer";
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import prisma from '@/lib/prismaDB';
-
+import prisma from "@/lib/prismaDB";
 
 interface EmailRequestBody {
   firstName: string;
@@ -17,33 +16,28 @@ interface EmailRequestBody {
 }
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
-  const {
-    firstName,
-    lastName,
-    email,
-    message,
-    subject,
-  }: EmailRequestBody = await request.json();
+  const { firstName, lastName, email, message, subject }: EmailRequestBody =
+    await request.json();
 
   if (!firstName || !lastName || !email || !message) {
     return NextResponse.json(
-      { error: 'Missing required fields' },
+      { error: "Missing required fields" },
       { status: 400 }
     );
   }
 
   const transport: Transporter = nodemailer.createTransport({
-    host: 'smtp.hostinger.com',
+    service: "gmail",
+    host: "smtp.gmail.com",
     port: 465,
     secure: true,
     auth: {
-      user:process.env.EMAIL,
-      pass:process.env.EMAIL_PASSWORD,
+      user: process.env.EMAIL,
+      pass: process.env.EMAIL_PASS,
     },
   });
 
-
-  const adminEmails = process.env.ADMIN_EMAILS?.split(',') || [];
+  const adminEmails = process.env.ADMIN_EMAILS?.split(",") || [];
 
   const adminMailOptions = (adminEmail: string): Mail.Options => ({
     from: process.env.EMAIL,
@@ -55,8 +49,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   const customerMailOptions: Mail.Options = {
     from: process.env.EMAIL, // Use a different from address for the customer
     to: email,
-    subject: 'Thank you for contacting us!',
-    text: 'Thank you for contacting us! We will get back to you as soon as possible.',
+    subject: "Thank you for contacting us!",
+    text: "Thank you for contacting us! We will get back to you as soon as possible.",
   };
 
   try {
@@ -81,12 +75,9 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       },
     });
 
-    return NextResponse.json({ message: 'Emails sent' });
+    return NextResponse.json({ message: "Emails sent" });
   } catch (err) {
-    console.error('Error sending email:', err);
-    return NextResponse.json(
-      { error: 'Failed to send emails' },
-      { status: 500 }
-    );
+    console.error("Error sending email:", err);
+    return NextResponse.json({ error: err }, { status: 500 });
   }
 }
