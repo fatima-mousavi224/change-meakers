@@ -12,11 +12,16 @@ export default function Contribute() {
           <h1 className="font-bold sm:text-4xl text-2xl mb-3 text-black_color">
             Do you want to contribute?
           </h1>
-          <p className="text-lg text-paragraph_color ">
-            Join our fight for human rights and girls’ education. Today, more
-            than 7.8 million children are out of school in Afghanistan. Your
-            support helps Afghan children, youth, and girls learn. Photo
-            Credits: AP Photo/Ebrahim Noroozi, File and Arab News.
+          <p className="text-base text-paragraph_color ">
+            Every penny makes a difference! Today, over 7.8 million children in
+            Afghanistan are out of school. Your support helps Afghan children,
+            youth, and girls learn. In America, we process all donations through
+            our partner, the IOC, a registered 501(c)(3) and 509(a)(1) nonprofit
+            (Tax ID: 33-0547951). Donations are non-political, non-sectarian,
+            and tax-deductible. Your donation is safe and secure. he IOC
+            securely transfers funds to us, ensuring transparency. Learn more at
+            the link below. Photo Credits: AP Photo/Ebrahim Noroozi, File and
+            Arab News.
           </p>
         </div>
         <GoFundMeEmbed />
