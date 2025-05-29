@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import logo from "../../../public/images/logo.jpg";
 import { DonateIcon, Profile, Search, Setting } from "../icons/Icons";
 import SearchResultList from "../search/SearchResult";
+import { ChevronDownIcon } from '@heroicons/react/20/solid'
 
 interface Props {
   navigation: Array<{ name: string; href: string; current?: boolean }>;
@@ -35,6 +36,7 @@ export default function MainNavBar({
   const router = useRouter();
   const [searchResults, setSearchResults] = useState<Post[]>([]);
   const [searchInitiated, setSearchInitiated] = useState(false);
+  const [openMenu, setOpenMenu] = useState(false);
 
   const handleSearch = async (query: string) => {
     if (query.trim() === "") {
@@ -189,7 +191,7 @@ export default function MainNavBar({
         </div>
       </div>
       <div className="w-full border-b py-5 lg:block hidden">
-        <div className="items-center justify-between hidden gap-3 px-2 overflow-hidden lg:flex">
+        <div className="items-center justify-between hidden gap-3 px-2  lg:flex">
           <div className="flex items-center gap-3">
             {/* menu items  */}
             {navigation.map((item, index) => (
@@ -223,6 +225,24 @@ export default function MainNavBar({
             >
               <Instagram className="w-6 h-6 duration-150 hover:scale-105" />
             </Link>
+            <div  className="relative inline-block text-left">
+            <div>
+              <button className="text-sm  duration-150 hover:scale-105 bg-[#F2F2F2] rounded-lg p-2 flex gap-2" onClick={() => setOpenMenu(!openMenu)}>
+                Join Us
+                <ChevronDownIcon aria-hidden="true" className="-mr-1 size-5 text-gray-400" />
+              </button>
+            </div>
+
+            {openMenu && (
+              <div className="absolute right-0 mt-2 w-44 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black/5 transition focus:outline-hidden z-40 overflow-hidden">
+                <div className="">
+                  <Link href="/apply_student" className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:text-gray-900 data-focus:outline-hidden hover:bg-gray-100 hover:text-gray-900 transition-all duration-300">Apply as a Student</Link>
+                  <Link href="/apply_contributor" className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:text-gray-900 data-focus:outline-hidden hover:bg-gray-100 hover:text-gray-900 transition-all duration-300">Join as a Contributor</Link>
+                </div>
+              </div>
+            )}
+         
+          </div>
             {user !== null && (
               <Link
                 href="/admin"

@@ -163,6 +163,30 @@ export default function MobileSidebar({
                       </li>
                     </ul>
                   </nav>
+                  <div className="flex flex-col gap-y-2">
+                    <Link
+                      href="/apply_student"
+                      className={cn(
+                        pathName === "/apply_student"
+                          ? "text-primary-200 bg-light_gray font-semibold"
+                          : " hover:text-primary-200 hover:bg-light_gray font-medium",
+                        "group flex gap-x-3 rounded-md p-2 text-sm leading-6 transition-colors duration-200 ease-in"
+                      )}
+                    >
+                      Apply as a Student
+                    </Link>
+                    <Link
+                      href="/apply_volunteer"
+                      className={cn(
+                        pathName === "/apply_contributor"
+                          ? "text-primary-200 bg-light_gray font-semibold"
+                          : " hover:text-primary-200 hover:bg-light_gray font-medium",
+                        "group flex gap-x-3 rounded-md p-2 text-sm leading-6 transition-colors duration-200 ease-in"
+                      )}
+                    >
+                      Join as a Contributor
+                    </Link>
+                  </div>
                 </div>
                 <div>
                   <div className="space-y-1 flex flex-col items-start">
@@ -174,7 +198,7 @@ export default function MobileSidebar({
                             className="flex items-center gap-2"
                             target="_blank"
                           >
-                            Donate
+                            Donate Now
                             <DonateIcon />
                           </Link>
                         </div>
