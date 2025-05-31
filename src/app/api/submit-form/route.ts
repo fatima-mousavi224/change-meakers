@@ -1,128 +1,83 @@
-import { NextResponse } from 'next/server';
-import nodemailer from 'nodemailer';
-import validator from 'validator';
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+import { NextRequest, NextResponse } from "next/server";
+import nodemailer, { Transporter } from "nodemailer";
+import Mail from "nodemailer/lib/mailer";
 
-export async function POST(request) {
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import prisma from "@/lib/prismaDB";
+
+interface EmailRequestBody {
+  firstName: string;
+  lastName: string;
+  email: string;
+  subject: string;
+  message: string;
+}
+
+export async function POST(request: NextRequest): Promise<NextResponse> {
+  const { firstName, lastName, email, message, subject }: EmailRequestBody =
+    await request.json();
+
+  if (!firstName || !lastName || !email || !message) {
+    return NextResponse.json(
+      { error: "Missing required fields" },
+      { status: 400 }
+    );
+  }
+
+  const transport: Transporter = nodemailer.createTransport({
+    service: "gmail",
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true,
+    auth: {
+      user: process.env.EMAIL,
+      pass: process.env.EMAIL_PASS,
+    },
+  });
+
+  const adminEmails = process.env.ADMIN_EMAILS?.split(",") || [];
+
+  const adminMailOptions = (adminEmail: string): Mail.Options => ({
+    from: process.env.EMAIL,
+    to: adminEmail,
+    subject: `Message from ${firstName} (${lastName})`,
+    text: `Subject: ${subject}\n\nMessage: ${message}`,
+  });
+
+  const customerMailOptions: Mail.Options = {
+    from: process.env.EMAIL, // Use a different from address for the customer
+    to: email,
+    subject: "Thank you for contacting us!",
+    text: "Thank you for contacting us! We will get back to you as soon as possible.",
+  };
+
   try {
-    const formData = await request.formData();
+    // Send emails to all admins
+    await Promise.all(
+      adminEmails.map(async (adminEmail) => {
+        await transport.sendMail(adminMailOptions(adminEmail));
+      })
+    );
 
-    // Extract and validate fields
-    const fields = {};
-    for (const [key, value] of formData.entries()) {
-      if (key !== 'idPhoto' && key !== 'englishDoc' && key !== 'supportingDocs') {
-        fields[key] = value;
-      }
-    }
+    // Send email to the customer
+    await transport.sendMail(customerMailOptions);
 
-    const requiredFields = [
-      'firstName',
-      'lastName',
-      'phone',
-      'dob',
-      'gender',
-      'email',
-      'country',
-      'nationality',
-      'educationStatus',
-      'program',
-      'englishLevel',
-      'consent',
-      'signatureName',
-      'signatureDate',
-    ];
-    for (const field of requiredFields) {
-      if (!fields[field] || (field === 'consent' && fields[field] !== 'true')) {
-        return NextResponse.json(
-          { message: `Missing or invalid ${field}` },
-          { status: 400 }
-        );
-      }
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(fields.email)) {
-      return NextResponse.json(
-        { message: 'Invalid email format' },
-        { status: 400 }
-      );
-    }
-
-    // Sanitize text fields
-    const sanitizedFields = {};
-    for (const [key, value] of Object.entries(fields)) {
-      sanitizedFields[key] = typeof value === 'string' ? validator.escape(value) : value;
-    }
-
-    // Prepare email content
-    const emailBody = `
-      <h2>New Student Application</h2>
-      <p><strong>First Name:</strong> ${sanitizedFields.firstName}</p>
-      <p><strong>Last Name:</strong> ${sanitizedFields.lastName}</p>
-      <p><strong>Phone:</strong> ${sanitizedFields.phone}</p>
-      <p><strong>Date of Birth:</strong> ${sanitizedFields.dob}</p>
-      <p><strong>Gender:</strong> ${sanitizedFields.gender}</p>
-      <p><strong>Email:</strong> ${sanitizedFields.email}</p>
-      <p><strong>Country:</strong> ${sanitizedFields.country}</p>
-      <p><strong>Nationality:</strong> ${sanitizedFields.nationality}</p>
-      <p><strong>Education Status:</strong> ${sanitizedFields.educationStatus}</p>
-      <p><strong>Program:</strong> ${sanitizedFields.program}</p>
-      <p><strong>English Level:</strong> ${sanitizedFields.englishLevel}</p>
-      <p><strong>Message:</strong> ${sanitizedFields.message || 'N/A'}</p>
-      <p><strong>Referred:</strong> ${sanitizedFields.referred || 'N/A'}</p>
-      <p><strong>Consent:</strong> ${sanitizedFields.consent}</p>
-      <p><strong>Signature Name:</strong> ${sanitizedFields.signatureName}</p>
-      <p><strong>Signature Date:</strong> ${sanitizedFields.signatureDate}</p>
-    `;
-
-    // Set up Nodemailer
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
+    // Save customer info to the database
+    await prisma.customer.create({
+      data: {
+        firstName,
+        email,
+        lastName,
+        message,
+        subject,
       },
     });
 
-    const mailOptions = {
-      from: process.env.EMAIL_USER,
-      to: 'admins@example.com', // Replace with actual admin email
-      subject: 'New Student Application',
-      html: emailBody,
-      attachments: [],
-    };
-
-    // Handle file attachments
-    const idPhoto = formData.get('idPhoto');
-    if (idPhoto) {
-      mailOptions.attachments.push({
-        filename: idPhoto.name,
-        content: Buffer.from(await idPhoto.arrayBuffer()),
-      });
-    }
-    const englishDoc = formData.get('englishDoc');
-    if (englishDoc) {
-      mailOptions.attachments.push({
-        filename: englishDoc.name,
-        content: Buffer.from(await englishDoc.arrayBuffer()),
-      });
-    }
-    const supportingDocs = formData.getAll('supportingDocs');
-    for (const doc of supportingDocs) {
-      mailOptions.attachments.push({
-        filename: doc.name,
-        content: Buffer.from(await doc.arrayBuffer()),
-      });
-    }
-
-    // Send email
-    await transporter.sendMail(mailOptions);
-
-    return NextResponse.json({ message: 'Form submitted successfully' });
-  } catch (error) {
-    console.error(error);
-    return NextResponse.json(
-      { message: 'Error submitting form' },
-      { status: 500 }
-    );
+    return NextResponse.json({ message: "Emails sent" });
+  } catch (err) {
+    console.error("Error sending email:", err);
+    return NextResponse.json({ error: err }, { status: 500 });
   }
 }
