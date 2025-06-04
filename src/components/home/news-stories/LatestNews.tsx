@@ -77,7 +77,7 @@ const LatestNews: React.FC = () => {
         className="absolute top-1/2 right-4 transform -translate-y-1/2 bg-white p-2 rounded-2xl shadow-md cursor-pointer z-10"
         id="nextButton"
       >
-        <MdOutlineNavigateNext className=" md:size-8 font-bold" />
+      <MdOutlineNavigateNext className=" md:size-8 font-bold" />
       </button>
       <Swiper
         breakpoints={{
