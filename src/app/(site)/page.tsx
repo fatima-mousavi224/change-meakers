@@ -3,6 +3,7 @@ import Contribute from "@/components/home/contribute/Contribute";
 import HeroSlider from "@/components/home/hero-section/HeroSlider";
 import HomeVedio from "@/components/home/homeVedio";
 import { InfiniteBanner } from "@/components/home/infinite-banner/InfiniteBanner";
+import LatestNews from "@/components/home/news-stories/LatestNews";
 import NewsStories from "@/components/home/news-stories/news-stories";
 import Ourchanges from "@/components/home/our-changes/OurChanges";
 import WhoWeAre from "@/components/home/who-we-are/WhoWeAre";
@@ -25,6 +26,7 @@ export default async function HomePage() {
       <Ourchanges />
       <WhoWeAre />
       <NewsStories posts={posts} categories={categories} />
+      <LatestNews />
       <HomeVedio />
       <Contribute />
       <Subscribe />
