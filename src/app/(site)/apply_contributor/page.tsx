@@ -100,6 +100,8 @@ export default function ApplyContribution() {
     if (files.idPhoto) data.append("idPhoto", files.idPhoto);
     if (files.englishDoc) data.append("englishDoc", files.englishDoc);
     files.supportingDocs.forEach((file) => data.append("supportingDocs", file));
+    console.log("data", data);
+    
 
     try {
       const response = await fetch("/api/submit-form", {
@@ -342,6 +344,7 @@ We work in education, empowerment, advocacy, and humanitarian support, especiall
                           </svg>
                           <input
                             type="file"
+                            draggable
                             accept=".pdf,.docx"
                             onChange={(e) => handleFileChange(e, "englishDoc")}
                             className="sr-only focus:outline-none active:outline-none bg-transparent"
@@ -947,15 +950,7 @@ We work in education, empowerment, advocacy, and humanitarian support, especiall
 
             {/* Submit */}
             <div className="flex justify-between mb-10">
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="bg-primary-100 text-white px-4 md:px-6 py-1 md:py-3 rounded-md disabled:opacity-50"
-                onClick={handleSubmit}
-              >
-                Submit
-              </button>
-              <button
+               <button
                 type="button"
                 className="border-2 border-gray-300 px-4 md:px-6 py-2 md:py-3 rounded-md"
                 onClick={() => {
@@ -986,6 +981,16 @@ We work in education, empowerment, advocacy, and humanitarian support, especiall
               >
                 Clear Form
               </button>
+
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="bg-primary-100 text-white px-4 md:px-6 py-1 md:py-3 rounded-md disabled:opacity-50"
+                onClick={handleSubmit}
+              >
+                Submit
+              </button>
+             
             </div>
             {submitMessage && (
               <p

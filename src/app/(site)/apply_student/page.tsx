@@ -2,6 +2,9 @@
 import Banner from "@/components/common/Banner";
 import React, { useState } from "react";
 import Image from "next/image";
+import { IoMdClose } from "react-icons/io";
+import firebaseApp from "lib/firebase";
+import { getDownloadURL, getStorage, ref, uploadBytesResumable } from "firebase/storage";
 
 interface FormData {
   firstName: string;
@@ -13,11 +16,15 @@ interface FormData {
   country: string;
   nationality: string;
   educationStatus: string;
-  program: string;
+  girlsProgram: string; // For "Online Education for Girls"
+  subjectsProgram: string; // For "Online School Subjects"
+  englishTestTaken: string; // For "Have you taken any English proficiency tests?"
   englishLevel: string;
-  message: string;
-  referred: string;
-  consent: boolean;
+  motivationMessage: string; // Renamed from "message" for clarity
+  referralSource: string; // For "How did you hear about us?"
+  additionalMessage: string; // For "Your Message (Optional)"
+  invitaionProgram: string; // Typo corrected to "invitationProgram"
+  consent: false;
   signatureName: string;
   signatureDate: string;
 }
@@ -28,7 +35,71 @@ interface Files {
   supportingDocs: File[];
 }
 
+
+
 export default function StudentApplication() {
+
+  // Define the list of programs with keys and labels
+  const programs = [
+    { key: "accessVideos", label: "Access To Recorded School Subject Videos" },
+    {
+      key: "requestSupplies",
+      label: "Request Books & School Supplies",
+      sublabel: "For War-Affected Children Or Girls",
+    },
+    {
+      key: "joinELibrary",
+      label: "Join The Change ELibrary",
+      sublabel: "Access To Daily Reading Materials & Educational Resources",
+    },
+    {
+      key: "applyScholarship",
+      label: "Apply For International Scholarship Preparation Program",
+      sublabel: "For Girls In Science And Language Tracks",
+    },
+    {
+      key: "girlCoders",
+      label: "Afghan Girl Coders Program",
+      sublabel: "Learn Coding And Computer Science",
+    },
+    {
+      key: "humanRights",
+      label: "Human Rights & Advocacy Program",
+      sublabel: "Global Awareness & Reporting Network",
+    },
+    {
+      key: "mentalHealth",
+      label: "Mental Health & Empowerment Seminars",
+      sublabel: "Online Support And Self-Empowerment",
+    },
+    {
+      key: "onlineSupport",
+      label: "Online Support And Self-Empowerment",
+      sublabel: "For Families In Critical Crisis",
+    },
+  ];
+
+  // Initialize state with all programs set to false
+  const initialSelectedPrograms = Object.fromEntries(
+    programs.map((program) => [program.key, false])
+  );
+
+  // State to track selected programs
+  const [selectedPrograms, setSelectedPrograms] = useState(
+    initialSelectedPrograms
+  );
+
+  // Handle checkbox change
+  const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, checked } = event.target;
+    setSelectedPrograms((prev) => ({
+      ...prev,
+      [name]: checked,
+    }));
+  };
+
+  console.log("🚀 ~ StudentApplication ~ selectedPrograms:", selectedPrograms);
+
   const [formData, setFormData] = useState<FormData>({
     firstName: "",
     lastName: "",
@@ -39,10 +110,14 @@ export default function StudentApplication() {
     country: "",
     nationality: "",
     educationStatus: "",
-    program: "",
+    girlsProgram: "", // For "Online Education for Girls"
+    subjectsProgram: "", // For "Online School Subjects"
+    englishTestTaken: "", // For "Have you taken any English proficiency tests?"
     englishLevel: "",
-    message: "",
-    referred: "",
+    motivationMessage: "", // Renamed from "message" for clarity
+    referralSource: "", // For "How did you hear about us?"
+    additionalMessage: "", // For "Your Message (Optional)"
+    invitaionProgram: "", // Typo corrected to "invitationProgram"
     consent: false,
     signatureName: "",
     signatureDate: "",
@@ -87,80 +162,143 @@ export default function StudentApplication() {
     } else {
       setFiles((prev) => ({ ...prev, [field]: file }));
     }
-  };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setSubmitMessage("");
-
-    const data = new FormData();
-    Object.entries(formData).forEach(([key, value]) => {
-      data.append(key, value.toString());
-    });
-    if (files.idPhoto) data.append("idPhoto", files.idPhoto);
-    if (files.englishDoc) data.append("englishDoc", files.englishDoc);
-    files.supportingDocs.forEach((file) => data.append("supportingDocs", file));
-
-    try {
-      const response = await fetch("/api/submit-form", {
-        method: "POST",
-        body: data,
-      });
-      if (response.ok) {
-        setSubmitStatus("success");
-        setSubmitMessage("Form submitted successfully");
-        setFormData({
-          firstName: "",
-          lastName: "",
-          phone: "",
-          dob: "",
-          gender: "",
-          email: "",
-          country: "",
-          nationality: "",
-          educationStatus: "",
-          program: "",
-          englishLevel: "",
-          message: "",
-          referred: "",
-          consent: false,
-          signatureName: "",
-          signatureDate: "",
-        });
-        setFiles({ idPhoto: null, englishDoc: null, supportingDocs: [] });
-      } else {
-        setSubmitStatus("error");
-        setSubmitMessage("Error submitting form");
+    // check if image is more than 10 mb
+    const maxSize = 10 * 1024 * 1024; // 10 MB
+    for (let file of Array.from(fileList)) {
+      if (file.size > maxSize) {
+        alert("File size exceeds 10 MB limit.");
+        return;
       }
-    } catch (error) {
-      console.error(error);
-      setSubmitStatus("error");
-      setSubmitMessage("Error submitting form");
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
+const uploadImageUrl = async (file: File, folder: string) => {
+  const filename = new Date().getTime() + "_" + file.name;
+
+  const storage = getStorage(firebaseApp);
+  const storageRef = ref(storage, `${folder}/${filename}`);
+
+  const uploadTask = uploadBytesResumable(storageRef, file);
+
+  return new Promise((resolve, reject) => {
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        console.log("Upload is " + progress + "% done");
+      },
+      (error) => {
+        console.error("Error uploading image:", error);
+        reject(error);
+      },
+      () => {
+        // Upload completed successfully, now get the download URL
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+          resolve(downloadURL);
+        }).catch((error) => {
+          console.error("Error getting download URL:", error);
+          reject(error);
+        });
+      }
+    );
+  });
+};
+
+  const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setIsSubmitting(true);
+  setSubmitMessage("");
+
+  const data = new FormData();
+  Object.entries(formData).forEach(([key, value]) => {
+    data.append(key, value.toString());
+  });
+  Object.entries(selectedPrograms).forEach(([key, value]) => {
+    data.append(key, value.toString());
+  });
+
+  // Prepare to hold URLs for uploaded files
+  const uploadedFiles: { [key: string]: string | string[] } = {};
+
+  try {
+    // Upload files and get URLs
+    if (files.idPhoto) {
+      uploadedFiles.idPhoto = await uploadImageUrl(files.idPhoto, "idPhotos") as string;
+    }
+    if (files.englishDoc) {
+      uploadedFiles.englishDoc = await uploadImageUrl(files.englishDoc, "englishDocs") as string;
+    }
+    for (const file of files.supportingDocs) {
+      const url = await uploadImageUrl(file, "supportingDocs");
+      if (!uploadedFiles.supportingDocs) {
+        uploadedFiles.supportingDocs = [];
+      }
+      (uploadedFiles.supportingDocs as string[]).push(url as string);
+    }
+
+    // Append URLs to the data object
+    data.append("idPhotoUrl", uploadedFiles.idPhoto as string);
+    data.append("englishDocUrl", uploadedFiles.englishDoc as string);
+    if (uploadedFiles.supportingDocs) {
+      (uploadedFiles.supportingDocs as string[]).forEach((url) => {
+        data.append("supportingDocsUrls", url);
+      });
+    }
+
+    const response = await fetch("/api/submit-form", {
+      method: "POST",
+      body: JSON.stringify(Object.fromEntries(data.entries())),
+    });
+
+    if (response.ok) {
+      setSubmitStatus("success");
+      setSubmitMessage("Form submitted successfully");
+      setFormData({
+        firstName: "",
+        lastName: "",
+        phone: "",
+        dob: "",
+        gender: "",
+        email: "",
+        country: "",
+        nationality: "",
+        educationStatus: "",
+        girlsProgram: "", // For "Online Education for Girls"
+        subjectsProgram: "", // For "Online School Subjects"
+        englishTestTaken: "", // For "Have you taken any English proficiency tests?"
+        englishLevel: "",
+        motivationMessage: "", // Renamed from "message" for clarity
+        referralSource: "", // For "How did you hear about us?"
+        additionalMessage: "", // For "Your Message (Optional)"
+        invitaionProgram: "", // Typo corrected to "invitationProgram"
+        consent: false,
+        signatureName: "",
+        signatureDate: "",
+      });
+      setFiles({ idPhoto: null, englishDoc: null, supportingDocs: [] });
+    } else {
+      setSubmitStatus("error");
+      setSubmitMessage("Error submitting form");
+    }
+  } catch (error) {
+    console.error(error);
+    setSubmitStatus("error");
+    setSubmitMessage("Error submitting form");
+  } finally {
+    setIsSubmitting(false);
+  }
+};
+
+
+  console.log("🚀 ~ StudentApplication ~ formData:", formData);
+  //  console.log("🚀 ~ StudentApplication ~ data:", data);
+
   return (
     <div className="flex mt-4 max-w-screen-2xl mx-auto px-4">
-      {/* Sidebar
-      <aside className="w-1/4 pr-4">
-        <div className="sticky top-4">
-          <h2 className="text-xl font-bold mb-4">Become a Changemaker</h2>
-          <p className="text-sm text-gray-600 mb-4">
-            Universal Contributor Application Form
-          </p>
-          <p className="text-xs text-gray-500">
-            Please fill this form to join our growing network of change-makers.
-          </p>
-        </div>
-      </aside> */}
-
-      {/* Main Content */}
       <main>
         <div className="md:px-5">
-           <Banner>
+          <Banner>
             <span className="text-lg md:text-5xl block font-bold">
               Student Application Portal
             </span>
@@ -182,7 +320,7 @@ export default function StudentApplication() {
           </div>
         </div>
         <div className="lg:px-40 mx-auto">
-          <h2 className="text-lg md:text-2xl my-12  mx-auto text-center">
+          <h2 className="text-lg md:text-2xl my-12 mx-auto text-center">
             <p>
               Programs are highly tailored and space is restricted. For this
               reason, each
@@ -195,7 +333,7 @@ export default function StudentApplication() {
           </h2>
           <form className="mt-12 space-y-8">
             {/* Basic Information */}
-            <section className="border-2 rounded-lg p-4  md:p-8 lg:px-14 bg-[#F2F2F2]">
+            <section className="border-2 rounded-lg p-4 md:p-8 lg:px-14 bg-[#F2F2F2]">
               <h2 className="text-xl font-semibold mb-4">Basic Information</h2>
               <p className="text-sm text-gray-600 mb-6">
                 Key personal details for identification and contact:
@@ -331,7 +469,6 @@ export default function StudentApplication() {
                     />
                   </div>
                 </div>
-
                 <div className="col-span-2">
                   <label className="block text-sm/6 font-medium text-gray-900">
                     Upload Documents
@@ -343,23 +480,40 @@ export default function StudentApplication() {
                     <div className="relative text-center">
                       <div className="mt-4 flex flex-col space-y-4 text-sm/6 text-gray-600">
                         <label className="relative mx-auto cursor-pointer rounded-md font-semibold text-primary-100 focus-within:outline-hidden hover:text-primary-100">
-                          <svg
-                            className="mx-auto size-12 text-gray-300"
-                            viewBox="0 0 24 24"
-                            fill="currentColor"
-                            aria-hidden="true"
-                            data-slot="icon"
-                          >
-                            <path
-                              fillRule="evenodd"
-                              d="M1.5 6a2.25 2.25 0 0 1 2.25-2.25h16.5A2.25 2.25 0 0 1 22.5 6v12a2.25 2.25 0 0 1-2.25 2.25H3.75A2.25 2.25 0 0 1 1.5 18V6ZM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0 0 21 18v-1.94l-2.69-2.689a1.5 1.5 0 0 0-2.12 0l-.88.879.97.97a.75.75 0 1 1-1.06 1.06l-5.16-5.159a1.5 1.5 0 0 0-2.12 0L3 16.061Zm10.125-7.81a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Z"
-                              clipRule="evenodd"
-                            />
-                          </svg>
+                          {files.idPhoto &&
+                          files.idPhoto.type.startsWith("image/") ? (
+                            <div className="relative">
+                              <img
+                                src={URL.createObjectURL(files.idPhoto)}
+                                alt="ID Photo Preview"
+                                className="mx-auto size-16 object-cover"
+                              />
+                              <IoMdClose
+                                className="absolute top-2 right-2"
+                                onClick={() => {
+                                  files.idPhoto = null;
+                                }}
+                              />
+                            </div>
+                          ) : (
+                            <svg
+                              className="mx-auto size-12 text-gray-300"
+                              viewBox="0 0 24 24"
+                              fill="currentColor"
+                              aria-hidden="true"
+                              data-slot="icon"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M1.5 6a2.25 2.25 0 0 1 2.25-2.25h16.5A2.25 2.25 0 0 1 22.5 6v12a2.25 2.25 0 0 1-2.25 2.25H3.75A2.25 2.25 0 0 1 1.5 18V6ZM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0 0 21 18v-1.94l-2.69-2.689a1.5 1.5 0 0 0-2.12 0l-.88.879.97.97a.75.75 0 1 1-1.06 1.06l-5.16-5.159a1.5 1.5 0 0 0-2.12 0L3 16.061Zm10.125-7.81a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                          )}
                           <input
                             type="file"
-                            accept=".pdf,.docx"
-                            onChange={(e) => handleFileChange(e, "englishDoc")}
+                            accept=".pdf,.docx,.jpg,.jpeg,.png"
+                            onChange={(e) => handleFileChange(e, "idPhoto")}
                             className="sr-only focus:outline-none active:outline-none bg-transparent"
                           />
                         </label>
@@ -379,13 +533,12 @@ export default function StudentApplication() {
               </div>
             </section>
 
-            {/* Education Background*/}
+            {/* Education Background */}
             <section className="border-2 rounded-lg p-4 md:p-8 lg:px-14 bg-[#F2F2F2]">
               <h2 className="text-xl font-semibold mb-10">
                 Skills & Background
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* firs input */}
                 <div>
                   <label className="block text-sm/6 font-medium text-gray-900">
                     Current Education Status
@@ -415,27 +568,20 @@ export default function StudentApplication() {
                     </select>
                   </div>
                 </div>
-                {/* second input */}
                 <div>
                   <label className="block text-sm/6 font-medium text-gray-900">
                     Online Education for Girls
                   </label>
                   <div className="mt-2">
                     <select
-                      name="program"
+                      name="girlsProgram"
                       className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-100 focus:ring-offset-2"
-                      value={formData.program}
+                      value={formData.girlsProgram}
                       onChange={handleInputChange}
                       required
                     >
                       <option value="English Language Class">
                         English Language Class
-                      </option>
-                      <option value="English Language Class">
-                        English Language Class
-                      </option>
-                      <option value="Italian Language Class">
-                        Italian Language Class
                       </option>
                       <option value="Italian Language Class">
                         Italian Language Class
@@ -446,16 +592,15 @@ export default function StudentApplication() {
                     </select>
                   </div>
                 </div>
-                {/* third input */}
                 <div>
                   <label className="block text-sm/6 font-medium text-gray-900">
                     Online School Subjects
                   </label>
                   <div className="mt-2">
                     <select
-                      name="program"
+                      name="subjectsProgram"
                       className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-100 focus:ring-offset-2"
-                      value={formData.program}
+                      value={formData.subjectsProgram}
                       onChange={handleInputChange}
                       required
                     >
@@ -470,173 +615,45 @@ export default function StudentApplication() {
                     </select>
                   </div>
                 </div>
+                <div></div>
+              </div>
 
-                {/* Select the Programs or Support You’re Interested In */}
-                <div>
-                  <label className="block text-sm/6 font-medium text-gray-900">
-                    Select the Programs or Support You’re Interested In
-                  </label>
-                  <div className="mt-2">
-                    <select
-                      name="program"
-                      className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-100 focus:ring-offset-2"
-                      value={formData.program}
-                      onChange={handleInputChange}
-                      required
+              {/*  Select the Programs or Support You’re Interested In */}
+
+              <div className="mt-7">
+                <h1 className="mb-4">
+                  Select the Programs or Support You’re Interested In
+                </h1>
+                <div className="flex flex-col gap-3 w-full">
+                  {programs.map((program) => (
+                    <label
+                      key={program.key}
+                      htmlFor={program.key}
+                      className="flex items-center space-x-3 border border-gray-300 rounded-md px-5 py-3 w-full"
                     >
-                      <option value="Teacher / Trainer">
-                        Teacher / Trainer
-                      </option>
-                      <option value="Curriculum Developer">
-                        Curriculum Developer
-                      </option>
-                      <option value="Editor / Proofreader">
-                        Editor / Proofreader
-                      </option>
-                      <option value="Translator">Translator</option>
-                      <option value="Graphic Designer">Graphic Designer</option>
-                      <option value="Video Editor / Animator">
-                        Video Editor / Animator
-                      </option>
-                      <option value="Web / App Developer">
-                        Web / App Developer
-                      </option>
-                      <option value="Social Media Manager">
-                        Social Media Manager
-                      </option>
-                      <option value="Mental Health Counselor">
-                        Mental Health Counselor
-                      </option>
-                      <option value="Humanitarian Worker">
-                        Humanitarian Worker
-                      </option>
-                      <option value="Fundraiser">Fundraiser</option>
-                      <option value="Project Coordinator">
-                        Project Coordinator
-                      </option>
-                      <option value="Admin Support">Admin Support</option>
-                      <option value="Other (Please specify)">
-                        Other (Please specify)
-                      </option>
-                    </select>
-                  </div>
+                      <input
+                        id={program.key}
+                        type="checkbox"
+                        name={program.key}
+                        checked={selectedPrograms[program.key]}
+                        onChange={handleCheckboxChange}
+                        className="h-4 w-4 text-blue-600 border-gray-500 rounded focus:ring-blue-500"
+                      />
+                      <span>
+                        {program.label}
+                        {program.sublabel && (
+                          <>
+                            <br />
+                            <span className="text-sm text-gray-500">
+                              {program.sublabel}
+                            </span>
+                          </>
+                        )}
+                      </span>
+                    </label>
+                  ))}
                 </div>
-
-                </div>
-                {/* Select the Programs or Support You’re Interested In */}
-                <div className="mt-7">
-                  <h1 className="mb-4">
-                    Select the Programs or Support You’re Interested In
-                  </h1>
-                  <div className="flex flex-col gap-3 w-full">
-                    <label className="flex items-center space-x-3 border border-gray-300 rounded-md px-5 py-3 w-full">
-                      <input
-                        type="checkbox"
-                        className="h-4 w-4 text-blue-600 border-gray-500 rounded focus:ring-blue-500"
-                      />
-                      <span>Access To Recorded School Subject Videos</span>
-                    </label>
-
-                    <label className="flex items-center space-x-3 border border-gray-300 rounded-md px-5 py-3 w-full">
-                      <input
-                        type="checkbox"
-                        className="h-4 w-4 text-blue-600 border-gray-500 rounded focus:ring-blue-500"
-                      />
-                      <span>
-                        Request Books & School Supplies
-                        <br />
-                        <span className="text-sm text-gray-500">
-                          For War-Affected Children Or Girls
-                        </span>
-                      </span>
-                    </label>
-
-                    <label className="flex items-center space-x-3 border border-gray-300 rounded-md px-5 py-3 w-full">
-                      <input
-                        type="checkbox"
-                        className="h-4 w-4 text-blue-600 border-gray-500 rounded focus:ring-blue-500"
-                      />
-                      <span>
-                        Join The Change ELibrary
-                        <br />
-                        <span className="text-sm text-gray-500">
-                          Access To Daily Reading Materials & Educational
-                          Resources
-                        </span>
-                      </span>
-                    </label>
-
-                    <label className="flex items-center space-x-3 border border-gray-300 rounded-md px-5 py-3 w-full">
-                      <input
-                        type="checkbox"
-                        className="h-4 w-4 text-blue-600 border-gray-500 rounded focus:ring-blue-500"
-                      />
-                      <span>
-                        Apply For International Scholarship Preparation Program
-                        <br />
-                        <span className="text-sm text-gray-500">
-                          For Girls In Science And Language Tracks
-                        </span>
-                      </span>
-                    </label>
-
-                    <label className="flex items-center space-x-3 border border-gray-300 rounded-md px-5 py-3 w-full">
-                      <input
-                        type="checkbox"
-                        className="h-4 w-4 text-blue-600 border-gray-500 rounded focus:ring-blue-500"
-                      />
-                      <span>
-                        Afghan Girl Coders Program
-                        <br />
-                        <span className="text-sm text-gray-500">
-                          Learn Coding And Computer Science
-                        </span>
-                      </span>
-                    </label>
-
-                    <label className="flex items-center space-x-3 border border-gray-300 rounded-md px-5 py-3 w-full">
-                      <input
-                        type="checkbox"
-                        className="h-4 w-4 text-blue-600 border-gray-500 rounded focus:ring-blue-500"
-                      />
-                      <span>
-                        Human Rights & Advocacy Program
-                        <br />
-                        <span className="text-sm text-gray-500">
-                          Global Awareness & Reporting Network
-                        </span>
-                      </span>
-                    </label>
-
-                    <label className="flex items-center space-x-3 border border-gray-300 rounded-md px-5 py-3 w-full">
-                      <input
-                        type="checkbox"
-                        className="h-4 w-4 text-blue-600 border-gray-500 rounded focus:ring-blue-500"
-                      />
-                      <span>
-                        Mental Health & Empowerment Seminars
-                        <br />
-                        <span className="text-sm text-gray-500">
-                          Online Support And Self-Empowerment
-                        </span>
-                      </span>
-                    </label>
-
-                    <label className="flex items-center space-x-3 border border-gray-300 rounded-md px-5 py-3 w-full">
-                      <input
-                        type="checkbox"
-                        className="h-4 w-4 text-blue-600 border-gray-500 rounded focus:ring-blue-500"
-                      />
-                      <span>
-                        Online Support And Self-Empowerment
-                        <br />
-                        <span className="text-sm text-gray-500">
-                          For Families In Critical Crisis
-                        </span>
-                      </span>
-                    </label>
-                  </div>
-                </div>
+              </div>
             </section>
 
             {/* English Language Proficiency */}
@@ -645,16 +662,15 @@ export default function StudentApplication() {
                 English Language Proficiency
               </h2>
               <div className="space-y-5">
-                {/* firs input */}
                 <div>
                   <label className="block text-sm/6 font-medium text-gray-900">
                     What is your current level?
                   </label>
                   <div className="mt-2">
                     <select
-                      name="educationStatus"
+                      name="englishLevel"
                       className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-100 focus:ring-offset-2"
-                      value={formData.educationStatus}
+                      value={formData.englishLevel}
                       onChange={handleInputChange}
                       required
                     >
@@ -672,17 +688,15 @@ export default function StudentApplication() {
                     </select>
                   </div>
                 </div>
-
-                {/* second input */}
                 <div>
                   <label className="block text-sm/6 font-medium text-gray-900">
                     Have you taken any English proficiency tests?
                   </label>
                   <div className="mt-2">
                     <select
-                      name="program"
+                      name="englishTestTaken"
                       className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-100 focus:ring-offset-2"
-                      value={formData.program}
+                      value={formData.englishTestTaken}
                       onChange={handleInputChange}
                       required
                     >
@@ -693,7 +707,6 @@ export default function StudentApplication() {
                     </select>
                   </div>
                 </div>
-
                 <div className="col-span-2">
                   <label className="block text-sm/6 font-medium text-gray-900">
                     Upload Documents
@@ -705,19 +718,38 @@ export default function StudentApplication() {
                     <div className="relative text-center">
                       <div className="mt-4 flex flex-col space-y-4 text-sm/6 text-gray-600">
                         <label className="relative mx-auto cursor-pointer rounded-md font-semibold text-primary-100 focus-within:outline-hidden hover:text-primary-100">
-                          <svg
-                            className="mx-auto size-12 text-gray-300"
-                            viewBox="0 0 24 24"
-                            fill="currentColor"
-                            aria-hidden="true"
-                            data-slot="icon"
-                          >
-                            <path
-                              fillRule="evenodd"
-                              d="M1.5 6a2.25 2.25 0 0 1 2.25-2.25h16.5A2.25 2.25 0 0 1 22.5 6v12a2.25 2.25 0 0 1-2.25 2.25H3.75A2.25 2.25 0 0 1 1.5 18V6ZM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0 0 21 18v-1.94l-2.69-2.689a1.5 1.5 0 0 0-2.12 0l-.88.879.97.97a.75.75 0 1 1-1.06 1.06l-5.16-5.159a1.5 1.5 0 0 0-2.12 0L3 16.061Zm10.125-7.81a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Z"
-                              clipRule="evenodd"
-                            />
-                          </svg>
+                          {files.englishDoc ? (
+                            <div className="relative">
+                              <Image
+                                src={"/images/pdf.png"}
+                                width={200}
+                                height={300}
+                                title="PDF Preview"
+                                alt="image file"
+                                style={{ border: "1px solid #ccc" }}
+                              />
+                              <IoMdClose
+                                className="absolute top-2 right-2"
+                                onClick={() => {
+                                  files.englishDoc = null;
+                                }}
+                              />
+                            </div>
+                          ) : (
+                            <svg
+                              className="mx-auto size-12 text-gray-300"
+                              viewBox="0 0 24 24"
+                              fill="currentColor"
+                              aria-hidden="true"
+                              data-slot="icon"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M1.5 6a2.25 2.25 0 0 1 2.25-2.25h16.5A2.25 2.25 0 0 1 22.5 6v12a2.25 2.25 0 0 1-2.25 2.25H3.75A2.25 2.25 0 0 1 1.5 18V6ZM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0 0 21 18v-1.94l-2.69-2.689a1.5 1.5 0 0 0-2.12 0l-.88.879.97.97a.75.75 0 1 1-1.06 1.06l-5.16-5.159a1.5 1.5 0 0 0-2.12 0L3 16.061Zm10.125-7.81a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                          )}
                           <input
                             type="file"
                             accept=".pdf,.docx"
@@ -754,25 +786,24 @@ export default function StudentApplication() {
                   </label>
                   <div className="mt-2">
                     <textarea
-                      name="message"
+                      name="motivationMessage"
                       className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-100 focus:ring-offset-2"
-                      value={formData.message}
+                      value={formData.motivationMessage}
                       onChange={handleInputChange}
                       rows={4}
                       maxLength={1000}
                       placeholder="Describe your situation or reason for applying"
                     />
                   </div>
-                  {/* firs input */}
                   <div>
                     <label className="block text-sm/6 font-medium text-gray-900 mt-2">
                       How did you hear about us?
                     </label>
                     <div className="mt-2">
                       <select
-                        name="educationStatus"
+                        name="referralSource"
                         className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-100 focus:ring-offset-2"
-                        value={formData.educationStatus}
+                        value={formData.referralSource}
                         onChange={handleInputChange}
                         required
                       >
@@ -803,7 +834,6 @@ export default function StudentApplication() {
                 <p className="mb-6 text-base">
                   You may upload any of the following:
                 </p>
-
                 <p className="text-base">• CV/Resume</p>
                 <p className="text-base">• Portfolio or sample work</p>
                 <p className="text-base">• Certificates or degrees</p>
@@ -825,23 +855,46 @@ export default function StudentApplication() {
                     <div className="relative text-center">
                       <div className="mt-4 flex flex-col space-y-4 text-sm/6 text-gray-600">
                         <label className="relative mx-auto cursor-pointer rounded-md font-semibold text-primary-100 focus-within:outline-hidden hover:text-primary-100">
-                          <svg
-                            className="mx-auto size-12 text-gray-300"
-                            viewBox="0 0 24 24"
-                            fill="currentColor"
-                            aria-hidden="true"
-                            data-slot="icon"
-                          >
-                            <path
-                              fillRule="evenodd"
-                              d="M1.5 6a2.25 2.25 0 0 1 2.25-2.25h16.5A2.25 2.25 0 0 1 22.5 6v12a2.25 2.25 0 0 1-2.25 2.25H3.75A2.25 2.25 0 0 1 1.5 18V6ZM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0 0 21 18v-1.94l-2.69-2.689a1.5 1.5 0 0 0-2.12 0l-.88.879.97.97a.75.75 0 1 1-1.06 1.06l-5.16-5.159a1.5 1.5 0 0 0-2.12 0L3 16.061Zm10.125-7.81a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Z"
-                              clipRule="evenodd"
-                            />
-                          </svg>
+                          {files.supportingDocs &&
+                          files.supportingDocs.length > 0 ? (
+                            <div className="relative">
+                              <Image
+                                src={"/images/pdf.png"}
+                                width={200}
+                                height={300}
+                                title="PDF Preview"
+                                alt="image file"
+                                style={{ border: "1px solid #ccc" }}
+                              />
+                              <IoMdClose
+                                className="absolute top-2 right-2"
+                                onClick={() => {
+                                  // files.supportingDocs = null;
+                                }}
+                              />
+                            </div>
+                          ) : (
+                            <svg
+                              className="mx-auto size-12 text-gray-300"
+                              viewBox="0 0 24 24"
+                              fill="currentColor"
+                              aria-hidden="true"
+                              data-slot="icon"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M1.5 6a2.25 2.25 0 0 1 2.25-2.25h16.5A2.25 2.25 0 0 1 22.5 6v12a2.25 2.25 0 0 1-2.25 2.25H3.75A2.25 2.25 0 0 1 1.5 18V6ZM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0 0 21 18v-1.94l-2.69-2.689a1.5 1.5 0 0 0-2.12 0l-.88.879.97.97a.75.75 0 1 1-1.06 1.06l-5.16-5.159a1.5 1.5 0 0 0-2.12 0L3 16.061Zm10.125-7.81a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                          )}
                           <input
                             type="file"
                             accept=".pdf,.docx"
-                            onChange={(e) => handleFileChange(e, "englishDoc")}
+                            onChange={(e) =>
+                              handleFileChange(e, "supportingDocs")
+                            }
+                            multiple
                             className="sr-only focus:outline-none active:outline-none bg-transparent"
                           />
                         </label>
@@ -873,9 +926,9 @@ export default function StudentApplication() {
                   </label>
                   <div className="mt-2">
                     <textarea
-                      name="referred"
+                      name="additionalMessage"
                       className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-100 focus:ring-offset-2"
-                      value={formData.referred}
+                      value={formData.additionalMessage}
                       onChange={handleInputChange}
                       rows={7}
                       placeholder="Write here your message?"
@@ -899,9 +952,9 @@ export default function StudentApplication() {
                   </label>
                   <div className="mt-2">
                     <textarea
-                      name="referred"
+                      name="invitaionProgram"
                       className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-100 focus:ring-offset-2"
-                      value={formData.referred}
+                      value={formData.invitaionProgram}
                       onChange={handleInputChange}
                       rows={7}
                       placeholder="Write here your message?"
@@ -947,7 +1000,6 @@ export default function StudentApplication() {
                   Makers of the World.
                 </li>
               </p>
-
               <div className="grid grid-cols-1 gap-6">
                 <div>
                   <label className="flex items-center">
@@ -995,34 +1047,30 @@ export default function StudentApplication() {
             {/* Submit */}
             <div className="flex justify-between mb-10">
               <button
-                type="submit"
-                disabled={isSubmitting}
-                className="bg-primary-100 text-white px-4 md:px-6 py-1 md:py-3 rounded-md disabled:opacity-50"
-                onClick={handleSubmit}
-              >
-                Submit
-              </button>
-              <button
                 type="button"
                 className="border-2 border-gray-300 px-4 md:px-6 py-2 md:py-3 rounded-md"
                 onClick={() => {
                   setFormData({
-                    firstName: "",
-                    lastName: "",
-                    phone: "",
-                    dob: "",
-                    gender: "",
-                    email: "",
-                    country: "",
-                    nationality: "",
-                    educationStatus: "",
-                    program: "",
-                    englishLevel: "",
-                    message: "",
-                    referred: "",
-                    consent: false,
-                    signatureName: "",
-                    signatureDate: "",
+                firstName: "",
+                  lastName: "",
+                  phone: "",
+                  dob: "",
+                  gender: "",
+                  email: "",
+                  country: "",
+                  nationality: "",
+                  educationStatus: "",
+                  girlsProgram: "", // For "Online Education for Girls"
+                  subjectsProgram: "", // For "Online School Subjects"
+                  englishTestTaken: "", // For "Have you taken any English proficiency tests?"
+                  englishLevel: "",
+                  motivationMessage: "", // Renamed from "message" for clarity
+                  referralSource: "", // For "How did you hear about us?"
+                  additionalMessage: "", // For "Your Message (Optional)"
+                  invitaionProgram: "", // Typo corrected to "invitationProgram"
+                  consent: false,
+                  signatureName: "",
+                  signatureDate: "",
                   });
                   setFiles({
                     idPhoto: null,
@@ -1032,6 +1080,14 @@ export default function StudentApplication() {
                 }}
               >
                 Clear Form
+              </button>
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="bg-primary-100 text-white px-4 md:px-6 py-1 md:py-3 rounded-md disabled:opacity-50"
+                onClick={handleSubmit}
+              >
+                Submit
               </button>
             </div>
             {submitMessage && (
