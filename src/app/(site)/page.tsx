@@ -6,6 +6,7 @@ import { InfiniteBanner } from "@/components/home/infinite-banner/InfiniteBanner
 import LatestNews from "@/components/home/news-stories/LatestNews";
 import NewsStories from "@/components/home/news-stories/news-stories";
 import Ourchanges from "@/components/home/our-changes/OurChanges";
+import ProjectInitiatives from "@/components/home/project-Initiative/ProjectInitiatives";
 import WhoWeAre from "@/components/home/who-we-are/WhoWeAre";
 import "@/lib/env";
 import prisma from "@/lib/prismaDB";
@@ -33,6 +34,7 @@ export default async function HomePage() {
       <WhoWeAre />
       {/* <NewsStories posts={posts} categories={categories} /> */}
       </div>
+      <ProjectInitiatives />
       <LatestNews posts={posts} />
       <div className="max-w-screen-2xl px-4 mx-auto">
       <HomeVedio />
