@@ -58,8 +58,9 @@ const newsItems: NewsItem[] = [
 
 const LatestNews: React.FC = () => {
   return (
-    <div className="relative lg:px-20 py-12 md:bg-gray-200 my-10">
-      <div className="flex justify-between items-center">
+    <div className="md:bg-gray-200">
+    <div className="relative lg:px-20 py-12 my-10 max-w-screen-2xl px-4 mx-auto">
+      <div className="flex justify-between items-center ">
         <h2 className="text-2xl font-bold text-center md:text-left">
           Latest News
         </h2>
@@ -68,13 +69,13 @@ const LatestNews: React.FC = () => {
         </Link>
       </div>
       <button
-        className="absolute top-1/2 left-4 transform -translate-y-1/2 bg-white p-2 rounded-2xl shadow-md cursor-pointer z-10"
+        className="hidden md:block absolute top-1/2 left-4 transform -translate-y-1/2 bg-white p-2 rounded-2xl shadow-md cursor-pointer z-10"
         id="prevButton"
       >
         <MdOutlineNavigateBefore className=" md:size-8 font-bold" />
       </button>
       <button
-        className="absolute top-1/2 right-4 transform -translate-y-1/2 bg-white p-2 rounded-2xl shadow-md cursor-pointer z-10"
+        className="hidden md:block absolute top-1/2 right-4 transform -translate-y-1/2 bg-white p-2 rounded-2xl shadow-md cursor-pointer z-10"
         id="nextButton"
       >
       <MdOutlineNavigateNext className=" md:size-8 font-bold" />
@@ -127,6 +128,7 @@ const LatestNews: React.FC = () => {
           </SwiperSlide>
         ))}
       </Swiper>
+    </div>
     </div>
   );
 };

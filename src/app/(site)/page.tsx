@@ -20,16 +20,20 @@ export default async function HomePage() {
   const categories = await prisma.category.findMany();
 
   return (
-    <main className="max-w-screen-2xl px-4 mx-auto">
+    <main >
+      <div className="max-w-screen-2xl px-4 mx-auto">
       <HeroSlider />
       <InfiniteBanner direction="left" />
       <Ourchanges />
       <WhoWeAre />
       <NewsStories posts={posts} categories={categories} />
+      </div>
       <LatestNews />
+      <div className="max-w-screen-2xl px-4 mx-auto">
       <HomeVedio />
       <Contribute />
       <Subscribe />
+      </div>
     </main>
   );
 }
