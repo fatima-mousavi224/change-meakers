@@ -4,15 +4,14 @@ import Mail from "nodemailer/lib/mailer";
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   const data = await request.json();
-  console.log("Received contributor data:", data);
-
   const transport: Transporter = nodemailer.createTransport({
-    host: "smtp.hostinger.com",
+    service: "gmail",
+    host: "smtp.gmail.com",
     port: 465,
     secure: true,
     auth: {
-      user: "learninbox-support@learninbox.com",
-      pass: "SYSTem$9999",
+      user: process.env.EMAIL,
+      pass: process.env.EMAIL_PASS,
     },
   });
 
