@@ -10,7 +10,7 @@ interface FormData {
   firstName: string;
   lastName: string;
   phone: string;
-  dob: string;
+  date_birth: string;
   gender: string;
   email: string;
   country: string;
@@ -98,13 +98,12 @@ export default function StudentApplication() {
     }));
   };
 
-  console.log("🚀 ~ StudentApplication ~ selectedPrograms:", selectedPrograms);
 
   const [formData, setFormData] = useState<FormData>({
     firstName: "",
     lastName: "",
     phone: "",
-    dob: "",
+    date_birth: "",
     gender: "",
     email: "",
     country: "",
@@ -245,7 +244,8 @@ const uploadImageUrl = async (file: File, folder: string) => {
         data.append("supportingDocsUrls", url);
       });
     }
-
+    console.log("file data", data);
+    
     const response = await fetch("/api/submit-form", {
       method: "POST",
       body: JSON.stringify(Object.fromEntries(data.entries())),
@@ -258,7 +258,7 @@ const uploadImageUrl = async (file: File, folder: string) => {
         firstName: "",
         lastName: "",
         phone: "",
-        dob: "",
+        date_birth: "",
         gender: "",
         email: "",
         country: "",
@@ -291,7 +291,6 @@ const uploadImageUrl = async (file: File, folder: string) => {
 };
 
 
-  console.log("🚀 ~ StudentApplication ~ formData:", formData);
   //  console.log("🚀 ~ StudentApplication ~ data:", data);
 
   return (
@@ -395,9 +394,9 @@ const uploadImageUrl = async (file: File, folder: string) => {
                       <div className="mt-2">
                         <input
                           type="date"
-                          name="dob"
+                          name="date_birth"
                           className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-100 focus:ring-offset-2"
-                          value={formData.dob}
+                          value={formData.date_birth}
                           onChange={handleInputChange}
                           required
                         />
@@ -489,7 +488,7 @@ const uploadImageUrl = async (file: File, folder: string) => {
                                 className="mx-auto size-16 object-cover"
                               />
                               <IoMdClose
-                                className="absolute top-2 right-2"
+                                className="absolute top-0 right-0"
                                 onClick={() => {
                                   files.idPhoto = null;
                                 }}
@@ -869,7 +868,7 @@ const uploadImageUrl = async (file: File, folder: string) => {
                               <IoMdClose
                                 className="absolute top-2 right-2"
                                 onClick={() => {
-                                  // files.supportingDocs = null;
+                                  files.supportingDocs = [];
                                 }}
                               />
                             </div>
@@ -1054,7 +1053,7 @@ const uploadImageUrl = async (file: File, folder: string) => {
                 firstName: "",
                   lastName: "",
                   phone: "",
-                  dob: "",
+                  date_birth: "",
                   gender: "",
                   email: "",
                   country: "",
