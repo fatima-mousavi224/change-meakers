@@ -5,7 +5,7 @@ import { cn } from "../../utilities/cn"
 interface BannerProps {
   className?: string;
   children: React.ReactNode;
-}
+} 
 
 export default function Banner({ className, children }: BannerProps) {
   return (
