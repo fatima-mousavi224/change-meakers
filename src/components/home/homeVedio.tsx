@@ -1,6 +1,6 @@
 export default function HomeVideo() {
   return (
-    <div className="flex flex-col md:flex-row justify-between items-center mb-10 gap-6">
+    <div className="flex flex-col md:flex-row justify-between items-center mb-10 gap-6 md:py-20">
       {/* Left Section: Text Content */}
       <div className="w-full md:w-1/2">
         <div className="border-l-8 rounded-lg border-primary-800 pl-4 mb-4">

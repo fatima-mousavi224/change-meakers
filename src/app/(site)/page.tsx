@@ -9,15 +9,20 @@ import Ourchanges from "@/components/home/our-changes/OurChanges";
 import WhoWeAre from "@/components/home/who-we-are/WhoWeAre";
 import "@/lib/env";
 import prisma from "@/lib/prismaDB";
-import { Suspense } from "react";
 
 export default async function HomePage() {
   // select the 4 latest posts
-  const posts = await prisma.post.findMany({
-    take: 4,
-    orderBy: { createdAt: "desc" },
+    const posts = await prisma.post.findMany({
+    take: 10,
+    where: {
+      Category: {
+        title: "Latests", 
+      },
+    },
+    orderBy: {
+      postDate: "desc", 
+    },
   });
-  const categories = await prisma.category.findMany();
 
   return (
     <main >
@@ -26,9 +31,9 @@ export default async function HomePage() {
       <InfiniteBanner direction="left" />
       <Ourchanges />
       <WhoWeAre />
-      <NewsStories posts={posts} categories={categories} />
+      {/* <NewsStories posts={posts} categories={categories} /> */}
       </div>
-      <LatestNews />
+      <LatestNews posts={posts} />
       <div className="max-w-screen-2xl px-4 mx-auto">
       <HomeVedio />
       <Contribute />
