@@ -4,7 +4,7 @@ import { TfiReload } from "react-icons/tfi";
 
 function ProjectInitiatives() {
   return (
-    <div className="bg-gray-200">
+    <div className="bg-light_gray">
       <div className="max-w-7xl mx-auto py-10 px-8">
         <h2 className="text-3xl mb-12  font-bold text-left">
           Projects & Initiatives

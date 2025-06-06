@@ -35,9 +35,12 @@ export default async function HomePage() {
       {/* <NewsStories posts={posts} categories={categories} /> */}
       </div>
       <ProjectInitiatives />
+       <div className="max-w-screen-2xl px-4 mx-auto">
+
+      <HomeVedio />
+       </div>
       <LatestNews posts={posts} />
       <div className="max-w-screen-2xl px-4 mx-auto">
-      <HomeVedio />
       <Contribute />
       <Subscribe />
       </div>
