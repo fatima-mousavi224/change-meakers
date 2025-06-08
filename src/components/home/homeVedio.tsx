@@ -1,6 +1,6 @@
 export default function HomeVideo() {
   return (
-    <div className="flex flex-col md:flex-row justify-between items-center mb-10 gap-6 md:py-20">
+    <div className="flex flex-col md:flex-row justify-between items-center mb-10 gap-6 md:py-20 py-10">
       {/* Left Section: Text Content */}
       <div className="w-full md:w-1/2 pr-10">
         <div className="border-l-8 rounded-lg border-primary-800 pl-4 mb-8">
@@ -25,7 +25,7 @@ export default function HomeVideo() {
           className="rounded-2xl shadow-lg sm:w-[90%] w-full h-[200px] md:h-[440px]"
         ></iframe>
         {/* Caption Overlay with Small Primary Background */}
-     <div className="absolute md:-bottom-6 -bottom-3 -z-10 md:right-4 -right-3 bg-primary-100 px-3 py-1 text-sm text-white h-32 w-32 rounded-2xl">
+     <div className="absolute md:-bottom-6 -bottom-3 -z-10 md:right-8 -right-3 bg-primary-100 px-3 py-1 text-sm text-white h-32 w-44 rounded-2xl">
      </div>
       </div>
     </div>

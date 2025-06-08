@@ -20,7 +20,6 @@ interface NewsStoriesProps {
 const LatestNews = ({ posts }: NewsStoriesProps) => {
   const [filteredPosts, setFilteredPosts] = useState<Post[]>(posts);
 
-  // function to handle category change and filter posts
   // No Posts State
   if (!filteredPosts || filteredPosts.length === 0) {
     return <NoDataMessage />;
@@ -29,7 +28,7 @@ const LatestNews = ({ posts }: NewsStoriesProps) => {
   return (
     <div className="md:bg-light_gray">
       <div className="relative lg:px-20 py-12 my-10 max-w-screen-2xl px-4 mx-auto">
-        <div className="flex justify-between items-center ">
+        <div className="flex justify-between items-center">
           <h2 className="text-2xl font-bold text-center md:text-left">
             Latest News
           </h2>
@@ -44,13 +43,13 @@ const LatestNews = ({ posts }: NewsStoriesProps) => {
           className="hidden md:block absolute top-1/2 left-4 transform -translate-y-1/2 bg-white p-2 rounded-2xl shadow-md cursor-pointer z-10"
           id="prevButton"
         >
-          <MdOutlineNavigateBefore className=" md:size-8 font-bold" />
+          <MdOutlineNavigateBefore className="md:size-8 font-bold" />
         </button>
         <button
           className="hidden md:block absolute top-1/2 right-4 transform -translate-y-1/2 bg-white p-2 rounded-2xl shadow-md cursor-pointer z-10"
           id="nextButton"
         >
-          <MdOutlineNavigateNext className=" md:size-8 font-bold" />
+          <MdOutlineNavigateNext className="md:size-8 font-bold" />
         </button>
         <Swiper
           breakpoints={{
@@ -67,7 +66,7 @@ const LatestNews = ({ posts }: NewsStoriesProps) => {
               spaceBetween: 10,
             },
             320: {
-              slidesPerView: 1,
+              slidesPerView: 1.2, // Show 1 slide + 20% of the next on small screens
               spaceBetween: 5,
             },
           }}
@@ -76,14 +75,12 @@ const LatestNews = ({ posts }: NewsStoriesProps) => {
             nextEl: "#nextButton",
           }}
           modules={[Navigation]}
-          loop={true}
-          slidesPerView={3}
-          className="mySwiper !py-7 w-[95%] mx-auto"
+          className="mySwiper !py-7 w-[95%] mx-auto h-full"
         >
           {filteredPosts.map((item, index) => (
             <SwiperSlide
               key={index}
-              className="bg-white rounded-3xl shadow-md shadow-gray-500"
+              className="bg-white rounded-3xl shadow-sm shadow-gray-500 overflow-hidden"
             >
               <Link
                 href={`/updates/${item.id}`}
@@ -95,7 +92,7 @@ const LatestNews = ({ posts }: NewsStoriesProps) => {
                   alt="image1"
                   width={500}
                   height={500}
-                  className="rounded-t-md object-cover w-full h-48 md:h-60 lg:h-72"
+                  className="object-cover w-full h-48 md:h-60 lg:h-72"
                 />
                 <div className="px-5 py-8 space-y-2">
                   <h3 className="font-semibold text-xl">{item.title}</h3>

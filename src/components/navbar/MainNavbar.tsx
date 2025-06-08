@@ -225,24 +225,41 @@ export default function MainNavBar({
             >
               <Instagram className="w-6 h-6 duration-150 hover:scale-105" />
             </Link>
-            <div  className="relative inline-block text-left">
-            <div>
-              <button className="text-sm  duration-150 hover:scale-105 bg-[#F2F2F2] rounded-lg p-2 flex gap-2" onClick={() => setOpenMenu(!openMenu)}>
-                Join Us
-                <ChevronDownIcon aria-hidden="true" className="-mr-1 size-5 text-gray-400" />
-              </button>
-            </div>
-
-            {openMenu && (
-              <div className="absolute right-0 mt-2 w-44 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black/5 transition focus:outline-hidden z-40 overflow-hidden">
-                <div className="">
-                  <Link href="/apply_student" className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:text-gray-900 data-focus:outline-hidden hover:bg-gray-100 hover:text-gray-900 transition-all duration-300">Apply as a Student</Link>
-                  <Link href="/apply_contributor" className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:text-gray-900 data-focus:outline-hidden hover:bg-gray-100 hover:text-gray-900 transition-all duration-300">Join as a Contributor</Link>
-                </div>
+            <div className="relative inline-block text-left">
+              <div>
+                <button
+                  className="text-sm  duration-150 hover:scale-105 bg-[#F2F2F2] rounded-lg p-2 flex gap-2"
+                  onClick={() => setOpenMenu(!openMenu)}
+                >
+                  Join Us
+                  <ChevronDownIcon
+                    aria-hidden="true"
+                    className="-mr-1 size-5 text-gray-400"
+                  />
+                </button>
               </div>
-            )}
-         
-          </div>
+
+              {openMenu && (
+                <div className="absolute right-0 mt-2 w-44 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black/5 transition focus:outline-hidden z-40 overflow-hidden">
+                  <div className="">
+                    <Link
+                      href="/apply"
+                      className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:text-gray-900 data-focus:outline-hidden hover:bg-gray-100 hover:text-gray-900 transition-all duration-300"
+                      onClick={() => setOpenMenu(false)}
+                    >
+                      Apply as a Student
+                    </Link>
+                    <Link
+                      href="/join"
+                      className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:text-gray-900 data-focus:outline-hidden hover:bg-gray-100 hover:text-gray-900 transition-all duration-300"
+                      onClick={() => setOpenMenu(false)}
+                    >
+                      Join as a Contributor
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </div>
             {user !== null && (
               <Link
                 href="/admin"
