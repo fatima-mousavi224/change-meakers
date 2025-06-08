@@ -4,7 +4,14 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { IoMdClose } from "react-icons/io";
 import firebaseApp from "lib/firebase";
-import { getDownloadURL, getStorage, ref, uploadBytesResumable } from "firebase/storage";
+import {
+  getDownloadURL,
+  getStorage,
+  ref,
+  uploadBytesResumable,
+} from "firebase/storage";
+import toast from "react-hot-toast";
+import { z } from "zod";
 
 interface FormData {
   firstName: string;
@@ -16,15 +23,15 @@ interface FormData {
   country: string;
   nationality: string;
   educationStatus: string;
-  girlsProgram: string; // For "Online Education for Girls"
-  subjectsProgram: string; // For "Online School Subjects"
-  englishTestTaken: string; // For "Have you taken any English proficiency tests?"
+  girlsProgram: string;
+  subjectsProgram: string;
+  englishTestTaken: string;
   englishLevel: string;
-  motivationMessage: string; // Renamed from "message" for clarity
-  referralSource: string; // For "How did you hear about us?"
-  additionalMessage: string; // For "Your Message (Optional)"
-  invitaionProgram: string; // Typo corrected to "invitationProgram"
-  consent: false;
+  motivationMessage: string;
+  referralSource: string;
+  additionalMessage: string;
+  invitaionProgram: string;
+  selectedProgram: string;
   signatureName: string;
   signatureDate: string;
 }
@@ -35,11 +42,32 @@ interface Files {
   supportingDocs: File[];
 }
 
-
+const formDataSchema = z.object({
+  firstName: z.string().min(1, "First Name is required"),
+  lastName: z.string().min(1, "Last Name is required"),
+  phone: z.string().min(1, "Phone/WhatsApp Number is required"),
+  date_birth: z.string().min(1, "Date of Birth is required"),
+  gender: z.string().min(1, "Gender is required"),
+  email: z.string().email("Invalid email address"),
+  country: z.string().min(1, "Country of Residence is required"),
+  nationality: z.string().min(1, "Nationality is required"),
+  educationStatus: z.string().min(1, "Current Education Status is required"),
+  girlsProgram: z.string().min(1, "Online Education for Girls is required"),
+  subjectsProgram: z.string().min(1, "Online School Subjects is required"),
+  englishTestTaken: z
+    .string()
+    .min(1, "English proficiency test status is required"),
+  englishLevel: z.string().min(1, "English level is required"),
+  motivationMessage: z.string().optional(),
+  referralSource: z.string().min(1, "Referral source is required"),
+  additionalMessage: z.string().optional(),
+  invitaionProgram: z.string().optional(),
+  selectedProgram: z.string().min(1, "Please select a program"),
+  signatureName: z.string().min(1, "Full Name for signature is required"),
+  signatureDate: z.string().min(1, "Date for signature is required"),
+});
 
 export default function StudentApplication() {
-
-  // Define the list of programs with keys and labels
   const programs = [
     { key: "accessVideos", label: "Access To Recorded School Subject Videos" },
     {
@@ -79,26 +107,6 @@ export default function StudentApplication() {
     },
   ];
 
-  // Initialize state with all programs set to false
-  const initialSelectedPrograms = Object.fromEntries(
-    programs.map((program) => [program.key, false])
-  );
-
-  // State to track selected programs
-  const [selectedPrograms, setSelectedPrograms] = useState(
-    initialSelectedPrograms
-  );
-
-  // Handle checkbox change
-  const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, checked } = event.target;
-    setSelectedPrograms((prev) => ({
-      ...prev,
-      [name]: checked,
-    }));
-  };
-
-
   const [formData, setFormData] = useState<FormData>({
     firstName: "",
     lastName: "",
@@ -109,40 +117,53 @@ export default function StudentApplication() {
     country: "",
     nationality: "",
     educationStatus: "",
-    girlsProgram: "", // For "Online Education for Girls"
-    subjectsProgram: "", // For "Online School Subjects"
-    englishTestTaken: "", // For "Have you taken any English proficiency tests?"
+    girlsProgram: "",
+    subjectsProgram: "",
+    englishTestTaken: "",
     englishLevel: "",
-    motivationMessage: "", // Renamed from "message" for clarity
-    referralSource: "", // For "How did you hear about us?"
-    additionalMessage: "", // For "Your Message (Optional)"
-    invitaionProgram: "", // Typo corrected to "invitationProgram"
-    consent: false,
+    motivationMessage: "",
+    referralSource: "",
+    additionalMessage: "",
+    invitaionProgram: "",
+    selectedProgram: "",
     signatureName: "",
     signatureDate: "",
   });
+
   const [files, setFiles] = useState<Files>({
     idPhoto: null,
     englishDoc: null,
     supportingDocs: [],
   });
+
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitMessage, setSubmitMessage] = useState("");
-  const [submitStatus, setSubmitStatus] = useState<"success" | "error" | null>(
-    null
-  );
+  const [errors, setErrors] = useState<z.inferFlattenedErrors<
+    typeof formDataSchema
+  > | null>(null);
 
   const handleInputChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
     >
   ) => {
-    const { name, value, type } = e.target;
-    const checked = (e.target as HTMLInputElement).checked;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const validateFile = (
+    file: File,
+    acceptedTypes: string[],
+    maxSize: number
+  ) => {
+    const fileType = file.type;
+    const fileSize = file.size;
+    if (!acceptedTypes.includes(fileType)) {
+      return `Invalid file type. Accepted types: ${acceptedTypes.join(", ")}`;
+    }
+    if (fileSize > maxSize) {
+      return `File size exceeds the limit of ${maxSize / (1024 * 1024)} MB`;
+    }
+    return null;
   };
 
   const handleFileChange = (
@@ -152,146 +173,163 @@ export default function StudentApplication() {
     const fileList = e.target.files;
     if (!fileList) return;
 
-    const file = fileList[0];
-    if (field === "supportingDocs") {
+    const acceptedTypes =
+      field === "idPhoto"
+        ? [
+            "image/jpeg",
+            "image/png",
+            "application/pdf",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+          ]
+        : [
+            "application/pdf",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+          ];
+    const maxSize = 10 * 1024 * 1024; // 10 MB
+
+    for (let file of Array.from(fileList)) {
+      const error = validateFile(file, acceptedTypes, maxSize);
+      if (error) {
+        toast.error(error);
+        return;
+      }
+    }
+
+    if (field === "idPhoto" || field === "englishDoc") {
+      setFiles((prev) => ({ ...prev, [field]: fileList[0] }));
+    } else if (field === "supportingDocs") {
       setFiles((prev) => ({
         ...prev,
         supportingDocs: [...prev.supportingDocs, ...Array.from(fileList)],
       }));
-    } else {
-      setFiles((prev) => ({ ...prev, [field]: file }));
-    }
-
-    // check if image is more than 10 mb
-    const maxSize = 10 * 1024 * 1024; // 10 MB
-    for (let file of Array.from(fileList)) {
-      if (file.size > maxSize) {
-        alert("File size exceeds 10 MB limit.");
-        return;
-      }
     }
   };
 
-const uploadImageUrl = async (file: File, folder: string) => {
-  const filename = new Date().getTime() + "_" + file.name;
+  const uploadImageUrl = async (file: File, folder: string) => {
+    const filename = new Date().getTime() + "_" + file.name;
+    const storage = getStorage(firebaseApp);
+    const storageRef = ref(storage, `${folder}/${filename}`);
+    const uploadTask = uploadBytesResumable(storageRef, file);
 
-  const storage = getStorage(firebaseApp);
-  const storageRef = ref(storage, `${folder}/${filename}`);
-
-  const uploadTask = uploadBytesResumable(storageRef, file);
-
-  return new Promise((resolve, reject) => {
-    uploadTask.on(
-      "state_changed",
-      (snapshot) => {
-        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        console.log("Upload is " + progress + "% done");
-      },
-      (error) => {
-        console.error("Error uploading image:", error);
-        reject(error);
-      },
-      () => {
-        // Upload completed successfully, now get the download URL
-        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-          resolve(downloadURL);
-        }).catch((error) => {
-          console.error("Error getting download URL:", error);
+    return new Promise((resolve, reject) => {
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          const progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          console.log("Upload is " + progress + "% done");
+        },
+        (error) => {
+          console.error("Error uploading image:", error);
           reject(error);
-        });
-      }
-    );
-  });
-};
+        },
+        () => {
+          getDownloadURL(uploadTask.snapshot.ref)
+            .then((downloadURL) => {
+              resolve(downloadURL);
+            })
+            .catch((error) => {
+              console.error("Error getting download URL:", error);
+              reject(error);
+            });
+        }
+      );
+    });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setIsSubmitting(true);
-  setSubmitMessage("");
+    e.preventDefault();
+    setIsSubmitting(true);
+    setErrors(null);
 
-  const data = new FormData();
-  Object.entries(formData).forEach(([key, value]) => {
-    data.append(key, value.toString());
-  });
-  Object.entries(selectedPrograms).forEach(([key, value]) => {
-    data.append(key, value.toString());
-  });
-
-  // Prepare to hold URLs for uploaded files
-  const uploadedFiles: { [key: string]: string | string[] } = {};
-
-  try {
-    // Upload files and get URLs
-    if (files.idPhoto) {
-      uploadedFiles.idPhoto = await uploadImageUrl(files.idPhoto, "idPhotos") as string;
-    }
-    if (files.englishDoc) {
-      uploadedFiles.englishDoc = await uploadImageUrl(files.englishDoc, "englishDocs") as string;
-    }
-    for (const file of files.supportingDocs) {
-      const url = await uploadImageUrl(file, "supportingDocs");
-      if (!uploadedFiles.supportingDocs) {
-        uploadedFiles.supportingDocs = [];
-      }
-      (uploadedFiles.supportingDocs as string[]).push(url as string);
+    const validationResult = formDataSchema.safeParse(formData);
+    if (!validationResult.success) {
+      setErrors(validationResult.error.flatten());
+      setIsSubmitting(false);
+      toast.error("Please fill in all required fields correctly");
+      return;
     }
 
-    // Append URLs to the data object
-    data.append("idPhotoUrl", uploadedFiles.idPhoto as string);
-    data.append("englishDocUrl", uploadedFiles.englishDoc as string);
-    if (uploadedFiles.supportingDocs) {
-      (uploadedFiles.supportingDocs as string[]).forEach((url) => {
-        data.append("supportingDocsUrls", url);
-      });
-    }
-    console.log("file data", data);
-    
-    const response = await fetch("/api/submit-form", {
-      method: "POST",
-      body: JSON.stringify(Object.fromEntries(data.entries())),
-    });
+    toast
+      .promise(
+        (async () => {
+          const data = new FormData();
+          Object.entries(formData).forEach(([key, value]) => {
+            data.append(key, value.toString());
+          });
 
-    if (response.ok) {
-      setSubmitStatus("success");
-      setSubmitMessage("Form submitted successfully");
-      setFormData({
-        firstName: "",
-        lastName: "",
-        phone: "",
-        date_birth: "",
-        gender: "",
-        email: "",
-        country: "",
-        nationality: "",
-        educationStatus: "",
-        girlsProgram: "", // For "Online Education for Girls"
-        subjectsProgram: "", // For "Online School Subjects"
-        englishTestTaken: "", // For "Have you taken any English proficiency tests?"
-        englishLevel: "",
-        motivationMessage: "", // Renamed from "message" for clarity
-        referralSource: "", // For "How did you hear about us?"
-        additionalMessage: "", // For "Your Message (Optional)"
-        invitaionProgram: "", // Typo corrected to "invitationProgram"
-        consent: false,
-        signatureName: "",
-        signatureDate: "",
-      });
-      setFiles({ idPhoto: null, englishDoc: null, supportingDocs: [] });
-    } else {
-      setSubmitStatus("error");
-      setSubmitMessage("Error submitting form");
-    }
-  } catch (error) {
-    console.error(error);
-    setSubmitStatus("error");
-    setSubmitMessage("Error submitting form");
-  } finally {
-    setIsSubmitting(false);
-  }
-};
+          const uploadedFiles: { [key: string]: string | string[] } = {};
 
+          if (files.idPhoto) {
+            uploadedFiles.idPhoto = (await uploadImageUrl(
+              files.idPhoto,
+              "idPhotos"
+            )) as string;
+          }
+          if (files.englishDoc) {
+            uploadedFiles.englishDoc = (await uploadImageUrl(
+              files.englishDoc,
+              "englishDocs"
+            )) as string;
+          }
+          for (const file of files.supportingDocs) {
+            const url = await uploadImageUrl(file, "supportingDocs");
+            if (!uploadedFiles.supportingDocs) {
+              uploadedFiles.supportingDocs = [];
+            }
+            (uploadedFiles.supportingDocs as string[]).push(url as string);
+          }
 
-  //  console.log("🚀 ~ StudentApplication ~ data:", data);
+          data.append("idPhotoUrl", typeof uploadedFiles.idPhoto === "string" ? uploadedFiles.idPhoto : "");
+          data.append("englishDocUrl", typeof uploadedFiles.englishDoc === "string" ? uploadedFiles.englishDoc : "");
+          if (uploadedFiles.supportingDocs && Array.isArray(uploadedFiles.supportingDocs)) {
+            (uploadedFiles.supportingDocs as string[]).forEach((url) => {
+              data.append("supportingDocsUrls", url);
+            });
+          }
+
+          const response = await fetch("/api/submit-form", {
+            method: "POST",
+            body: JSON.stringify(Object.fromEntries(data)),
+          });
+
+          if (response.ok) {
+            setFormData({
+              firstName: "",
+              lastName: "",
+              phone: "",
+              date_birth: "",
+              gender: "",
+              email: "",
+              country: "",
+              nationality: "",
+              educationStatus: "",
+              girlsProgram: "",
+              subjectsProgram: "",
+              englishTestTaken: "",
+              englishLevel: "",
+              motivationMessage: "",
+              referralSource: "",
+              additionalMessage: "",
+              invitaionProgram: "",
+              selectedProgram: "",
+              signatureName: "",
+              signatureDate: "",
+            });
+            setFiles({ idPhoto: null, englishDoc: null, supportingDocs: [] });
+            return "Form submitted successfully";
+          } else {
+            throw new Error("Error submitting form");
+          }
+        })(),
+        {
+          loading: "Submitting form...",
+          success: (message) => message,
+          error: (err) => err.message,
+        }
+      )
+      .finally(() => setIsSubmitting(false));
+  };
 
   return (
     <div className="flex mt-4 max-w-screen-2xl mx-auto px-4">
@@ -325,12 +363,11 @@ const uploadImageUrl = async (file: File, folder: string) => {
               reason, each
             </p>
             <p className="font-bold">
-              {" "}
               applicant may request only one program per submission. Choose
               carefully.
             </p>
           </h2>
-          <form className="mt-12 space-y-8">
+          <div className="mt-12 space-y-8">
             {/* Basic Information */}
             <section className="border-2 rounded-lg p-4 md:p-8 lg:px-14 bg-[#F2F2F2]">
               <h2 className="text-xl font-semibold mb-4">Basic Information</h2>
@@ -352,6 +389,11 @@ const uploadImageUrl = async (file: File, folder: string) => {
                       required
                       maxLength={50}
                     />
+                    {errors?.fieldErrors.firstName && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.fieldErrors.firstName[0]}
+                      </p>
+                    )}
                   </div>
                 </div>
                 <div>
@@ -368,6 +410,11 @@ const uploadImageUrl = async (file: File, folder: string) => {
                       required
                       maxLength={50}
                     />
+                    {errors?.fieldErrors.lastName && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.fieldErrors.lastName[0]}
+                      </p>
+                    )}
                   </div>
                 </div>
                 <div className="col-span-2">
@@ -385,6 +432,11 @@ const uploadImageUrl = async (file: File, folder: string) => {
                           onChange={handleInputChange}
                           required
                         />
+                        {errors?.fieldErrors.phone && (
+                          <p className="text-red-500 text-sm mt-1">
+                            {errors.fieldErrors.phone[0]}
+                          </p>
+                        )}
                       </div>
                     </div>
                     <div>
@@ -400,6 +452,11 @@ const uploadImageUrl = async (file: File, folder: string) => {
                           onChange={handleInputChange}
                           required
                         />
+                        {errors?.fieldErrors.date_birth && (
+                          <p className="text-red-500 text-sm mt-1">
+                            {errors.fieldErrors.date_birth[0]}
+                          </p>
+                        )}
                       </div>
                     </div>
                     <div>
@@ -419,6 +476,11 @@ const uploadImageUrl = async (file: File, folder: string) => {
                           <option value="Male">Male</option>
                           <option value="Other">Other</option>
                         </select>
+                        {errors?.fieldErrors.gender && (
+                          <p className="text-red-500 text-sm mt-1">
+                            {errors.fieldErrors.gender[0]}
+                          </p>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -436,6 +498,11 @@ const uploadImageUrl = async (file: File, folder: string) => {
                       onChange={handleInputChange}
                       required
                     />
+                    {errors?.fieldErrors.email && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.fieldErrors.email[0]}
+                      </p>
+                    )}
                   </div>
                 </div>
                 <div>
@@ -451,6 +518,11 @@ const uploadImageUrl = async (file: File, folder: string) => {
                       onChange={handleInputChange}
                       required
                     />
+                    {errors?.fieldErrors.country && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.fieldErrors.country[0]}
+                      </p>
+                    )}
                   </div>
                 </div>
                 <div>
@@ -466,6 +538,11 @@ const uploadImageUrl = async (file: File, folder: string) => {
                       onChange={handleInputChange}
                       required
                     />
+                    {errors?.fieldErrors.nationality && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.fieldErrors.nationality[0]}
+                      </p>
+                    )}
                   </div>
                 </div>
                 <div className="col-span-2">
@@ -489,9 +566,12 @@ const uploadImageUrl = async (file: File, folder: string) => {
                               />
                               <IoMdClose
                                 className="absolute top-0 right-0"
-                                onClick={() => {
-                                  files.idPhoto = null;
-                                }}
+                                onClick={() =>
+                                  setFiles((prev) => ({
+                                    ...prev,
+                                    idPhoto: null,
+                                  }))
+                                }
                               />
                             </div>
                           ) : (
@@ -518,10 +598,9 @@ const uploadImageUrl = async (file: File, folder: string) => {
                         </label>
                         <div>
                           <p className="font-semibold text-blue-500">
-                            Drag & Drop your Photo{" "}
+                            Drag & Drop your Photo
                           </p>
                           <p className="text-gray-500">
-                            {" "}
                             here or Browse up to 10 MB
                           </p>
                         </div>
@@ -550,6 +629,7 @@ const uploadImageUrl = async (file: File, folder: string) => {
                       onChange={handleInputChange}
                       required
                     >
+                      <option value="">Select Status</option>
                       <option value="Not in school">Not in school</option>
                       <option value="In public school">In public school</option>
                       <option value="In private school">
@@ -565,6 +645,11 @@ const uploadImageUrl = async (file: File, folder: string) => {
                         University graduate
                       </option>
                     </select>
+                    {errors?.fieldErrors.educationStatus && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.fieldErrors.educationStatus[0]}
+                      </p>
+                    )}
                   </div>
                 </div>
                 <div>
@@ -579,6 +664,7 @@ const uploadImageUrl = async (file: File, folder: string) => {
                       onChange={handleInputChange}
                       required
                     >
+                      <option value="">Select Program</option>
                       <option value="English Language Class">
                         English Language Class
                       </option>
@@ -589,6 +675,11 @@ const uploadImageUrl = async (file: File, folder: string) => {
                         Women’s Rights & Advocacy
                       </option>
                     </select>
+                    {errors?.fieldErrors.girlsProgram && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.fieldErrors.girlsProgram[0]}
+                      </p>
+                    )}
                   </div>
                 </div>
                 <div>
@@ -603,6 +694,7 @@ const uploadImageUrl = async (file: File, folder: string) => {
                       onChange={handleInputChange}
                       required
                     >
+                      <option value="">Select Subject</option>
                       <option value="Math">Math</option>
                       <option value="Physics">Physics</option>
                       <option value="Chemistry">Chemistry</option>
@@ -612,13 +704,17 @@ const uploadImageUrl = async (file: File, folder: string) => {
                       <option value="Islamic Studies">Islamic Studies</option>
                       <option value="Other">Other</option>
                     </select>
+                    {errors?.fieldErrors.subjectsProgram && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.fieldErrors.subjectsProgram[0]}
+                      </p>
+                    )}
                   </div>
                 </div>
                 <div></div>
               </div>
 
-              {/*  Select the Programs or Support You’re Interested In */}
-
+              {/* Select the Programs or Support You’re Interested In */}
               <div className="mt-7">
                 <h1 className="mb-4">
                   Select the Programs or Support You’re Interested In
@@ -632,10 +728,16 @@ const uploadImageUrl = async (file: File, folder: string) => {
                     >
                       <input
                         id={program.key}
-                        type="checkbox"
-                        name={program.key}
-                        checked={selectedPrograms[program.key]}
-                        onChange={handleCheckboxChange}
+                        type="radio"
+                        name="program"
+                        value={program.key}
+                        checked={formData.selectedProgram === program.key}
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            selectedProgram: e.target.value,
+                          }))
+                        }
                         className="h-4 w-4 text-blue-600 border-gray-500 rounded focus:ring-blue-500"
                       />
                       <span>
@@ -652,6 +754,11 @@ const uploadImageUrl = async (file: File, folder: string) => {
                     </label>
                   ))}
                 </div>
+                {errors?.fieldErrors.selectedProgram && (
+                  <p className="text-red-500 text-sm mt-2">
+                    {errors.fieldErrors.selectedProgram[0]}
+                  </p>
+                )}
               </div>
             </section>
 
@@ -673,6 +780,7 @@ const uploadImageUrl = async (file: File, folder: string) => {
                       onChange={handleInputChange}
                       required
                     >
+                      <option value="">Select Level</option>
                       <option value="Beginner">Beginner</option>
                       <option value="Pre-Intermediate">Pre-Intermediate</option>
                       <option value="Intermediate">Intermediate</option>
@@ -685,6 +793,11 @@ const uploadImageUrl = async (file: File, folder: string) => {
                         I don’t know my level
                       </option>
                     </select>
+                    {errors?.fieldErrors.englishLevel && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.fieldErrors.englishLevel[0]}
+                      </p>
+                    )}
                   </div>
                 </div>
                 <div>
@@ -699,11 +812,17 @@ const uploadImageUrl = async (file: File, folder: string) => {
                       onChange={handleInputChange}
                       required
                     >
+                      <option value="">Select Option</option>
                       <option value="Yes (attach score/report below)">
                         Yes (attach score/report below)
                       </option>
                       <option value="No">No</option>
                     </select>
+                    {errors?.fieldErrors.englishTestTaken && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.fieldErrors.englishTestTaken[0]}
+                      </p>
+                    )}
                   </div>
                 </div>
                 <div className="col-span-2">
@@ -720,7 +839,7 @@ const uploadImageUrl = async (file: File, folder: string) => {
                           {files.englishDoc ? (
                             <div className="relative">
                               <Image
-                                src={"/images/pdf.png"}
+                                src="/images/pdf.png"
                                 width={200}
                                 height={300}
                                 title="PDF Preview"
@@ -729,9 +848,12 @@ const uploadImageUrl = async (file: File, folder: string) => {
                               />
                               <IoMdClose
                                 className="absolute top-2 right-2"
-                                onClick={() => {
-                                  files.englishDoc = null;
-                                }}
+                                onClick={() =>
+                                  setFiles((prev) => ({
+                                    ...prev,
+                                    englishDoc: null,
+                                  }))
+                                }
                               />
                             </div>
                           ) : (
@@ -758,10 +880,9 @@ const uploadImageUrl = async (file: File, folder: string) => {
                         </label>
                         <div>
                           <p className="font-semibold text-blue-500">
-                            Drag & Drop your Photo{" "}
+                            Drag & Drop your Photo
                           </p>
                           <p className="text-gray-500">
-                            {" "}
                             here or Browse up to 10 MB
                           </p>
                         </div>
@@ -779,7 +900,7 @@ const uploadImageUrl = async (file: File, folder: string) => {
               </h2>
               <div className="grid grid-cols-1 gap-6">
                 <div>
-                  <label className="block text-sm/6 fo text-gray-900">
+                  <label className="block text-sm/6 font-medium text-gray-900">
                     Why do you want to join Change Makers of the World (Optional
                     but strongly encouraged)
                   </label>
@@ -806,6 +927,7 @@ const uploadImageUrl = async (file: File, folder: string) => {
                         onChange={handleInputChange}
                         required
                       >
+                        <option value="">Select Source</option>
                         <option value="Social Media">Social Media</option>
                         <option value="Referred by a friend">
                           Referred by a friend
@@ -818,6 +940,11 @@ const uploadImageUrl = async (file: File, folder: string) => {
                         </option>
                         <option value="Other">Other</option>
                       </select>
+                      {errors?.fieldErrors.referralSource && (
+                        <p className="text-red-500 text-sm mt-1">
+                          {errors.fieldErrors.referralSource[0]}
+                        </p>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -858,7 +985,7 @@ const uploadImageUrl = async (file: File, folder: string) => {
                           files.supportingDocs.length > 0 ? (
                             <div className="relative">
                               <Image
-                                src={"/images/pdf.png"}
+                                src="/images/pdf.png"
                                 width={200}
                                 height={300}
                                 title="PDF Preview"
@@ -867,9 +994,12 @@ const uploadImageUrl = async (file: File, folder: string) => {
                               />
                               <IoMdClose
                                 className="absolute top-2 right-2"
-                                onClick={() => {
-                                  files.supportingDocs = [];
-                                }}
+                                onClick={() =>
+                                  setFiles((prev) => ({
+                                    ...prev,
+                                    supportingDocs: [],
+                                  }))
+                                }
                               />
                             </div>
                           ) : (
@@ -882,7 +1012,7 @@ const uploadImageUrl = async (file: File, folder: string) => {
                             >
                               <path
                                 fillRule="evenodd"
-                                d="M1.5 6a2.25 2.25 0 0 1 2.25-2.25h16.5A2.25 2.25 0 0 1 22.5 6v12a2.25 2.25 0 0 1-2.25 2.25H3.75A2.25 2.25 0 0 1 1.5 18V6ZM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0 0 21 18v-1.94l-2.69-2.689a1.5 1.5 0 0 0-2.12 0l-.88.879.97.97a.75.75 0 1 1-1.06 1.06l-5.16-5.159a1.5 1.5 0 0 0-2.12 0L3 16.061Zm10.125-7.81a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Z"
+                                d="M1.5 6a2.25 2.25 0 0 1 2.25-2.25h16.5A2.25 2.25 0 0 1 22.5 6v12a2.25 2.25 0 0 1-2.25 2.25H3.75A2.25 2.25 0 0 1 1.5 18V6ZM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0 0 21 18v-1.94l-2.69-2.689a1.5 1.5 0 0 0-2.12 0l-.88.879.97.97a.75.75 0 1 wymagań1-1.06 1.06l-5.16-5.159a1.5 1.5 0 0 0-2.12 0L3 16.061Zm10.125-7.81a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Z"
                                 clipRule="evenodd"
                               />
                             </svg>
@@ -899,10 +1029,9 @@ const uploadImageUrl = async (file: File, folder: string) => {
                         </label>
                         <div>
                           <p className="font-semibold text-blue-500">
-                            Drag & Drop your Photo{" "}
+                            Drag & Drop your Photo
                           </p>
                           <p className="text-gray-500">
-                            {" "}
                             here or Browse up to 10 MB
                           </p>
                         </div>
@@ -1022,6 +1151,11 @@ const uploadImageUrl = async (file: File, folder: string) => {
                         onChange={handleInputChange}
                         required
                       />
+                      {errors?.fieldErrors.signatureName && (
+                        <p className="text-red-500 text-sm mt-1">
+                          {errors.fieldErrors.signatureName[0]}
+                        </p>
+                      )}
                     </div>
                   </div>
                   <div className="col-span-1">
@@ -1037,6 +1171,11 @@ const uploadImageUrl = async (file: File, folder: string) => {
                         onChange={handleInputChange}
                         required
                       />
+                      {errors?.fieldErrors.signatureDate && (
+                        <p className="text-red-500 text-sm mt-1">
+                          {errors.fieldErrors.signatureDate[0]}
+                        </p>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -1050,26 +1189,26 @@ const uploadImageUrl = async (file: File, folder: string) => {
                 className="border-2 border-gray-300 px-4 md:px-6 py-2 md:py-3 rounded-md"
                 onClick={() => {
                   setFormData({
-                firstName: "",
-                  lastName: "",
-                  phone: "",
-                  date_birth: "",
-                  gender: "",
-                  email: "",
-                  country: "",
-                  nationality: "",
-                  educationStatus: "",
-                  girlsProgram: "", // For "Online Education for Girls"
-                  subjectsProgram: "", // For "Online School Subjects"
-                  englishTestTaken: "", // For "Have you taken any English proficiency tests?"
-                  englishLevel: "",
-                  motivationMessage: "", // Renamed from "message" for clarity
-                  referralSource: "", // For "How did you hear about us?"
-                  additionalMessage: "", // For "Your Message (Optional)"
-                  invitaionProgram: "", // Typo corrected to "invitationProgram"
-                  consent: false,
-                  signatureName: "",
-                  signatureDate: "",
+                    firstName: "",
+                    lastName: "",
+                    phone: "",
+                    date_birth: "",
+                    gender: "",
+                    email: "",
+                    country: "",
+                    nationality: "",
+                    educationStatus: "",
+                    girlsProgram: "",
+                    subjectsProgram: "",
+                    englishTestTaken: "",
+                    englishLevel: "",
+                    motivationMessage: "",
+                    referralSource: "",
+                    additionalMessage: "",
+                    invitaionProgram: "",
+                    selectedProgram: "",
+                    signatureName: "",
+                    signatureDate: "",
                   });
                   setFiles({
                     idPhoto: null,
@@ -1081,24 +1220,15 @@ const uploadImageUrl = async (file: File, folder: string) => {
                 Clear Form
               </button>
               <button
-                type="submit"
+                type="button"
                 disabled={isSubmitting}
                 className="bg-primary-100 text-white px-4 md:px-6 py-1 md:py-3 rounded-md disabled:opacity-50"
                 onClick={handleSubmit}
               >
-                Submit
+                {isSubmitting ? "Submitting..." : "Submit"}
               </button>
             </div>
-            {submitMessage && (
-              <p
-                className={
-                  submitStatus === "success" ? "text-green-500" : "text-red-500"
-                }
-              >
-                {submitMessage}
-              </p>
-            )}
-          </form>
+          </div>
         </div>
       </main>
     </div>

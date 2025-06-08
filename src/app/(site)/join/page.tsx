@@ -10,6 +10,8 @@ import {
   ref,
   uploadBytesResumable,
 } from "firebase/storage";
+import toast from "react-hot-toast";
+import { z } from "zod";
 
 interface FormData {
   firstName: string;
@@ -43,6 +45,43 @@ interface Files {
   identityDocs: File[];
   supportingDocs: File[];
 }
+
+const formDataSchema = z.object({
+  firstName: z.string().min(1, "First Name is required"),
+  lastName: z.string().min(1, "Last Name is required"),
+  phone: z.string().min(1, "Phone/WhatsApp Number is required"),
+  date_birth: z.string().min(1, "Date of Birth is required"),
+  gender: z.string().min(1, "Gender is required"),
+  email: z
+    .string()
+    .email("Invalid email address")
+    .min(1, "Email Address is required"),
+  country: z.string().min(1, "Country of Residence is required"),
+  nationality: z.string().min(1, "Nationality is required"),
+  employmentStatus: z.string().min(1, "Current Employment Status is required"),
+  educationLevel: z
+    .string()
+    .min(1, "Highest Level of Education Completed is required"),
+  professionalRole: z
+    .string()
+    .min(1, "Professional Skills or Roles You Can Offer is required"),
+  englishLevel: z.string().min(1, "Languages Spoken & Proficiency is required"),
+  fieldOfStudy: z
+    .string()
+    .min(1, "Field of Study / Specialization is required"),
+  interestTeaching: z
+    .string()
+    .min(1, "Interest in teaching or leading sessions online is required"),
+  interestArea: z.string().min(1, "Area(s) of interest is required"),
+  educationStatus: z.string().min(1, "Type of involvement is required"),
+  program: z.string().min(1, "Availability is required"),
+  message: z.string().optional(),
+  referred: z.string().min(1, "How did you hear about us? is required"),
+  notes: z.string().optional(),
+  signatureName: z.string().min(1, "Full Name for signature is required"),
+  signatureDate: z.string().min(1, "Date for signature is required"),
+  consent: z.boolean(),
+});
 
 export default function ApplyContribution() {
   const [formData, setFormData] = useState<FormData>({
@@ -80,6 +119,7 @@ export default function ApplyContribution() {
   const [submitStatus, setSubmitStatus] = useState<"success" | "error" | null>(
     null
   );
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const handleInputChange = (
     e: React.ChangeEvent<
@@ -153,6 +193,20 @@ export default function ApplyContribution() {
     e.preventDefault();
     setIsSubmitting(true);
     setSubmitMessage("");
+    setErrors({});
+
+    const dataToValidate = { ...formData, consent: true };
+    const validationResult = formDataSchema.safeParse(dataToValidate);
+    if (!validationResult.success) {
+      const fieldErrors = validationResult.error.flatten().fieldErrors;
+      const formattedErrors: { [key: string]: string } = {};
+      for (const [key, value] of Object.entries(fieldErrors)) {
+        formattedErrors[key] = value![0];
+      }
+      setErrors(formattedErrors);
+      setIsSubmitting(false);
+      return;
+    }
 
     const data = new FormData();
     Object.entries(formData).forEach(([key, value]) => {
@@ -190,15 +244,12 @@ export default function ApplyContribution() {
 
       const response = await fetch("/api/submit-contribute-form", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formDataToSend),
       });
 
       if (response.ok) {
         setSubmitStatus("success");
-        setSubmitMessage("Form submitted successfully");
         setFormData({
           firstName: "",
           lastName: "",
@@ -226,9 +277,10 @@ export default function ApplyContribution() {
           signatureDate: "",
         });
         setFiles({ idPhoto: null, identityDocs: [], supportingDocs: [] });
+        toast.success("Form submitted successfully");
       } else {
         setSubmitStatus("error");
-        setSubmitMessage("Error submitting form");
+        toast.error("Error submitting form");
       }
     } catch (error) {
       console.error(error);
@@ -270,7 +322,7 @@ export default function ApplyContribution() {
           <h2 className="text-lg md:text-2xl font-semibold my-12 max-w-md mx-auto text-center">
             Please fill this form to join our growing network of change-makers.
           </h2>
-          <form className="mt-12 space-y-8">
+          <form className="mt-12 space-y-8" onSubmit={handleSubmit}>
             <section className="border-2 rounded-lg p-4 md:p-8 lg:px-14 bg-[#F2F2F2]">
               <h2 className="text-xl font-semibold mb-4">Basic Information</h2>
               <p className="text-sm text-gray-600 mb-6">
@@ -291,6 +343,11 @@ export default function ApplyContribution() {
                       required
                       maxLength={50}
                     />
+                    {errors.firstName && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.firstName}
+                      </p>
+                    )}
                   </div>
                 </div>
                 <div>
@@ -307,6 +364,11 @@ export default function ApplyContribution() {
                       required
                       maxLength={50}
                     />
+                    {errors.lastName && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.lastName}
+                      </p>
+                    )}
                   </div>
                 </div>
                 <div className="col-span-2">
@@ -324,6 +386,11 @@ export default function ApplyContribution() {
                           onChange={handleInputChange}
                           required
                         />
+                        {errors.phone && (
+                          <p className="text-red-500 text-sm mt-1">
+                            {errors.phone}
+                          </p>
+                        )}
                       </div>
                     </div>
                     <div>
@@ -339,6 +406,11 @@ export default function ApplyContribution() {
                           onChange={handleInputChange}
                           required
                         />
+                        {errors.date_birth && (
+                          <p className="text-red-500 text-sm mt-1">
+                            {errors.date_birth}
+                          </p>
+                        )}
                       </div>
                     </div>
                     <div>
@@ -358,6 +430,11 @@ export default function ApplyContribution() {
                           <option value="Male">Male</option>
                           <option value="Other">Other</option>
                         </select>
+                        {errors.gender && (
+                          <p className="text-red-500 text-sm mt-1">
+                            {errors.gender}
+                          </p>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -375,6 +452,11 @@ export default function ApplyContribution() {
                       onChange={handleInputChange}
                       required
                     />
+                    {errors.email && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.email}
+                      </p>
+                    )}
                   </div>
                 </div>
                 <div>
@@ -390,6 +472,11 @@ export default function ApplyContribution() {
                       onChange={handleInputChange}
                       required
                     />
+                    {errors.country && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.country}
+                      </p>
+                    )}
                   </div>
                 </div>
                 <div>
@@ -405,65 +492,13 @@ export default function ApplyContribution() {
                       onChange={handleInputChange}
                       required
                     />
+                    {errors.nationality && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.nationality}
+                      </p>
+                    )}
                   </div>
                 </div>
-                {/* <div className="col-span-2">
-                  <label className="block text-sm/6 font-medium text-gray-900">
-                    Upload Photo
-                  </label>
-                  <span className="text-xs text-gray-600 italic">
-                    (Professional headshot or passport-style)
-                  </span>
-                  <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
-                    <div className="relative text-center">
-                      {files.idPhoto &&
-                      files.idPhoto.type.startsWith("image/") ? (
-                        <div className="relative">
-                          <img
-                            src={URL.createObjectURL(files.idPhoto)}
-                            alt="ID Photo Preview"
-                            className="mx-auto size-16 object-cover"
-                          />
-                          <IoMdClose
-                            className="absolute top-0 right-0 cursor-pointer"
-                            onClick={() => {
-                              files.idPhoto = null;
-                            }}
-                            
-                          />
-                        </div>
-                      ) : (
-                        <svg
-                          className="mx-auto size-12 text-gray-300"
-                          viewBox="0 0 24 24"
-                          fill="currentColor"
-                          aria-hidden="true"
-                          data-slot="icon"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M1.5 6a2.25 2.25 0 0 1 2.25-2.25h16.5A2.25 2.25 0 0 1 22.5 6v12a2.25 2.25 0 0 1-2.25 2.25H3.75A2.25 2.25 0 0 1 1.5 18V6ZM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0 0 21 18v-1.94l-2.69-2.689a1.5 1.5 0 0 0-2.12 0l-.88.879.97.97a.75.75 0 1 1-1.06 1.06l-5.16-5.159a1.5 1.5 0 0 0-2.12 0L3 16.061Zm10.125-7.81a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                      )}
-                      <input
-                        type="file"
-                         accept=".pdf,.docx,.jpg,."
-                        onChange={(e) => handleFileChange(e, "idPhoto")}
-                        className="sr-only focus:outline-none active:outline-none bg-transparent"
-                      />
-                      <div className="mt-4 flex flex-col space-y-4 text-sm/6 text-gray-600">
-                        <p className="font-semibold text-blue-500">
-                          Drag & Drop your Photo
-                        </p>
-                        <p className="text-gray-500">
-                          here or Browse up to 10 MB
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div> */}
                 <div className="col-span-2">
                   <label className="block text-sm/6 font-medium text-gray-900">
                     Upload Photo
@@ -485,9 +520,12 @@ export default function ApplyContribution() {
                               />
                               <IoMdClose
                                 className="absolute top-0 right-0"
-                                onClick={() => {
-                                  files.idPhoto = null;
-                                }}
+                                onClick={() =>
+                                  setFiles((prev) => ({
+                                    ...prev,
+                                    idPhoto: null,
+                                  }))
+                                }
                               />
                             </div>
                           ) : (
@@ -514,10 +552,9 @@ export default function ApplyContribution() {
                         </label>
                         <div>
                           <p className="font-semibold text-blue-500">
-                            Drag & Drop your Photo{" "}
+                            Drag & Drop your Photo
                           </p>
                           <p className="text-gray-500">
-                            {" "}
                             here or Browse up to 10 MB
                           </p>
                         </div>
@@ -540,7 +577,7 @@ export default function ApplyContribution() {
                           files.identityDocs.length > 0 ? (
                             <div className="relative">
                               <Image
-                                src={"/images/pdf.png"}
+                                src="/images/pdf.png"
                                 width={200}
                                 height={300}
                                 title="PDF Preview"
@@ -549,9 +586,12 @@ export default function ApplyContribution() {
                               />
                               <IoMdClose
                                 className="absolute top-2 right-2"
-                                onClick={() => {
-                                  // files.supportingDocs = null;
-                                }}
+                                onClick={() =>
+                                  setFiles((prev) => ({
+                                    ...prev,
+                                    identityDocs: [],
+                                  }))
+                                }
                               />
                             </div>
                           ) : (
@@ -581,10 +621,9 @@ export default function ApplyContribution() {
                         </label>
                         <div>
                           <p className="font-semibold text-blue-500">
-                            Drag & Drop your Photo{" "}
+                            Drag & Drop your Photo
                           </p>
                           <p className="text-gray-500">
-                            {" "}
                             here or Browse up to 10 MB
                           </p>
                         </div>
@@ -612,12 +651,18 @@ export default function ApplyContribution() {
                       onChange={handleInputChange}
                       required
                     >
+                      <option value="">Select Employment Status</option>
                       <option value="Employed">Employed</option>
                       <option value="Freelancer">Freelancer</option>
                       <option value="Unemployed">Unemployed</option>
                       <option value="Student">Student</option>
                       <option value="Retired">Retired</option>
                     </select>
+                    {errors.employmentStatus && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.employmentStatus}
+                      </p>
+                    )}
                   </div>
                 </div>
                 <div>
@@ -632,6 +677,7 @@ export default function ApplyContribution() {
                       onChange={handleInputChange}
                       required
                     >
+                      <option value="">Select Education Level</option>
                       <option value="High School">High School</option>
                       <option value="Vocational Training">
                         Vocational Training
@@ -642,6 +688,11 @@ export default function ApplyContribution() {
                       <option value="Master’s Degree">Master’s Degree</option>
                       <option value="PhD or Doctorate">PhD or Doctorate</option>
                     </select>
+                    {errors.educationLevel && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.educationLevel}
+                      </p>
+                    )}
                   </div>
                 </div>
                 <div>
@@ -656,6 +707,7 @@ export default function ApplyContribution() {
                       onChange={handleInputChange}
                       required
                     >
+                      <option value="">Select Role</option>
                       <option value="Teacher / Trainer">
                         Teacher / Trainer
                       </option>
@@ -691,6 +743,11 @@ export default function ApplyContribution() {
                         Other (Please specify)
                       </option>
                     </select>
+                    {errors.professionalRole && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.professionalRole}
+                      </p>
+                    )}
                   </div>
                 </div>
                 <div>
@@ -705,6 +762,7 @@ export default function ApplyContribution() {
                       onChange={handleInputChange}
                       required
                     >
+                      <option value="">Select Proficiency</option>
                       <option value="A1 – Beginner">A1 – Beginner</option>
                       <option value="A2 – Elementary">A2 – Elementary</option>
                       <option value="B1 – Intermediate">
@@ -716,6 +774,11 @@ export default function ApplyContribution() {
                       <option value="C1 – Advanced">C1 – Advanced</option>
                       <option value="C2 – Proficient">C2 – Proficient</option>
                     </select>
+                    {errors.englishLevel && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.englishLevel}
+                      </p>
+                    )}
                   </div>
                 </div>
                 <div>
@@ -731,6 +794,11 @@ export default function ApplyContribution() {
                       onChange={handleInputChange}
                       required
                     />
+                    {errors.fieldOfStudy && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.fieldOfStudy}
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>
@@ -753,9 +821,15 @@ export default function ApplyContribution() {
                       onChange={handleInputChange}
                       required
                     >
-                      <option value="yes">yes</option>
-                      <option value="no">no</option>
+                      <option value="">Select Option</option>
+                      <option value="yes">Yes</option>
+                      <option value="no">No</option>
                     </select>
+                    {errors.interestTeaching && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.interestTeaching}
+                      </p>
+                    )}
                   </div>
                 </div>
                 <div>
@@ -770,6 +844,7 @@ export default function ApplyContribution() {
                       onChange={handleInputChange}
                       required
                     >
+                      <option value="">Select Area</option>
                       <option value="English Language">English Language</option>
                       <option value="Science Subjects">Science Subjects</option>
                       <option value="Part-time">Part-time</option>
@@ -782,6 +857,11 @@ export default function ApplyContribution() {
                       </option>
                       <option value="Specific Hours">Specific Hours</option>
                     </select>
+                    {errors.interestArea && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.interestArea}
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>
@@ -804,6 +884,7 @@ export default function ApplyContribution() {
                       onChange={handleInputChange}
                       required
                     >
+                      <option value="">Select Involvement</option>
                       <option value="Paid Position">Paid Position</option>
                       <option value="Volunteer Position">
                         Volunteer Position
@@ -828,6 +909,11 @@ export default function ApplyContribution() {
                       </option>
                       <option value="Fundraiser">Fundraiser</option>
                     </select>
+                    {errors.educationStatus && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.educationStatus}
+                      </p>
+                    )}
                   </div>
                 </div>
                 <div>
@@ -842,6 +928,7 @@ export default function ApplyContribution() {
                       onChange={handleInputChange}
                       required
                     >
+                      <option value="">Select Availability</option>
                       <option value="Full-time">Full-time</option>
                       <option value="Volunteer Position">
                         Volunteer Position
@@ -854,9 +941,13 @@ export default function ApplyContribution() {
                       <option value="One-time Project Collaboration">
                         One-time Project Collaboration
                       </option>
-
                       <option value="Specific Hours">Specific Hours</option>
                     </select>
+                    {errors.program && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.program}
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>
@@ -868,7 +959,7 @@ export default function ApplyContribution() {
               </h2>
               <div className="grid grid-cols-1 gap-6">
                 <div>
-                  <label className="block text-sm/6 fo text-gray-900">
+                  <label className="block text-sm/6 font-medium text-gray-900">
                     Why do you want to join Change Makers of the World (Optional
                     but strongly encouraged)
                   </label>
@@ -895,6 +986,7 @@ export default function ApplyContribution() {
                         onChange={handleInputChange}
                         required
                       >
+                        <option value="">Select Source</option>
                         <option value="Social Media">Social Media</option>
                         <option value="Referred by a friend">
                           Referred by a friend
@@ -907,99 +999,106 @@ export default function ApplyContribution() {
                         </option>
                         <option value="Other">Other</option>
                       </select>
+                      {errors.referred && (
+                        <p className="text-red-500 text-sm mt-1">
+                          {errors.referred}
+                        </p>
+                      )}
                     </div>
                   </div>
                 </div>
               </div>
             </section>
 
-              <section className="border-2 rounded-lg p-4 md:p-8 lg:px-14 bg-[#F2F2F2]">
-                    <h2 className="md:text-lg text-xl font-semibold mb-4">
-                      Supporting Documents (Optional)
-                    </h2>
-                    <p className="text-sm text-gray-600 mb-6">
-                      <p className="mb-6 text-base">
-                        You may upload any of the following:
-                      </p>
-                      <p className="text-base">• CV/Resume</p>
-                      <p className="text-base">• Portfolio or sample work</p>
-                      <p className="text-base">• Certificates or degrees</p>
-                      <p className="text-base">• Teaching license or credentials</p>
-                      <p className="text-base">• Recommendation letters</p>
-                      <p className="text-base">
-                        • Proposal of support or program idea
-                      </p>
-                      <p className="text-base">
-                        • Any other document that supports your role
-                      </p>
-                    </p>
-                    <div className="grid grid-cols-1 gap-6">
-                      <div>
-                        <label className="block text-sm/6 font-medium text-gray-900">
-                          Upload Documents
-                        </label>
-                        <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
-                          <div className="relative text-center">
-                            <div className="mt-4 flex flex-col space-y-4 text-sm/6 text-gray-600">
-                              <label className="relative mx-auto cursor-pointer rounded-md font-semibold text-primary-100 focus-within:outline-hidden hover:text-primary-100">
-                                {files.supportingDocs &&
-                                files.supportingDocs.length > 0 ? (
-                                  <div className="relative">
-                                    <Image
-                                      src={"/images/pdf.png"}
-                                      width={200}
-                                      height={300}
-                                      title="PDF Preview"
-                                      alt="image file"
-                                      style={{ border: "1px solid #ccc" }}
-                                    />
-                                    <IoMdClose
-                                      className="absolute top-2 right-2"
-                                      onClick={() => {
-                                        files.supportingDocs = [];
-                                      }}
-                                    />
-                                  </div>
-                                ) : (
-                                  <svg
-                                    className="mx-auto size-12 text-gray-300"
-                                    viewBox="0 0 24 24"
-                                    fill="currentColor"
-                                    aria-hidden="true"
-                                    data-slot="icon"
-                                  >
-                                    <path
-                                      fillRule="evenodd"
-                                      d="M1.5 6a2.25 2.25 0 0 1 2.25-2.25h16.5A2.25 2.25 0 0 1 22.5 6v12a2.25 2.25 0 0 1-2.25 2.25H3.75A2.25 2.25 0 0 1 1.5 18V6ZM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0 0 21 18v-1.94l-2.69-2.689a1.5 1.5 0 0 0-2.12 0l-.88.879.97.97a.75.75 0 1 1-1.06 1.06l-5.16-5.159a1.5 1.5 0 0 0-2.12 0L3 16.061Zm10.125-7.81a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Z"
-                                      clipRule="evenodd"
-                                    />
-                                  </svg>
-                                )}
-                                <input
-                                  type="file"
-                                  accept=".pdf,.docx"
-                                  onChange={(e) =>
-                                    handleFileChange(e, "supportingDocs")
-                                  }
-                                  multiple
-                                  className="sr-only focus:outline-none active:outline-none bg-transparent"
-                                />
-                              </label>
-                              <div>
-                                <p className="font-semibold text-blue-500">
-                                  Drag & Drop your Photo{" "}
-                                </p>
-                                <p className="text-gray-500">
-                                  {" "}
-                                  here or Browse up to 10 MB
-                                </p>
-                              </div>
+            <section className="border-2 rounded-lg p-4 md:p-8 lg:px-14 bg-[#F2F2F2]">
+              <h2 className="text-xl font-semibold mb-4">
+                Supporting Documents (Optional)
+              </h2>
+              <p className="text-sm text-gray-600 mb-6">
+                <p className="mb-6 text-base">
+                  You may upload any of the following:
+                </p>
+                <p className="text-base">• CV/Resume</p>
+                <p className="text-base">• Portfolio or sample work</p>
+                <p className="text-base">• Certificates or degrees</p>
+                <p className="text-base">• Teaching license or credentials</p>
+                <p className="text-base">• Recommendation letters</p>
+                <p className="text-base">
+                  • Proposal of support or program idea
+                </p>
+                <p className="text-base">
+                  • Any other document that supports your role
+                </p>
+              </p>
+              <div className="grid grid-cols-1 gap-6">
+                <div>
+                  <label className="block text-sm/6 font-medium text-gray-900">
+                    Upload Documents
+                  </label>
+                  <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
+                    <div className="relative text-center">
+                      <div className="mt-4 flex flex-col space-y-4 text-sm/6 text-gray-600">
+                        <label className="relative mx-auto cursor-pointer rounded-md font-semibold text-primary-100 focus-within:outline-hidden hover:text-primary-100">
+                          {files.supportingDocs &&
+                          files.supportingDocs.length > 0 ? (
+                            <div className="relative">
+                              <Image
+                                src="/images/pdf.png"
+                                width={200}
+                                height={300}
+                                title="PDF Preview"
+                                alt="image file"
+                                style={{ border: "1px solid #ccc" }}
+                              />
+                              <IoMdClose
+                                className="absolute top-2 right-2"
+                                onClick={() =>
+                                  setFiles((prev) => ({
+                                    ...prev,
+                                    supportingDocs: [],
+                                  }))
+                                }
+                              />
                             </div>
-                          </div>
+                          ) : (
+                            <svg
+                              className="mx-auto size-12 text-gray-300"
+                              viewBox="0 0 24 24"
+                              fill="currentColor"
+                              aria-hidden="true"
+                              data-slot="icon"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M1.5 6a2.25 2.25 0 0 1 2.25-2.25h16.5A2.25 2.25 0 0 1 22.5 6v12a2.25 2.25 0 0 1-2.25 2.25H3.75A2.25 2.25 0 0 1 1.5 18V6ZM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0 0 21 18v-1.94l-2.69-2.689a1.5 1.5 0 0 0-2.12 0l-.88.879.97.97a.75.75 0 1 1-1.06 1.06l-5.16-5.159a1.5 1.5 0 0 0-2.12 0L3 16.061Zm10.125-7.81a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                          )}
+                          <input
+                            type="file"
+                            accept=".pdf,.docx"
+                            onChange={(e) =>
+                              handleFileChange(e, "supportingDocs")
+                            }
+                            multiple
+                            className="sr-only focus:outline-none active:outline-none bg-transparent"
+                          />
+                        </label>
+                        <div>
+                          <p className="font-semibold text-blue-500">
+                            Drag & Drop your Photo
+                          </p>
+                          <p className="text-gray-500">
+                            here or Browse up to 10 MB
+                          </p>
                         </div>
                       </div>
                     </div>
-                  </section>
+                  </div>
+                </div>
+              </div>
+            </section>
 
             <section className="border-2 rounded-lg p-4 md:p-8 lg:px-14 bg-[#F2F2F2]">
               <h2 className="text-lg md:text-xl font-semibold mb-4">
@@ -1082,6 +1181,11 @@ export default function ApplyContribution() {
                         onChange={handleInputChange}
                         required
                       />
+                      {errors.signatureName && (
+                        <p className="text-red-500 text-sm mt-1">
+                          {errors.signatureName}
+                        </p>
+                      )}
                     </div>
                   </div>
                   <div className="col-span-1">
@@ -1097,6 +1201,11 @@ export default function ApplyContribution() {
                         onChange={handleInputChange}
                         required
                       />
+                      {errors.signatureDate && (
+                        <p className="text-red-500 text-sm mt-1">
+                          {errors.signatureDate}
+                        </p>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -1147,9 +1256,8 @@ export default function ApplyContribution() {
                 type="submit"
                 disabled={isSubmitting}
                 className="bg-primary-100 text-white px-4 md:px-6 py-1 md:py-3 rounded-md disabled:opacity-50"
-                onClick={handleSubmit}
               >
-                Submit
+                {isSubmitting ? "Submitting..." : "Submit"}
               </button>
             </div>
             {submitMessage && (
