@@ -13,6 +13,7 @@ import {
   MdOutlineAdminPanelSettings,
 } from "react-icons/md";
 import { CreditCard } from "lucide-react";
+import { IoMdClipboard } from "react-icons/io";
 
 const menuItems = [
   { id: 1, label: "Home", icon: IoHomeOutline, link: "/admin" },
@@ -52,6 +53,12 @@ const menuItems = [
     icon: CreditCard,
     link: "/admin/view-donations",
   },
+   {
+      id: 8,
+      label: "Projects & Initiatives",
+      icon: IoMdClipboard,
+      link: "/admin/project-and-initiative",
+    },
 ];
 export default function MobileAdminSidebar() {
   const [expanded, setExpanded] = useState(false);

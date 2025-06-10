@@ -322,3 +322,12 @@ html {
   --tw-ring-opacity: 1;
   --tw-ring-color: rgb(19, 76, 131 / var(--tw-ring-opacity));
 }
+
+/* swiper-pagination-bullet swiper-pagination-bullet-active */
+
+.swiper-pagination-bullet{
+  background-color: white !important;
+}
+.swiper-pagination-bullet-active{
+  background-color: white !important;
+}

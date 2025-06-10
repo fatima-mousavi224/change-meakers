@@ -21,6 +21,7 @@ import { FaRegListAlt } from "react-icons/fa";
 import { LuUserCog } from "react-icons/lu";
 import { MdOutlineAdminPanelSettings } from "react-icons/md";
 import { TbHeartCheck } from "react-icons/tb";
+import { IoMdClipboard } from "react-icons/io";
 
 const navigation = [
   { name: "Home", href: "/admin", icon: Home },
@@ -45,6 +46,12 @@ const navigation = [
     href: "/admin/profile",
     icon: UserRoundPen,
   },
+  {
+    name: "Projects & Initiatives",
+    href: "/admin/project-and-initiative",
+    icon: IoMdClipboard,
+  },
+  
 ];
 
 function classNames(...classes: any) {
