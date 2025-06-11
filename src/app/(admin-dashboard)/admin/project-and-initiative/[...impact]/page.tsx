@@ -39,7 +39,7 @@ interface FilesState {
   coverPhoto: File | null;
 }
 
-export default function ApplyContribution() {
+export default function ImpactPage() {
   const [formData, setFormData] = useState<FormData>({
     title: "",
     impactTags: "",

@@ -15,12 +15,64 @@ import "swiper/css/pagination";
 import { MdOutlineNavigateBefore, MdOutlineNavigateNext } from "react-icons/md";
 import Link from "next/link";
 
-const initialProjects = Array(8).fill(0).map((_, index) => ({
-  id: index,
-  title: `Project ${index + 1}`,
-  type: "Project type",
-  images: [image1, image2, image3],
-}));
+// const initialProjects = Array(8).fill(0).map((_, index) => ({
+//   id: index,
+//   title: `Project ${index + 1}`,
+//   type: "Project type",
+//   images: [image1, image2, image3],
+// }));
+
+const initialProjects = [
+  {
+    id: 1,
+    title: "TaskHive",
+    type: "Web Application",
+    images: [image1, image2, image3]
+  },
+  {
+    id: 2,
+    title: "PortfoLink",
+    type: "Personal Portfolio",
+    images: [image1, image2, image3]
+  },
+  {
+    id: 3,
+    title: "NoteSphere",
+    type: "Mobile App",
+    images: [image1, image2, image3]
+  },
+  {
+    id: 4,
+    title: "EduTrack",
+    type: "Learning Management System",
+    images: [image1, image2, image3]
+  },
+  {
+    id: 5,
+    title: "ShopNest",
+    type: "E-commerce Website",
+    images: [image1, image2, image3]
+  },
+  {
+    id: 6,
+    title: "Evently",
+    type: "Event Management Platform",
+    images: [image1, image2, image3]
+  },
+  {
+    id: 7,
+    title: "DevConnect",
+    type: "Social Network Platform",
+    images: [image1, image2, image3]
+  },
+  {
+    id: 8,
+    title: "FinSight",
+    type: "Finance Dashboard",
+    images: [image1, image2, image3]
+  },
+  
+];
 
 function ProjectAndInitiative() {
   const [search, setSearch] = useState("");
@@ -123,7 +175,7 @@ function ProjectAndInitiative() {
                 alt={`${project.title} logo`}
                 width={24}
                 height={24}
-                className="size-6 object-cover absolute top-2 right-2 bg-white p-1 rounded-full shadow"
+                className="size-8 object-cover absolute top-2 right-2 z-50 p-1 rounded-full shadow"
               />
             </div>
 
