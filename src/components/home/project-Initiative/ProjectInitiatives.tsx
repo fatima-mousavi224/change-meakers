@@ -10,6 +10,7 @@ import projectImage5 from "../../../../public/images/programs/human_rights/slide
 import projectImage6 from "../../../../public/images/programs/human_rights/slider_6.jpg";
 import projectImage7 from "../../../../public/images/programs/human_rights/slider_7.jpg";
 import projectImage8 from "../../../../public/images/programs/human_rights/slider_8.jpg";
+import Link from "next/link";
 
 
 const projects = [
@@ -52,7 +53,9 @@ function ProjectInitiatives() {
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {projects.slice(0, visibleProjects).map((project) => (
-            <ProjectCard key={project.id} project={project} />
+            <Link href={`/programs/${project.id}`} key={project.id}>
+              <ProjectCard project={project} />
+            </Link>
           ))}
         </div>
         {visibleProjects < projects.length && (
