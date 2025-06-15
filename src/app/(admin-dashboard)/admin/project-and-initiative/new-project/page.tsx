@@ -109,7 +109,7 @@ interface TeamCard {
   showLinkInput: boolean;
 }
 
-export default function ApplyContribution() {
+export default function CreateNewProject() {
   const [formData, setFormData] = React.useState(FormDataInterface);
   const [files, setFiles] = React.useState(FilesStateInterface);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
@@ -399,10 +399,14 @@ const handleIconPreviewChange = (
       const fileFields = Object.keys(FilesStateInterface);
 
       for (const field of fileFields) {
-        if (files[field]) {
-          const url = await uploadImageUrl(files[field], field);
-          uploadedFiles[field] = url;
+        // if (files[field]) {
+          // const url = await uploadImageUrl(files[field], field);
+          const file = files[field];
+          if (file) {
+            const url = await uploadImageUrl(file, field)
+            uploadedFiles[field] = url;
         }
+        
       }
 
       const formDataToSend = { ...formData, ...uploadedFiles };
