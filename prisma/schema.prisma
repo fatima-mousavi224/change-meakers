@@ -147,6 +147,125 @@ model VerificationToken {
 
   @@unique([identifier, token])
 }
+model Project {
+  id                         String                @id @default(auto()) @map("_id") @db.ObjectId
+  projectTitle               String
+  cardDescription            String
+  heroTitle                  String
+  iconTitleStatus1           String?
+  shortDescriptionStatus1     String?
+  iconTitleStatus2            String?
+  shortDescriptionStatus2    String?
+  sectionTitleVoices         String?
+  sectionDescriptionVoices   String?
+  sectionTitleTeam           String?
+  sectionDescriptionTeam     String?
+  sectionTitleStudents       String?
+  sectionDescriptionStudents String?
+  sectionTitleNewsletter     String?
+  sectionDescriptionNewsletter String?
+  navigationLabel            String?
+  showInMainNavigation       Boolean            @default(true)
+  cardImage                  String?
+  heroImage                  String?
+  newsletterImage1           String?
+  newsletterImage2           String?
+  statusIcon1                String?
+  statusIcon2                String?
+  teamCards                  TeamCard[]
+  studentItems               StudentItem[]
+  voices                     Voice[]
+  liveMoments                LiveMoment[]
+  relatedLinks               RelatedLink[]
+  newsletterItems            NewsletterItem[]
+  offerIcons                 OfferIcon[]
+  createdAt                  DateTime           @default(now())
+  updatedAt                  DateTime           @updatedAt
+}
+
+model TeamCard {
+  id            String      @id @default(auto()) @map("_id") @db.ObjectId
+  projectId     String      @db.ObjectId
+  name          String
+  role          String
+  biography     String
+  link          String?
+  showLinkInput Boolean  @default(false)
+  image         String?
+  icon          String?
+  project       Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model StudentItem {
+  id            String      @id @default(auto()) @map("_id") @db.ObjectId
+  projectId     String      @db.ObjectId
+  name          String
+  role          String
+  biography     String
+  link          String?
+  showLinkInput Boolean  @default(false)
+  image         String?
+  icon          String?
+  project       Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Voice {
+  id          String      @id @default(auto()) @map("_id") @db.ObjectId
+  projectId   String      @db.ObjectId
+  quote       String
+  name        String
+  description String
+  icon        String?
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model LiveMoment {
+  id          String      @id @default(auto()) @map("_id") @db.ObjectId
+  projectId   String      @db.ObjectId
+  link        String
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model RelatedLink {
+  id          String      @id @default(auto()) @map("_id") @db.ObjectId
+  projectId   String      @db.ObjectId
+  buttonName  String
+  buttonLink  String
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model NewsletterItem {
+  id          String      @id @default(auto()) @map("_id") @db.ObjectId
+  projectId   String      @db.ObjectId
+  date        DateTime
+  title       String
+  description String
+  url         String?
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model OfferIcon {
+  id          String      @id @default(auto()) @map("_id") @db.ObjectId
+  projectId   String      @db.ObjectId
+  url         String
+  iconTitle   String?
+  shortDescription String?
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
 
 enum PaymentStatus {
   PENDING

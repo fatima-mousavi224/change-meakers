@@ -797,7 +797,7 @@ const Programs: React.FC = () => {
               faces. Some photos may be blurred or cropped to protect their
               identity.
             </p>
-            <div className="flex items-center justify-center sm:w-[360px] md:w-full mx-auto">
+            <div className="flex items-center justify-center sm:w-[360px] md:w-[90%] mx-auto">
               <Sliders data={educationSlideData} />
             </div>
           </div>
@@ -1145,7 +1145,7 @@ const Programs: React.FC = () => {
               </div>
               <h4 className="text-lg md:font-bold text-slate-700 w-sm">Stay updated! Subscribe to receive the latest news, events, and impact stories from our work.</h4>
               <div className="flex md:w-96 rounded-lg bg-white relative">
-                <input type="text" placeholder="Enter Your Email Address" className="py-2 border-none bg-transparent rounded-lg w-full focus:outline-0 focus:border-0 px-4 " />
+                <input type="text" placeholder="Enter Your Email Address" className="py-2 border-none bg-transparent rounded-lg w-full !focus:outline-none !focus:border-none focus:ring-0 px-4 " />
                 <div className="bg-blue-900 p-3 rounded-lg absolute right-0 -top-0.5  cursor-pointer hover:opacity-80"><FaArrowRightLong className="text-white size-5" /></div>
               </div>
           </div>
