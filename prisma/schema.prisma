@@ -152,26 +152,79 @@ model Project {
   projectTitle               String
   cardDescription            String
   heroTitle                  String
+  // Hero Section Fields
+  subheading                 String?
+  slogan                     String?
+  buttonName                 String?
+  buttonLink                 String?
+  // Status & Icons Fields
   iconTitleStatus1           String?
   shortDescriptionStatus1     String?
   iconTitleStatus2            String?
   shortDescriptionStatus2    String?
+  // Vision & Goal Section
+  visionTitle                String?
+  visionText                 String?
+  goalTitle                  String?
+  goalText                   String?
+  visionGoalImage1           String?
+  visionGoalImage2           String?
+  visionGoalImage3           String?
+  visionGoalImage4           String?
+  // About Program Section
+  sectionTitleAbout          String?
+  bodyText                   String?
+  buttonName2                String?
+  buttonLink2                String?
+  // Voices Section
   sectionTitleVoices         String?
   sectionDescriptionVoices   String?
+  // Media Block Section
+  heroTitleMedia             String?
+  shortDescriptionMedia      String?
+  videoLink                  String?
+  fullVideoDescription       String?
+  mediaHeroImage             String?
+  // Team Section
   sectionTitleTeam           String?
   sectionDescriptionTeam     String?
+  // Students Section
   sectionTitleStudents       String?
   sectionDescriptionStudents String?
+  // Quotation Section
+  addQuote                   String?
+  nameRole                   String?
+  // Photo Album Section
+  sectionTitlePhoto          String?
+  sectionDescriptionPhoto    String?
+  photoAlbumImage1           String?
+  photoAlbumImage2           String?
+  photoAlbumImage3           String?
+  photoAlbumImage4           String?
+  // Newsletter Section
   sectionTitleNewsletter     String?
   sectionDescriptionNewsletter String?
-  navigationLabel            String?
-  showInMainNavigation       Boolean            @default(true)
-  cardImage                  String?
-  heroImage                  String?
   newsletterImage1           String?
   newsletterImage2           String?
+  // Global Goals (SDGs) Section
+  sectionTitleSDGs           String?
+  sectionTextSDGs            String?
+  sdgsImage1                 String?
+  sdgsImage2                 String?
+  sdgsImage3                 String?
+  sdgsImage4                 String?
+  // Final Call to Action
+  finalStatement             String?
+  // Navigation
+  navigationLabel            String?
+  showInMainNavigation       Boolean            @default(true)
+  // Card and Hero Images
+  cardImage                  String?
+  heroImage                  String?
+  // Status Icons
   statusIcon1                String?
   statusIcon2                String?
+  // Relations
   teamCards                  TeamCard[]
   studentItems               StudentItem[]
   voices                     Voice[]
