@@ -11,24 +11,48 @@ import {
 import { FaSquarePlus, FaTrash } from "react-icons/fa6";
 import { FaEdit } from "react-icons/fa";
 import toast from "react-hot-toast";
+import { BsArrowRight } from "react-icons/bs";
 
 // FormData interface
 const FormDataInterface = {
   projectTitle: "",
   cardDescription: "",
   heroTitle: "",
+  subheading: "",
+  slogan: "",
+  buttonName: "",
+  buttonLink: "",
   iconTitleStatus1: "",
   shortDescriptionStatus1: "",
   iconTitleStatus2: "",
   shortDescriptionStatus2: "",
+  visionTitle: "",
+  visionText: "",
+  goalTitle: "",
+  goalText: "",
+  sectionTitleAbout: "",
+  bodyText: "",
+  buttonName2: "",
+  buttonLink2: "",
   sectionTitleVoices: "",
   sectionDescriptionVoices: "",
+  heroTitleMedia: "",
+  shortDescriptionMedia: "",
+  videoLink: "",
+  fullVideoDescription: "",
   sectionTitleTeam: "",
   sectionDescriptionTeam: "",
   sectionTitleStudents: "",
   sectionDescriptionStudents: "",
+  addQuote: "",
+  nameRole: "",
+  sectionTitlePhoto: "",
+  sectionDescriptionPhoto: "",
   sectionTitleNewsletter: "",
   sectionDescriptionNewsletter: "",
+  sectionTitleSDGs: "",
+  sectionTextSDGs: "",
+  finalStatement: "",
   navigationLabel: "",
 };
 
@@ -350,14 +374,49 @@ export default function CreateNewProject() {
 
     try {
       // Validate required fields
-      if (!data.projectTitle || !data.cardDescription || !data.heroTitle) {
+      if (
+        !data.projectTitle ||
+        !data.cardDescription ||
+        !data.heroTitle ||
+        !data.subheading ||
+        !data.slogan ||
+        !data.buttonName ||
+        !data.buttonLink ||
+        !data.iconTitleStatus1 ||
+        !data.shortDescriptionStatus1 ||
+        !data.iconTitleStatus2 ||
+        !data.shortDescriptionStatus2 ||
+        !data.visionTitle ||
+        !data.visionText ||
+        !data.goalTitle ||
+        !data.goalText ||
+        !data.sectionTitleAbout ||
+        !data.bodyText ||
+        !data.buttonName2 ||
+        !data.buttonLink2 ||
+        !data.sectionTitleVoices ||
+        !data.sectionDescriptionVoices ||
+        !data.heroTitleMedia ||
+        !data.shortDescriptionMedia ||
+        !data.videoLink ||
+        !data.fullVideoDescription ||
+        !data.sectionTitleTeam ||
+        !data.sectionDescriptionTeam ||
+        !data.sectionTitleStudents ||
+        !data.sectionDescriptionStudents ||
+        !data.addQuote ||
+        !data.nameRole ||
+        !data.sectionTitlePhoto ||
+        !data.sectionDescriptionPhoto ||
+        !data.sectionTitleNewsletter ||
+        !data.sectionDescriptionNewsletter ||
+        !data.sectionTitleSDGs ||
+        !data.sectionTextSDGs ||
+        !data.finalStatement
+      ) {
         setSubmitStatus("error");
-        setSubmitMessage(
-          "Please fill in all required fields: Project Title, Card Description, and Hero Title"
-        );
-        toast.error(
-          "Please fill in all required fields: Project Title, Card Description, and Hero Title"
-        );
+        setSubmitMessage("Please fill in all required fields");
+        toast.error("Please fill in all required fields");
         setIsSubmitting(false);
         return;
       }
@@ -548,11 +607,36 @@ export default function CreateNewProject() {
           })),
         ...(statusIcons[0] && { iconPreview1: statusIcons[0] }),
         ...(statusIcons[1] && { iconPreview2: statusIcons[1] }),
+        // Add all the new form fields
+        subheading: data.subheading,
+        slogan: data.slogan,
+        buttonName: data.buttonName,
+        buttonLink: data.buttonLink,
+        visionTitle: data.visionTitle,
+        visionText: data.visionText,
+        goalTitle: data.goalTitle,
+        goalText: data.goalText,
+        sectionTitleAbout: data.sectionTitleAbout,
+        bodyText: data.bodyText,
+        buttonName2: data.buttonName2,
+        buttonLink2: data.buttonLink2,
+        heroTitleMedia: data.heroTitleMedia,
+        shortDescriptionMedia: data.shortDescriptionMedia,
+        videoLink: data.videoLink,
+        fullVideoDescription: data.fullVideoDescription,
+        addQuote: data.addQuote,
+        nameRole: data.nameRole,
+        sectionTitlePhoto: data.sectionTitlePhoto,
+        sectionDescriptionPhoto: data.sectionDescriptionPhoto,
+        sectionTitleSDGs: data.sectionTitleSDGs,
+        sectionTextSDGs: data.sectionTextSDGs,
+        finalStatement: data.finalStatement,
       };
-
-      // Remove empty properties
+      console.log("🚀 ~ onSubmit ~ formDataToSend:", formDataToSend);
+      // Remove empty properties but keep required fields
       const cleanFormData = Object.fromEntries(
         Object.entries(formDataToSend).filter(([key, value]) => {
+          // Always keep these special fields and required fields
           if (
             key === "uploadedFiles" ||
             key === "teamCards" ||
@@ -564,10 +648,40 @@ export default function CreateNewProject() {
             key === "offerIcons" ||
             key === "iconPreview1" ||
             key === "iconPreview2" ||
-            key === "showInMainNavigation"
+            key === "showInMainNavigation" ||
+            // Required fields - always keep
+            key === "projectTitle" ||
+            key === "cardDescription" ||
+            key === "heroTitle" ||
+            // New optional fields - keep if they have values
+            key === "subheading" ||
+            key === "slogan" ||
+            key === "buttonName" ||
+            key === "buttonLink" ||
+            key === "visionTitle" ||
+            key === "visionText" ||
+            key === "goalTitle" ||
+            key === "goalText" ||
+            key === "sectionTitleAbout" ||
+            key === "bodyText" ||
+            key === "buttonName2" ||
+            key === "buttonLink2" ||
+            key === "heroTitleMedia" ||
+            key === "shortDescriptionMedia" ||
+            key === "videoLink" ||
+            key === "fullVideoDescription" ||
+            key === "addQuote" ||
+            key === "nameRole" ||
+            key === "sectionTitlePhoto" ||
+            key === "sectionDescriptionPhoto" ||
+            key === "sectionTitleSDGs" ||
+            key === "sectionTextSDGs" ||
+            key === "finalStatement" ||
+            key === "navigationLabel"
           ) {
-            return true; // Keep these special fields
+            return true; // Keep these fields
           }
+          // For other fields, only keep if they have values
           return value !== "" && value !== null && value !== undefined;
         })
       );
@@ -629,6 +743,13 @@ export default function CreateNewProject() {
         Object.keys(FormDataInterface).forEach((key) => {
           setValue(key as any, "");
         });
+        setValue(
+          "offerIcons",
+          Array.from({ length: 2 }, () => ({
+            iconTitle: "",
+            shortDescription: "",
+          }))
+        );
       } else {
         setSubmitStatus("error");
         setSubmitMessage(
@@ -663,6 +784,62 @@ export default function CreateNewProject() {
         fileInputRefs.current[key]!.value = "";
       }
     });
+    // Reset all form values
+    Object.keys(FormDataInterface).forEach((key) => {
+      setValue(key as any, "");
+    });
+    // Reset array fields
+    setValue("teamCards", [
+      { name: "", role: "", biography: "", link: "", showLinkInput: false },
+      { name: "", role: "", biography: "", link: "", showLinkInput: false },
+      { name: "", role: "", biography: "", link: "", showLinkInput: false },
+    ]);
+    setValue(
+      "studentItems",
+      Array.from({ length: 3 }, () => ({
+        link: "",
+        showLinkInput: false,
+        name: "",
+        role: "",
+        biography: "",
+      }))
+    );
+    setValue(
+      "voices",
+      Array.from({ length: 3 }, () => ({
+        quote: "",
+        name: "",
+        description: "",
+      }))
+    );
+    setValue(
+      "liveMoments",
+      Array.from({ length: 3 }, () => ({ link: "" }))
+    );
+    setValue(
+      "relatedLinks",
+      Array.from({ length: 3 }, () => ({
+        buttonName: "",
+        buttonLink: "",
+      }))
+    );
+    setValue(
+      "newsletterItems",
+      Array.from({ length: 2 }, () => ({
+        date: "",
+        title: "",
+        description: "",
+        url: "",
+      }))
+    );
+    setValue(
+      "offerIcons",
+      Array.from({ length: 2 }, () => ({
+        iconTitle: "",
+        shortDescription: "",
+      }))
+    );
+    setValue("showInMainNavigation", false);
   };
 
   return (
@@ -897,7 +1074,118 @@ export default function CreateNewProject() {
                     </p>
                   )}
                 </div>
-                {/* Add similar Controller components for subheading, slogan, buttonName, buttonLink */}
+                <div className="col-span-1 mt-4 md:mt-0">
+                  <label className="block text-sm/6 font-medium text-gray-900">
+                    Subheading
+                  </label>
+                  <Controller
+                    name="subheading"
+                    control={control}
+                    rules={{
+                      required: "Subheading is required",
+                      maxLength: 50,
+                    }}
+                    render={({ field }) => (
+                      <input
+                        {...field}
+                        type="text"
+                        placeholder="write something here..."
+                        className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2"
+                      />
+                    )}
+                  />
+                  {errors.subheading && (
+                    <p className="text-red-500 text-sm">
+                      {errors.subheading.message}
+                    </p>
+                  )}
+                </div>
+                <div className="col-span-1 mt-4 md:mt-0">
+                  <label className="block text-sm/6 font-medium text-gray-900">
+                    Subheading Line or Slogan
+                  </label>
+                  <Controller
+                    name="slogan"
+                    control={control}
+                    rules={{
+                      required: "Slogan is required",
+                      maxLength: 50,
+                    }}
+                    render={({ field }) => (
+                      <input
+                        {...field}
+                        type="text"
+                        placeholder="write something here..."
+                        className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2"
+                      />
+                    )}
+                  />
+                  {errors.slogan && (
+                    <p className="text-red-500 text-sm">
+                      {errors.slogan.message}
+                    </p>
+                  )}
+                </div>
+                <div className="col-span-1 mt-4 md:mt-0 relative">
+                  <label className="block text-sm/6 font-medium text-gray-900">
+                    Button Name
+                  </label>
+                  <Controller
+                    name="buttonName"
+                    control={control}
+                    rules={{
+                      required: "Button Name is required",
+                      maxLength: 50,
+                    }}
+                    render={({ field }) => (
+                      <input
+                        {...field}
+                        type="text"
+                        placeholder="Enter the button's name"
+                        className="block w-full border rounded-full border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2"
+                      />
+                    )}
+                  />
+                  {errors.buttonName && (
+                    <p className="text-red-500 text-sm">
+                      {errors.buttonName.message}
+                    </p>
+                  )}
+                  <a
+                    href="#"
+                    className="absolute top-8 right-2 p-2 bg-gray-100 rounded-full"
+                  >
+                    <span className="text-xl">
+                      <BsArrowRight />
+                    </span>
+                  </a>
+                </div>
+                <div className="col-span-1 mt-4 md:mt-0">
+                  <label className="block text-sm/6 font-medium text-gray-900">
+                    Button Link
+                  </label>
+                  <Controller
+                    name="buttonLink"
+                    control={control}
+                    rules={{
+                      required: "Button Link is required",
+                      maxLength: 200,
+                    }}
+                    render={({ field }) => (
+                      <input
+                        {...field}
+                        type="text"
+                        placeholder="Enter the URL"
+                        className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2"
+                      />
+                    )}
+                  />
+                  {errors.buttonLink && (
+                    <p className="text-red-500 text-sm">
+                      {errors.buttonLink.message}
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
           </section>
@@ -1076,96 +1364,316 @@ export default function CreateNewProject() {
             </div>
           </section>
 
-          {/* Offer Icons Section */}
+          {/* Vision & Goal Section */}
           <section className="border-2 rounded-lg p-4 md:p-8 lg:px-14 bg-white">
-            <h2 className="text-xl font-semibold mb-4 text-sky-800">
-              3. Offer Icons
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {[0, 1].map((index) => (
-                <div
-                  key={index}
-                  className="border border-gray-300 border-dashed rounded-xl px-4 py-6"
-                >
-                  <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-                    <div className="relative">
-                      <label
-                        htmlFor={`offerIcon${index}`}
-                        className="text-sm text-center xl:text-left xl:text-xl px-4 py-1 xl:py-3 rounded-xl cursor-pointer inline-block shadow-sm shadow-gray-500"
-                      >
-                        Add Offer Icon +
-                      </label>
+            <h3 className="text-sky-800 text-xl font-semibold">
+              3. Vision & Goal Section
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+              <div className="col-span-1 mt-4 md:mt-0">
+                <label className="block text-sm/6 font-medium text-gray-900">
+                  Vision Title
+                </label>
+                <Controller
+                  name="visionTitle"
+                  control={control}
+                  rules={{
+                    required: "Vision Title is required",
+                    maxLength: 50,
+                  }}
+                  render={({ field }) => (
+                    <input
+                      {...field}
+                      type="text"
+                      placeholder="e.g. 'Our Vision'"
+                      className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2"
+                    />
+                  )}
+                />
+                {errors.visionTitle && (
+                  <p className="text-red-500 text-sm">
+                    {errors.visionTitle.message}
+                  </p>
+                )}
+              </div>
+              <div className="col-span-1 mt-4 md:mt-0">
+                <label className="block text-sm/6 font-medium text-gray-900">
+                  Vision Text
+                </label>
+                <Controller
+                  name="visionText"
+                  control={control}
+                  rules={{
+                    required: "Vision Text is required",
+                    maxLength: 200,
+                  }}
+                  render={({ field }) => (
+                    <input
+                      {...field}
+                      type="text"
+                      placeholder="write something here..."
+                      className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2"
+                    />
+                  )}
+                />
+                {errors.visionText && (
+                  <p className="text-red-500 text-sm">
+                    {errors.visionText.message}
+                  </p>
+                )}
+              </div>
+              <div className="col-span-1 mt-4 md:mt-0">
+                <label className="block text-sm/6 font-medium text-gray-900">
+                  Goal Title
+                </label>
+                <Controller
+                  name="goalTitle"
+                  control={control}
+                  rules={{
+                    required: "Goal Title is required",
+                    maxLength: 50,
+                  }}
+                  render={({ field }) => (
+                    <input
+                      {...field}
+                      type="text"
+                      placeholder="e.g. 'Our Goal'"
+                      className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2"
+                    />
+                  )}
+                />
+                {errors.goalTitle && (
+                  <p className="text-red-500 text-sm">
+                    {errors.goalTitle.message}
+                  </p>
+                )}
+              </div>
+              <div className="col-span-1 mt-4 md:mt-0">
+                <label className="block text-sm/6 font-medium text-gray-900">
+                  Goal Text
+                </label>
+                <Controller
+                  name="goalText"
+                  control={control}
+                  rules={{
+                    required: "Goal Text is required",
+                    maxLength: 200,
+                  }}
+                  render={({ field }) => (
+                    <input
+                      {...field}
+                      type="text"
+                      placeholder="write something here..."
+                      className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2"
+                    />
+                  )}
+                />
+                {errors.goalText && (
+                  <p className="text-red-500 text-sm">
+                    {errors.goalText.message}
+                  </p>
+                )}
+              </div>
+            </div>
+            <div className="mt-5">
+              <label className="block text-sm/6 font-medium">
+                Upload Image(s),{" "}
+                <span className="text-gray-500 text-sm">Maximum 4 Images</span>
+              </label>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+                {[1, 2, 3, 4].map((index) => (
+                  <div
+                    key={index}
+                    className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-2"
+                  >
+                    <div className="relative text-center">
+                      {files[`visionGoalImage${index}`] ? (
+                        <div className="relative">
+                          <img
+                            src={imagePreviews[`visionGoalImage${index}`]}
+                            alt={`Vision Goal Image ${index} Preview`}
+                            className="mx-auto w-16 h-16 object-cover"
+                          />
+                          <span
+                            className="absolute top-0 right-0 cursor-pointer"
+                            onClick={() => {
+                              setFiles((prev) => ({
+                                ...prev,
+                                [`visionGoalImage${index}`]: null,
+                              }));
+                              setImagePreviews((prev) => {
+                                const newPreviews = { ...prev };
+                                delete newPreviews[`visionGoalImage${index}`];
+                                return newPreviews;
+                              });
+                              if (
+                                fileInputRefs.current[`visionGoalImage${index}`]
+                              ) {
+                                fileInputRefs.current[
+                                  `visionGoalImage${index}`
+                                ]!.value = "";
+                              }
+                            }}
+                          >
+                            ✖
+                          </span>
+                        </div>
+                      ) : (
+                        <svg
+                          className="mx-auto w-12 h-12 text-gray-300"
+                          viewBox="0 0 24 24"
+                          fill="currentColor"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M1.5 6a2.25 2.25 0 0 1 2.25-2.25h16.5A2.25 2.25 0 0 1 22.5 6v12a2.25 2.25 0 0 1-2.25 2.25H3.75A2.25 2.25 0 0 1 1.5 18V6ZM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0 0 21 18v-1.94l-2.69-2.689a1.5 1.5 0 0 0-2.12 0l-.88.879.97.97a.75.75 0 1 1-1.06 1.06l-5.16-5.159a1.5 1.5 0 0 0-2.12 0L3 16.061Zm10.125-7.81a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                      )}
                       <input
                         type="file"
-                        id={`offerIcon${index}`}
-                        className="hidden"
-                        accept="image/*"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) {
-                            handleOfferIconChange(index, file);
-                          }
-                        }}
-                        ref={setRef(`offerIcon${index}`)}
+                        accept=".jpg,.jpeg,.png"
+                        onChange={(e) =>
+                          handleFileChange(e, `visionGoalImage${index}`)
+                        }
+                        className="absolute inset-0 opacity-0 cursor-pointer"
+                        ref={setRef(`visionGoalImage${index}`)}
                       />
-                      {offerIcons[index] && (
-                        <img
-                          src={offerIcons[index]!}
-                          alt={`Offer Icon ${index + 1} Preview`}
-                          className="mt-2 size-10 object-contain"
-                        />
-                      )}
-                    </div>
-                    <div className="flex-1 space-y-3">
-                      <div>
-                        <label className="block text-sm/6 font-medium text-gray-900">
-                          Icon Title
-                        </label>
-                        <Controller
-                          name={`offerIcons.${index}.iconTitle`}
-                          control={control}
-                          rules={{
-                            required: "Icon Title is required",
-                            maxLength: 50,
-                          }}
-                          render={({ field }) => (
-                            <input
-                              {...field}
-                              type="text"
-                              placeholder="Enter icon title"
-                              className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2"
-                            />
-                          )}
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm/6 font-medium text-gray-900">
-                          Short Description
-                        </label>
-                        <Controller
-                          name={`offerIcons.${index}.shortDescription`}
-                          control={control}
-                          rules={{
-                            required: "Short Description is required",
-                            maxLength: 200,
-                          }}
-                          render={({ field }) => (
-                            <textarea
-                              {...field}
-                              placeholder="Enter short description"
-                              className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2"
-                              rows={3}
-                            />
-                          )}
-                        />
-                      </div>
+                      <p className="mt-4 font-semibold text-blue-500">
+                        Drag & Drop your Photo
+                      </p>
+                      <p className="text-gray-500">
+                        here or Browse up to 10 MB
+                      </p>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </section>
-
+          {/* About Program Section */}
+          <section className="border-2 rounded-lg p-4 md:p-8 lg:px-14 bg-white">
+            <h2 className="text-xl font-semibold mb-4 text-sky-800">
+              4. About Program Section
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="md:grid grid-cols-1 md:grid-cols-3 gap-4 md:col-span-2 mt-4 md:mt-0">
+                <div className="col-span-3 mt-4 md:mt-0">
+                  <label className="block text-sm/6 font-medium text-gray-900">
+                    Section Title
+                  </label>
+                  <Controller
+                    name="sectionTitleAbout"
+                    control={control}
+                    rules={{
+                      required: "Section Title is required",
+                      maxLength: 50,
+                    }}
+                    render={({ field }) => (
+                      <input
+                        {...field}
+                        type="text"
+                        placeholder="e.g. 'About the Program'"
+                        className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2"
+                      />
+                    )}
+                  />
+                  {errors.sectionTitleAbout && (
+                    <p className="text-red-500 text-sm">
+                      {errors.sectionTitleAbout.message}
+                    </p>
+                  )}
+                </div>
+                <div className="col-span-3 mt-4 md:mt-0">
+                  <label className="block text-sm/6 font-medium text-gray-900">
+                    Body Text
+                  </label>
+                  <Controller
+                    name="bodyText"
+                    control={control}
+                    rules={{
+                      required: "Body Text is required",
+                      maxLength: 1000,
+                    }}
+                    render={({ field }) => (
+                      <textarea
+                        {...field}
+                        placeholder="write something here..."
+                        className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2"
+                        rows={4}
+                      />
+                    )}
+                  />
+                  {errors.bodyText && (
+                    <p className="text-red-500 text-sm">
+                      {errors.bodyText.message}
+                    </p>
+                  )}
+                </div>
+                <div className="col-span-1 mt-4 md:mt-0 relative">
+                  <label className="block text-sm/6 font-medium text-gray-900">
+                    Button Name
+                  </label>
+                  <Controller
+                    name="buttonName2"
+                    control={control}
+                    rules={{
+                      required: "Button Name is required",
+                      maxLength: 50,
+                    }}
+                    render={({ field }) => (
+                      <input
+                        {...field}
+                        type="text"
+                        placeholder="Enter the button's name"
+                        className="block w-full border rounded-full border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2"
+                      />
+                    )}
+                  />
+                  {errors.buttonName2 && (
+                    <p className="text-red-500 text-sm">
+                      {errors.buttonName2.message}
+                    </p>
+                  )}
+                  <a
+                    href="#"
+                    className="absolute top-8 right-2 p-2 bg-gray-100 rounded-full"
+                  >
+                    <span className="text-xl">
+                      <BsArrowRight />
+                    </span>
+                  </a>
+                </div>
+                <div className="col-span-1 mt-4 md:mt-0">
+                  <label className="block text-sm/6 font-medium text-gray-900">
+                    Button Link
+                  </label>
+                  <Controller
+                    name="buttonLink2"
+                    control={control}
+                    rules={{
+                      required: "Button Link is required",
+                      maxLength: 200,
+                    }}
+                    render={({ field }) => (
+                      <input
+                        {...field}
+                        type="text"
+                        placeholder="Enter the URL"
+                        className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2"
+                      />
+                    )}
+                  />
+                  {errors.buttonLink2 && (
+                    <p className="text-red-500 text-sm">
+                      {errors.buttonLink2.message}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+          </section>
           {/* Voices from the Classroom */}
           <section className="border-2 rounded-lg p-4 md:p-8 lg:px-14 bg-white">
             <h2 className="text-xl font-semibold mb-4 text-sky-800">
@@ -1321,6 +1829,273 @@ export default function CreateNewProject() {
                   ))}
                 </div>
               </div>
+            </div>
+          </section>
+          {/* Media Block Section */}
+          <section className="border-2 rounded-lg p-4 md:p-8 lg:px-14 bg-white">
+            <h2 className="text-xl font-semibold mb-4 text-sky-800">
+              6. Media Block Section
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5 col-span-2">
+                <div className="col-span-1">
+                  <label className="block text-sm/6 font-medium">
+                    Upload Hero Image
+                  </label>
+                  <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
+                    <div className="relative text-center">
+                      {files.mediaHeroImage ? (
+                        <div className="relative">
+                          <img
+                            src={imagePreviews.mediaHeroImage}
+                            alt="Media Hero Image Preview"
+                            className="mx-auto w-16 h-16 object-cover"
+                          />
+                          <span
+                            className="absolute top-0 right-0 cursor-pointer"
+                            onClick={() => {
+                              setFiles((prev) => ({
+                                ...prev,
+                                mediaHeroImage: null,
+                              }));
+                              setImagePreviews((prev) => {
+                                const newPreviews = { ...prev };
+                                delete newPreviews.mediaHeroImage;
+                                return newPreviews;
+                              });
+                              if (fileInputRefs.current.mediaHeroImage) {
+                                fileInputRefs.current.mediaHeroImage.value = "";
+                              }
+                            }}
+                          >
+                            ✖
+                          </span>
+                        </div>
+                      ) : (
+                        <svg
+                          className="mx-auto w-12 h-12 text-gray-300"
+                          viewBox="0 0 24 24"
+                          fill="currentColor"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M1.5 6a2.25 2.25 0 0 1 2.25-2.25h16.5A2.25 2.25 0 0 1 22.5 6v12a2.25 2.25 0 0 1-2.25 2.25H3.75A2.25 2.25 0 0 1 1.5 18V6ZM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0 0 21 18v-1.94l-2.69-2.689a1.5 1.5 0 0 0-2.12 0l-.88.879.97.97a.75.75 0 1 1-1.06 1.06l-5.16-5.159a1.5 1.5 0 0 0-2.12 0L3 16.061Zm10.125-7.81a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                      )}
+                      <input
+                        type="file"
+                        accept=".jpg,.jpeg,.png"
+                        onChange={(e) => handleFileChange(e, "mediaHeroImage")}
+                        className="absolute inset-0 opacity-0 cursor-pointer"
+                        ref={setRef("mediaHeroImage")}
+                      />
+                      <p className="mt-4 font-semibold text-blue-500">
+                        Drag & Drop your Photo
+                      </p>
+                      <p className="text-gray-500">
+                        here or Browse up to 10 MB
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 md:col-span-2 mt-4 md:mt-0">
+                <div className="col-span-2 mt-4 md:mt-0">
+                  <label className="block text-sm/6 font-medium text-gray-900">
+                    Hero Title
+                  </label>
+                  <Controller
+                    name="heroTitleMedia"
+                    control={control}
+                    rules={{
+                      required: "Hero Title is required",
+                      maxLength: 50,
+                    }}
+                    render={({ field }) => (
+                      <input
+                        {...field}
+                        type="text"
+                        placeholder="write something here..."
+                        className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2"
+                      />
+                    )}
+                  />
+                  {errors.heroTitleMedia && (
+                    <p className="text-red-500 text-sm">
+                      {errors.heroTitleMedia.message}
+                    </p>
+                  )}
+                </div>
+                <div className="col-span-2 mt-4 md:mt-0">
+                  <label className="block text-sm/6 font-medium text-gray-900">
+                    Short Description
+                  </label>
+                  <Controller
+                    name="shortDescriptionMedia"
+                    control={control}
+                    rules={{
+                      required: "Short Description is required",
+                      maxLength: 200,
+                    }}
+                    render={({ field }) => (
+                      <input
+                        {...field}
+                        type="text"
+                        placeholder="write something here..."
+                        className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2"
+                      />
+                    )}
+                  />
+                  {errors.shortDescriptionMedia && (
+                    <p className="text-red-500 text-sm">
+                      {errors.shortDescriptionMedia.message}
+                    </p>
+                  )}
+                </div>
+                <div className="col-span-2 mt-4 md:mt-0">
+                  <label className="block text-sm/6 font-medium text-gray-900">
+                    Video Link
+                  </label>
+                  <Controller
+                    name="videoLink"
+                    control={control}
+                    rules={{
+                      required: "Video Link is required",
+                      maxLength: 200,
+                    }}
+                    render={({ field }) => (
+                      <input
+                        {...field}
+                        type="text"
+                        placeholder="write something here..."
+                        className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2"
+                      />
+                    )}
+                  />
+                  {errors.videoLink && (
+                    <p className="text-red-500 text-sm">
+                      {errors.videoLink.message}
+                    </p>
+                  )}
+                </div>
+                <div className="col-span-2 mt-4 md:mt-0">
+                  <label className="block text-sm/6 font-medium text-gray-900">
+                    Full Video Description
+                  </label>
+                  <Controller
+                    name="fullVideoDescription"
+                    control={control}
+                    rules={{
+                      required: "Full Video Description is required",
+                      maxLength: 500,
+                    }}
+                    render={({ field }) => (
+                      <input
+                        {...field}
+                        type="text"
+                        placeholder="Enter the description"
+                        className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2"
+                      />
+                    )}
+                  />
+                  {errors.fullVideoDescription && (
+                    <p className="text-red-500 text-sm">
+                      {errors.fullVideoDescription.message}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+          </section>
+          {/* Offer Icons Section */}
+          <section className="border-2 rounded-lg p-4 md:p-8 lg:px-14 bg-white">
+            <h2 className="text-xl font-semibold mb-4 text-sky-800">
+              7.‘What We Offer?’ Section
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {[0, 1].map((index) => (
+                <div
+                  key={index}
+                  className="border border-gray-300 border-dashed rounded-xl px-4 py-6"
+                >
+                  <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                    <div className="relative">
+                      <label
+                        htmlFor={`offerIcon${index}`}
+                        className="text-sm text-center xl:text-left xl:text-xl px-4 py-1 xl:py-3 rounded-xl cursor-pointer inline-block shadow-sm shadow-gray-500"
+                      >
+                        Add Offer Icon +
+                      </label>
+                      <input
+                        type="file"
+                        id={`offerIcon${index}`}
+                        className="hidden"
+                        accept="image/*"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            handleOfferIconChange(index, file);
+                          }
+                        }}
+                        ref={setRef(`offerIcon${index}`)}
+                      />
+                      {offerIcons[index] && (
+                        <img
+                          src={offerIcons[index]!}
+                          alt={`Offer Icon ${index + 1} Preview`}
+                          className="mt-2 size-10 object-contain"
+                        />
+                      )}
+                    </div>
+                    <div className="flex-1 space-y-3">
+                      <div>
+                        <label className="block text-sm/6 font-medium text-gray-900">
+                          Icon Title
+                        </label>
+                        <Controller
+                          name={`offerIcons.${index}.iconTitle`}
+                          control={control}
+                          rules={{
+                            required: "Icon Title is required",
+                            maxLength: 50,
+                          }}
+                          render={({ field }) => (
+                            <input
+                              {...field}
+                              type="text"
+                              placeholder="Enter icon title"
+                              className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2"
+                            />
+                          )}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm/6 font-medium text-gray-900">
+                          Short Description
+                        </label>
+                        <Controller
+                          name={`offerIcons.${index}.shortDescription`}
+                          control={control}
+                          rules={{
+                            required: "Short Description is required",
+                            maxLength: 200,
+                          }}
+                          render={({ field }) => (
+                            <textarea
+                              {...field}
+                              placeholder="Enter short description"
+                              className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2"
+                              rows={3}
+                            />
+                          )}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           </section>
 
@@ -1792,6 +2567,199 @@ export default function CreateNewProject() {
             </div>
           </section>
 
+          {/* Quotation Section */}
+          <section className="border-2 rounded-lg p-4 md:p-8 lg:px-14 bg-white">
+            <h3 className="text-sky-800 text-xl font-semibold">
+              10. Quotation Section
+            </h3>
+            <div className="col-span-1 mt-4">
+              <label className="block text-sm/6 font-medium text-gray-900">
+                Add Quote
+              </label>
+              <Controller
+                name="addQuote"
+                control={control}
+                rules={{
+                  required: "Quote is required",
+                  maxLength: 500,
+                }}
+                render={({ field }) => (
+                  <input
+                    {...field}
+                    type="text"
+                    placeholder="write something here..."
+                    className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2"
+                  />
+                )}
+              />
+              {errors.addQuote && (
+                <p className="text-red-500 text-sm">
+                  {errors.addQuote.message}
+                </p>
+              )}
+            </div>
+            <div className="col-span-1 mt-4">
+              <label className="block text-sm/6 font-medium text-gray-900">
+                Name + Role
+              </label>
+              <Controller
+                name="nameRole"
+                control={control}
+                rules={{
+                  required: "Name + Role is required",
+                  maxLength: 100,
+                }}
+                render={({ field }) => (
+                  <input
+                    {...field}
+                    type="text"
+                    placeholder="write something here..."
+                    className="block w-full md:w-1/2 rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2"
+                  />
+                )}
+              />
+              {errors.nameRole && (
+                <p className="text-red-500 text-sm">
+                  {errors.nameRole.message}
+                </p>
+              )}
+            </div>
+          </section>
+
+          {/* Photo Album Section */}
+          <section className="border-2 rounded-lg p-4 md:p-8 lg:px-14 bg-white">
+            <h3 className="text-sky-800 text-xl font-semibold">
+              11. Photo Album Section
+            </h3>
+            <p className="my-2">Label's Name</p>
+            <div className="bg-gray-200 w-40 space-x-4 px-2 my-2 py-2 rounded-full flex justify-center items-center">
+              <span className="bg-sky-700 h-2 w-2 rounded-full"></span>
+              <span className="text-gray-400">e.g., "Photos"</span>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+              <div className="col-span-1 mt-4 md:mt-0">
+                <label className="block text-sm/6 font-medium text-gray-900">
+                  Section Title
+                </label>
+                <Controller
+                  name="sectionTitlePhoto"
+                  control={control}
+                  rules={{
+                    required: "Section Title is required",
+                    maxLength: 50,
+                  }}
+                  render={({ field }) => (
+                    <input
+                      {...field}
+                      type="text"
+                      placeholder="e.g. 'Photo Album'"
+                      className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2"
+                    />
+                  )}
+                />
+                {errors.sectionTitlePhoto && (
+                  <p className="text-red-500 text-sm">
+                    {errors.sectionTitlePhoto.message}
+                  </p>
+                )}
+              </div>
+              <div className="col-span-2 mt-4 md:mt-0">
+                <label className="block text-sm/6 font-medium text-gray-900">
+                  Section Description
+                </label>
+                <Controller
+                  name="sectionDescriptionPhoto"
+                  control={control}
+                  rules={{
+                    required: "Section Description is required",
+                    maxLength: 1000,
+                  }}
+                  render={({ field }) => (
+                    <textarea
+                      {...field}
+                      placeholder="write something here..."
+                      className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2"
+                      rows={4}
+                    />
+                  )}
+                />
+                {errors.sectionDescriptionPhoto && (
+                  <p className="text-red-500 text-sm">
+                    {errors.sectionDescriptionPhoto.message}
+                  </p>
+                )}
+              </div>
+            </div>
+            <div className="mt-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+              {[1, 2, 3, 4].map((index) => (
+                <div
+                  key={index}
+                  className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-2"
+                >
+                  <div className="relative text-center">
+                    {files[`photoAlbumImage${index}`] ? (
+                      <div className="relative">
+                        <img
+                          src={imagePreviews[`photoAlbumImage${index}`]}
+                          alt={`Photo Album Image ${index} Preview`}
+                          className="mx-auto w-16 h-16 object-cover"
+                        />
+                        <span
+                          className="absolute top-0 right-0 cursor-pointer"
+                          onClick={() => {
+                            setFiles((prev) => ({
+                              ...prev,
+                              [`photoAlbumImage${index}`]: null,
+                            }));
+                            setImagePreviews((prev) => {
+                              const newPreviews = { ...prev };
+                              delete newPreviews[`photoAlbumImage${index}`];
+                              return newPreviews;
+                            });
+                            if (
+                              fileInputRefs.current[`photoAlbumImage${index}`]
+                            ) {
+                              fileInputRefs.current[
+                                `photoAlbumImage${index}`
+                              ]!.value = "";
+                            }
+                          }}
+                        >
+                          ✖
+                        </span>
+                      </div>
+                    ) : (
+                      <svg
+                        className="mx-auto w-12 h-12 text-gray-300"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M1.5 6a2.25 2.25 0 0 1 2.25-2.25h16.5A2.25 2.25 0 0 1 22.5 6v12a2.25 2.25 0 0 1-2.25 2.25H3.75A2.25 2.25 0 0 1 1.5 18V6ZM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0 0 21 18v-1.94l-2.69-2.689a1.5 1.5 0 0 0-2.12 0l-.88.879.97.97a.75.75 0 1 1-1.06 1.06l-5.16-5.159a1.5 1.5 0 0 0-2.12 0L3 16.061Zm10.125-7.81a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    )}
+                    <input
+                      type="file"
+                      accept=".jpg,.jpeg,.png"
+                      onChange={(e) =>
+                        handleFileChange(e, `photoAlbumImage${index}`)
+                      }
+                      className="absolute inset-0 opacity-0 cursor-pointer"
+                      ref={setRef(`photoAlbumImage${index}`)}
+                    />
+                    <p className="mt-4 font-semibold text-blue-500">
+                      Drag & Drop your Photo
+                    </p>
+                    <p className="text-gray-500">here or Browse up to 10 MB</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
           {/* Newsletter/Archive Document Section */}
           <section className="border-2 rounded-lg p-4 md:p-8 lg:px-14 bg-white">
             <h3 className="text-sky-800 text-xl font-semibold">
@@ -2043,7 +3011,131 @@ export default function CreateNewProject() {
               </div>
             ))}
           </section>
-
+          {/* Global Goals (SDGs) Section */}
+          <section className="border-2 rounded-lg p-4 md:p-8 lg:px-14 bg-white">
+            <h3 className="text-sky-800 text-xl font-semibold">
+              14. Global Goals (SDGs)
+            </h3>
+            <p className="my-2">Label's Name</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+              <div className="col-span-1 mt-4 md:mt-0">
+                <label className="block text-sm/6 font-medium text-gray-900">
+                  Section Title
+                </label>
+                <Controller
+                  name="sectionTitleSDGs"
+                  control={control}
+                  rules={{
+                    required: "Section Title is required",
+                    maxLength: 50,
+                  }}
+                  render={({ field }) => (
+                    <input
+                      {...field}
+                      type="text"
+                      placeholder="e.g. 'Sustainable Development Goals'"
+                      className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2"
+                    />
+                  )}
+                />
+                {errors.sectionTitleSDGs && (
+                  <p className="text-red-500 text-sm">
+                    {errors.sectionTitleSDGs.message}
+                  </p>
+                )}
+              </div>
+              <div className="col-span-2 mt-4 md:mt-0">
+                <label className="block text-sm/6 font-medium text-gray-900">
+                  Section Text
+                </label>
+                <Controller
+                  name="sectionTextSDGs"
+                  control={control}
+                  rules={{
+                    required: "Section Text is required",
+                    maxLength: 1000,
+                  }}
+                  render={({ field }) => (
+                    <textarea
+                      {...field}
+                      placeholder="write something here..."
+                      className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2"
+                      rows={4}
+                    />
+                  )}
+                />
+                {errors.sectionTextSDGs && (
+                  <p className="text-red-500 text-sm">
+                    {errors.sectionTextSDGs.message}
+                  </p>
+                )}
+              </div>
+            </div>
+            <div className="mt-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+              {[1, 2, 3, 4].map((index) => (
+                <div
+                  key={index}
+                  className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-2"
+                >
+                  <div className="relative text-center">
+                    {files[`sdgsImage${index}`] ? (
+                      <div className="relative">
+                        <img
+                          src={imagePreviews[`sdgsImage${index}`]}
+                          alt={`SDGs Image ${index} Preview`}
+                          className="mx-auto w-16 h-16 object-cover"
+                        />
+                        <span
+                          className="absolute top-0 right-0 cursor-pointer"
+                          onClick={() => {
+                            setFiles((prev) => ({
+                              ...prev,
+                              [`sdgsImage${index}`]: null,
+                            }));
+                            setImagePreviews((prev) => {
+                              const newPreviews = { ...prev };
+                              delete newPreviews[`sdgsImage${index}`];
+                              return newPreviews;
+                            });
+                            if (fileInputRefs.current[`sdgsImage${index}`]) {
+                              fileInputRefs.current[
+                                `sdgsImage${index}`
+                              ]!.value = "";
+                            }
+                          }}
+                        >
+                          ✖
+                        </span>
+                      </div>
+                    ) : (
+                      <svg
+                        className="mx-auto w-12 h-12 text-gray-300"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M1.5 6a2.25 2.25 0 0 1 2.25-2.25h16.5A2.25 2.25 0 0 1 22.5 6v12a2.25 2.25 0 0 1-2.25 2.25H3.75A2.25 2.25 0 0 1 1.5 18V6ZM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0 0 21 18v-1.94l-2.69-2.689a1.5 1.5 0 0 0-2.12 0l-.88.879.97.97a.75.75 0 1 1-1.06 1.06l-5.16-5.159a1.5 1.5 0 0 0-2.12 0L3 16.061Zm10.125-7.81a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    )}
+                    <input
+                      type="file"
+                      accept=".jpg,.jpeg,.png"
+                      onChange={(e) => handleFileChange(e, `sdgsImage${index}`)}
+                      className="absolute inset-0 opacity-0 cursor-pointer"
+                      ref={setRef(`sdgsImage${index}`)}
+                    />
+                    <p className="mt-4 font-semibold text-blue-500">
+                      Drag & Drop your Photo
+                    </p>
+                    <p className="text-gray-500">here or Browse up to 10 MB</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
           {/* Related Links Section */}
           <section className="border-2 rounded-lg p-4 md:p-8 lg:px-14 bg-white space-y-5 py-10">
             <h3 className="text-sky-800 font-medium text-xl">
@@ -2097,6 +3189,35 @@ export default function CreateNewProject() {
                 </div>
               </div>
             ))}
+          </section>
+
+          {/* Final Call to Action / Statement Section */}
+          <section className="border-2 rounded-lg p-4 md:p-8 lg:px-14 bg-white">
+            <h3 className="text-xl font-medium text-sky-800">
+              16. Final Call to Action / Statement
+            </h3>
+            <label className="block mt-4">Final Big Statement</label>
+            <Controller
+              name="finalStatement"
+              control={control}
+              rules={{
+                required: "Final Statement is required",
+                maxLength: 500,
+              }}
+              render={({ field }) => (
+                <input
+                  {...field}
+                  type="text"
+                  placeholder="write something here..."
+                  className="border w-full mt-2 border-gray-400 border-dashed rounded-lg text-gray-500 block placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2"
+                />
+              )}
+            />
+            {errors.finalStatement && (
+              <p className="text-red-500 text-sm">
+                {errors.finalStatement.message}
+              </p>
+            )}
           </section>
 
           {/* Navigation Settings Section */}

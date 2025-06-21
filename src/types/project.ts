@@ -50,8 +50,21 @@ export interface OfferIconInput {
 export interface UploadedFiles {
   cardImage?: string;
   heroImage?: string;
+  visionGoalImage1?: string;
+  visionGoalImage2?: string;
+  visionGoalImage3?: string;
+  visionGoalImage4?: string;
+  mediaHeroImage?: string;
+  photoAlbumImage1?: string;
+  photoAlbumImage2?: string;
+  photoAlbumImage3?: string;
+  photoAlbumImage4?: string;
   newsletterImage1?: string;
   newsletterImage2?: string;
+  sdgsImage1?: string;
+  sdgsImage2?: string;
+  sdgsImage3?: string;
+  sdgsImage4?: string;
 }
 
 export interface ProjectInput {
@@ -62,10 +75,10 @@ export interface ProjectInput {
   slogan?: string;
   buttonName?: string;
   buttonLink?: string;
-  iconTitle?: string;
-  shortDescription?: string;
-  iconTitle2?: string;
-  shortDescription2?: string;
+  iconTitleStatus1?: string;
+  shortDescriptionStatus1?: string;
+  iconTitleStatus2?: string;
+  shortDescriptionStatus2?: string;
   visionTitle?: string;
   visionText?: string;
   goalTitle?: string;
@@ -75,13 +88,11 @@ export interface ProjectInput {
   buttonName2?: string;
   buttonLink2?: string;
   sectionTitleVoices?: string;
-  sectionDescription?: string;
+  sectionDescriptionVoices?: string;
   heroTitleMedia?: string;
   shortDescriptionMedia?: string;
   videoLink?: string;
   fullVideoDescription?: string;
-  iconTitleOffer1?: string;
-  shortDescriptionOffer1?: string;
   sectionTitleTeam?: string;
   sectionDescriptionTeam?: string;
   sectionTitleStudents?: string;

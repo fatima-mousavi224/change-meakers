@@ -8,6 +8,23 @@ export async function POST(request: Request) {
     const body = await request.json();
     console.log("Received data:", JSON.stringify(body, null, 2));
 
+    // Simple validation check for required fields
+    if (!body.projectTitle || !body.cardDescription || !body.heroTitle) {
+      console.error("Missing required fields:", {
+        projectTitle: !!body.projectTitle,
+        cardDescription: !!body.cardDescription,
+        heroTitle: !!body.heroTitle,
+      });
+      return NextResponse.json(
+        {
+          error: "Missing required fields",
+          message:
+            "Project title, card description, and hero title are required",
+        },
+        { status: 400 }
+      );
+    }
+
     // Log the structure of the data
     console.log("Data structure check:", {
       hasProjectTitle: !!body.projectTitle,
@@ -29,6 +46,11 @@ export async function POST(request: Request) {
       console.log("Parsed data successfully:", parsedData);
     } catch (validationError) {
       console.error("Schema validation failed:", validationError);
+      console.error(
+        "Validation error details:",
+        JSON.stringify(validationError, null, 2)
+      );
+      console.error("Received body:", JSON.stringify(body, null, 2));
       return NextResponse.json(
         {
           error: "Validation failed",
@@ -56,12 +78,28 @@ export async function POST(request: Request) {
     const project = await prisma.project.create({
       data: {
         ...projectData,
+        // Map uploaded files to their respective fields
         cardImage: uploadedFiles?.cardImage,
         heroImage: uploadedFiles?.heroImage,
+        visionGoalImage1: uploadedFiles?.visionGoalImage1,
+        visionGoalImage2: uploadedFiles?.visionGoalImage2,
+        visionGoalImage3: uploadedFiles?.visionGoalImage3,
+        visionGoalImage4: uploadedFiles?.visionGoalImage4,
+        mediaHeroImage: uploadedFiles?.mediaHeroImage,
+        photoAlbumImage1: uploadedFiles?.photoAlbumImage1,
+        photoAlbumImage2: uploadedFiles?.photoAlbumImage2,
+        photoAlbumImage3: uploadedFiles?.photoAlbumImage3,
+        photoAlbumImage4: uploadedFiles?.photoAlbumImage4,
         newsletterImage1: uploadedFiles?.newsletterImage1,
         newsletterImage2: uploadedFiles?.newsletterImage2,
+        sdgsImage1: uploadedFiles?.sdgsImage1,
+        sdgsImage2: uploadedFiles?.sdgsImage2,
+        sdgsImage3: uploadedFiles?.sdgsImage3,
+        sdgsImage4: uploadedFiles?.sdgsImage4,
+        // Map status icons
         statusIcon1: iconPreview1 || null,
         statusIcon2: iconPreview2 || null,
+        // Create related records
         teamCards: teamCards ? { create: teamCards } : undefined,
         studentItems: studentItems ? { create: studentItems } : undefined,
         voices: voices ? { create: voices } : undefined,
