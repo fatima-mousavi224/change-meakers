@@ -649,11 +649,9 @@ export default function CreateNewProject() {
             key === "iconPreview1" ||
             key === "iconPreview2" ||
             key === "showInMainNavigation" ||
-            // Required fields - always keep
             key === "projectTitle" ||
             key === "cardDescription" ||
             key === "heroTitle" ||
-            // New optional fields - keep if they have values
             key === "subheading" ||
             key === "slogan" ||
             key === "buttonName" ||
