@@ -9,6 +9,7 @@ import {
   uploadBytesResumable,
 } from "firebase/storage";
 import { FaSquarePlus, FaTrash } from "react-icons/fa6";
+import { toast } from "react-hot-toast";
 
 interface FormData {
   title: string;
@@ -16,18 +17,18 @@ interface FormData {
   writersName: string;
   date: string;
   contentDescription: string;
-  contentDescription2: string;
+  contentDescription2?: string;
   writerPhoto: File | null;
   galleryPhoto: File | null;
   galleryPhoto2: File | null;
   writerPhoto2: File | null;
   coverPhoto: File | null;
-  message1: string;
-  message2: string;
-  title2: string;
-  date2: string;
-  impactTags2: string;
-  writersName2: string;
+  message1?: string;
+  message2?: string;
+  title2?: string;
+  date2?: string;
+  impactTags2?: string;
+  writersName2?: string;
   addImpact: string;
 }
 
@@ -72,7 +73,9 @@ export default function ImpactPage() {
   console.log("Form Data:", formData);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitMessage, setSubmitMessage] = useState("");
-  const [submitStatus, setSubmitStatus] = useState<"success" | "error" | null>(null);
+  const [submitStatus, setSubmitStatus] = useState<"success" | "error" | null>(
+    null
+  );
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -107,7 +110,10 @@ export default function ImpactPage() {
     }));
   };
 
-  const uploadImageUrl = async (file: File, folder: string): Promise<string> => {
+  const uploadImageUrl = async (
+    file: File,
+    folder: string
+  ): Promise<string> => {
     const filename = `${Date.now()}_${file.name}`;
     const storage = getStorage(firebaseApp);
     const storageRef = ref(storage, `${folder}/${filename}`);
@@ -117,7 +123,8 @@ export default function ImpactPage() {
       uploadTask.on(
         "state_changed",
         (snapshot) => {
-          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          const progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
           console.log(`Upload is ${progress}% done`);
         },
         (error) => {
@@ -163,8 +170,20 @@ export default function ImpactPage() {
 
       // Prepare form data for submission
       const formDataToSend = {
-        ...formData,
-        ...uploadedFiles,
+        title: formData.title,
+        impactTags: formData.impactTags,
+        writersName: formData.writersName,
+        date: formData.date,
+        contentDescription: formData.contentDescription,
+        message1: formData.message1,
+        message2: formData.message2,
+        title2: formData.title2,
+        date2: formData.date2,
+        impactTags2: formData.impactTags2,
+        writersName2: formData.writersName2,
+        contentDescription2: formData.contentDescription2,
+        addImpact: formData.addImpact,
+        // Only include uploaded file URLs, not File objects
         writerPhoto: uploadedFiles.writerPhoto || null,
         galleryPhoto: uploadedFiles.galleryPhoto || null,
         galleryPhoto2: uploadedFiles.galleryPhoto2 || null,
@@ -172,7 +191,9 @@ export default function ImpactPage() {
         coverPhoto: uploadedFiles.coverPhoto || null,
       };
 
-      const response = await fetch("/api/submit-contribute-form", {
+      console.log("Sending data to API:", formDataToSend);
+
+      const response = await fetch("/api/impact", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -183,6 +204,7 @@ export default function ImpactPage() {
       if (response.ok) {
         setSubmitStatus("success");
         setSubmitMessage("Form submitted successfully");
+        toast.success("Impact created successfully");
         // Reset form
         setFormData({
           title: "",
@@ -212,12 +234,16 @@ export default function ImpactPage() {
           coverPhoto: null,
         });
       } else {
+        const errorData = await response.json();
+        console.error("API Error:", errorData);
         setSubmitStatus("error");
-        setSubmitMessage("Error submitting form");
+        setSubmitMessage(errorData.message || "Error submitting form");
+        toast.error(errorData.message || "Error creating impact");
       }
     } catch (error) {
       setSubmitStatus("error");
       setSubmitMessage("Error submitting form");
+      toast.error("Error creating impact");
     } finally {
       setIsSubmitting(false);
     }
@@ -375,8 +401,14 @@ export default function ImpactPage() {
                                 <IoMdClose
                                   className="absolute top-0 right-0 cursor-pointer"
                                   onClick={() => {
-                                    setFiles((prev) => ({ ...prev, writerPhoto: null }));
-                                    setFormData((prev) => ({ ...prev, writerPhoto: null }));
+                                    setFiles((prev) => ({
+                                      ...prev,
+                                      writerPhoto: null,
+                                    }));
+                                    setFormData((prev) => ({
+                                      ...prev,
+                                      writerPhoto: null,
+                                    }));
                                   }}
                                 />
                               </div>
@@ -399,7 +431,9 @@ export default function ImpactPage() {
                               type="file"
                               name="writerPhoto"
                               accept=".jpg,.jpeg,.png"
-                              onChange={(e) => handleFileChange(e, "writerPhoto")}
+                              onChange={(e) =>
+                                handleFileChange(e, "writerPhoto")
+                              }
                               className="sr-only focus:outline-none active:outline-none bg-transparent"
                             />
                           </label>
@@ -407,7 +441,9 @@ export default function ImpactPage() {
                             <p className="font-semibold text-blue-500">
                               Drag & Drop your Photo
                             </p>
-                            <p className="text-gray-500">here or Browse up to 10 MB</p>
+                            <p className="text-gray-500">
+                              here or Browse up to 10 MB
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -431,8 +467,14 @@ export default function ImpactPage() {
                                 <IoMdClose
                                   className="absolute top-0 right-0 cursor-pointer"
                                   onClick={() => {
-                                    setFiles((prev) => ({ ...prev, galleryPhoto: null }));
-                                    setFormData((prev) => ({ ...prev, galleryPhoto: null }));
+                                    setFiles((prev) => ({
+                                      ...prev,
+                                      galleryPhoto: null,
+                                    }));
+                                    setFormData((prev) => ({
+                                      ...prev,
+                                      galleryPhoto: null,
+                                    }));
                                   }}
                                 />
                               </div>
@@ -455,7 +497,9 @@ export default function ImpactPage() {
                               type="file"
                               name="galleryPhoto"
                               accept=".jpg,.jpeg,.png"
-                              onChange={(e) => handleFileChange(e, "galleryPhoto")}
+                              onChange={(e) =>
+                                handleFileChange(e, "galleryPhoto")
+                              }
                               className="sr-only focus:outline-none active:outline-none bg-transparent"
                             />
                           </label>
@@ -463,7 +507,9 @@ export default function ImpactPage() {
                             <p className="font-semibold text-blue-500">
                               Drag & Drop your Photo
                             </p>
-                            <p className="text-gray-500">here or Browse up to 10 MB</p>
+                            <p className="text-gray-500">
+                              here or Browse up to 10 MB
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -474,7 +520,10 @@ export default function ImpactPage() {
                         className="text-red-500 hover:text-red-600 cursor-pointer size-4"
                         onClick={() => {
                           setFiles((prev) => ({ ...prev, galleryPhoto: null }));
-                          setFormData((prev) => ({ ...prev, galleryPhoto: null }));
+                          setFormData((prev) => ({
+                            ...prev,
+                            galleryPhoto: null,
+                          }));
                         }}
                       />
                     </div>
@@ -484,7 +533,9 @@ export default function ImpactPage() {
             </section>
 
             <section className="border-2 rounded-lg p-4 md:p-8 lg:px-14 bg-white">
-              <h2 className="text-xl font-semibold mb-10">Highlighted Impact</h2>
+              <h2 className="text-xl font-semibold mb-10">
+                Highlighted Impact
+              </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5 col-span-2">
                   <div className="col-span-1">
@@ -515,7 +566,6 @@ export default function ImpactPage() {
                         className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-100 focus:ring-offset-2"
                         value={formData.title2}
                         onChange={handleInputChange}
-                        required
                         maxLength={50}
                       />
                     </div>
@@ -535,7 +585,6 @@ export default function ImpactPage() {
                         className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-100 focus:ring-offset-2"
                         value={formData.impactTags2}
                         onChange={handleInputChange}
-                        required
                         maxLength={50}
                       />
                     </div>
@@ -551,7 +600,6 @@ export default function ImpactPage() {
                         className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-100 focus:ring-offset-2"
                         value={formData.date2}
                         onChange={handleInputChange}
-                        required
                       />
                     </div>
                   </div>
@@ -586,7 +634,6 @@ export default function ImpactPage() {
                       className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-100 focus:ring-offset-2"
                       value={formData.writersName2}
                       onChange={handleInputChange}
-                      required
                       maxLength={50}
                     />
                   </div>
@@ -611,8 +658,14 @@ export default function ImpactPage() {
                                 <IoMdClose
                                   className="absolute top-0 right-0 cursor-pointer"
                                   onClick={() => {
-                                    setFiles((prev) => ({ ...prev, writerPhoto2: null }));
-                                    setFormData((prev) => ({ ...prev, writerPhoto2: null }));
+                                    setFiles((prev) => ({
+                                      ...prev,
+                                      writerPhoto2: null,
+                                    }));
+                                    setFormData((prev) => ({
+                                      ...prev,
+                                      writerPhoto2: null,
+                                    }));
                                   }}
                                 />
                               </div>
@@ -635,7 +688,9 @@ export default function ImpactPage() {
                               type="file"
                               name="writerPhoto2"
                               accept=".jpg,.jpeg,.png"
-                              onChange={(e) => handleFileChange(e, "writerPhoto2")}
+                              onChange={(e) =>
+                                handleFileChange(e, "writerPhoto2")
+                              }
                               className="sr-only focus:outline-none active:outline-none bg-transparent"
                             />
                           </label>
@@ -643,7 +698,9 @@ export default function ImpactPage() {
                             <p className="font-semibold text-blue-500">
                               Drag & Drop your Photo
                             </p>
-                            <p className="text-gray-500">here or Browse up to 10 MB</p>
+                            <p className="text-gray-500">
+                              here or Browse up to 10 MB
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -667,8 +724,14 @@ export default function ImpactPage() {
                                 <IoMdClose
                                   className="absolute top-0 right-0 cursor-pointer"
                                   onClick={() => {
-                                    setFiles((prev) => ({ ...prev, coverPhoto: null }));
-                                    setFormData((prev) => ({ ...prev, coverPhoto: null }));
+                                    setFiles((prev) => ({
+                                      ...prev,
+                                      coverPhoto: null,
+                                    }));
+                                    setFormData((prev) => ({
+                                      ...prev,
+                                      coverPhoto: null,
+                                    }));
                                   }}
                                 />
                               </div>
@@ -691,7 +754,9 @@ export default function ImpactPage() {
                               type="file"
                               name="coverPhoto"
                               accept=".jpg,.jpeg,.png"
-                              onChange={(e) => handleFileChange(e, "coverPhoto")}
+                              onChange={(e) =>
+                                handleFileChange(e, "coverPhoto")
+                              }
                               className="sr-only focus:outline-none active:outline-none bg-transparent"
                             />
                           </label>
@@ -699,7 +764,9 @@ export default function ImpactPage() {
                             <p className="font-semibold text-blue-500">
                               Drag & Drop your Photo
                             </p>
-                            <p className="text-gray-500">here or Browse up to 10 MB</p>
+                            <p className="text-gray-500">
+                              here or Browse up to 10 MB
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -728,8 +795,14 @@ export default function ImpactPage() {
                                 <IoMdClose
                                   className="absolute top-0 right-0 cursor-pointer"
                                   onClick={() => {
-                                    setFiles((prev) => ({ ...prev, galleryPhoto2: null }));
-                                    setFormData((prev) => ({ ...prev, galleryPhoto2: null }));
+                                    setFiles((prev) => ({
+                                      ...prev,
+                                      galleryPhoto2: null,
+                                    }));
+                                    setFormData((prev) => ({
+                                      ...prev,
+                                      galleryPhoto2: null,
+                                    }));
                                   }}
                                 />
                               </div>
@@ -752,7 +825,9 @@ export default function ImpactPage() {
                               type="file"
                               name="galleryPhoto2"
                               accept=".jpg,.jpeg,.png"
-                              onChange={(e) => handleFileChange(e, "galleryPhoto2")}
+                              onChange={(e) =>
+                                handleFileChange(e, "galleryPhoto2")
+                              }
                               className="sr-only focus:outline-none active:outline-none bg-transparent"
                             />
                           </label>
@@ -760,7 +835,9 @@ export default function ImpactPage() {
                             <p className="font-semibold text-blue-500">
                               Drag & Drop your Photo
                             </p>
-                            <p className="text-gray-500">here or Browse up to 10 MB</p>
+                            <p className="text-gray-500">
+                              here or Browse up to 10 MB
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -779,7 +856,6 @@ export default function ImpactPage() {
                       className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-100 focus:ring-offset-2"
                       value={formData.contentDescription2}
                       onChange={handleInputChange}
-                      required
                       rows={4}
                       maxLength={1000}
                     />

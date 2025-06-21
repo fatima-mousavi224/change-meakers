@@ -138,3 +138,61 @@ export const ProjectSchema = z.object({
   iconPreview1: z.union([z.string(), z.null(), z.undefined()]).optional(),
   iconPreview2: z.union([z.string(), z.null(), z.undefined()]).optional(),
 });
+
+export const ImpactSchema = z.object({
+  // Standard Impact fields
+  title: z
+    .string()
+    .min(1, "Title is required")
+    .max(50, "Title must be 50 characters or less"),
+  impactTags: z
+    .string()
+    .min(1, "Impact tags are required")
+    .max(50, "Impact tags must be 50 characters or less"),
+  writersName: z
+    .string()
+    .min(1, "Writer's name is required")
+    .max(50, "Writer's name must be 50 characters or less"),
+  date: z.string().min(1, "Date is required"),
+  contentDescription: z
+    .string()
+    .min(1, "Content description is required")
+    .max(1000, "Content description must be 1000 characters or less"),
+  writerPhoto: z.string().nullable().optional(),
+  galleryPhoto: z.string().nullable().optional(),
+
+  // Highlighted Impact fields - make them optional
+  message1: z
+    .string()
+    .max(1000, "Message must be 1000 characters or less")
+    .optional(),
+  message2: z
+    .string()
+    .max(1000, "Message must be 1000 characters or less")
+    .optional(),
+  title2: z.string().max(50, "Title must be 50 characters or less").optional(),
+  date2: z.string().optional(),
+  impactTags2: z
+    .string()
+    .max(50, "Impact tags must be 50 characters or less")
+    .optional(),
+  writersName2: z
+    .string()
+    .max(50, "Writer's name must be 50 characters or less")
+    .optional(),
+  writerPhoto2: z.string().nullable().optional(),
+  coverPhoto: z.string().nullable().optional(),
+  galleryPhoto2: z.string().nullable().optional(),
+  contentDescription2: z
+    .string()
+    .max(1000, "Content description must be 1000 characters or less")
+    .optional(),
+
+  // Project association
+  addImpact: z
+    .string()
+    .min(1, "Project name is required")
+    .max(50, "Project name must be 50 characters or less"),
+});
+
+export type ImpactInput = z.infer<typeof ImpactSchema>;
