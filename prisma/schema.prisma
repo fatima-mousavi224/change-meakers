@@ -320,6 +320,36 @@ model OfferIcon {
   updatedAt   DateTime @updatedAt
 }
 
+model Impact {
+  id                    String   @id @default(auto()) @map("_id") @db.ObjectId
+  // Standard Impact fields
+  title                 String
+  impactTags            String
+  writersName           String
+  date                  DateTime
+  contentDescription    String
+  writerPhoto           String?
+  galleryPhoto          String?
+  
+  // Highlighted Impact fields
+  message1              String?
+  message2              String?
+  title2                String?
+  date2                 DateTime?
+  impactTags2           String?
+  writersName2          String?
+  writerPhoto2          String?
+  coverPhoto            String?
+  galleryPhoto2         String?
+  contentDescription2   String?
+  
+  // Project association
+  projectName           String?
+  
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+}
+
 enum PaymentStatus {
   PENDING
   SUCCESS
