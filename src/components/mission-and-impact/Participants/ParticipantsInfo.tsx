@@ -18,6 +18,7 @@ import image7 from "public/images/mission-impact/participants/7.jpg";
 import image8 from "public/images/mission-impact/participants/8.jpg";
 import image9 from "public/images/mission-impact/participants/9.jpg";
 import image10 from "public/images/mission-impact/participants/6.jpg";
+import { StudentItem } from "@prisma/client";
 
 const participantsInfo = [
   {
@@ -136,28 +137,29 @@ export default function ParticipantsInfo() {
         }}
         className="sm:h-48 lg:h-56"
       >
-        {participantsInfo.map((participant) => (
+        {participantsInfo.map((student) => (
           <SwiperSlide
-            key={participant.id}
+            key={student?.id}
             className="bg-white rounded-lg space-y-8 p-6 h-full flex flex-col justify-between"
           >
             <div className="sm:h-1/2">
               <p className="text-paragraph_color text-sm">
-                {participant.description}
+                {student?.description}
               </p>
             </div>
             <div className="flex items-center gap-2">
               <Image
-                src={participant.image}
+                src={student?.image ?? "/images/default-avatar.png"}
                 alt="participant"
                 height={1200}
                 width={1200}
                 className="h-12 w-12 rounded-full object-cover"
               />
+              
               <div className="flex flex-col">
-                <p className="font-semibold">{participant.name}</p>
+                <p className="font-semibold">{student?.name}</p>
                 <p className="text-xs text-paragraph_color">
-                  {participant.location}
+                  {student?.location}
                 </p>
               </div>
             </div>

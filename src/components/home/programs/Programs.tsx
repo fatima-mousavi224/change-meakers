@@ -44,6 +44,9 @@ import { FaLinkedinIn } from "react-icons/fa6";
 import { TfiReload } from "react-icons/tfi";
 import Header from "@/components/current-program-page/Header";
 import Sliders from "@/components/current-program-page/Sliders";
+import { useParams } from "next/navigation";
+import { Project } from "@prisma/client";
+import prisma from "@/lib/prismaDB";
 
 interface Slide {
   image: StaticImageData;
@@ -56,7 +59,8 @@ const slides: Slide[] = [
   { image: image3 },
 ];
 
-const Programs: React.FC = () => {
+const Programs = async () => {
+
   const [activeIndex, setActiveIndex] = useState(0);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
@@ -234,6 +238,31 @@ const Programs: React.FC = () => {
       link: "#",
     },
   ];
+  
+  const [projects, setProjects] = useState<Project>();
+  console.log("🚀 ~ projects:", projects)
+  const [loading, setLoading] = useState(true);
+  const params= useParams();
+  const id= params.id as string;
+  
+    useEffect(() => {
+      const fetchProjects = async () => {
+        try {
+          const response = await fetch(`/api/projects/${id}`, { method: "GET" });
+          if (!response.ok) throw new Error("Failed to fetch projects");
+          const data = await response.json();
+          // console.log("🚀 ~ fetchProjects ~ data:", data);
+          setProjects(data);
+        } catch (error) {
+          console.error("Error fetching projects:", error);
+        } finally {
+          setLoading(false);
+        }
+      };
+  
+      fetchProjects();
+    }, []);
+    
 
   return (
     <div>
@@ -250,27 +279,20 @@ const Programs: React.FC = () => {
               onTouchMove={handleTouchMove}
               onTouchEnd={handleTouchEnd}
             >
-              {slides.map((slide, index) => (
+
                 <Image
-                  key={index}
-                  src={
-                    isMobile && slide.mobileImage
-                      ? slide.mobileImage
-                      : slide.image
-                  }
-                  alt={`Slide ${index + 1}`}
+                  src={projects?.heroImage ?? "" }
+                  alt={projects?.heroTitle ?? ""}
                   fill
-                  className={`absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-500 ease-in-out ${
-                    index === activeIndex ? "opacity-100 z-0" : "opacity-0"
-                  } rounded-[35px]`}
+                  className={`absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-500 ease-in-out opacity-100 z-0" : "opacity-0"
+                   rounded-[35px]`}
                 />
-              ))}
             </div>
 
             {/* Overlay with Static Text and Button */}
             <div className="absolute inset-0 z-20 bg-black bg-opacity-40 flex flex-col justify-end items-start sm:p-10 p-5 font-plusJakartaSans rounded-[35px]">
               <h2 className="text-3xl md:text-4xl font-bold text-white mb-2">
-                Change Makers of the World
+                {projects?.heroTitle}
               </h2>
               <p className="text-sm md:text-lg text-white mb-1 font-bold font-plusJakartaSans">
                 Our Vision: Together, we can change the world.
@@ -324,22 +346,32 @@ const Programs: React.FC = () => {
       {/* Programs Section */}
       <section className="bg-light_gray overflow-x-hidden md:bg-white max-w-screen-2xl mx-auto mt-10 px-6">
         <div className="bg-light_gray rounded-xl py-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-6  items-center">
-          {stats.map((stat, index) => (
             <div
-              key={index}
               className="flex md:px-10 space-x-3 items-center gap-2 sm:w-1/4"
             >
               <div className="bg-white rounded-xl p-8 shadow-sm">
-                {stat.icon}
+                <Image src={projects?.statusIcon1 ?? ""} alt={projects?.iconTitleStatus1 as string} width={500} height={500} />
               </div>
               <div>
-                <h3 className="text-lg font-semibold">{stat.title}</h3>
+                <h3 className="text-lg font-semibold">{projects?.iconTitleStatus1}</h3>
                 <p className="text-sm text-gray-500 w-40 md:w-56 line-clamp-2">
-                  {stat.description}
+                  {projects?.shortDescriptionStatus1}
                 </p>
               </div>
             </div>
-          ))}
+            <div
+              className="flex md:px-10 space-x-3 items-center gap-2 sm:w-1/4"
+            >
+              <div className="bg-white rounded-xl p-8 shadow-sm">
+                <Image src={projects?.statusIcon1 ?? ""} alt={projects?.iconTitleStatus2 as string} width={500} height={500} />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold">{projects?.iconTitleStatus2}</h3>
+                <p className="text-sm text-gray-500 w-40 md:w-56 line-clamp-2">
+                  {projects?.shortDescriptionStatus2}
+                </p>
+              </div>
+            </div>
         </div>
       </section>
 
@@ -350,7 +382,7 @@ const Programs: React.FC = () => {
           <div className="grid col-span-1 gap-4">
             {/* our vission card */}
             <div className="max-w-2xl bg-light_gray rounded-xl shadow shadow-gray-400 py-4 px-5">
-              <h3 className="text-2xl font-semibold">Our Vission</h3>
+              <h3 className="text-2xl font-semibold">{}</h3>
               <p className="text-gray-500 my-8">
                 Lorem, ipsum dolor sit amet consectetur adipisicing elit.
                 Obcaecati quis tempore, odit sit ad at temporibus harum
@@ -536,15 +568,14 @@ const Programs: React.FC = () => {
           <div className="flex items-center mx-auto justify-center gap-2 w-40 rounded-2xl bg-primary-50 bg-opacity-15 p-2">
             <Icon icon="dot" height={8} width={10} />
             <span className="text-xs text-primary-50 font-semibold">
-              Our Students
+              {projects?.sectionTitleStudents}
             </span>
           </div>
           <h3 className="text-2xl md:text-3xl my-2 lg:text-4xl 2xl:text-5xl text-center py-2 font-semibold">
             “Voices from the Classroom”
           </h3>
           <p className="text-paragraph_color text-center text-sm md:text-base">
-            For privacy and safety, we use nicknames and symbolic photos instead
-            of real mames or images.
+            {projects?.sectionDescriptionStudents}
           </p>
           <ParticipantsInfo />
         </div>
