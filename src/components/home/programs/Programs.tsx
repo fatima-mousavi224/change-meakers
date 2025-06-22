@@ -11,12 +11,6 @@ import { educationSlideData } from "@/lib/data";
 import { HiOfficeBuilding } from "react-icons/hi";
 import { FaLink } from "react-icons/fa6";
 import { TbMessagePause } from "react-icons/tb";
-import {
-  FaChalkboardTeacher,
-  FaBookOpen,
-  FaGlobe,
-  FaTools,
-} from "react-icons/fa";
 import { PiChalkboardTeacherFill } from "react-icons/pi";
 import { FaArrowRightLong } from "react-icons/fa6";
 import { BsBarChartSteps } from "react-icons/bs";
@@ -45,8 +39,7 @@ import { TfiReload } from "react-icons/tfi";
 import Header from "@/components/current-program-page/Header";
 import Sliders from "@/components/current-program-page/Sliders";
 import { useParams } from "next/navigation";
-import { Project } from "@prisma/client";
-import prisma from "@/lib/prismaDB";
+import { OfferIcon, Project, TeamCard, Voice } from "@prisma/client";
 
 interface Slide {
   image: StaticImageData;
@@ -59,7 +52,7 @@ const slides: Slide[] = [
   { image: image3 },
 ];
 
-const Programs = async () => {
+const Programs = () => {
 
   const [activeIndex, setActiveIndex] = useState(0);
   const [touchStart, setTouchStart] = useState<number | null>(null);
@@ -136,58 +129,31 @@ const Programs = async () => {
     },
   ];
 
-  // Offer section
-  const offerings = [
-    {
-      icon: <FaChalkboardTeacher className="text-blue-500 w-8 h-8" />,
-      title: "Structured Curriculum",
-      description:
-        "Five levels of instruction including Scratch, HTML/CSS, Python, JavaScript, and basic app development.",
-    },
-    {
-      icon: <FaBookOpen className="text-blue-500 w-8 h-8" />,
-      title: "Digital Literacy & Human Rights Education",
-      description:
-        "We teach students not only how to code, but also how to use technology safely and advocate for their rights.",
-    },
-    {
-      icon: <FaGlobe className="text-blue-500 w-8 h-8" />,
-      title: "Mentorship & Support",
-      description:
-        "Remote and local mentors guide students on personal and academic goals, career pathways, and confidence building.",
-    },
-    {
-      icon: <FaTools className="text-blue-500 w-8 h-8" />,
-      title: "Access To Tools",
-      description:
-        "We provide laptops, internet access, and safe learning spaces in areas where tech access is often limited or unavailable.",
-    },
-  ];
-
   // Team Members meet section
-  const TeamMembers = [
-    {
-      name: "Laila",
-      course: "Web Development (HTML, CSS, JavaScript)",
-      imgUrl: imgUrl, // Replace with actual image path
-      description:
-        "Laila had to leave school at a young age and stayed home for years with no access to learning. When she joined the academy, she didn’t know how to use a computer. Now, just a few months in, she’s building web pages with HTML and CSS. She comes to every class, asks questions, and says learning to code has given her a new sense of direction. Her goal is to become a freelance web developer and support her family from home.",
-    },
-    {
-      name: "Marwa",
-      course: "UI/UX Design Basics",
-      imgUrl: imgUrl, // Replace with actual image path
-      description:
-        "Laila had to leave school at a young age and stayed home for years with no access to learning. When she joined the academy, she didn’t know how to use a computer. Now, just a few months in, she’s building web pages with HTML and CSS. She comes to every class, asks questions, and says learning to code has given her a new sense of direction. Her goal is to become a freelance web developer and support her family from home.",
-    },
-    {
-      name: "Amina",
-      course: "Introduction to Python Programming",
-      imgUrl: imgUrl, // Replace with actual image path
-      description:
-        "Laila had to leave school at a young age and stayed home for years with no access to learning. When she joined the academy, she didn’t know how to use a computer. Now, just a few months in, she’s building web pages with HTML and CSS. She comes to every class, asks questions, and says learning to code has given her a new sense of direction. Her goal is to become a freelance web developer and support her family from home.",
-    },
-  ];
+ 
+  // const TeamMembers = [
+  //   {
+  //     name: "Laila",
+  //     course: "Web Development (HTML, CSS, JavaScript)",
+  //     imgUrl: imgUrl, // Replace with actual image path
+  //     description:
+  //       "Laila had to leave school at a young age and stayed home for years with no access to learning. When she joined the academy, she didn’t know how to use a computer. Now, just a few months in, she’s building web pages with HTML and CSS. She comes to every class, asks questions, and says learning to code has given her a new sense of direction. Her goal is to become a freelance web developer and support her family from home.",
+  //   },
+  //   {
+  //     name: "Marwa",
+  //     course: "UI/UX Design Basics",
+  //     imgUrl: imgUrl, // Replace with actual image path
+  //     description:
+  //       "Laila had to leave school at a young age and stayed home for years with no access to learning. When she joined the academy, she didn’t know how to use a computer. Now, just a few months in, she’s building web pages with HTML and CSS. She comes to every class, asks questions, and says learning to code has given her a new sense of direction. Her goal is to become a freelance web developer and support her family from home.",
+  //   },
+  //   {
+  //     name: "Amina",
+  //     course: "Introduction to Python Programming",
+  //     imgUrl: imgUrl, // Replace with actual image path
+  //     description:
+  //       "Laila had to leave school at a young age and stayed home for years with no access to learning. When she joined the academy, she didn’t know how to use a computer. Now, just a few months in, she’s building web pages with HTML and CSS. She comes to every class, asks questions, and says learning to code has given her a new sense of direction. Her goal is to become a freelance web developer and support her family from home.",
+  //   },
+  // ];
 
   // Team Members meet section
   const Students = [
@@ -239,8 +205,14 @@ const Programs = async () => {
     },
   ];
   
-  const [projects, setProjects] = useState<Project>();
-  console.log("🚀 ~ projects:", projects)
+  const [projects, setProjects] = useState<
+    (Project & {
+      voices: Voice[];
+      offerIcons: OfferIcon[];
+      teamCards: TeamCard[]
+    }) | null
+  >(null);
+  console.log("🚀 ~ projects id:", projects)
   const [loading, setLoading] = useState(true);
   const params= useParams();
   const id= params.id as string;
@@ -261,7 +233,7 @@ const Programs = async () => {
       };
   
       fetchProjects();
-    }, []);
+    }, [id]);
     
 
   return (
@@ -349,8 +321,8 @@ const Programs = async () => {
             <div
               className="flex md:px-10 space-x-3 items-center gap-2 sm:w-1/4"
             >
-              <div className="bg-white rounded-xl p-8 shadow-sm">
-                <Image src={projects?.statusIcon1 ?? ""} alt={projects?.iconTitleStatus1 as string} width={500} height={500} />
+              <div className="bg-white rounded-xl p-8 shadow-sm relative">
+                <Image src={projects?.statusIcon1 ?? ""} alt={projects?.iconTitleStatus1 as string} width={500} height={500} className="absolute top-2 left-2 size-12 " />
               </div>
               <div>
                 <h3 className="text-lg font-semibold">{projects?.iconTitleStatus1}</h3>
@@ -362,8 +334,8 @@ const Programs = async () => {
             <div
               className="flex md:px-10 space-x-3 items-center gap-2 sm:w-1/4"
             >
-              <div className="bg-white rounded-xl p-8 shadow-sm">
-                <Image src={projects?.statusIcon1 ?? ""} alt={projects?.iconTitleStatus2 as string} width={500} height={500} />
+              <div className="bg-white rounded-xl p-8 shadow-sm relative">
+                <Image src={projects?.statusIcon2 ?? ""} alt={projects?.iconTitleStatus2 as string} width={500} height={500} className="absolute top-2 left-2 size-12 rounded-xl " />
               </div>
               <div>
                 <h3 className="text-lg font-semibold">{projects?.iconTitleStatus2}</h3>
@@ -562,7 +534,7 @@ const Programs = async () => {
         </div>
       </section>
 
-      {/* Our students section */}
+      {/* Voices from the Classroom section */}
       <section className="bg-light_gray mt-10">
         <div className=" max-w-screen-2xl mx-auto lg:p-20 md:p-16 px-2 py-10 rounded-lg my-8">
           <div className="flex items-center mx-auto justify-center gap-2 w-40 rounded-2xl bg-primary-50 bg-opacity-15 p-2">
@@ -577,7 +549,7 @@ const Programs = async () => {
           <p className="text-paragraph_color text-center text-sm md:text-base">
             {projects?.sectionDescriptionStudents}
           </p>
-          <ParticipantsInfo />
+          {projects?.voices && <ParticipantsInfo Voices={projects.voices} />}
         </div>
       </section>
 
@@ -622,16 +594,16 @@ const Programs = async () => {
             What We Offer?
           </h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 px-4">
-            {offerings.map((offer, index) => (
+            {projects?.offerIcons.map((offer, index) => (
               <div
                 key={index}
                 className="rounded-xl p-6 shadow bg-slate-50 hover:shadow-lg transition duration-300"
               >
-                <div className="flex mb-4">{offer.icon}</div>
+                <Image src={offer?.url?offer?.url:""} width={500} height={500} alt="offer icon" className="size-16 rounded-xl" />
                 <h3 className="text-xl font-semibold mb-2 line-clamp-1">
-                  {offer.title}
+                  {offer?.iconTitle || ""}
                 </h3>
-                <p className="text-gray-600 mb-4">{offer.description}</p>
+                <p className="text-gray-600 mb-4">{offer?.shortDescription || ""}</p>
                 <a
                   href="#"
                   className="text-blue-500 font-semibold hover:underline"
@@ -645,7 +617,7 @@ const Programs = async () => {
       </section>
 
       {/* Team Meet Section */}
-      <section className="max-w-screen-2xl px-4 mx-auto mt-10">
+       <section className="max-w-screen-2xl px-4 mx-auto mt-10">
         <div className="py-10 text-center">
           <div className="flex items-center mx-auto justify-center gap-2 w-28 rounded-full bg-primary-50 bg-opacity-15 p-2 mb-6">
             <Icon icon="dot" height={8} width={10} />
@@ -660,22 +632,26 @@ const Programs = async () => {
             photos are used to protect their identity.
           </p>
           <div className="flex flex-col md:flex-row justify-center md:space-x-6 mt-8 gap-6">
-            {TeamMembers.map((member, index) => (
-              <div
-                key={index}
-                className="bg-white rounded-lg shadow-lg md:w-1/3 relative md:h-[500px] overflow-hidden group"
-              >
+            {loading || !projects ? (
+              <p>Loading...</p>
+            ) : (
+              projects?.teamCards?.length ?(
+              projects?.teamCards?.map((member: TeamCard, index) => (
+                <div
+                  key={index}
+                  className="bg-white rounded-lg shadow-lg md:w-1/3 relative md:h-[500px] overflow-hidden group"
+                >
                 {/* Image container */}
                 <div className="relative z-0">
                   <Image
-                    src={member.imgUrl}
-                    alt={member.name}
+                    src={member?.image ||  "/default-avatar.jpg"}
+                    alt={member?.name || "Team member"}
                     className="rounded-t-lg h-80 md:h-96 group-hover:ease-in-out md:group-hover:h-[500px] object-cover  transition-all duration-700 ease-in-out"
                   />
                   <div className="border-t-8 border-sky-800  group-hover:hidden transition duration-150"></div>
                   <div className="group-hover:py-0 py-6 group-hover:hidden transition duration-150">
-                    <h3 className="text-xl font-semibold">{member.name}</h3>
-                    <p className="text-gray-600 mb-2">{member.course}</p>
+                    <h3 className="text-xl font-semibold">{member?.name}</h3>
+                    <p className="text-gray-600 mb-2">{member?.role}</p>
                   </div>
                   {/* Overlay details */}
                   <div
@@ -690,24 +666,26 @@ const Programs = async () => {
                           {member.name}
                         </h3>
                         <p className="text-base md:text-base text-gray-600 mb-2">
-                          {member.course}
+                          {member?.role}
                         </p>
                         <p className="text-sm line-clamp-6 md:text-base text-blue-500 mb-2">
-                          {member.description}
+                          {member?.biography}
                         </p>
                         <Link
                           href="#"
                           className="cursor-pointer block mx-auto w-full mt-4 md:mt-20"
                         >
                           <FaLinkedinIn className="size-8 mx-auto bg-blue-600 text-white rounded" />
+                          <img src={member?.icon || ""} alt="members icon" className="size-8 mx-auto bg-blue-600 text-white rounded" />
                         </Link>
                       </div>
                     </div>
                   </div>
                 </div>
-                {/* Optional: a button or other content */}
               </div>
-            ))}
+            ))):
+            <p>No team members round?</p>
+          )}
           </div>
         </div>
       </section>
@@ -729,7 +707,7 @@ const Programs = async () => {
             participant.
           </p>
           <div className="flex flex-col md:flex-row justify-center md:space-x-6 mt-8 gap-6">
-            {TeamMembers.map((member, index) => (
+            {Students.map((member, index) => (
               <div
                 key={index}
                 className="bg-white rounded-lg shadow-lg md:w-1/3 relative md:h-[500px] overflow-hidden group"
