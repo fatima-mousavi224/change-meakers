@@ -138,27 +138,28 @@ export default function ParticipantsInfo() {
       >
         {participantsInfo.map((participant) => (
           <SwiperSlide
-            key={participant.id}
+            key={participant?.id}
             className="bg-white rounded-lg space-y-8 p-6 h-full flex flex-col justify-between"
           >
             <div className="sm:h-1/2">
               <p className="text-paragraph_color text-sm">
-                {participant.description}
+                {participant?.description}
               </p>
             </div>
             <div className="flex items-center gap-2">
               <Image
-                src={participant.image}
+                src={participant?.image ?? "/images/default-avatar.png"}
                 alt="participant"
                 height={1200}
                 width={1200}
                 className="h-12 w-12 rounded-full object-cover"
               />
+              
               <div className="flex flex-col">
-                <p className="font-semibold">{participant.name}</p>
-                <p className="text-xs text-paragraph_color">
-                  {participant.location}
-                </p>
+                <p className="font-semibold">{participant?.name}</p>
+                {/* <p className="text-xs text-paragraph_color">
+                  {participant?.}
+                </p> */}
               </div>
             </div>
           </SwiperSlide>

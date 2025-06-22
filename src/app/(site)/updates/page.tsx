@@ -1,6 +1,6 @@
 import Banner from "@/components/common/Banner";
 import BlogPosts from "@/components/updates/UpdatePosts";
-import prisma from "../../../lib/prismaDB";
+import prisma from "@/lib/prismaDB";
 import { Metadata } from "next";
 import { Suspense } from "react";
 
