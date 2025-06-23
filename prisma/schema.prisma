@@ -149,10 +149,12 @@ model VerificationToken {
 }
 model Project {
   id                         String                @id @default(auto()) @map("_id") @db.ObjectId
+  // Card components
   projectTitle               String
   cardDescription            String
-  heroTitle                  String
+  uploadCardImage            String
   // Hero Section Fields
+  heroTitle                  String?
   subheading                 String?
   slogan                     String?
   buttonName                 String?
