@@ -81,7 +81,7 @@ function LiveMoments() {
                 />
                 {errors?.liveMoments?.[index]?.link && (
                   <p className="text-red-500 text-sm">
-                    {errors.liveMoments[index].link.message as string}
+                    {errors?.liveMoments[index]?.link?.message as string}
                   </p>
                 )}
               </div>
