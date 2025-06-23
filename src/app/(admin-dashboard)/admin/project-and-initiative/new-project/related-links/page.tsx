@@ -74,14 +74,14 @@ export default function RelatedLinksSection() {
                     type="text"
                     placeholder="Enter the URL"
                     className={`border w-full mt-2 border-dashed rounded-lg px-3 py-2 block placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2 ${
-                      errors.relatedLinks?.[index]?.buttonLink ? "border-red-500" : "border-gray-400"
+                      errors?.relatedLinks?.[index]?.buttonLink ? "border-red-500" : "border-gray-400"
                     }`}
                   />
                 )}
               />
-              {errors.relatedLinks?.[index]?.buttonLink && (
+              {errors?.relatedLinks?.[index]?.buttonLink && (
                 <p className="text-red-500 text-sm mt-1">
-                  {errors.relatedLinks[index].buttonLink?.message}
+                  {errors?.relatedLinks[index]?.buttonLink?.message}
                 </p>
               )}
             </div>
@@ -103,14 +103,14 @@ export default function RelatedLinksSection() {
                     type="text"
                     placeholder="Enter the button's name"
                     className={`border w-full mt-2 border-dashed rounded-lg px-3 py-2 block placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2 ${
-                      errors.relatedLinks?.[index]?.buttonName ? "border-red-500" : "border-gray-400"
+                      errors?.relatedLinks?.[index]?.buttonName ? "border-red-500" : "border-gray-400"
                     }`}
                   />
                 )}
               />
-              {errors.relatedLinks?.[index]?.buttonName && (
+              {errors?.relatedLinks?.[index]?.buttonName && (
                 <p className="text-red-500 text-sm mt-1">
-                  {errors.relatedLinks[index].buttonName?.message}
+                  {errors?.relatedLinks[index]?.buttonName?.message}
                 </p>
               )}
             </div>

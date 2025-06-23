@@ -34,6 +34,8 @@ function LiveMoments() {
       liveMoments: [{ link: "" }, { link: "" }, { link: "" }],
     });
   };
+
+  
   return (
     <div>
       <h2 className="text-lg md:text-3xl font-bold text-sky-800 my-6 text-center md:text-left">
@@ -81,7 +83,7 @@ function LiveMoments() {
                 />
                 {errors?.liveMoments?.[index]?.link && (
                   <p className="text-red-500 text-sm">
-                    {errors?.liveMoments[index]?.link?.message as string}
+                    {errors?.liveMoments[index]?.link?.message as string | undefined}
                   </p>
                 )}
               </div>

@@ -207,7 +207,6 @@ const Programs = () => {
   
   const [projects, setProjects] = useState<
     (Project & {
-      voices: Voice[];
       offerIcons: OfferIcon[];
       teamCards: TeamCard[]
     }) | null
@@ -549,7 +548,7 @@ const Programs = () => {
           <p className="text-paragraph_color text-center text-sm md:text-base">
             {projects?.sectionDescriptionStudents}
           </p>
-          {projects?.voices && <ParticipantsInfo Voices={projects.voices} />}
+          <ParticipantsInfo />
         </div>
       </section>
 
