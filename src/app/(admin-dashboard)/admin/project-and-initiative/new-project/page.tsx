@@ -12,7 +12,7 @@ import { FaSquarePlus, FaTrash } from "react-icons/fa6";
 import { FaEdit } from "react-icons/fa";
 import toast from "react-hot-toast";
 import { BsArrowRight } from "react-icons/bs";
-
+import Tabs from "@/components/create-project-tabs/Tabs";
 // FormData interface
 const FormDataInterface = {
   projectTitle: "",
@@ -843,9 +843,10 @@ export default function CreateNewProject() {
   return (
     <div className="flex mt-4 max-w-screen-2xl mx-auto">
       <main className="mx-auto">
-        <h2 className="text-lg md:text-3xl font-bold text-sky-800 my-12 text-center md:text-left">
+        <h2 className="text-lg md:text-3xl font-bold text-sky-800 my-6 text-center md:text-left">
           Create New Project
         </h2>
+       <Tabs />
         <form
           onSubmit={handleSubmit(onSubmit)}
           className="mt-12 space-y-8 md:w-full lg:w-full xl:w-[1000px] 2xl:w-[60vw]"
@@ -1672,6 +1673,7 @@ export default function CreateNewProject() {
               </div>
             </div>
           </section>
+          
           {/* Voices from the Classroom */}
           <section className="border-2 rounded-lg p-4 md:p-8 lg:px-14 bg-white">
             <h2 className="text-xl font-semibold mb-4 text-sky-800">
