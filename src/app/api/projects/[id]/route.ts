@@ -1,215 +1,64 @@
-import { NextResponse } from "next/server";
-import prisma from "../../../../lib/prismaDB";
+import prisma from "@/lib/prismaDB";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
-  request: Request,
+  req: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
-    const id = params.id;
     const project = await prisma.project.findUnique({
-      where: { id },
-      include: {
-        teamCards: true,
-        studentItems: true,
-        voices: true,
-        liveMoments: true,
-        relatedLinks: true,
-        newsletterItems: true,
-        offerIcons: true,
-      },
+      where: { id: params.id },
     });
 
     if (!project) {
       return NextResponse.json({ error: "Project not found" }, { status: 404 });
     }
 
-    return NextResponse.json(project, { status: 200 });
+    return NextResponse.json(project);
   } catch (error) {
-    console.error("GET /api/projects/[id] error:", error);
+    console.log("error", error);
     return NextResponse.json(
-      { error: "Internal Server Error" },
+      { error: "Failed to fetch project" },
       { status: 500 }
     );
   }
 }
 
-export async function PUT(
-  request: Request,
+export async function PATCH(
+  req: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
-    const id = params.id;
-    const data = await request.json();
+    const body = await req.json();
 
-    // Validate required fields
-    if (!data.projectTitle || !data.cardDescription || !data.heroTitle) {
-      return NextResponse.json(
-        { error: "Missing required fields" },
-        { status: 400 }
-      );
-    }
-
-    // Parse newsletterItems dates
-    const newsletterItems =
-      data.newsletterItems?.map((item: any) => ({
-        ...item,
-        date: new Date(item.date),
-      })) || [];
-
-    // Delete existing relations to replace with new ones
-    await prisma.teamCard.deleteMany({ where: { projectId: id } });
-    await prisma.studentItem.deleteMany({ where: { projectId: id } });
-    await prisma.voice.deleteMany({ where: { projectId: id } });
-    await prisma.liveMoment.deleteMany({ where: { projectId: id } });
-    await prisma.relatedLink.deleteMany({ where: { projectId: id } });
-    await prisma.newsletterItem.deleteMany({ where: { projectId: id } });
-    await prisma.offerIcon.deleteMany({ where: { projectId: id } });
-
-    const project = await prisma.project.update({
-      where: { id },
-      data: {
-        projectTitle: data.projectTitle,
-        cardDescription: data.cardDescription,
-        heroTitle: data.heroTitle,
-        subheading: data.subheading || null,
-        slogan: data.slogan || null,
-        buttonName: data.buttonName || null,
-        buttonLink: data.buttonLink || null,
-        iconTitleStatus1: data.iconTitleStatus1 || null,
-        shortDescriptionStatus1: data.shortDescriptionStatus1 || null,
-        iconTitleStatus2: data.iconTitleStatus2 || null,
-        shortDescriptionStatus2: data.shortDescriptionStatus2 || null,
-        visionTitle: data.visionTitle || null,
-        visionText: data.visionText || null,
-        goalTitle: data.goalTitle || null,
-        goalText: data.goalText || null,
-        sectionTitleAbout: data.sectionTitleAbout || null,
-        bodyText: data.bodyText || null,
-        buttonName2: data.buttonName2 || null,
-        buttonLink2: data.buttonLink2 || null,
-        sectionTitleVoices: data.sectionTitleVoices || null,
-        sectionDescriptionVoices: data.sectionDescriptionVoices || null,
-        heroTitleMedia: data.heroTitleMedia || null,
-        shortDescriptionMedia: data.shortDescriptionMedia || null,
-        videoLink: data.videoLink || null,
-        fullVideoDescription: data.fullVideoDescription || null,
-        sectionTitleTeam: data.sectionTitleTeam || null,
-        sectionDescriptionTeam: data.sectionDescriptionTeam || null,
-        sectionTitleStudents: data.sectionTitleStudents || null,
-        sectionDescriptionStudents: data.sectionDescriptionStudents || null,
-        addQuote: data.addQuote || null,
-        nameRole: data.nameRole || null,
-        sectionTitlePhoto: data.sectionTitlePhoto || null,
-        sectionDescriptionPhoto: data.sectionDescriptionPhoto || null,
-        sectionTitleNewsletter: data.sectionTitleNewsletter || null,
-        sectionDescriptionNewsletter: data.sectionDescriptionNewsletter || null,
-        sectionTitleSDGs: data.sectionTitleSDGs || null,
-        sectionTextSDGs: data.sectionTextSDGs || null,
-        finalStatement: data.finalStatement || null,
-        navigationLabel: data.navigationLabel || null,
-        showInMainNavigation: data.showInMainNavigation ?? true,
-        cardImage: data.uploadedFiles?.cardImage || null,
-        heroImage: data.uploadedFiles?.heroImage || null,
-        newsletterImage1: data.uploadedFiles?.newsletterImage1 || null,
-        newsletterImage2: data.uploadedFiles?.newsletterImage2 || null,
-        statusIcon1: data.iconPreview1 || null,
-        statusIcon2: data.iconPreview2 || null,
-        teamCards: {
-          create:
-            data.teamCards?.map((card: any) => ({
-              name: card.name,
-              role: card.role,
-              biography: card.biography,
-              link: card.link || null,
-              showLinkInput: card.showLinkInput ?? false,
-              image: card.image || null,
-              icon: card.icon || null,
-            })) || [],
-        },
-        studentItems: {
-          create:
-            data.studentItems?.map((item: any) => ({
-              name: item.name,
-              role: item.role,
-              biography: item.biography,
-              link: item.link || null,
-              showLinkInput: item.showLinkInput ?? false,
-              image: item.image || null,
-              icon: item.icon || null,
-            })) || [],
-        },
-        voices: {
-          create:
-            data.voices?.map((voice: any) => ({
-              quote: voice.quote,
-              name: voice.name,
-              description: voice.description,
-              icon: voice.icon || null,
-            })) || [],
-        },
-        liveMoments: {
-          create:
-            data.liveMoments?.map((moment: any) => ({
-              link: moment.link,
-            })) || [],
-        },
-        relatedLinks: {
-          create:
-            data.relatedLinks?.map((link: any) => ({
-              buttonName: link.buttonName,
-              buttonLink: link.buttonLink,
-            })) || [],
-        },
-        newsletterItems: {
-          create: newsletterItems,
-        },
-        offerIcons: {
-          create:
-            data.offerIcons?.map((icon: any) => ({
-              url: icon.url,
-            })) || [],
-        },
-      },
-      include: {
-        teamCards: true,
-        studentItems: true,
-        voices: true,
-        liveMoments: true,
-        relatedLinks: true,
-        newsletterItems: true,
-        offerIcons: true,
-      },
+    const updated = await prisma.project.update({
+      where: { id: params.id },
+      data: body,
     });
 
-    return NextResponse.json(project, { status: 200 });
+    return NextResponse.json(updated);
   } catch (error) {
-    console.error("PUT /api/projects/[id] error:", error);
+    console.error(error);
     return NextResponse.json(
-      { error: "Internal Server Error" },
+      { error: "Failed to update project" },
       { status: 500 }
     );
   }
 }
 
 export async function DELETE(
-  request: Request,
+  req: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
-    const id = params.id;
-    const project = await prisma.project.delete({
-      where: { id },
+    await prisma.project.delete({
+      where: { id: params.id },
     });
 
-    return NextResponse.json(
-      { message: "Project deleted successfully", project },
-      { status: 200 }
-    );
+    return NextResponse.json({ message: "Project deleted successfully" });
   } catch (error) {
-    console.error("DELETE /api/projects/[id] error:", error);
     return NextResponse.json(
-      { error: "Internal Server Error" },
+      { error: "Failed to delete project" },
       { status: 500 }
     );
   }
