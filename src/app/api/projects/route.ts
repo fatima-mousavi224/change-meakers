@@ -22,13 +22,13 @@ export async function POST(req: NextRequest) {
       data: {
         projectTitle: body.projectTitle,
         cardDescription: body.cardDescription,
-        uploadCardImage: body.uploadCardImage,
+        uploadCardImage: body.cardImage,
       },
     });
 
     return NextResponse.json(project, { status: 201 });
   } catch (error) {
-    console.error(error);
+    console.error("error------+++++---------", error);
     return NextResponse.json(
       { error: "Failed to create project" },
       { status: 500 }
