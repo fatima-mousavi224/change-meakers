@@ -1,9 +1,13 @@
-'use client';
+"use client";
 
 import Tabs from "@/components/create-project-tabs/Tabs";
 import { useRef, useState } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { BsArrowRight } from "react-icons/bs";
+import { uploadCardImage } from "lib/uploadCardImage";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
+import { cn } from "utilities/cn";
 
 type HeroFormValues = {
   heroTitle: string;
@@ -17,18 +21,48 @@ type HeroFormValues = {
 export default function HeroSectionForm() {
   const {
     handleSubmit,
-    control,
+    register,
     setValue,
     reset,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<HeroFormValues>();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [preview, setPreview] = useState<string | null>(null);
+  const projectId = localStorage.getItem("projectId");
+  const router = useRouter();
 
-  const onSubmit = (data: HeroFormValues) => {
-    console.log("Hero Section Data:", data);
-    alert("Hero section submitted!");
+  const onSubmit = async (data: HeroFormValues) => {
+    try {
+      let heroImageUrl = null;
+      if (data.heroImage) {
+        heroImageUrl = await uploadCardImage(data.heroImage);
+      }
+      const res = await fetch(`/api/projects/${projectId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...data,
+          heroImage: heroImageUrl,
+        }),
+      });
+      const result = await res.json();
+      if (res.ok) {
+        localStorage.setItem("projectId", result.id);
+        toast.success("Hero section saved!");
+        router.push("/admin/project-and-initiative/new-project/status-icon");
+        reset();
+        setPreview(null);
+        if (fileInputRef.current) fileInputRef.current.value = "";
+      } else {
+        toast.error("Failed to save hero section.");
+      }
+    } catch (error) {
+      console.error("Error submitting hero section:", error);
+      toast.error("Failed to save hero section. Please try again.");
+    }
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -49,229 +83,207 @@ export default function HeroSectionForm() {
 
   return (
     <div className="max-w-screen-2xl mx-auto">
-          <h2 className="text-lg md:text-3xl font-bold text-sky-800 my-6 text-center md:text-left">
-            Create New Project
-          </h2>
-          <Tabs />
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className="border-2 rounded-lg my-6 p-6 md:p-8 lg:px-14 bg-white"
-    >
-      <h2 className="text-xl font-semibold mb-6 text-sky-800">
-        1. Hero Section
+      <h2 className="text-lg md:text-3xl font-bold text-sky-800 my-6 text-center md:text-left">
+        Create New Project
       </h2>
+      <Tabs />
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="border-2 rounded-lg my-6 p-6 md:p-8 lg:px-14 bg-white"
+      >
+        <h2 className="text-xl font-semibold mb-6 text-sky-800">
+          1. Hero Section
+        </h2>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Image Upload */}
-        <div className="md:col-span-2">
-          <label className="block text-sm font-medium mb-1">
-            Upload Hero Image
-          </label>
-          <Controller
-            name="heroImage"
-            control={control}
-            render={() => (
-              <div className="flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
-                <div className="relative text-center">
-                  {preview ? (
-                    <div className="relative">
-                      <img
-                        src={preview}
-                        alt="Preview"
-                        className="mx-auto w-16 h-16 object-cover"
-                      />
-                      <span
-                        className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-1.5 cursor-pointer"
-                        onClick={removeImage}
-                      >
-                        ✕
-                      </span>
-                    </div>
-                  ) : (
-                    <svg
-                      className="mx-auto w-12 h-12 text-gray-300"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Image Upload */}
+          <div className="md:col-span-2">
+            <label className="block text-sm font-medium mb-1">
+              Upload Hero Image
+            </label>
+            <div className="flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
+              <div className="relative text-center">
+                {preview ? (
+                  <div className="relative">
+                    <img
+                      src={preview}
+                      alt="Preview"
+                      className="mx-auto w-16 h-16 object-cover"
+                    />
+                    <span
+                      className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-1.5 cursor-pointer"
+                      onClick={removeImage}
                     >
-                      <path
-                        fillRule="evenodd"
-                        d="M1.5 6a2.25 2.25 0 0 1 2.25-2.25h16.5A2.25 2.25 0 0 1 22.5 6v12a2.25 2.25 0 0 1-2.25 2.25H3.75A2.25 2.25 0 0 1 1.5 18V6ZM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0 0 21 18v-1.94l-2.69-2.689a1.5 1.5 0 0 0-2.12 0l-.88.879.97.97a.75.75 0 1 1-1.06 1.06l-5.16-5.159a1.5 1.5 0 0 0-2.12 0L3 16.061Zm10.125-7.81a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  )}
-                  <input
-                    type="file"
-                    accept=".jpg,.jpeg,.png"
-                    onChange={handleImageChange}
-                    className="absolute inset-0 opacity-0 cursor-pointer"
-                    ref={fileInputRef}
-                  />
-                  <p className="mt-4 font-semibold text-blue-500">
-                    Drag & Drop your Photo
-                  </p>
-                  <p className="text-gray-500 text-sm">
-                    here or browse up to 10 MB
-                  </p>
-                </div>
+                      ✕
+                    </span>
+                  </div>
+                ) : (
+                  <svg
+                    className="mx-auto w-12 h-12 text-gray-300"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M1.5 6a2.25 2.25 0 0 1 2.25-2.25h16.5A2.25 2.25 0 0 1 22.5 6v12a2.25 2.25 0 0 1-2.25 2.25H3.75A2.25 2.25 0 0 1 1.5 18V6ZM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0 0 21 18v-1.94l-2.69-2.689a1.5 1.5 0 0 0-2.12 0l-.88.879.97.97a.75.75 0 1 1-1.06 1.06l-5.16-5.159a1.5 1.5 0 0 0-2.12 0L3 16.061Zm10.125-7.81a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                )}
+                <input
+                  type="file"
+                  accept=".jpg,.jpeg,.png"
+                  onChange={handleImageChange}
+                  className="absolute inset-0 opacity-0 cursor-pointer"
+                  ref={fileInputRef}
+                />
+                <p className="mt-4 font-semibold text-blue-500">
+                  Drag & Drop your Photo
+                </p>
+                <p className="text-gray-500 text-sm">
+                  here or browse up to 10 MB
+                </p>
               </div>
+            </div>
+          </div>
+
+          {/* Hero Title */}
+          <div>
+            <label className="block text-sm font-medium text-gray-900 mb-1">
+              Hero Title
+            </label>
+            <input
+              type="text"
+              placeholder="write something here..."
+              className="block w-full rounded-md border border-dashed border-gray-900/25 px-4 py-3"
+              {...register("heroTitle", {
+                required: "Hero Title is required",
+                maxLength: 50,
+              })}
+            />
+            {errors.heroTitle && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.heroTitle.message}
+              </p>
             )}
-          />
+          </div>
+
+          {/* Subheading */}
+          <div>
+            <label className="block text-sm font-medium text-gray-900 mb-1">
+              Subheading
+            </label>
+            <input
+              type="text"
+              placeholder="write something here..."
+              className="block w-full rounded-md border border-dashed border-gray-900/25 px-4 py-3"
+              {...register("subheading", {
+                required: "Subheading is required",
+                maxLength: 50,
+              })}
+            />
+            {errors.subheading && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.subheading.message}
+              </p>
+            )}
+          </div>
+
+          {/* Slogan */}
+          <div>
+            <label className="block text-sm font-medium text-gray-900 mb-1">
+              Subheading Line or Slogan
+            </label>
+            <input
+              type="text"
+              placeholder="write something here..."
+              className="block w-full rounded-md border border-dashed border-gray-900/25 px-4 py-3"
+              {...register("slogan", {
+                required: "Slogan is required",
+                maxLength: 50,
+              })}
+            />
+            {errors.slogan && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.slogan.message}
+              </p>
+            )}
+          </div>
+
+          {/* Button Name */}
+          <div className="relative">
+            <label className="block text-sm font-medium text-gray-900 mb-1">
+              Button Name
+            </label>
+            <input
+              type="text"
+              placeholder="Enter the button's name"
+              className="block w-full rounded-full border border-dashed border-gray-900/25 px-4 py-3"
+              {...register("buttonName", {
+                required: "Button Name is required",
+                maxLength: 50,
+              })}
+            />
+            <a
+              href="#"
+              className="absolute top-9 right-3 p-2 bg-gray-100 rounded-full"
+            >
+              <BsArrowRight />
+            </a>
+            {errors.buttonName && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.buttonName.message}
+              </p>
+            )}
+          </div>
+
+          {/* Button Link */}
+          <div>
+            <label className="block text-sm font-medium text-gray-900 mb-1">
+              Button Link
+            </label>
+            <input
+              type="text"
+              placeholder="Enter the URL"
+              className="block w-full rounded-md border border-dashed border-gray-900/25 px-4 py-3"
+              {...register("buttonLink", {
+                required: "Button Link is required",
+                maxLength: 200,
+              })}
+            />
+            {errors.buttonLink && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.buttonLink.message}
+              </p>
+            )}
+          </div>
         </div>
 
-        {/* Hero Title */}
-        <div>
-          <label className="block text-sm font-medium text-gray-900 mb-1">
-            Hero Title
-          </label>
-          <Controller
-            name="heroTitle"
-            control={control}
-            rules={{ required: "Hero Title is required", maxLength: 50 }}
-            render={({ field }) => (
-              <input
-                {...field}
-                type="text"
-                placeholder="write something here..."
-                className="block w-full rounded-md border border-dashed border-gray-900/25 px-4 py-3"
-              />
+        {/* Submit & Clear Button */}
+        <div className="flex justify-between items-center mt-6">
+          <button
+            type="submit"
+            className={cn(
+              "bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition",
+              isSubmitting && "opacity-50 cursor-not-allowed"
             )}
-          />
-          {errors.heroTitle && (
-            <p className="text-red-500 text-sm mt-1">
-              {errors.heroTitle.message}
-            </p>
-          )}
-        </div>
-
-        {/* Subheading */}
-        <div>
-          <label className="block text-sm font-medium text-gray-900 mb-1">
-            Subheading
-          </label>
-          <Controller
-            name="subheading"
-            control={control}
-            rules={{ required: "Subheading is required", maxLength: 50 }}
-            render={({ field }) => (
-              <input
-                {...field}
-                type="text"
-                placeholder="write something here..."
-                className="block w-full rounded-md border border-dashed border-gray-900/25 px-4 py-3"
-              />
-            )}
-          />
-          {errors.subheading && (
-            <p className="text-red-500 text-sm mt-1">
-              {errors.subheading.message}
-            </p>
-          )}
-        </div>
-
-        {/* Slogan */}
-        <div>
-          <label className="block text-sm font-medium text-gray-900 mb-1">
-            Subheading Line or Slogan
-          </label>
-          <Controller
-            name="slogan"
-            control={control}
-            rules={{ required: "Slogan is required", maxLength: 50 }}
-            render={({ field }) => (
-              <input
-                {...field}
-                type="text"
-                placeholder="write something here..."
-                className="block w-full rounded-md border border-dashed border-gray-900/25 px-4 py-3"
-              />
-            )}
-          />
-          {errors.slogan && (
-            <p className="text-red-500 text-sm mt-1">
-              {errors.slogan.message}
-            </p>
-          )}
-        </div>
-
-        {/* Button Name */}
-        <div className="relative">
-          <label className="block text-sm font-medium text-gray-900 mb-1">
-            Button Name
-          </label>
-          <Controller
-            name="buttonName"
-            control={control}
-            rules={{ required: "Button Name is required", maxLength: 50 }}
-            render={({ field }) => (
-              <input
-                {...field}
-                type="text"
-                placeholder="Enter the button's name"
-                className="block w-full rounded-full border border-dashed border-gray-900/25 px-4 py-3"
-              />
-            )}
-          />
-          <a
-            href="#"
-            className="absolute top-9 right-3 p-2 bg-gray-100 rounded-full"
+            disabled={isSubmitting}
           >
-            <BsArrowRight />
-          </a>
-          {errors.buttonName && (
-            <p className="text-red-500 text-sm mt-1">
-              {errors.buttonName.message}
-            </p>
-          )}
+            {isSubmitting ? "Submitting" : "Submit"}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              reset();
+              setPreview(null);
+              if (fileInputRef.current) fileInputRef.current.value = "";
+            }}
+            className="bg-gray-300 text-gray-800 px-6 py-2 rounded-md hover:bg-gray-400 transition"
+          >
+            Clear Form
+          </button>
         </div>
-
-        {/* Button Link */}
-        <div>
-          <label className="block text-sm font-medium text-gray-900 mb-1">
-            Button Link
-          </label>
-          <Controller
-            name="buttonLink"
-            control={control}
-            rules={{ required: "Button Link is required", maxLength: 200 }}
-            render={({ field }) => (
-              <input
-                {...field}
-                type="text"
-                placeholder="Enter the URL"
-                className="block w-full rounded-md border border-dashed border-gray-900/25 px-4 py-3"
-              />
-            )}
-          />
-          {errors.buttonLink && (
-            <p className="text-red-500 text-sm mt-1">
-              {errors.buttonLink.message}
-            </p>
-          )}
-        </div>
-      </div>
-
-      {/* Submit & Clear Button */}
-      <div className="flex justify-between items-center mt-6">
-        <button
-          type="submit"
-          className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition"
-        >
-          Submit
-        </button>
-        <button
-          type="button"
-          onClick={() => {
-            reset();
-            setPreview(null);
-            if (fileInputRef.current) fileInputRef.current.value = "";
-          }}
-          className="bg-gray-300 text-gray-800 px-6 py-2 rounded-md hover:bg-gray-400 transition"
-        >
-          Clear Form
-        </button>
-      </div>
-    </form>
+      </form>
     </div>
   );
 }
