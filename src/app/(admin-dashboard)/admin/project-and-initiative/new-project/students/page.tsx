@@ -1,8 +1,12 @@
 "use client";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useFieldArray } from "react-hook-form";
 import { useRef, useState } from "react";
 import { FaTrash, FaSquarePlus } from "react-icons/fa6";
 import Tabs from "@/components/create-project-tabs/Tabs";
+import { uploadCardImage } from "lib/uploadCardImage";
+import { cn } from "@/lib/utils";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 type StudentItem = {
   name: string;
@@ -25,27 +29,26 @@ export default function StudentsSection() {
     reset,
     setValue,
     watch,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<FormData>({
     defaultValues: {
       sectionTitleStudents: "",
       sectionDescriptionStudents: "",
-      studentItems: Array(3).fill({
-        name: "",
-        role: "",
-        biography: "",
-        showLinkInput: false,
-        link: "",
-      }),
+      studentItems: [],
     },
+  });
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "studentItems",
   });
 
   const [studentFiles, setStudentFiles] = useState<{
     images: (File | null)[];
     icons: (File | null)[];
   }>({
-    images: [null, null, null],
-    icons: [null, null, null],
+    images: [],
+    icons: [],
   });
 
   const [imagePreviews, setImagePreviews] = useState<{ [key: string]: string }>(
@@ -102,34 +105,95 @@ export default function StudentsSection() {
     setValue(`studentItems.${index}.showLinkInput`, !current);
   };
 
-  const onSubmit = (data: FormData) => {
-    console.log("Submitted Data:", data);
-    console.log(
-      "Uploaded student images:",
-      studentFiles.images.map((f) => (f ? f.name : null))
+  const projectId =
+    typeof window !== "undefined" ? localStorage.getItem("projectId") : null;
+  const router = useRouter();
+
+  const onSubmit = async (data: FormData) => {
+    if (!projectId) {
+      alert("No projectId found");
+      return;
+    }
+    // Upload images and icons for each student item
+    const studentItemsWithFiles = await Promise.all(
+      data.studentItems.map(async (item, idx) => {
+        let imageUrl = "";
+        let iconUrl = "";
+        if (studentFiles.images[idx]) {
+          imageUrl = await uploadCardImage(studentFiles.images[idx]!);
+        }
+        if (studentFiles.icons[idx]) {
+          iconUrl = await uploadCardImage(studentFiles.icons[idx]!);
+        }
+        return {
+          ...item,
+          image: imageUrl,
+          icon: iconUrl,
+        };
+      })
     );
-    console.log(
-      "Uploaded student icons:",
-      studentFiles.icons.map((f) => (f ? f.name : null))
-    );
+    const payload = {
+      ...data,
+      studentItems: studentItemsWithFiles,
+    };
+    const response = await fetch(`/api/projects/${projectId}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+    const result = await response.json();
+    if (response.ok) {
+      localStorage.setItem("projectId", result.id);
+      toast.success("Students section updated successfully!");
+      router.push("/admin/project-and-initiative/new-project/quotation");
+      handleClear();
+    } else {
+      toast.error(result.error || "Failed to update project");
+    }
   };
 
   const handleClear = () => {
     reset({
       sectionTitleStudents: "",
       sectionDescriptionStudents: "",
-      studentItems: Array(3).fill({
-        name: "",
-        role: "",
-        biography: "",
-        showLinkInput: false,
-        link: "",
-      }),
+      studentItems: [],
     });
-    setStudentFiles({ images: [null, null, null], icons: [null, null, null] });
+    setStudentFiles({ images: [], icons: [] });
     setImagePreviews({});
     Object.values(fileInputRefs.current).forEach((input) => {
       if (input) input.value = "";
+    });
+  };
+
+  const handleAddStudent = () => {
+    append({
+      name: "",
+      role: "",
+      biography: "",
+      showLinkInput: false,
+      link: "",
+    });
+    setStudentFiles((prev) => ({
+      images: [...prev.images, null],
+      icons: [...prev.icons, null],
+    }));
+  };
+
+  const handleRemoveStudent = (index: number) => {
+    remove(index);
+    setStudentFiles((prev) => {
+      const newImages = [...prev.images];
+      const newIcons = [...prev.icons];
+      newImages.splice(index, 1);
+      newIcons.splice(index, 1);
+      return { images: newImages, icons: newIcons };
+    });
+    setImagePreviews((prev) => {
+      const newPreviews = { ...prev };
+      delete newPreviews[`studentImage${index}`];
+      return newPreviews;
     });
   };
 
@@ -204,9 +268,9 @@ export default function StudentsSection() {
           </div>
 
           <div className="mt-5 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-            {[0, 1, 2].map((index) => (
+            {fields.map((field, index) => (
               <div
-                key={index}
+                key={field.id}
                 className="border border-gray-300 border-dashed rounded-xl px-4 py-8"
               >
                 <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-2">
@@ -362,10 +426,16 @@ export default function StudentsSection() {
                 )}
 
                 <div className="flex justify-end space-x-4 col-span-2 mt-3">
-                  <span className="text-blue-600 cursor-pointer hover:text-blue-700">
+                  <span
+                    className="text-blue-600 cursor-pointer hover:text-blue-700"
+                    onClick={handleAddStudent}
+                  >
                     <FaSquarePlus />
                   </span>
-                  <span className="text-red-500 hover:text-red-600 cursor-pointer w-4 h-4">
+                  <span
+                    className="text-red-500 hover:text-red-600 cursor-pointer w-4 h-4"
+                    onClick={() => handleRemoveStudent(index)}
+                  >
                     <FaTrash />
                   </span>
                 </div>
@@ -374,18 +444,31 @@ export default function StudentsSection() {
           </div>
 
           <div className="flex justify-between space-x-6 my-8">
+            <div className="flex space-x-2">
+              <button
+                type="button"
+                onClick={handleAddStudent}
+                className="bg-blue-100 text-blue-700 px-6 py-2 rounded hover:bg-blue-200 transition border border-blue-400"
+              >
+                Add Student
+              </button>
+              <button
+                type="button"
+                onClick={handleClear}
+                className="bg-gray-400 text-white px-6 py-2 rounded hover:bg-gray-500 transition"
+              >
+                Clear
+              </button>
+            </div>
             <button
               type="submit"
-              className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition"
+              className={cn(
+                "bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition",
+                isSubmitting && "opacity-50 cursor-not-allowed"
+              )}
+              disabled={isSubmitting}
             >
-              Submit
-            </button>
-            <button
-              type="button"
-              onClick={handleClear}
-              className="bg-gray-400 text-white px-6 py-2 rounded hover:bg-gray-500 transition"
-            >
-              Clear
+              {isSubmitting ? "Submitting..." : "Submit"}
             </button>
           </div>
         </form>

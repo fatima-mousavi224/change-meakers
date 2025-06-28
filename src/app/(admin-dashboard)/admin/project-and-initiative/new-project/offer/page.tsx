@@ -1,7 +1,11 @@
 "use client";
 
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import Tabs from "@/components/create-project-tabs/Tabs";
+import { cn } from "@/lib/utils";
+import { uploadCardImage } from "lib/uploadCardImage";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 interface OfferIcon {
   iconTitle: string;
@@ -23,10 +27,10 @@ type FormData = {
 export default function Offer() {
   const {
     handleSubmit,
-    control,
     reset,
     setValue,
     watch,
+    formState: { errors, isSubmitting },
   } = useForm<FormData>({
     defaultValues: {
       offerIcons: [
@@ -37,6 +41,8 @@ export default function Offer() {
   });
 
   const offerIcons = watch("offerIcons"); // watch for offerIcons array
+  const projectId = localStorage.getItem("projectId");
+  const router = useRouter();
 
   const setRef = (name: string) => (el: HTMLInputElement | null) => {
     if (el) el.value = ""; // optional: reset file input
@@ -54,11 +60,51 @@ export default function Offer() {
     reader.readAsDataURL(file);
   };
 
-  const onSubmit = (data: FormData) => {
-    // The data now includes files and previews
-    console.log("Form Data:", data);
+  const onSubmit = async (data: FormData) => {
+    // Upload icons to Firebase and replace iconFile with URL
+    const offerIconsWithUrls = await Promise.all(
+      data.offerIcons.map(async (icon, idx) => {
+        if (icon.iconFile) {
+          const url = await uploadCardImage(icon.iconFile);
+          return {
+            iconTitle: icon.iconTitle,
+            shortDescription: icon.shortDescription,
+            url,
+          };
+        }
+        return {
+          iconTitle: icon.iconTitle,
+          shortDescription: icon.shortDescription,
+          url: icon.iconPreviewUrl || "",
+        };
+      })
+    );
 
-    // For actual upload, you might need to prepare FormData object for fetch/Axios
+    const payload = {
+      offerIcons: offerIconsWithUrls,
+    };
+
+    try {
+      const response = await fetch(`/api/projects/${projectId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+      const result = await response.json();
+      if (response.ok) {
+        localStorage.setItem("projectId", result.projectId);
+        toast.success("Project updated successfully!");
+        router.push("/admin/project-and-initiative/new-project/team");
+        reset();
+      } else {
+        toast.error(result.error || "Failed to update project.");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to update project.");
+    }
   };
 
   return (
@@ -68,8 +114,6 @@ export default function Offer() {
       </h2>
       <Tabs />
       <form onSubmit={handleSubmit(onSubmit)}>
-        {/* ... other sections ... */}
-
         {/* Offer Icons Section */}
         <section className="border-2 my-6 rounded-lg p-4 md:p-8 lg:px-14 bg-white">
           <h2 className="text-xl font-semibold mb-4 text-sky-800">
@@ -113,42 +157,40 @@ export default function Offer() {
                       <label className="block text-sm/6 font-medium text-gray-900">
                         Icon Title
                       </label>
-                      <Controller
+                      <input
                         name={`offerIcons.${index}.iconTitle`}
-                        control={control}
-                        rules={{
-                          required: "Icon Title is required",
-                          maxLength: 50,
-                        }}
-                        render={({ field }) => (
-                          <input
-                            {...field}
-                            type="text"
-                            placeholder="Enter icon title"
-                            className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2"
-                          />
-                        )}
+                        type="text"
+                        placeholder="Enter icon title"
+                        className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2"
+                        value={offerIcons[index]?.iconTitle || ""}
+                        onChange={(e) =>
+                          setValue(
+                            `offerIcons.${index}.iconTitle`,
+                            e.target.value
+                          )
+                        }
+                        maxLength={50}
+                        required
                       />
                     </div>
                     <div>
                       <label className="block text-sm/6 font-medium text-gray-900">
                         Short Description
                       </label>
-                      <Controller
+                      <textarea
                         name={`offerIcons.${index}.shortDescription`}
-                        control={control}
-                        rules={{
-                          required: "Short Description is required",
-                          maxLength: 200,
-                        }}
-                        render={({ field }) => (
-                          <textarea
-                            {...field}
-                            placeholder="Enter short description"
-                            className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2"
-                            rows={3}
-                          />
-                        )}
+                        placeholder="Enter short description"
+                        className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2"
+                        rows={3}
+                        value={offerIcons[index]?.shortDescription || ""}
+                        onChange={(e) =>
+                          setValue(
+                            `offerIcons.${index}.shortDescription`,
+                            e.target.value
+                          )
+                        }
+                        maxLength={200}
+                        required
                       />
                     </div>
                   </div>
@@ -162,9 +204,13 @@ export default function Offer() {
         <div className="mt-6 flex justify-between gap-4">
           <button
             type="submit"
-            className="px-6 py-2 bg-sky-600 text-white rounded-md shadow hover:bg-sky-700 transition"
+            className={cn(
+              "px-6 py-2 bg-sky-600 text-white rounded-md shadow hover:bg-sky-700 transition",
+              isSubmitting && "opacity-50 cursor-not-allowed"
+            )}
+            disabled={isSubmitting}
           >
-            Submit
+            {isSubmitting ? "Submitting..." : "Submit"}
           </button>
           <button
             type="button"

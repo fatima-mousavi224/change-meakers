@@ -1,8 +1,12 @@
 "use client";
 
 import Tabs from "@/components/create-project-tabs/Tabs";
+import { cn } from "@/lib/utils";
+import { uploadCardImage } from "lib/uploadCardImage";
+import { useRouter } from "next/navigation";
 import React, { useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { toast } from "react-hot-toast";
 
 export default function NewsletterForm() {
   const fileInputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
@@ -14,13 +18,16 @@ export default function NewsletterForm() {
   const {
     control,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
     reset,
   } = useForm();
 
   const setRef = (name: string) => (el: HTMLInputElement | null) => {
     fileInputRefs.current[name] = el;
   };
+
+  const projectId = localStorage.getItem("projectId");
+  const router = useRouter();
 
   const handleFileChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -49,9 +56,53 @@ export default function NewsletterForm() {
     });
   };
 
-  const onSubmit = (data: any) => {
-    console.log("Newsletter Data:", data);
-    console.log("Newsletter Files:", files);
+  const onSubmit = async (data: any) => {
+    // Attach images to newsletterItems
+    let newsletterItemsWithImages = await Promise.all(
+      (data.newsletterItems || []).map(async (item: any, idx: number) => {
+        const file = files[`newsletterImage${idx + 1}`];
+        let imageUrl = null;
+        if (file) {
+          try {
+            imageUrl = await uploadCardImage(file);
+          } catch (err) {
+            toast.error(`Failed to upload image for item ${idx + 1}`);
+          }
+        }
+        // Ensure date is ISO-8601 or null
+        let date = item.date ? new Date(item.date).toISOString() : null;
+
+        return {
+          ...item,
+          date,
+          newsLetterImage: imageUrl,
+        };
+      })
+    );
+
+    const finalData = {
+      ...data,
+      newsletterItems: newsletterItemsWithImages,
+    };
+
+
+    try {
+      const res = await fetch(`/api/projects/${projectId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(finalData),
+      });
+      if (!res.ok) throw new Error("Failed to update project");
+      if (res.ok) {
+        localStorage.setItem("projectId", projectId!);
+        toast.success("Project updated successfully!");
+        router.push("/admin/project-and-initiative/new-project/live-moments");
+        reset();
+        setFiles({});
+      }
+    } catch (err: any) {
+      toast.error(err.message || "An error occurred");
+    }
   };
 
   return (
@@ -212,6 +263,7 @@ export default function NewsletterForm() {
                           {...field}
                           placeholder="Date"
                           className="w-full border border-dashed rounded px-2 py-1"
+                          type="date"
                         />
                       )}
                     />
@@ -247,9 +299,13 @@ export default function NewsletterForm() {
           <div className="flex justify-between mt-6">
             <button
               type="submit"
-              className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
+              className={cn(
+                "bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700",
+                isSubmitting && "opacity-50 cursor-not-allowed"
+              )}
+              disabled={isSubmitting}
             >
-              Submit
+              {isSubmitting ? "Submitting..." : "Submit"}
             </button>
             <button
               type="button"

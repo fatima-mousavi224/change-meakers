@@ -2,7 +2,11 @@
 
 import Tabs from "@/components/create-project-tabs/Tabs";
 import { useState, useRef } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
+import { uploadCardImage } from "lib/uploadCardImage";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
+import { cn } from "@/lib/utils";
 
 interface VisionGoalFormValues {
   visionTitle: string;
@@ -14,11 +18,11 @@ interface VisionGoalFormValues {
 
 export default function VisionGoalForm() {
   const {
-    control,
+    register,
     handleSubmit,
     setValue,
     reset,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<VisionGoalFormValues>({
     defaultValues: {
       visionGoalImages: [null, null, null, null],
@@ -29,6 +33,8 @@ export default function VisionGoalForm() {
     {}
   );
   const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
+  const router = useRouter();
+  const projectId = localStorage.getItem("projectId");
 
   const setRef = (key: string) => (ref: HTMLInputElement | null) => {
     fileInputRefs.current[key] = ref;
@@ -53,12 +59,48 @@ export default function VisionGoalForm() {
     }
   };
 
-  const onSubmit = (data: VisionGoalFormValues) => {
-    console.log("Submitted Data:", {
-      ...data,
-      visionGoalImages: data.visionGoalImages.map((f) => f?.name || null),
-    });
-    alert("Data logged to console!");
+  const onSubmit = async (data: VisionGoalFormValues) => {
+    try {
+      // Upload each image to Firebase and get URLs
+      const uploadedImageUrls = await Promise.all(
+        (data.visionGoalImages || []).map(async (file) => {
+          if (file) {
+            return await uploadCardImage(file);
+          }
+          return null;
+        })
+      );
+      // Prepare payload with image URLs, do NOT send visionGoalImages
+      const { visionGoalImages, ...rest } = data;
+      const payload = {
+        ...rest,
+        visionGoalImage1: uploadedImageUrls[0],
+        visionGoalImage2: uploadedImageUrls[1],
+        visionGoalImage3: uploadedImageUrls[2],
+        visionGoalImage4: uploadedImageUrls[3],
+      };
+      const res = await fetch(`/api/projects/${projectId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) {
+        toast.success("Vision & Goal section saved!");
+        router.push("/admin/project-and-initiative/new-project/about-program");
+        reset();
+        setImagePreviews({});
+        Object.values(fileInputRefs.current).forEach((input) => {
+          if (input) input.value = "";
+        });
+      } else {
+        toast.error("Failed to save Vision & Goal section.");
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      toast.error("Failed to save Vision & Goal section. Please try again.");
+    }
   };
 
   return (
@@ -79,18 +121,14 @@ export default function VisionGoalForm() {
             <label className="block text-sm font-medium text-gray-900">
               Vision Title
             </label>
-            <Controller
-              name="visionTitle"
-              control={control}
-              rules={{ required: "Vision Title is required", maxLength: 50 }}
-              render={({ field }) => (
-                <input
-                  {...field}
-                  type="text"
-                  placeholder="e.g. 'Our Vision'"
-                  className="block w-full rounded-md border border-dashed border-gray-300 px-6 py-3"
-                />
-              )}
+            <input
+              {...register("visionTitle", {
+                required: "Vision Title is required",
+                maxLength: 50,
+              })}
+              type="text"
+              placeholder="e.g. 'Our Vision'"
+              className="block w-full rounded-md border border-dashed border-gray-300 px-6 py-3"
             />
             {errors.visionTitle && (
               <p className="text-red-500 text-sm">
@@ -103,18 +141,14 @@ export default function VisionGoalForm() {
             <label className="block text-sm font-medium text-gray-900">
               Vision Text
             </label>
-            <Controller
-              name="visionText"
-              control={control}
-              rules={{ required: "Vision Text is required", maxLength: 200 }}
-              render={({ field }) => (
-                <input
-                  {...field}
-                  type="text"
-                  placeholder="Write something here..."
-                  className="block w-full rounded-md border border-dashed border-gray-300 px-6 py-3"
-                />
-              )}
+            <input
+              {...register("visionText", {
+                required: "Vision Text is required",
+                maxLength: 200,
+              })}
+              type="text"
+              placeholder="Write something here..."
+              className="block w-full rounded-md border border-dashed border-gray-300 px-6 py-3"
             />
             {errors.visionText && (
               <p className="text-red-500 text-sm">
@@ -127,18 +161,14 @@ export default function VisionGoalForm() {
             <label className="block text-sm font-medium text-gray-900">
               Goal Title
             </label>
-            <Controller
-              name="goalTitle"
-              control={control}
-              rules={{ required: "Goal Title is required", maxLength: 50 }}
-              render={({ field }) => (
-                <input
-                  {...field}
-                  type="text"
-                  placeholder="e.g. 'Our Goal'"
-                  className="block w-full rounded-md border border-dashed border-gray-300 px-6 py-3"
-                />
-              )}
+            <input
+              {...register("goalTitle", {
+                required: "Goal Title is required",
+                maxLength: 50,
+              })}
+              type="text"
+              placeholder="e.g. 'Our Goal'"
+              className="block w-full rounded-md border border-dashed border-gray-300 px-6 py-3"
             />
             {errors.goalTitle && (
               <p className="text-red-500 text-sm">{errors.goalTitle.message}</p>
@@ -149,18 +179,14 @@ export default function VisionGoalForm() {
             <label className="block text-sm font-medium text-gray-900">
               Goal Text
             </label>
-            <Controller
-              name="goalText"
-              control={control}
-              rules={{ required: "Goal Text is required", maxLength: 200 }}
-              render={({ field }) => (
-                <input
-                  {...field}
-                  type="text"
-                  placeholder="Write something here..."
-                  className="block w-full rounded-md border border-dashed border-gray-300 px-6 py-3"
-                />
-              )}
+            <input
+              {...register("goalText", {
+                required: "Goal Text is required",
+                maxLength: 200,
+              })}
+              type="text"
+              placeholder="Write something here..."
+              className="block w-full rounded-md border border-dashed border-gray-300 px-6 py-3"
             />
             {errors.goalText && (
               <p className="text-red-500 text-sm">{errors.goalText.message}</p>
@@ -237,28 +263,30 @@ export default function VisionGoalForm() {
             })}
           </div>
         </div>
-<div className="flex justify-between items-center">
-  
-        <button
-          type="submit"
-          className="mt-6 bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700"
-        >
-          Submit
-        </button>
-         <button
-          type="button"
-          onClick={() => {
-            reset();
-            setImagePreviews({});
-            Object.values(fileInputRefs.current).forEach((input) => {
-              if (input) input.value = "";
-            });
-          }}
-          className="bg-gray-300 text-gray-800 px-6 py-2 rounded-md hover:bg-gray-400 transition"
-        >
-          Clear Form
-        </button>
-</div>
+        <div className="flex justify-between items-center">
+          <button
+            type="submit"
+            className={cn(
+              "mt-6 bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700",
+              isSubmitting && "opacity-50 cursor-not-allowed"
+            )}
+          >
+            {isSubmitting ? "Submitting..." : "Submit"}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              reset();
+              setImagePreviews({});
+              Object.values(fileInputRefs.current).forEach((input) => {
+                if (input) input.value = "";
+              });
+            }}
+            className="bg-gray-300 text-gray-800 px-6 py-2 rounded-md hover:bg-gray-400 transition"
+          >
+            Clear Form
+          </button>
+        </div>
       </form>
     </div>
   );

@@ -1,7 +1,11 @@
-'use client'
+"use client";
 import Tabs from "@/components/create-project-tabs/Tabs";
+import { uploadCardImage } from "lib/uploadCardImage";
+import { useRouter } from "next/navigation";
 import React, { useRef } from "react";
 import { Controller, useForm } from "react-hook-form";
+import toast from "react-hot-toast";
+import { cn } from "utilities/cn";
 
 function PhotoAlbum() {
   // Add this ref to store file input references
@@ -10,50 +14,95 @@ function PhotoAlbum() {
   const {
     control,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
     reset,
+    register,
   } = useForm();
 
   // State for files and image previews
   const [files, setFiles] = React.useState<{ [key: string]: File | null }>({});
-  const [imagePreviews, setImagePreviews] = React.useState<{ [key: string]: string }>({});
+  const [imagePreviews, setImagePreviews] = React.useState<{
+    [key: string]: string;
+  }>({});
 
-  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>, arg1: string): void {
+  const projectId = localStorage.getItem("projectId");
+  const router = useRouter();
+
+  function handleFileChange(
+    e: React.ChangeEvent<HTMLInputElement>,
+    arg1: string
+  ): void {
     const file = e.target.files && e.target.files[0];
     if (file) {
       setFiles((prev) => ({ ...prev, [arg1]: file }));
       const reader = new FileReader();
       reader.onloadend = () => {
-        setImagePreviews((prev) => ({ ...prev, [arg1]: reader.result as string }));
+        setImagePreviews((prev) => ({
+          ...prev,
+          [arg1]: reader.result as string,
+        }));
       };
       reader.readAsDataURL(file);
     }
   }
 
   // Define the onSubmitPhotoAlbum function
-  function onSubmitPhotoAlbum(data: any) {
-    // Handle form submission logic here
-    console.log("Photo Album Form Data:", data);
-    console.log("Uploaded Images:", files);
-    // You can also handle files here if needed
-  }
+  const onSubmit = async (data: any) => {
+    try {
+      // 1. Collect image files from local files state
+      const imageKeys = [1, 2, 3, 4].map((i) => `photoAlbumImage${i}`);
+      const uploadedImageUrls: { [key: string]: string } = {};
+      for (const key of imageKeys) {
+        const file = files[key]; // Use local files state
+        if (file) {
+          // Call uploadCardImage for each file
+          // @ts-ignore
+          const url = await uploadCardImage(file);
+          uploadedImageUrls[key] = url;
+        }
+      }
+      // 2. Prepare payload
+      const payload = {
+        sectionTitlePhoto: data.sectionTitlePhoto,
+        sectionDescriptionPhoto: data.sectionDescriptionPhoto,
+        ...uploadedImageUrls,
+      };
+      // 3. Send PATCH request
+      const response = await fetch(`/api/projects/${projectId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const result = await response.json();
+      if (!response.ok) {
+        toast.error("Failed to save photo album section.");
+      }
+      if (response.ok) {
+        localStorage.setItem("projectId", result.id);
+        toast.success("Photo album section saved successfully!");
+        router.push(`/admin/project-and-initiative/new-project/news-letter`);
+        clearPhotoAlbumForm();
+      }
+    } catch (error: any) {
+      toast.error(
+        error.message || "An error occurred while saving the project section"
+      );
+    }
+  };
 
   // Clear form handler
   function clearPhotoAlbumForm() {
     reset();
     setFiles({});
     setImagePreviews({});
-    Object.values(fileInputRefs.current).forEach((input) => {
-      if (input) input.value = "";
-    });
   }
 
   return (
-      <div className="max-w-screen-2xl mx-auto">
-              <h2 className="text-lg md:text-3xl font-bold text-sky-800 my-6 text-center md:text-left">
-                Create New Project
-              </h2>
-              <Tabs />
+    <div className="max-w-screen-2xl mx-auto">
+      <h2 className="text-lg md:text-3xl font-bold text-sky-800 my-6 text-center md:text-left">
+        Create New Project
+      </h2>
+      <Tabs />
       {/* Photo Album Section */}
       <section className="border-2 my-6 rounded-lg p-4 md:p-8 lg:px-14 bg-white">
         <h3 className="text-sky-800 text-xl font-semibold">
@@ -64,7 +113,7 @@ function PhotoAlbum() {
           <span className="bg-sky-700 h-2 w-2 rounded-full"></span>
           <span className="text-gray-400">e.g., "Photos"</span>
         </div>
-        <form onSubmit={handleSubmit(onSubmitPhotoAlbum)}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
             <div className="col-span-1 mt-4 md:mt-0">
               <label className="block text-sm/6 font-medium text-gray-900">
@@ -171,13 +220,14 @@ function PhotoAlbum() {
                     </svg>
                   )}
                   <input
+                    {...register(`photoAlbumImage${index}`)}
                     type="file"
                     accept=".jpg,.jpeg,.png"
                     onChange={(e) =>
                       handleFileChange(e, `photoAlbumImage${index}`)
                     }
                     className="absolute inset-0 opacity-0 cursor-pointer"
-                      ref={el => {
+                    ref={(el) => {
                       if (fileInputRefs && fileInputRefs.current) {
                         fileInputRefs.current[`photoAlbumImage${index}`] = el;
                       }
@@ -194,9 +244,13 @@ function PhotoAlbum() {
           <div className="flex justify-between mt-4">
             <button
               type="submit"
-              className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+              className={cn(
+                "bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600",
+                isSubmitting && "opacity-50 cursor-not-allowed"
+              )}
+              disabled={isSubmitting}
             >
-              Submit
+              {isSubmitting ? "Submitting..." : "Submit"}
             </button>
             <button
               type="button"
