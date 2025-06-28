@@ -271,9 +271,9 @@ model StudentItem {
 model Voice {
   id          String      @id @default(auto()) @map("_id") @db.ObjectId
   projectId   String      @db.ObjectId
-  quote       String
-  name        String
-  description String
+  quote       String?
+  name        String?
+  description String?
   icon        String?
   project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
   createdAt   DateTime @default(now())
@@ -306,6 +306,7 @@ model NewsletterItem {
   title       String
   description String
   url         String?
+  newsLetterImage String?
   project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -315,8 +316,8 @@ model OfferIcon {
   id          String      @id @default(auto()) @map("_id") @db.ObjectId
   projectId   String      @db.ObjectId
   url         String
-  iconTitle   String?
-  shortDescription String?
+  iconTitle   String
+  shortDescription String
   project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

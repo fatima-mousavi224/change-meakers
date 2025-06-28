@@ -1,9 +1,13 @@
 "use client";
 
-import { Controller, useForm } from "react-hook-form";
-import { useRef, useState } from "react";
-import { FaTrash, FaSquarePlus } from "react-icons/fa6"; // or "react-icons/fa"
 import Tabs from "@/components/create-project-tabs/Tabs";
+import { cn } from "@/lib/utils";
+import { uploadCardImage } from "lib/uploadCardImage";
+import { useRouter } from "next/navigation";
+import { useRef, useState } from "react";
+import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
+import { FaSquarePlus, FaTrash } from "react-icons/fa6";
 
 type TeamCard = {
   name: string;
@@ -21,23 +25,26 @@ type FormData = {
 
 export default function TeamSectionForm() {
   const {
-    control,
     handleSubmit,
     reset,
     setValue,
     watch,
-    formState: { errors },
+    formState: { errors, isSubmitting },
+    register,
+    getValues,
   } = useForm<FormData>({
     defaultValues: {
       sectionTitleTeam: "",
       sectionDescriptionTeam: "",
-      teamCards: Array(3).fill({
-        name: "",
-        role: "",
-        biography: "",
-        showLinkInput: false,
-        link: "",
-      }),
+      teamCards: [
+        {
+          name: "",
+          role: "",
+          biography: "",
+          showLinkInput: false,
+          link: "",
+        },
+      ],
     },
   });
 
@@ -46,12 +53,14 @@ export default function TeamSectionForm() {
     images: (File | null)[];
     icons: (File | null)[];
   }>({
-    images: [null, null, null],
-    icons: [null, null, null],
+    images: [null],
+    icons: [null],
   });
 
   // For image previews
-  const [imagePreviews, setImagePreviews] = useState<{ [key: string]: string }>({});
+  const [imagePreviews, setImagePreviews] = useState<{ [key: string]: string }>(
+    {}
+  );
 
   // refs to clear file inputs
   const fileInputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
@@ -60,8 +69,14 @@ export default function TeamSectionForm() {
     fileInputRefs.current[name] = el;
   };
 
+  const projectId = localStorage.getItem("projectId");
+  const router = useRouter();
+
   // Handle image upload & preview for team photos
-  const handleTeamImageChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+  const handleTeamImageChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    index: number
+  ) => {
     const file = e.target.files?.[0];
     if (!file) return;
     if (file.size > 10 * 1024 * 1024) {
@@ -71,7 +86,10 @@ export default function TeamSectionForm() {
     // Preview
     const reader = new FileReader();
     reader.onloadend = () => {
-      setImagePreviews((prev) => ({ ...prev, [`teamImage${index}`]: reader.result as string }));
+      setImagePreviews((prev) => ({
+        ...prev,
+        [`teamImage${index}`]: reader.result as string,
+      }));
     };
     reader.readAsDataURL(file);
 
@@ -84,7 +102,10 @@ export default function TeamSectionForm() {
   };
 
   // Handle icon upload
-  const handleTeamIconChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+  const handleTeamIconChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    index: number
+  ) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -101,14 +122,50 @@ export default function TeamSectionForm() {
     setValue(`teamCards.${index}.showLinkInput`, !current);
   };
 
-  const onSubmit = (data: FormData) => {
-    // Log form data + file info (file names)
-    const filesInfo = {
-      images: teamCardFiles.images.map((f) => (f ? f.name : null)),
-      icons: teamCardFiles.icons.map((f) => (f ? f.name : null)),
-    };
-    console.log("Submitted Data:", data);
-    console.log("Uploaded Files:", filesInfo);
+  const onSubmit = async (data: FormData) => {
+    try {
+      // Upload images and icons for each team card
+      const teamCardsWithFiles = await Promise.all(
+        data.teamCards.map(async (card, idx) => {
+          let imageUrl = "";
+          let iconUrl = "";
+          if (teamCardFiles.images[idx]) {
+            imageUrl = await uploadCardImage(teamCardFiles.images[idx]!);
+          }
+          if (teamCardFiles.icons[idx]) {
+            iconUrl = await uploadCardImage(teamCardFiles.icons[idx]!);
+          }
+          return {
+            ...card,
+            image: imageUrl,
+            icon: iconUrl,
+          };
+        })
+      );
+
+      const payload = {
+        ...data,
+        teamCards: teamCardsWithFiles,
+      };
+      const response = await fetch(`/api/projects/${projectId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+      const result = await response.json();
+      if (response.ok) {
+        localStorage.setItem("projectId", result.id);
+        toast.success("Team section updated successfully!");
+        router.push("/admin/project-and-initiative/new-project/students");
+        handleClear();
+      }
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.message || "Failed to update team section."
+      );
+    }
   };
 
   // Clear all form fields + previews + files
@@ -132,6 +189,39 @@ export default function TeamSectionForm() {
     });
   };
 
+  // Add a new team card
+  const handleAddTeamCard = () => {
+    const currentCards = getValues("teamCards");
+    setValue("teamCards", [
+      ...currentCards,
+      { name: "", role: "", biography: "", showLinkInput: false, link: "" },
+    ]);
+    setTeamCardFiles((prev) => ({
+      images: [...prev.images, null],
+      icons: [...prev.icons, null],
+    }));
+  };
+
+  // Remove a team card
+  const handleRemoveTeamCard = (index: number) => {
+    const currentCards = getValues("teamCards");
+    if (currentCards.length === 1) return; // Prevent removing last card
+    const newCards = currentCards.filter((_, i) => i !== index);
+    setValue("teamCards", newCards);
+    setTeamCardFiles((prev) => ({
+      images: prev.images.filter((_, i) => i !== index),
+      icons: prev.icons.filter((_, i) => i !== index),
+    }));
+    setImagePreviews((prev) => {
+      const newPreviews = { ...prev };
+      delete newPreviews[`teamImage${index}`];
+      return newPreviews;
+    });
+    // Remove file input refs
+    delete fileInputRefs.current[`teamImage${index}`];
+    delete fileInputRefs.current[`StatusIcon${index}`];
+  };
+
   return (
     <div className="max-w-screen-2xl mx-auto">
       <h2 className="text-lg md:text-3xl font-bold text-sky-800 my-6 text-center md:text-left">
@@ -141,7 +231,9 @@ export default function TeamSectionForm() {
       <form onSubmit={handleSubmit(onSubmit)}>
         {/* Team Section */}
         <section className="border-2 my-6 rounded-lg p-4 md:p-8 lg:px-14 bg-white">
-          <h3 className="text-sky-800 text-xl font-semibold">8. Team Section</h3>
+          <h3 className="text-sky-800 text-xl font-semibold">
+            8. Team Section
+          </h3>
           <p>Label's Name</p>
           <div className="bg-gray-200 w-40 space-x-4 px-2 my-2 py-2 rounded-full flex justify-center items-center">
             <span className="bg-sky-700 h-2 w-2 rounded-full"></span>
@@ -151,55 +243,49 @@ export default function TeamSectionForm() {
           {/* Section Title & Description */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
             <div className="col-span-1 mt-4 md:mt-0">
-              <label className="block text-sm/6 font-medium text-gray-900">Section Title</label>
-              <Controller
-                name="sectionTitleTeam"
-                control={control}
-                rules={{
+              <label className="block text-sm/6 font-medium text-gray-900">
+                Section Title
+              </label>
+              <input
+                {...register("sectionTitleTeam", {
                   required: "Section Title is required",
                   maxLength: 50,
-                }}
-                render={({ field }) => (
-                  <input
-                    {...field}
-                    type="text"
-                    placeholder="e.g. 'Our Team'"
-                    className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2"
-                  />
-                )}
+                })}
+                type="text"
+                placeholder="e.g. 'Our Team'"
+                className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2"
               />
               {errors.sectionTitleTeam && (
-                <p className="text-red-500 text-sm">{errors.sectionTitleTeam.message}</p>
+                <p className="text-red-500 text-sm">
+                  {errors.sectionTitleTeam.message}
+                </p>
               )}
             </div>
 
             <div className="col-span-2 mt-4 md:mt-0">
-              <label className="block text-sm/6 font-medium text-gray-900">Section Description</label>
-              <Controller
-                name="sectionDescriptionTeam"
-                control={control}
-                rules={{
+              <label className="block text-sm/6 font-medium text-gray-900">
+                Section Description
+              </label>
+              <textarea
+                {...register("sectionDescriptionTeam", {
                   required: "Section Description is required",
                   maxLength: 1000,
-                }}
-                render={({ field }) => (
-                  <textarea
-                    {...field}
-                    placeholder="write something here..."
-                    className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2"
-                    rows={4}
-                  />
-                )}
+                })}
+                placeholder="write something here..."
+                className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2"
+                rows={4}
               />
               {errors.sectionDescriptionTeam && (
-                <p className="text-red-500 text-sm">{errors.sectionDescriptionTeam.message}</p>
+                <p className="text-red-500 text-sm">
+                  {errors.sectionDescriptionTeam.message}
+                </p>
               )}
             </div>
           </div>
 
           {/* Team Cards */}
           <div className="mt-5 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-            {[0, 1, 2].map((index) => (
+            {watch("teamCards").map((_, index: number) => (
               <div
                 key={index}
                 className="border border-gray-300 border-dashed rounded-xl px-4 py-8"
@@ -227,7 +313,9 @@ export default function TeamSectionForm() {
                               return newPreviews;
                             });
                             if (fileInputRefs.current[`teamImage${index}`]) {
-                              fileInputRefs.current[`teamImage${index}`]!.value = "";
+                              fileInputRefs.current[
+                                `teamImage${index}`
+                              ]!.value = "";
                             }
                           }}
                         >
@@ -254,47 +342,31 @@ export default function TeamSectionForm() {
                       onChange={(e) => handleTeamImageChange(e, index)}
                       ref={setRef(`teamImage${index}`)}
                     />
-                    <p className="mt-4 font-semibold text-blue-500">Drag & Drop your Photo</p>
+                    <p className="mt-4 font-semibold text-blue-500">
+                      Drag & Drop your Photo
+                    </p>
                     <p className="text-gray-500">here or Browse up to 10 MB</p>
                   </div>
                 </div>
 
                 {/* Inputs */}
-                <Controller
-                  name={`teamCards.${index}.name`}
-                  control={control}
-                  render={({ field }) => (
-                    <input
-                      {...field}
-                      type="text"
-                      placeholder="Enter Person's Name..."
-                      className="border-none focus:ring-0 w-full mt-2 placeholder:text-lg"
-                    />
-                  )}
+                <input
+                  {...register(`teamCards.${index}.name` as const)}
+                  type="text"
+                  placeholder="Enter Person's Name..."
+                  className="border-none focus:ring-0 w-full mt-2 placeholder:text-lg"
                 />
-                <Controller
-                  name={`teamCards.${index}.role`}
-                  control={control}
-                  render={({ field }) => (
-                    <input
-                      {...field}
-                      type="text"
-                      placeholder="Enter their role..."
-                      className="border-none focus:ring-0 w-full"
-                    />
-                  )}
+                <input
+                  {...register(`teamCards.${index}.role` as const)}
+                  type="text"
+                  placeholder="Enter their role..."
+                  className="border-none focus:ring-0 w-full"
                 />
-                <Controller
-                  name={`teamCards.${index}.biography`}
-                  control={control}
-                  render={({ field }) => (
-                    <textarea
-                      {...field}
-                      rows={2}
-                      placeholder="Enter a short biography"
-                      className="border-none focus:ring-0 resize-none w-full placeholder:font-medium"
-                    />
-                  )}
+                <textarea
+                  {...register(`teamCards.${index}.biography` as const)}
+                  rows={2}
+                  placeholder="Enter a short biography"
+                  className="border-none focus:ring-0 resize-none w-full placeholder:font-medium"
                 />
 
                 {/* Add Link and Icon Upload */}
@@ -322,28 +394,14 @@ export default function TeamSectionForm() {
                 </div>
 
                 {/* Show link input if toggled */}
-                <Controller
-                  name={`teamCards.${index}.showLinkInput`}
-                  control={control}
-                  render={({ field }) =>
-                    field.value ? (
-                      <Controller
-                        name={`teamCards.${index}.link`}
-                        control={control}
-                        render={({ field: linkField }) => (
-                          <input
-                            {...linkField}
-                            type="text"
-                            placeholder="Enter the link"
-                            className="border w-full mt-2 border-gray-400 rounded-lg"
-                          />
-                        )}
-                      />
-                    ) : (
-                      <></>
-                    )
-                  }
-                />
+                {watch(`teamCards.${index}.showLinkInput`) ? (
+                  <input
+                    {...register(`teamCards.${index}.link` as const)}
+                    type="text"
+                    placeholder="Enter the link"
+                    className="border w-full mt-2 border-gray-400 rounded-lg"
+                  />
+                ) : null}
 
                 {/* Show uploaded icon preview */}
                 {teamCardFiles.icons[index] && (
@@ -358,10 +416,20 @@ export default function TeamSectionForm() {
 
                 {/* Plus and Trash icons */}
                 <div className="flex justify-end space-x-4 col-span-2 mt-3">
-                  <span className="text-blue-600 cursor-pointer hover:text-blue-700">
+                  <span
+                    className="text-blue-600 cursor-pointer hover:text-blue-700"
+                    onClick={handleAddTeamCard}
+                  >
                     <FaSquarePlus />
                   </span>
-                  <span className="text-red-500 hover:text-red-600 cursor-pointer w-4 h-4">
+                  <span
+                    className={`text-red-500 hover:text-red-600 cursor-pointer w-4 h-4 ${
+                      watch("teamCards").length === 1
+                        ? "opacity-50 cursor-not-allowed"
+                        : ""
+                    }`}
+                    onClick={() => handleRemoveTeamCard(index)}
+                  >
                     <FaTrash />
                   </span>
                 </div>
@@ -374,9 +442,13 @@ export default function TeamSectionForm() {
         <div className="mt-6 flex justify-between gap-4">
           <button
             type="submit"
-            className="px-6 py-2 bg-sky-600 text-white rounded-md shadow hover:bg-sky-700 transition"
+            className={cn(
+              "px-6 py-2 bg-sky-600 text-white rounded-md shadow hover:bg-sky-700 transition",
+              isSubmitting && "opacity-50 cursor-not-allowed"
+            )}
+            disabled={isSubmitting}
           >
-            Submit
+            {isSubmitting ? "Submitting..." : "Submit"}
           </button>
           <button
             type="button"

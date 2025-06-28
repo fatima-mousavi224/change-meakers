@@ -3,6 +3,10 @@
 import { useForm, Controller } from "react-hook-form";
 import { useRef, useState } from "react";
 import Tabs from "@/components/create-project-tabs/Tabs";
+import { cn } from "@/lib/utils";
+import toast from "react-hot-toast";
+import { uploadCardImage } from "lib/uploadCardImage";
+import { useRouter } from "next/navigation";
 
 // Define the form data type
 type FormData = {
@@ -17,11 +21,14 @@ export default function GlobalGoalsSection() {
     {}
   );
 
+  const projectId = localStorage.getItem("projectId");
+  const router = useRouter();
+
   const {
     control,
     handleSubmit,
     reset,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<FormData>({
     defaultValues: {
       sectionTitleSDGs: "",
@@ -29,9 +36,45 @@ export default function GlobalGoalsSection() {
     },
   });
 
-  const onSubmitSDGs = (data: FormData) => {
-    console.log("Global Goals (SDGs) Data:", data);
-    console.log("Images:", files);
+  const onSubmitSDGs = async (data: FormData) => {
+    try {
+      // 1. Upload all selected images and get their URLs
+      const imageUploadPromises = Object.entries(files)
+        .filter(([_, file]) => file)
+        .map(async ([key, file]) => {
+          const url = await uploadCardImage(file!);
+          return { key, url };
+        });
+      const uploadedImages = await Promise.all(imageUploadPromises);
+      // 2. Build sdgsImages array or object (as needed)
+      const sdgsImages: Record<string, string> = {};
+      uploadedImages.forEach(({ key, url }) => {
+        sdgsImages[key] = url;
+      });
+      // 3. Combine with form data
+      const payload = {
+        ...data,
+        sdgsImage1: sdgsImages.sdgsImage0 || null,
+        sdgsImage2: sdgsImages.sdgsImage1 || null,
+        sdgsImage3: sdgsImages.sdgsImage2 || null,
+        sdgsImage4: sdgsImages.sdgsImage3 || null,
+      };
+      // 4. Send PATCH request
+      const res = await fetch(`/api/projects/${projectId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const result = await res.json();
+      if (!res.ok) toast.error(result.error || "Failed to save global goals");
+      if (res.ok) {
+        localStorage.setItem("projectId", result.id);
+        router.push("/admin/project-and-initiative/new-project/related-links");
+        toast.success("Global goals saved successfully!");
+      }
+    } catch (error: any) {
+      toast.error(error.message || "Something went wrong");
+    }
   };
 
   const clearSDGsForm = () => {
@@ -194,9 +237,13 @@ export default function GlobalGoalsSection() {
           <div className="flex justify-between mt-6">
             <button
               type="submit"
-              className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
+              className={cn(
+                "bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700",
+                isSubmitting && "opacity-50 cursor-not-allowed"
+              )}
+              disabled={isSubmitting}
             >
-              Submit
+              {isSubmitting ? "Submitting..." : "Submit"}
             </button>
             <button
               type="button"

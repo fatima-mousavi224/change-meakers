@@ -1,8 +1,12 @@
 "use client";
 
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { useRef, useState } from "react";
 import Tabs from "@/components/create-project-tabs/Tabs";
+import { cn } from "@/lib/utils";
+import { uploadCardImage } from "lib/uploadCardImage";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 type FormData = {
   heroTitleMedia: string;
@@ -15,10 +19,10 @@ type FormData = {
 export default function MediaBlockSection() {
   const {
     handleSubmit,
-    control,
     reset,
     setValue,
-    formState: { errors },
+    formState: { errors, isSubmitting },
+    register,
   } = useForm<FormData>({
     defaultValues: {
       heroTitleMedia: "",
@@ -31,6 +35,9 @@ export default function MediaBlockSection() {
 
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const projectId = localStorage.getItem("projectId");
+  const router = useRouter();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] ?? null;
@@ -54,8 +61,36 @@ export default function MediaBlockSection() {
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
-  const onSubmit = (data: FormData) => {
-    console.log("Media Block Section Data:", data);
+  const onSubmit = async (data: FormData) => {
+    try {
+      let imageUrl = "";
+      if (data.mediaHeroImage) {
+        imageUrl = await uploadCardImage(data.mediaHeroImage);
+      }
+      const payload = {
+        ...data,
+        mediaHeroImage: imageUrl,
+      };
+      const res = await fetch(`/api/projects/${projectId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+      const result = await res.json();
+      if (res.ok) {
+        localStorage.setItem("projectId", result.id);
+        reset();
+        setImagePreview(null);
+        toast.success("Media Block Section updated successfully!");
+        router.push("/admin/project-and-initiative/new-project/offer");
+      }
+    } catch (error) {
+      // Optionally, handle error (e.g., show an error message)
+      console.error(error);
+      toast.error("Failed to update Media Block Section. Please try again.");
+    }
   };
 
   return (
@@ -93,7 +128,7 @@ export default function MediaBlockSection() {
                       >
                         ×
                       </button>
-                       <p className="mt-4 text-center font-semibold text-blue-500">
+                      <p className="mt-4 text-center font-semibold text-blue-500">
                         Drag & Drop your Photo
                       </p>
                       <p className="text-gray-500 text-center">
@@ -141,21 +176,14 @@ export default function MediaBlockSection() {
                 <label className="block text-sm/6 font-medium text-gray-900">
                   Hero Title
                 </label>
-                <Controller
-                  name="heroTitleMedia"
-                  control={control}
-                  rules={{
+                <input
+                  {...register("heroTitleMedia", {
                     required: "Hero Title is required",
                     maxLength: 50,
-                  }}
-                  render={({ field }) => (
-                    <input
-                      {...field}
-                      type="text"
-                      placeholder="write something here..."
-                      className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2"
-                    />
-                  )}
+                  })}
+                  type="text"
+                  placeholder="write something here..."
+                  className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2"
                 />
                 {errors.heroTitleMedia && (
                   <p className="text-red-500 text-sm">
@@ -169,21 +197,14 @@ export default function MediaBlockSection() {
                 <label className="block text-sm/6 font-medium text-gray-900">
                   Short Description
                 </label>
-                <Controller
-                  name="shortDescriptionMedia"
-                  control={control}
-                  rules={{
+                <input
+                  {...register("shortDescriptionMedia", {
                     required: "Short Description is required",
                     maxLength: 200,
-                  }}
-                  render={({ field }) => (
-                    <input
-                      {...field}
-                      type="text"
-                      placeholder="write something here..."
-                      className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2"
-                    />
-                  )}
+                  })}
+                  type="text"
+                  placeholder="write something here..."
+                  className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2"
                 />
                 {errors.shortDescriptionMedia && (
                   <p className="text-red-500 text-sm">
@@ -197,21 +218,14 @@ export default function MediaBlockSection() {
                 <label className="block text-sm/6 font-medium text-gray-900">
                   Video Link
                 </label>
-                <Controller
-                  name="videoLink"
-                  control={control}
-                  rules={{
+                <input
+                  {...register("videoLink", {
                     required: "Video Link is required",
                     maxLength: 200,
-                  }}
-                  render={({ field }) => (
-                    <input
-                      {...field}
-                      type="text"
-                      placeholder="write something here..."
-                      className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2"
-                    />
-                  )}
+                  })}
+                  type="text"
+                  placeholder="write something here..."
+                  className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2"
                 />
                 {errors.videoLink && (
                   <p className="text-red-500 text-sm">
@@ -225,21 +239,14 @@ export default function MediaBlockSection() {
                 <label className="block text-sm/6 font-medium text-gray-900">
                   Full Video Description
                 </label>
-                <Controller
-                  name="fullVideoDescription"
-                  control={control}
-                  rules={{
+                <input
+                  {...register("fullVideoDescription", {
                     required: "Full Video Description is required",
                     maxLength: 500,
-                  }}
-                  render={({ field }) => (
-                    <input
-                      {...field}
-                      type="text"
-                      placeholder="Enter the description"
-                      className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2"
-                    />
-                  )}
+                  })}
+                  type="text"
+                  placeholder="Enter the description"
+                  className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2"
                 />
                 {errors.fullVideoDescription && (
                   <p className="text-red-500 text-sm">
@@ -255,9 +262,12 @@ export default function MediaBlockSection() {
         <div className="mt-6 flex justify-between gap-4 ">
           <button
             type="submit"
-            className="px-6 py-2 bg-sky-600 text-white rounded-md shadow hover:bg-sky-700 transition"
+            className={cn(
+              "px-6 py-2 bg-sky-600 text-white rounded-md shadow hover:bg-sky-700 transition",
+              isSubmitting && "opacity-50 cursor-not-allowed"
+            )}
           >
-            Submit
+            {isSubmitting ? "Submitting..." : "Submit"}
           </button>
           <button
             type="button"

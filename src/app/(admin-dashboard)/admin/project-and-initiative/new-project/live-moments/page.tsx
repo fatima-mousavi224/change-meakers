@@ -1,8 +1,10 @@
-"use client"
-import { useForm, Controller } from "react-hook-form";
-import { FaSquarePlus, FaTrash } from "react-icons/fa6";
+"use client";
 import Tabs from "@/components/create-project-tabs/Tabs";
-import { FaEdit } from "react-icons/fa";
+import { useRouter } from "next/navigation";
+import { Controller, useForm, useFieldArray } from "react-hook-form";
+import toast from "react-hot-toast";
+import { FaSquarePlus, FaTrash } from "react-icons/fa6";
+import { cn } from "utilities/cn";
 
 // Define your form type
 type LiveMoment = {
@@ -18,24 +20,51 @@ function LiveMoments() {
     control,
     handleSubmit,
     reset,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<FormData>({
     defaultValues: {
-      liveMoments: [{ link: "" }, { link: "" }, { link: "" }],
+      liveMoments: [{ link: "" }],
     },
   });
 
-  const onSubmitLiveMoments = (data: FormData) => {
-    console.log("Live Moments Data:", data);
+  const router = useRouter();
+  const projectId = localStorage.getItem("projectId");
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "liveMoments",
+  });
+
+  const onSubmit = async (data: FormData) => {
+    try {
+      const res = await fetch(`/api/projects/${projectId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...data,
+        }),
+      });
+      const result = await res.json();
+      if (res.ok) {
+        toast.success("Live moment saved successfully!");
+        localStorage.setItem("projectId", result.id);
+        router.push(`/admin/project-and-initiative/new-project/global-goals`);
+        reset();
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      toast.error("Failed to save live moment. Please try again.");
+    }
   };
 
   const clearLiveMomentsForm = () => {
     reset({
-      liveMoments: [{ link: "" }, { link: "" }, { link: "" }],
+      liveMoments: [{ link: "" }],
     });
   };
 
-  
   return (
     <div>
       <h2 className="text-lg md:text-3xl font-bold text-sky-800 my-6 text-center md:text-left">
@@ -47,22 +76,29 @@ function LiveMoments() {
         <h3 className="text-sky-800 font-medium text-xl">
           13. Live Moments: Follow Us
         </h3>
-        <form onSubmit={handleSubmit(onSubmitLiveMoments)}>
-          {[0, 1, 2].map((index) => (
+        <form onSubmit={handleSubmit(onSubmit)}>
+          {fields.map((field, index) => (
             <div
-              key={index}
+              key={field.id}
               className="flex flex-col md:flex-row-reverse items-center justify-between"
             >
               <div className="flex justify-center md:justify-end mb-6 md:mb-0 space-x-4">
-                <span className="text-blue-600 cursor-pointer w-4 h-4 hover:text-blue-800">
+                <span
+                  className="text-blue-600 cursor-pointer w-4 h-4 hover:text-blue-800"
+                  onClick={() => append({ link: "" })}
+                  title="Add"
+                >
                   <FaSquarePlus />
                 </span>
-                <span className="text-red-600 cursor-pointer w-4 h-4 hover:text-red-800">
-                  <FaTrash />
-                </span>
-                <span className="text-blue-600 cursor-pointer w-4 h-4 hover:text-blue-800">
-                  <FaEdit />
-                </span>
+                {fields.length > 1 && (
+                  <span
+                    className="text-red-600 cursor-pointer w-4 h-4 hover:text-red-800"
+                    onClick={() => remove(index)}
+                    title="Delete"
+                  >
+                    <FaTrash />
+                  </span>
+                )}
               </div>
               <div className="w-full">
                 <label className="block text-sm font-medium text-gray-900">
@@ -83,7 +119,11 @@ function LiveMoments() {
                 />
                 {errors?.liveMoments?.[index]?.link && (
                   <p className="text-red-500 text-sm">
-                    {errors?.liveMoments[index]?.link?.message as string | undefined}
+                    {
+                      errors?.liveMoments[index]?.link?.message as
+                        | string
+                        | undefined
+                    }
                   </p>
                 )}
               </div>
@@ -92,9 +132,13 @@ function LiveMoments() {
           <div className="flex justify-between mt-6">
             <button
               type="submit"
-              className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
+              className={cn(
+                "bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700",
+                isSubmitting && "opacity-50 cursor-not-allowed"
+              )}
+              disabled={isSubmitting}
             >
-              Submit
+              {isSubmitting ? "Submitting..." : "Submit"}
             </button>
             <button
               type="button"

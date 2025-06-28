@@ -24,16 +24,126 @@ export async function GET(
   }
 }
 
+// export async function PATCH(
+//   req: NextRequest,
+//   { params }: { params: { id: string } }
+// ) {
+//   try {
+//     const body = await req.json();
+
+//     const updated = await prisma.project.update({
+//       where: { id: params.id },
+//       data: body,
+//     });
+
+//     return NextResponse.json(updated);
+//   } catch (error) {
+//     console.error(error);
+//     return NextResponse.json(
+//       { error: "Failed to update project" },
+//       { status: 500 }
+//     );
+//   }
+// }
+
 export async function PATCH(
   req: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
     const body = await req.json();
+    const {
+      voices,
+      offerIcons,
+      teamCards,
+      studentItems,
+      newsletterItems,
+      liveMoments,
+      relatedLinks,
+      ...rest
+    } = body;
 
+    // Remove all existing voices for this project
+    await prisma.voice.deleteMany({
+      where: { projectId: params.id },
+    });
+    await prisma.offerIcon.deleteMany({
+      where: { projectId: params.id },
+    });
+
+    // Create new voices if provided
+    if (Array.isArray(voices) && voices.length > 0) {
+      await prisma.voice.createMany({
+        data: voices.map((v) => ({
+          ...v,
+          projectId: params.id,
+        })),
+      });
+    }
+    // Create new offer icons if provided
+    if (Array.isArray(offerIcons) && offerIcons.length > 0) {
+      await prisma.offerIcon.createMany({
+        data: offerIcons.map((o) => ({
+          ...o,
+          projectId: params.id,
+        })),
+      });
+    }
+
+    // Create teamCards if provided
+    if (Array.isArray(teamCards) && teamCards.length > 0) {
+      await prisma.teamCard.createMany({
+        data: teamCards.map((t) => ({
+          ...t,
+          projectId: params.id,
+        })),
+      });
+    }
+
+    // Create studentItems if provided
+    if (Array.isArray(studentItems) && studentItems.length > 0) {
+      await prisma.studentItem.createMany({
+        data: studentItems.map((st) => ({
+          ...st,
+          projectId: params.id,
+        })),
+      });
+    }
+
+    // Create newsLetterItems if provided
+    if (Array.isArray(newsletterItems) && newsletterItems.length > 0) {
+      await prisma.newsletterItem.createMany({
+        data: newsletterItems.map((n) => ({
+          ...n,
+          projectId: params.id,
+        })),
+      });
+    }
+
+    // Create liveMomentItems if provided
+    if (Array.isArray(liveMoments) && liveMoments.length > 0) {
+      await prisma.liveMoment.createMany({
+        data: liveMoments.map((l) => ({
+          ...l,
+          projectId: params.id,
+        })),
+      });
+    }
+
+    // Create relatedLinks if provided
+    if (Array.isArray(relatedLinks) && relatedLinks.length > 0) {
+      await prisma.relatedLink.createMany({
+        data: relatedLinks.map((l) => ({
+          ...l,
+          projectId: params.id,
+        })),
+      });
+    }
+
+    // Update the project with the rest of the fields
     const updated = await prisma.project.update({
       where: { id: params.id },
-      data: body,
+      data: rest,
     });
 
     return NextResponse.json(updated);
