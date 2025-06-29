@@ -53,6 +53,7 @@ export async function PATCH(
   try {
     const body = await req.json();
     const {
+      heroSections,
       voices,
       offerIcons,
       teamCards,
@@ -70,6 +71,16 @@ export async function PATCH(
     await prisma.offerIcon.deleteMany({
       where: { projectId: params.id },
     });
+
+    // Create new heroSections if provided
+    if (Array.isArray(heroSections) && heroSections.length > 0) {
+      await prisma.heroSection.createMany({
+        data: heroSections.map((h) => ({
+          ...h,
+          projectId: params.id,
+        })),
+      });
+    }
 
     // Create new voices if provided
     if (Array.isArray(voices) && voices.length > 0) {
