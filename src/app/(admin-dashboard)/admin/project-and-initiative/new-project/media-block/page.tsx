@@ -35,7 +35,6 @@ export default function MediaBlockSection() {
 
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-
   const projectId = localStorage.getItem("projectId");
   const router = useRouter();
 
