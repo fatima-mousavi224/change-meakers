@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import toast from "react-hot-toast";
-import { FaEyeSlash, FaTrash } from "react-icons/fa";
+import { FaTrash } from "react-icons/fa";
 import { IoIosArrowDown, IoIosSearch } from "react-icons/io";
 import "swiper/css";
 import "swiper/css/navigation";
@@ -26,8 +26,6 @@ const ProjectAndInitiative = ({
   projects,
   impacts,
 }: ProjectAndInitiativeProps) => {
-  console.log("projects", projects);
-  console.log("impacts", impacts);
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("All");
   const [filter, setFilter] = useState("Projects");
@@ -158,7 +156,7 @@ const ProjectAndInitiative = ({
                 {/* Project images rendering logic here, adjust as needed */}
 
                 <Image
-                  src={item?.heroImage}
+                  src={item.heroSections?.[0]?.heroImage}
                   alt={`${item.title} slide1`}
                   className="w-full h-32 object-cover rounded-md"
                   width={300}
@@ -168,7 +166,7 @@ const ProjectAndInitiative = ({
             ) : (
               <div className="relative">
                 <Image
-                  src={item?.galleryPhoto}
+                  src={item?.standardImpacts?.[0]?.galleryPhoto?.[0]}
                   alt={`${item.title} slide1`}
                   className="w-full h-32 object-cover rounded-md"
                   width={300}
@@ -195,7 +193,10 @@ const ProjectAndInitiative = ({
             <div className="flex justify-between items-center gap-1">
               <div className="mt-3">
                 <h3 className="text-sm font-semibold">
-                  {item.title || item.name || item.projectTitle}
+                  {item.title ||
+                    item.name ||
+                    item.projectTitle ||
+                    item.projectName}
                 </h3>
                 <p className="text-gray-500 text-xs">
                   {item.type || item.description}

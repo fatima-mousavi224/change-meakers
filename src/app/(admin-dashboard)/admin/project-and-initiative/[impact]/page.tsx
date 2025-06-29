@@ -1,5 +1,6 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
+import { useForm, useFieldArray, Controller } from "react-hook-form";
 import { IoMdClose } from "react-icons/io";
 import firebaseApp from "lib/firebase";
 import {
@@ -10,105 +11,101 @@ import {
 } from "firebase/storage";
 import { FaSquarePlus, FaTrash } from "react-icons/fa6";
 import { toast } from "react-hot-toast";
+import { v4 as uuidv4 } from "uuid";
+import { cn } from "@/lib/utils";
 
-interface FormData {
+interface StandardImpact {
+  id: string;
   title: string;
   impactTags: string;
   writersName: string;
   date: string;
   contentDescription: string;
-  contentDescription2?: string;
   writerPhoto: File | null;
-  galleryPhoto: File | null;
-  galleryPhoto2: File | null;
-  writerPhoto2: File | null;
-  coverPhoto: File | null;
-  message1?: string;
-  message2?: string;
-  title2?: string;
-  date2?: string;
-  impactTags2?: string;
-  writersName2?: string;
-  addImpact: string;
+  galleryPhoto: File[];
 }
 
-interface FilesState {
-  writerPhoto: File | null;
-  galleryPhoto: File | null;
-  galleryPhoto2: File | null;
+interface HighlightedImpact {
+  id: string;
+  message1: string;
+  title2: string;
+  impactTags2: string;
+  date2: string;
+  message2: string;
+  writersName2: string;
+  contentDescription2: string;
   writerPhoto2: File | null;
   coverPhoto: File | null;
+  galleryPhoto2: File[];
+}
+
+interface FormData {
+  standardImpacts: StandardImpact[];
+  highlightedImpacts: HighlightedImpact[];
+  projectName: string;
 }
 
 export default function ImpactPage() {
-  const [formData, setFormData] = useState<FormData>({
-    title: "",
-    impactTags: "",
-    writersName: "",
-    date: "",
-    contentDescription: "",
-    contentDescription2: "",
-    writerPhoto: null,
-    galleryPhoto: null,
-    galleryPhoto2: null,
-    writerPhoto2: null,
-    coverPhoto: null,
-    message1: "",
-    message2: "",
-    title2: "",
-    date2: "",
-    impactTags2: "",
-    writersName2: "",
-    addImpact: "",
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<FormData>({
+    defaultValues: {
+      standardImpacts: [
+        {
+          id: uuidv4(),
+          title: "",
+          impactTags: "",
+          writersName: "",
+          date: "",
+          contentDescription: "",
+          writerPhoto: null,
+          galleryPhoto: [],
+        },
+      ],
+      highlightedImpacts: [
+        {
+          id: uuidv4(),
+          message1: "",
+          title2: "",
+          impactTags2: "",
+          date2: "",
+          message2: "",
+          writersName2: "",
+          contentDescription2: "",
+          writerPhoto2: null,
+          coverPhoto: null,
+          galleryPhoto2: [],
+        },
+      ],
+      projectName: "",
+    },
   });
 
-  const [files, setFiles] = useState<FilesState>({
-    writerPhoto: null,
-    galleryPhoto: null,
-    galleryPhoto2: null,
-    writerPhoto2: null,
-    coverPhoto: null,
+  const {
+    fields: standardImpactFields,
+    append: appendStandardImpact,
+    remove: removeStandardImpact,
+  } = useFieldArray({
+    control,
+    name: "standardImpacts",
   });
 
-  console.log("Form Data:", formData);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitMessage, setSubmitMessage] = useState("");
-  const [submitStatus, setSubmitStatus] = useState<"success" | "error" | null>(
-    null
-  );
+  const {
+    fields: highlightedImpactFields,
+    append: appendHighlightedImpact,
+    remove: removeHighlightedImpact,
+  } = useFieldArray({
+    control,
+    name: "highlightedImpacts",
+  });
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleFileChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    field: keyof FilesState
-  ) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    const maxSize = 10 * 1024 * 1024; // 10 MB
-    if (file.size > maxSize) {
-      alert("File size exceeds 10 MB limit.");
-      return;
-    }
-
-    setFiles((prev) => ({
-      ...prev,
-      [field]: file,
-    }));
-    setFormData((prev) => ({
-      ...prev,
-      [field]: file,
-    }));
-  };
+  const [submitMessage, setSubmitMessage] = React.useState("");
+  const [submitStatus, setSubmitStatus] = React.useState<
+    "success" | "error" | null
+  >(null);
 
   const uploadImageUrl = async (
     file: File,
@@ -144,51 +141,80 @@ export default function ImpactPage() {
     });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
+  const onSubmit = async (data: FormData) => {
     setSubmitMessage("");
+    setSubmitStatus(null);
 
     try {
-      const uploadedFiles: { [key: string]: string } = {};
+      const uploadedFiles: { [key: string]: string | string[] } = {};
 
       // Upload files and get URLs
-      const fileFields: (keyof FilesState)[] = [
-        "writerPhoto",
-        "galleryPhoto",
-        "galleryPhoto2",
-        "writerPhoto2",
-        "coverPhoto",
-      ];
-
-      for (const field of fileFields) {
-        if (files[field]) {
-          const url = await uploadImageUrl(files[field]!, field);
-          uploadedFiles[field] = url;
+      for (const section of [
+        "standardImpacts",
+        "highlightedImpacts",
+      ] as const) {
+        const items =
+          section === "standardImpacts"
+            ? data.standardImpacts
+            : data.highlightedImpacts;
+        const fileFields =
+          section === "standardImpacts"
+            ? ["writerPhoto", "galleryPhoto"]
+            : ["writerPhoto2", "coverPhoto", "galleryPhoto2"];
+        // @ts-ignore
+        for (const [index, item] of items.entries()) {
+          for (const field of fileFields) {
+            const fileKey = `${section}[${index}].${field}`;
+            if (field === "galleryPhoto" || field === "galleryPhoto2") {
+              const files = item[field as keyof typeof item] as File[];
+              if (files && files.length > 0) {
+                const urls = await Promise.all(
+                  files.map((file) => uploadImageUrl(file, field))
+                );
+                uploadedFiles[fileKey] = urls;
+              } else {
+                uploadedFiles[fileKey] = [];
+              }
+            } else {
+              const file = item[field as keyof typeof item] as File | null;
+              if (file) {
+                const url = await uploadImageUrl(file, field);
+                uploadedFiles[fileKey] = url;
+              }
+            }
+          }
         }
       }
 
       // Prepare form data for submission
       const formDataToSend = {
-        title: formData.title,
-        impactTags: formData.impactTags,
-        writersName: formData.writersName,
-        date: formData.date,
-        contentDescription: formData.contentDescription,
-        message1: formData.message1,
-        message2: formData.message2,
-        title2: formData.title2,
-        date2: formData.date2,
-        impactTags2: formData.impactTags2,
-        writersName2: formData.writersName2,
-        contentDescription2: formData.contentDescription2,
-        addImpact: formData.addImpact,
-        // Only include uploaded file URLs, not File objects
-        writerPhoto: uploadedFiles.writerPhoto || null,
-        galleryPhoto: uploadedFiles.galleryPhoto || null,
-        galleryPhoto2: uploadedFiles.galleryPhoto2 || null,
-        writerPhoto2: uploadedFiles.writerPhoto2 || null,
-        coverPhoto: uploadedFiles.coverPhoto || null,
+        standardImpacts: data.standardImpacts.map((impact, index) => ({
+          title: impact.title,
+          impactTags: impact.impactTags,
+          writersName: impact.writersName,
+          date: impact.date,
+          contentDescription: impact.contentDescription,
+          writerPhoto:
+            uploadedFiles[`standardImpacts[${index}].writerPhoto`] || null,
+          galleryPhoto:
+            uploadedFiles[`standardImpacts[${index}].galleryPhoto`] || [],
+        })),
+        highlightedImpacts: data.highlightedImpacts.map((impact, index) => ({
+          message1: impact.message1 || null,
+          title2: impact.title2 || null,
+          impactTags2: impact.impactTags2 || null,
+          date2: impact.date2 || null,
+          message2: impact.message2 || null,
+          writersName2: impact.writersName2 || null,
+          contentDescription2: impact.contentDescription2 || null,
+          writerPhoto2:
+            uploadedFiles[`highlightedImpacts[${index}].writerPhoto2`] || null,
+          coverPhoto:
+            uploadedFiles[`highlightedImpacts[${index}].coverPhoto`] || null,
+          galleryPhoto2:
+            uploadedFiles[`highlightedImpacts[${index}].galleryPhoto2`] || [],
+        })),
+        projectName: data.projectName,
       };
 
       console.log("Sending data to API:", formDataToSend);
@@ -205,34 +231,7 @@ export default function ImpactPage() {
         setSubmitStatus("success");
         setSubmitMessage("Form submitted successfully");
         toast.success("Impact created successfully");
-        // Reset form
-        setFormData({
-          title: "",
-          impactTags: "",
-          writersName: "",
-          date: "",
-          contentDescription: "",
-          contentDescription2: "",
-          writerPhoto: null,
-          galleryPhoto: null,
-          galleryPhoto2: null,
-          writerPhoto2: null,
-          coverPhoto: null,
-          message1: "",
-          message2: "",
-          title2: "",
-          date2: "",
-          impactTags2: "",
-          writersName2: "",
-          addImpact: "",
-        });
-        setFiles({
-          writerPhoto: null,
-          galleryPhoto: null,
-          galleryPhoto2: null,
-          writerPhoto2: null,
-          coverPhoto: null,
-        });
+        reset();
       } else {
         const errorData = await response.json();
         console.error("API Error:", errorData);
@@ -244,39 +243,13 @@ export default function ImpactPage() {
       setSubmitStatus("error");
       setSubmitMessage("Error submitting form");
       toast.error("Error creating impact");
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
   const clearForm = () => {
-    setFormData({
-      title: "",
-      impactTags: "",
-      writersName: "",
-      date: "",
-      contentDescription: "",
-      contentDescription2: "",
-      writerPhoto: null,
-      galleryPhoto: null,
-      galleryPhoto2: null,
-      writerPhoto2: null,
-      coverPhoto: null,
-      message1: "",
-      message2: "",
-      title2: "",
-      date2: "",
-      impactTags2: "",
-      writersName2: "",
-      addImpact: "",
-    });
-    setFiles({
-      writerPhoto: null,
-      galleryPhoto: null,
-      galleryPhoto2: null,
-      writerPhoto2: null,
-      coverPhoto: null,
-    });
+    reset();
+    setSubmitMessage("");
+    setSubmitStatus(null);
   };
 
   return (
@@ -286,604 +259,934 @@ export default function ImpactPage() {
           <h2 className="text-lg md:text-3xl font-bold text-sky-800 my-12 text-center md:text-left">
             Create New Impact for a Project
           </h2>
-          <form className="mt-12 space-y-8" onSubmit={handleSubmit}>
-            <section className="border-2 rounded-lg p-4 md:p-8 lg:px-14 bg-white">
-              <h2 className="text-xl font-semibold mb-4 text-sky-800 text-center md:text-left">
-                Standard Impact
-              </h2>
-
-              <div className="md:grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="grid grid-cols-1 md:grid-cols-5 gap-5 col-span-2">
-                  <div className="md:col-span-2">
-                    <label className="block text-sm/6 font-medium text-gray-900">
-                      Title
-                    </label>
-                    <div className="mt-2">
-                      <input
-                        type="text"
-                        name="title"
-                        placeholder="write something here..."
-                        className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-100 focus:ring-offset-2"
-                        value={formData.title}
-                        onChange={handleInputChange}
-                        required
-                        maxLength={50}
-                      />
-                    </div>
-                  </div>
-                  <div className="md:col-span-3">
-                    <label className="block text-sm/6 font-medium text-gray-900">
-                      Impact Tags
-                    </label>
-                    <div className="mt-2">
-                      <input
-                        type="text"
-                        name="impactTags"
-                        placeholder="tags help categorize posts within each project."
-                        className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-100 focus:ring-offset-2"
-                        value={formData.impactTags}
-                        onChange={handleInputChange}
-                        required
-                        maxLength={50}
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-5 gap-5 col-span-2">
-                  <div className="md:col-span-2 mt-4 md:mt-0">
-                    <label className="block text-sm/6 font-medium text-gray-900">
-                      Writer's Name
-                    </label>
-                    <div className="mt-2">
-                      <input
-                        type="text"
-                        name="writersName"
-                        placeholder="write something here..."
-                        className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-100 focus:ring-offset-2"
-                        value={formData.writersName}
-                        onChange={handleInputChange}
-                        required
-                        maxLength={50}
-                      />
-                    </div>
-                  </div>
-                  <div className="md:col-span-3">
-                    <label className="block text-sm/6 font-medium text-gray-900">
-                      Enter a Date
-                    </label>
-                    <div className="mt-2">
-                      <input
-                        type="date"
-                        name="date"
-                        className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-100 focus:ring-offset-2"
-                        value={formData.date}
-                        onChange={handleInputChange}
-                        required
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="col-span-2">
-                  <label className="block text-sm/6 font-medium text-gray-900 mt-4 md:mt-0">
-                    Full Content Description
-                  </label>
-                  <div className="mt-2">
-                    <textarea
-                      name="contentDescription"
-                      placeholder="write something here..."
-                      className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-100 focus:ring-offset-2"
-                      value={formData.contentDescription}
-                      onChange={handleInputChange}
-                      required
-                      rows={4}
-                      maxLength={1000}
+          <form className="mt-12 space-y-8" onSubmit={handleSubmit(onSubmit)}>
+            {standardImpactFields.map((impact, index) => (
+              <section
+                key={impact.id}
+                className="border-2 rounded-lg p-4 md:p-8 lg:px-14 bg-white"
+              >
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-xl font-semibold text-sky-800 text-center md:text-left">
+                    Standard Impact {index + 1}
+                  </h2>
+                  {standardImpactFields.length > 1 && (
+                    <FaTrash
+                      className="text-red-500 hover:text-red-600 cursor-pointer size-4"
+                      onClick={() => removeStandardImpact(index)}
                     />
-                  </div>
+                  )}
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 col-span-2">
-                  <div className="col-span-1">
+                <div className="md:grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-5 gap-5 col-span-2">
+                    <div className="md:col-span-2">
+                      <label className="block text-sm/6 font-medium text-gray-900">
+                        Title
+                      </label>
+                      <div className="mt-2">
+                        <Controller
+                          name={`standardImpacts.${index}.title`}
+                          control={control}
+                          rules={{
+                            required: "Title is required",
+                            maxLength: 50,
+                          }}
+                          render={({ field }) => (
+                            <input
+                              type="text"
+                              placeholder="write something here..."
+                              className={cn(
+                                "block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-100 focus:ring-offset-2",
+                                errors.standardImpacts?.[index]?.title &&
+                                  "border-red-500"
+                              )}
+                              {...field}
+                            />
+                          )}
+                        />
+                        {errors?.standardImpacts?.[index]?.title && (
+                          <p className="text-red-500 text-xs mt-1">
+                            {errors?.standardImpacts[index]?.title?.message}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                    <div className="md:col-span-3">
+                      <label className="block text-sm/6 font-medium text-gray-900">
+                        Impact Tags
+                      </label>
+                      <div className="mt-2">
+                        <Controller
+                          name={`standardImpacts.${index}.impactTags`}
+                          control={control}
+                          rules={{
+                            required: "Impact tags are required",
+                            maxLength: 50,
+                          }}
+                          render={({ field }) => (
+                            <input
+                              type="text"
+                              placeholder="tags help categorize posts within each project."
+                              className={cn(
+                                "block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-100 focus:ring-offset-2",
+                                errors.standardImpacts?.[index]?.impactTags &&
+                                  "border-red-500"
+                              )}
+                              {...field}
+                            />
+                          )}
+                        />
+                        {errors.standardImpacts?.[index]?.impactTags && (
+                          <p className="text-red-500 text-xs mt-1">
+                            {
+                              errors?.standardImpacts[index]?.impactTags
+                                ?.message
+                            }
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-5 gap-5 col-span-2">
+                    <div className="md:col-span-2 mt-4 md:mt-0">
+                      <label className="block text-sm/6 font-medium text-gray-900">
+                        Writer's Name
+                      </label>
+                      <div className="mt-2">
+                        <Controller
+                          name={`standardImpacts.${index}.writersName`}
+                          control={control}
+                          rules={{
+                            required: "Writer's name is required",
+                            maxLength: 50,
+                          }}
+                          render={({ field }) => (
+                            <input
+                              type="text"
+                              placeholder="write something here..."
+                              className={cn(
+                                "block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-100 focus:ring-offset-2",
+                                errors?.standardImpacts?.[index]?.writersName &&
+                                  "border-red-500"
+                              )}
+                              {...field}
+                            />
+                          )}
+                        />
+                        {errors.standardImpacts?.[index]?.writersName && (
+                          <p className="text-red-500 text-xs mt-1">
+                            {
+                              errors?.standardImpacts[index]?.writersName
+                                ?.message
+                            }
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                    <div className="md:col-span-3">
+                      <label className="block text-sm/6 font-medium text-gray-900">
+                        Enter a Date
+                      </label>
+                      <div className="mt-2">
+                        <Controller
+                          name={`standardImpacts.${index}.date`}
+                          control={control}
+                          rules={{ required: "Date is required" }}
+                          render={({ field }) => (
+                            <input
+                              type="date"
+                              className={cn(
+                                "block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-100 focus:ring-offset-2",
+                                errors.standardImpacts?.[index]?.date &&
+                                  "border-red-500"
+                              )}
+                              {...field}
+                            />
+                          )}
+                        />
+                        {errors.standardImpacts?.[index]?.date && (
+                          <p className="text-red-500 text-xs mt-1">
+                            {errors?.standardImpacts[index]?.date?.message}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="col-span-2">
                     <label className="block text-sm/6 font-medium text-gray-900 mt-4 md:mt-0">
-                      Writer's Photo
+                      Full Content Description
                     </label>
-                    <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
-                      <div className="relative text-center">
-                        <div className="mt-4 flex flex-col space-y-4 text-sm/6 text-gray-600">
-                          <label className="relative mx-auto cursor-pointer rounded-md font-semibold text-primary-100 focus-within:outline-hidden hover:text-primary-100">
-                            {files.writerPhoto ? (
-                              <div className="relative">
-                                <img
-                                  src={URL.createObjectURL(files.writerPhoto)}
-                                  alt="Writer Photo Preview"
-                                  className="mx-auto size-16 object-cover"
-                                />
-                                <IoMdClose
-                                  className="absolute top-0 right-0 cursor-pointer"
-                                  onClick={() => {
-                                    setFiles((prev) => ({
-                                      ...prev,
-                                      writerPhoto: null,
-                                    }));
-                                    setFormData((prev) => ({
-                                      ...prev,
-                                      writerPhoto: null,
-                                    }));
-                                  }}
-                                />
-                              </div>
-                            ) : (
-                              <svg
-                                className="mx-auto size-12 text-gray-300"
-                                viewBox="0 0 24 24"
-                                fill="currentColor"
-                                aria-hidden="true"
-                                data-slot="icon"
-                              >
-                                <path
-                                  fillRule="evenodd"
-                                  d="M1.5 6a2.25 2.25 0 0 1 2.25-2.25h16.5A2.25 2.25 0 0 1 22.5 6v12a2.25 2.25 0 0 1-2.25 2.25H3.75A2.25 2.25 0 0 1 1.5 18V6ZM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0 0 21 18v-1.94l-2.69-2.689a1.5 1.5 0 0 0-2.12 0l-.88.879.97.97a.75.75 0 1 1-1.06 1.06l-5.16-5.159a1.5 1.5 0 0 0-2.12 0L3 16.061Zm10.125-7.81a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Z"
-                                  clipRule="evenodd"
-                                />
-                              </svg>
-                            )}
-                            <input
-                              type="file"
-                              name="writerPhoto"
-                              accept=".jpg,.jpeg,.png"
-                              onChange={(e) =>
-                                handleFileChange(e, "writerPhoto")
-                              }
-                              className="sr-only focus:outline-none active:outline-none bg-transparent"
-                            />
-                          </label>
-                          <div>
-                            <p className="font-semibold text-blue-500">
-                              Drag & Drop your Photo
-                            </p>
-                            <p className="text-gray-500">
-                              here or Browse up to 10 MB
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-span-1">
-                    <label className="block text-sm/6 font-medium text-gray-900">
-                      Gallery Photo
-                    </label>
-                    <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
-                      <div className="relative text-center">
-                        <div className="mt-4 flex flex-col space-y-4 text-sm/6 text-gray-600">
-                          <label className="relative mx-auto cursor-pointer rounded-md font-semibold text-primary-100 focus-within:outline-hidden hover:text-primary-100">
-                            {files.galleryPhoto ? (
-                              <div className="relative">
-                                <img
-                                  src={URL.createObjectURL(files.galleryPhoto)}
-                                  alt="Gallery Photo Preview"
-                                  className="mx-auto size-16 object-cover"
-                                />
-                                <IoMdClose
-                                  className="absolute top-0 right-0 cursor-pointer"
-                                  onClick={() => {
-                                    setFiles((prev) => ({
-                                      ...prev,
-                                      galleryPhoto: null,
-                                    }));
-                                    setFormData((prev) => ({
-                                      ...prev,
-                                      galleryPhoto: null,
-                                    }));
-                                  }}
-                                />
-                              </div>
-                            ) : (
-                              <svg
-                                className="mx-auto size-12 text-gray-300"
-                                viewBox="0 0 24 24"
-                                fill="currentColor"
-                                aria-hidden="true"
-                                data-slot="icon"
-                              >
-                                <path
-                                  fillRule="evenodd"
-                                  d="M1.5 6a2.25 2.25 0 0 1 2.25-2.25h16.5A2.25 2.25 0 0 1 22.5 6v12a2.25 2.25 0 0 1-2.25 2.25H3.75A2.25 2.25 0 0 1 1.5 18V6ZM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0 0 21 18v-1.94l-2.69-2.689a1.5 1.5 0 0 0-2.12 0l-.88.879.97.97a.75.75 0 1 1-1.06 1.06l-5.16-5.159a1.5 1.5 0 0 0-2.12 0L3 16.061Zm10.125-7.81a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Z"
-                                  clipRule="evenodd"
-                                />
-                              </svg>
-                            )}
-                            <input
-                              type="file"
-                              name="galleryPhoto"
-                              accept=".jpg,.jpeg,.png"
-                              onChange={(e) =>
-                                handleFileChange(e, "galleryPhoto")
-                              }
-                              className="sr-only focus:outline-none active:outline-none bg-transparent"
-                            />
-                          </label>
-                          <div>
-                            <p className="font-semibold text-blue-500">
-                              Drag & Drop your Photo
-                            </p>
-                            <p className="text-gray-500">
-                              here or Browse up to 10 MB
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex justify-end space-x-4 mt-2">
-                      <FaSquarePlus className="text-blue-600 cursor-pointer hover:text-blue-700" />
-                      <FaTrash
-                        className="text-red-500 hover:text-red-600 cursor-pointer size-4"
-                        onClick={() => {
-                          setFiles((prev) => ({ ...prev, galleryPhoto: null }));
-                          setFormData((prev) => ({
-                            ...prev,
-                            galleryPhoto: null,
-                          }));
+                    <div className="mt-2">
+                      <Controller
+                        name={`standardImpacts.${index}.contentDescription`}
+                        control={control}
+                        rules={{
+                          required: "Content description is required",
+                          maxLength: 1000,
                         }}
+                        render={({ field }) => (
+                          <textarea
+                            placeholder="write something here..."
+                            className={cn(
+                              "block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-100 focus:ring-offset-2",
+                              errors.standardImpacts?.[index]
+                                ?.contentDescription && "border-red-500"
+                            )}
+                            rows={4}
+                            {...field}
+                          />
+                        )}
                       />
+                      {errors.standardImpacts?.[index]?.contentDescription && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {
+                            errors?.standardImpacts[index]?.contentDescription
+                              ?.message
+                          }
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5 col-span-2">
+                    <div className="col-span-1">
+                      <label className="block text-sm/6 font-medium text-gray-900 mt-4 md:mt-0">
+                        Writer's Photo
+                      </label>
+                      <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
+                        <div className="relative text-center">
+                          <div className="mt-4 flex flex-col space-y-4 text-sm/6 text-gray-600">
+                            <Controller
+                              name={`standardImpacts.${index}.writerPhoto`}
+                              control={control}
+                              render={({ field: { value, onChange } }) => (
+                                <label className="relative mx-auto cursor-pointer rounded-md font-semibold text-primary-100 focus-within:outline-hidden hover:text-primary-100">
+                                  {value ? (
+                                    <div className="relative">
+                                      <img
+                                        src={URL.createObjectURL(value)}
+                                        alt="Writer Photo Preview"
+                                        className="mx-auto size-16 object-cover"
+                                      />
+                                      <IoMdClose
+                                        className="absolute top-0 right-0 cursor-pointer"
+                                        onClick={() => onChange(null)}
+                                      />
+                                    </div>
+                                  ) : (
+                                    <svg
+                                      className="mx-auto size-12 text-gray-300"
+                                      viewBox="0 0 24 24"
+                                      fill="currentColor"
+                                      aria-hidden="true"
+                                    >
+                                      <path
+                                        fillRule="evenodd"
+                                        d="M1.5 6a2.25 2.25 0 0 1 2.25-2.25h16.5A2.25 2.25 0 0 1 22.5 6v12a2.25 2.25 0 0 1-2.25 2.25H3.75A2.25 2.25 0 0 1 1.5 18V6ZM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0 0 21 18v-1.94l-2.69-2.689a1.5 1.5 0 0 0-2.12 0l-.88.879.97.97a.75.75 0 1 1-1.06 1.06l-5.16-5.159a1.5 1.5 0 0 0-2.12 0L3 16.061Zm10.125-7.81a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Z"
+                                        clipRule="evenodd"
+                                      />
+                                    </svg>
+                                  )}
+                                  <input
+                                    type="file"
+                                    accept=".jpg,.jpeg,.png"
+                                    onChange={(e) => {
+                                      const file = e.target.files?.[0];
+                                      if (file) {
+                                        if (file.size > 10 * 1024 * 1024) {
+                                          toast.error(
+                                            "File size exceeds 10 MB limit."
+                                          );
+                                          return;
+                                        }
+                                        onChange(file);
+                                      }
+                                    }}
+                                    className="sr-only"
+                                  />
+                                </label>
+                              )}
+                            />
+                            <div>
+                              <p className="font-semibold text-blue-500">
+                                Drag & Drop your Photo
+                              </p>
+                              <p className="text-gray-500">
+                                here or Browse up to 10 MB
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col-span-1">
+                      <label className="block text-sm/6 font-medium text-gray-900">
+                        Gallery Photos
+                      </label>
+                      <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
+                        <div className="relative text-center">
+                          <div className="mt-4 flex flex-col space-y-4 text-sm/6 text-gray-600">
+                            <Controller
+                              name={`standardImpacts.${index}.galleryPhoto`}
+                              control={control}
+                              render={({ field: { value, onChange } }) => (
+                                <>
+                                  <div className="flex flex-wrap gap-2">
+                                    {value && value.length > 0 ? (
+                                      value.map((file, fileIndex) => (
+                                        <div
+                                          key={fileIndex}
+                                          className="relative"
+                                        >
+                                          <img
+                                            src={URL.createObjectURL(file)}
+                                            alt={`Gallery Photo ${
+                                              fileIndex + 1
+                                            }`}
+                                            className="size-16 object-cover"
+                                          />
+                                          <IoMdClose
+                                            className="absolute top-0 right-0 cursor-pointer"
+                                            onClick={() => {
+                                              const newFiles = value.filter(
+                                                (_, i) => i !== fileIndex
+                                              );
+                                              onChange(newFiles);
+                                            }}
+                                          />
+                                        </div>
+                                      ))
+                                    ) : (
+                                      <svg
+                                        className="mx-auto size-12 text-gray-300"
+                                        viewBox="0 0 24 24"
+                                        fill="currentColor"
+                                        aria-hidden="true"
+                                      >
+                                        <path
+                                          fillRule="evenodd"
+                                          d="M1.5 6a2.25 2.25 0 0 1 2.25-2.25h16.5A2.25 2.25 0 0 1 22.5 6v12a2.25 2.25 0 0 1-2.25 2.25H3.75A2.25 2.25 0 0 1 1.5 18V6ZM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0 0 21 18v-1.94l-2.69-2.689a1.5 1.5 0 0 0-2.12 0l-.88.879.97.97a.75.75 0 1 1-1.06 1.06l-5.16-5.159a1.5 1.5 0 0 0-2.12 0L3 16.061Zm10.125-7.81a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Z"
+                                          clipRule="evenodd"
+                                        />
+                                      </svg>
+                                    )}
+                                  </div>
+                                  <label className="relative mx-auto cursor-pointer rounded-md font-semibold text-primary-100 hover:text-primary-100">
+                                    <span className="rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 cursor-pointer">
+                                      Upload photos
+                                    </span>
+                                    <input
+                                      className="sr-only"
+                                      type="file"
+                                      accept=".jpg,.jpeg,.png"
+                                      multiple
+                                      onChange={(e) => {
+                                        const files = Array.from(
+                                          e.target.files || []
+                                        );
+                                        if (files.length > 0) {
+                                          const validFiles = files.filter(
+                                            (file) =>
+                                              file.size <= 10 * 1024 * 1024
+                                          );
+                                          if (
+                                            validFiles.length < files.length
+                                          ) {
+                                            toast.error(
+                                              "Some files exceed 10 MB limit."
+                                            );
+                                          }
+                                          onChange([
+                                            ...(value || []),
+                                            ...validFiles,
+                                          ]);
+                                        }
+                                      }}
+                                    />
+                                  </label>
+                                  <div>
+                                    <p className="font-semibold text-blue-500">
+                                      Drag & Drop your Photos
+                                    </p>
+                                    <p className="text-gray-500">
+                                      here or Browse up to 10 MB each
+                                    </p>
+                                  </div>
+                                </>
+                              )}
+                            />
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </section>
+              </section>
+            ))}
+            <div className="flex justify-end">
+              <button
+                type="button"
+                onClick={() =>
+                  appendStandardImpact({
+                    id: uuidv4(),
+                    title: "",
+                    impactTags: "",
+                    writersName: "",
+                    date: "",
+                    contentDescription: "",
+                    writerPhoto: null,
+                    galleryPhoto: [],
+                  })
+                }
+                className="text-blue-600 hover:text-blue-700 flex items-center gap-2 -mt-4"
+              >
+                <FaSquarePlus className="size-5" />
+                Add Standard Impact
+              </button>
+            </div>
 
-            <section className="border-2 rounded-lg p-4 md:p-8 lg:px-14 bg-white">
-              <h2 className="text-xl font-semibold mb-10">
-                Highlighted Impact
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 col-span-2">
-                  <div className="col-span-1">
-                    <label className="block text-sm/6 font-medium text-gray-900">
-                      1st Description
-                    </label>
-                    <div className="mt-2">
-                      <textarea
-                        name="message1"
-                        className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-100 focus:ring-offset-2"
-                        value={formData.message1}
-                        onChange={handleInputChange}
-                        rows={4}
-                        maxLength={1000}
-                        placeholder="write something here..."
-                      />
-                    </div>
-                  </div>
-                  <div className="col-span-1">
-                    <label className="block text-sm/6 font-medium text-gray-900">
-                      Title
-                    </label>
-                    <div className="mt-2">
-                      <input
-                        type="text"
-                        name="title2"
-                        placeholder="write something here..."
-                        className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-100 focus:ring-offset-2"
-                        value={formData.title2}
-                        onChange={handleInputChange}
-                        maxLength={50}
-                      />
-                    </div>
-                  </div>
+            {highlightedImpactFields.map((impact, index) => (
+              <section
+                key={impact.id}
+                className="border-2 rounded-lg p-4 md:p-8 lg:px-14 bg-white"
+              >
+                <div className="flex justify-between items-center mb-10">
+                  <h2 className="text-xl font-semibold">
+                    Highlighted Impact {index + 1}
+                  </h2>
+                  {highlightedImpactFields.length > 1 && (
+                    <FaTrash
+                      className="text-red-500 hover:text-red-600 cursor-pointer size-4"
+                      onClick={() => removeHighlightedImpact(index)}
+                    />
+                  )}
                 </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5 col-span-2">
+                    <div className="col-span-1">
+                      <label className="block text-sm/6 font-medium text-gray-900">
+                        1st Description
+                      </label>
+                      <div className="mt-2">
+                        <Controller
+                          name={`highlightedImpacts.${index}.message1`}
+                          control={control}
+                          rules={{ maxLength: 1000 }}
+                          render={({ field }) => (
+                            <textarea
+                              placeholder="write something here..."
+                              className={cn(
+                                "block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-100 focus:ring-offset-2",
+                                errors.highlightedImpacts?.[index]?.message1 &&
+                                  "border-red-500"
+                              )}
+                              rows={4}
+                              {...field}
+                            />
+                          )}
+                        />
+                        {errors.highlightedImpacts?.[index]?.message1 && (
+                          <p className="text-red-500 text-xs mt-1">
+                            {
+                              errors?.highlightedImpacts[index]?.message1
+                                ?.message
+                            }
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                    <div className="col-span-1">
+                      <label className="block text-sm/6 font-medium text-gray-900">
+                        Title
+                      </label>
+                      <div className="mt-2">
+                        <Controller
+                          name={`highlightedImpacts.${index}.title2`}
+                          control={control}
+                          rules={{ maxLength: 50 }}
+                          render={({ field }) => (
+                            <input
+                              type="text"
+                              placeholder="write something here..."
+                              className={cn(
+                                "block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-100 focus:ring-offset-2",
+                                errors.highlightedImpacts?.[index]?.title2 &&
+                                  "border-red-500"
+                              )}
+                              {...field}
+                            />
+                          )}
+                        />
+                        {errors.highlightedImpacts?.[index]?.title2 && (
+                          <p className="text-red-500 text-xs mt-1">
+                            {errors?.highlightedImpacts[index]?.title2?.message}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-5 gap-5 col-span-2">
+                  <div className="grid grid-cols-1 md:grid-cols-5 gap-5 col-span-2">
+                    <div className="col-span-2">
+                      <label className="block text-sm/6 font-medium text-gray-900">
+                        Impact Tags
+                      </label>
+                      <div className="mt-2">
+                        <Controller
+                          name={`highlightedImpacts.${index}.impactTags2`}
+                          control={control}
+                          rules={{ maxLength: 50 }}
+                          render={({ field }) => (
+                            <input
+                              type="text"
+                              placeholder="Tags help categorize posts within each project."
+                              className={cn(
+                                "block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-100 focus:ring-offset-2",
+                                errors.highlightedImpacts?.[index]
+                                  ?.impactTags2 && "border-red-500"
+                              )}
+                              {...field}
+                            />
+                          )}
+                        />
+                        {errors.highlightedImpacts?.[index]?.impactTags2 && (
+                          <p className="text-red-500 text-xs mt-1">
+                            {
+                              errors?.highlightedImpacts[index]?.impactTags2
+                                ?.message
+                            }
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                    <div className="col-span-3">
+                      <label className="block text-sm/6 font-medium text-gray-900">
+                        Enter a Date
+                      </label>
+                      <div className="mt-2">
+                        <Controller
+                          name={`highlightedImpacts.${index}.date2`}
+                          control={control}
+                          render={({ field }) => (
+                            <input
+                              type="date"
+                              className={cn(
+                                "block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-100 focus:ring-offset-2",
+                                errors.highlightedImpacts?.[index]?.date2 &&
+                                  "border-red-500"
+                              )}
+                              {...field}
+                            />
+                          )}
+                        />
+                        {errors.highlightedImpacts?.[index]?.date2 && (
+                          <p className="text-red-500 text-xs mt-1">
+                            {errors?.highlightedImpacts[index]?.date2?.message}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
                   <div className="col-span-2">
                     <label className="block text-sm/6 font-medium text-gray-900">
-                      Impact Tags
+                      2nd Description
                     </label>
                     <div className="mt-2">
-                      <input
-                        type="text"
-                        placeholder="Tags help categorize posts within each project."
-                        name="impactTags2"
-                        className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-100 focus:ring-offset-2"
-                        value={formData.impactTags2}
-                        onChange={handleInputChange}
-                        maxLength={50}
+                      <Controller
+                        name={`highlightedImpacts.${index}.message2`}
+                        control={control}
+                        rules={{ maxLength: 1000 }}
+                        render={({ field }) => (
+                          <textarea
+                            placeholder="write something here..."
+                            className={cn(
+                              "block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-100 focus:ring-offset-2",
+                              errors.highlightedImpacts?.[index]?.message2 &&
+                                "border-red-500"
+                            )}
+                            rows={4}
+                            {...field}
+                          />
+                        )}
                       />
+                      {errors.highlightedImpacts?.[index]?.message2 && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {errors?.highlightedImpacts[index]?.message2?.message}
+                        </p>
+                      )}
                     </div>
                   </div>
-                  <div className="col-span-3">
+
+                  <div className="col-span-2">
                     <label className="block text-sm/6 font-medium text-gray-900">
-                      Enter a Date
+                      Writer Name
                     </label>
                     <div className="mt-2">
-                      <input
-                        type="date"
-                        name="date2"
-                        className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-100 focus:ring-offset-2"
-                        value={formData.date2}
-                        onChange={handleInputChange}
+                      <Controller
+                        name={`highlightedImpacts.${index}.writersName2`}
+                        control={control}
+                        rules={{ maxLength: 50 }}
+                        render={({ field }) => (
+                          <input
+                            type="text"
+                            placeholder="write something here..."
+                            className={cn(
+                              "block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-100 focus:ring-offset-2",
+                              errors?.highlightedImpacts?.[index]
+                                ?.writersName2 && "border-red-500"
+                            )}
+                            {...field}
+                          />
+                        )}
                       />
+                      {errors.highlightedImpacts?.[index]?.writersName2 && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {
+                            errors?.highlightedImpacts[index]?.writersName2
+                              ?.message
+                          }
+                        </p>
+                      )}
                     </div>
                   </div>
-                </div>
 
-                <div className="col-span-2">
-                  <label className="block text-sm/6 font-medium text-gray-900">
-                    2nd Description
-                  </label>
-                  <div className="mt-2">
-                    <textarea
-                      name="message2"
-                      className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-100 focus:ring-offset-2"
-                      value={formData.message2}
-                      onChange={handleInputChange}
-                      rows={4}
-                      maxLength={1000}
-                      placeholder="write something here..."
-                    />
-                  </div>
-                </div>
-
-                <div className="col-span-2">
-                  <label className="block text-sm/6 font-medium text-gray-900">
-                    Writer Name
-                  </label>
-                  <div className="mt-2">
-                    <input
-                      type="text"
-                      name="writersName2"
-                      placeholder="write something here..."
-                      className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-100 focus:ring-offset-2"
-                      value={formData.writersName2}
-                      onChange={handleInputChange}
-                      maxLength={50}
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 col-span-2">
-                  <div className="col-span-1">
-                    <label className="block text-sm/6 font-medium text-gray-900">
-                      Writer Photo
-                    </label>
-                    <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
-                      <div className="relative text-center">
-                        <div className="mt-4 flex flex-col space-y-4 text-sm/6 text-gray-600">
-                          <label className="relative mx-auto cursor-pointer rounded-md font-semibold text-primary-100 focus-within:outline-hidden hover:text-primary-100">
-                            {files.writerPhoto2 ? (
-                              <div className="relative">
-                                <img
-                                  src={URL.createObjectURL(files.writerPhoto2)}
-                                  alt="Writer Photo 2 Preview"
-                                  className="mx-auto size-16 object-cover"
-                                />
-                                <IoMdClose
-                                  className="absolute top-0 right-0 cursor-pointer"
-                                  onClick={() => {
-                                    setFiles((prev) => ({
-                                      ...prev,
-                                      writerPhoto2: null,
-                                    }));
-                                    setFormData((prev) => ({
-                                      ...prev,
-                                      writerPhoto2: null,
-                                    }));
-                                  }}
-                                />
-                              </div>
-                            ) : (
-                              <svg
-                                className="mx-auto size-12 text-gray-300"
-                                viewBox="0 0 24 24"
-                                fill="currentColor"
-                                aria-hidden="true"
-                                data-slot="icon"
-                              >
-                                <path
-                                  fillRule="evenodd"
-                                  d="M1.5 6a2.25 2.25 0 0 1 2.25-2.25h16.5A2.25 2.25 0 0 1 22.5 6v12a2.25 2.25 0 0 1-2.25 2.25H3.75A2.25 2.25 0 0 1 1.5 18V6ZM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0 0 21 18v-1.94l-2.69-2.689a1.5 1.5 0 0 0-2.12 0l-.88.879.97.97a.75.75 0 1 1-1.06 1.06l-5.16-5.159a1.5 1.5 0 0 0-2.12 0L3 16.061Zm10.125-7.81a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Z"
-                                  clipRule="evenodd"
-                                />
-                              </svg>
-                            )}
-                            <input
-                              type="file"
-                              name="writerPhoto2"
-                              accept=".jpg,.jpeg,.png"
-                              onChange={(e) =>
-                                handleFileChange(e, "writerPhoto2")
-                              }
-                              className="sr-only focus:outline-none active:outline-none bg-transparent"
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5 col-span-2">
+                    <div className="col-span-1">
+                      <label className="block text-sm/6 font-medium text-gray-900">
+                        Writer Photo
+                      </label>
+                      <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
+                        <div className="relative text-center">
+                          <div className="mt-4 flex flex-col space-y-4 text-sm/6 text-gray-600">
+                            <Controller
+                              name={`highlightedImpacts.${index}.writerPhoto2`}
+                              control={control}
+                              render={({ field: { value, onChange } }) => (
+                                <label className="relative mx-auto cursor-pointer rounded-md font-semibold text-primary-100 focus-within:outline-hidden hover:text-primary-100">
+                                  {value ? (
+                                    <div className="relative">
+                                      <img
+                                        src={URL.createObjectURL(value)}
+                                        alt="Writer Photo 2 Preview"
+                                        className="mx-auto size-16 object-cover"
+                                      />
+                                      <IoMdClose
+                                        className="absolute top-0 right-0 cursor-pointer"
+                                        onClick={() => onChange(null)}
+                                      />
+                                    </div>
+                                  ) : (
+                                    <svg
+                                      className="mx-auto size-12 text-gray-300"
+                                      viewBox="0 0 24 24"
+                                      fill="currentColor"
+                                      aria-hidden="true"
+                                    >
+                                      <path
+                                        fillRule="evenodd"
+                                        d="M1.5 6a2.25 2.25 0 0 1 2.25-2.25h16.5A2.25 2.25 0 0 1 22.5 6v12a2.25 2.25 0 0 1-2.25 2.25H3.75A2.25 2.25 0 0 1 1.5 18V6ZM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0 0 21 18v-1.94l-2.69-2.689a1.5 1.5 0 0 0-2.12 0l-.88.879.97.97a.75.75 0 1 1-1.06 1.06l-5.16-5.159a1.5 1.5 0 0 0-2.12 0L3 16.061Zm10.125-7.81a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Z"
+                                        clipRule="evenodd"
+                                      />
+                                    </svg>
+                                  )}
+                                  <input
+                                    type="file"
+                                    accept=".jpg,.jpeg,.png"
+                                    onChange={(e) => {
+                                      const file = e.target.files?.[0];
+                                      if (file) {
+                                        if (file.size > 10 * 1024 * 1024) {
+                                          toast.error(
+                                            "File size exceeds 10 MB limit."
+                                          );
+                                          return;
+                                        }
+                                        onChange(file);
+                                      }
+                                    }}
+                                    className="sr-only"
+                                  />
+                                </label>
+                              )}
                             />
-                          </label>
-                          <div>
-                            <p className="font-semibold text-blue-500">
-                              Drag & Drop your Photo
-                            </p>
-                            <p className="text-gray-500">
-                              here or Browse up to 10 MB
-                            </p>
+                            <div>
+                              <p className="font-semibold text-blue-500">
+                                Drag & Drop your Photo
+                              </p>
+                              <p className="text-gray-500">
+                                here or Browse up to 10 MB
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col-span-1">
+                      <label className="block text-sm/6 font-medium text-gray-900">
+                        Cover Photo
+                      </label>
+                      <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
+                        <div className="relative text-center">
+                          <div className="mt-4 flex flex-col space-y-4 text-sm/6 text-gray-600">
+                            <Controller
+                              name={`highlightedImpacts.${index}.coverPhoto`}
+                              control={control}
+                              render={({ field: { value, onChange } }) => (
+                                <label className="relative mx-auto cursor-pointer rounded-md font-semibold text-primary-100 focus-within:outline-hidden hover:text-primary-100">
+                                  {value ? (
+                                    <div className="relative">
+                                      <img
+                                        src={URL.createObjectURL(value)}
+                                        alt="Cover Photo Preview"
+                                        className="mx-auto size-16 object-cover"
+                                      />
+                                      <IoMdClose
+                                        className="absolute top-0 right-0 cursor-pointer"
+                                        onClick={() => onChange(null)}
+                                      />
+                                    </div>
+                                  ) : (
+                                    <svg
+                                      className="mx-auto size-12 text-gray-300"
+                                      viewBox="0 0 24 24"
+                                      fill="currentColor"
+                                      aria-hidden="true"
+                                    >
+                                      <path
+                                        fillRule="evenodd"
+                                        d="M1.5 6a2.25 2.25 0 0 1 2.25-2.25h16.5A2.25 2.25 0 0 1 22.5 6v12a2.25 2.25 0 0 1-2.25 2.25H3.75A2.25 2.25 0 0 1 1.5 18V6ZM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0 0 21 18v-1.94l-2.69-2.689a1.5 1.5 0 0 0-2.12 0l-.88.879.97.97a.75.75 0 1 1-1.06 1.06l-5.16-5.159a1.5 1.5 0 0 0-2.12 0L3 16.061Zm10.125-7.81a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Z"
+                                        clipRule="evenodd"
+                                      />
+                                    </svg>
+                                  )}
+                                  <input
+                                    type="file"
+                                    accept=".jpg,.jpeg,.png"
+                                    onChange={(e) => {
+                                      const file = e.target.files?.[0];
+                                      if (file) {
+                                        if (file.size > 10 * 1024 * 1024) {
+                                          toast.error(
+                                            "File size exceeds 10 MB limit."
+                                          );
+                                          return;
+                                        }
+                                        onChange(file);
+                                      }
+                                    }}
+                                    className="sr-only"
+                                  />
+                                </label>
+                              )}
+                            />
+                            <div>
+                              <p className="font-semibold text-blue-500">
+                                Drag & Drop your Photo
+                              </p>
+                              <p className="text-gray-500">
+                                here or Browse up to 10 MB
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="col-span-1">
+                      <label className="block text-sm/6 font-medium text-gray-900">
+                        Gallery Photos
+                      </label>
+                      <span className="text-xs text-gray-600 italic">
+                        Upload additional photos that will be shown inside the
+                        full post view when this impact story is opened.
+                      </span>
+                      <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
+                        <div className="relative text-center">
+                          <div className="mt-4 flex flex-col space-y-4 text-sm/6 text-gray-600">
+                            <Controller
+                              name={`highlightedImpacts.${index}.galleryPhoto2`}
+                              control={control}
+                              render={({ field: { value, onChange } }) => (
+                                <>
+                                  <div className="flex flex-wrap gap-2">
+                                    {value && value.length > 0 ? (
+                                      value.map((file, fileIndex) => (
+                                        <div
+                                          key={fileIndex}
+                                          className="relative"
+                                        >
+                                          <img
+                                            src={URL.createObjectURL(file)}
+                                            alt={`Gallery Photo 2 ${
+                                              fileIndex + 1
+                                            }`}
+                                            className="size-16 object-cover"
+                                          />
+                                          <IoMdClose
+                                            className="absolute top-0 right-0 cursor-pointer"
+                                            onClick={() => {
+                                              const newFiles = value.filter(
+                                                (_, i) => i !== fileIndex
+                                              );
+                                              onChange(newFiles);
+                                            }}
+                                          />
+                                        </div>
+                                      ))
+                                    ) : (
+                                      <svg
+                                        className="mx-auto size-12 text-gray-300"
+                                        viewBox="0 0 24 24"
+                                        fill="currentColor"
+                                        aria-hidden="true"
+                                      >
+                                        <path
+                                          fillRule="evenodd"
+                                          d="M1.5 6a2.25 2.25 0 0 1 2.25-2.25h16.5A2.25 2.25 0 0 1 22.5 6v12a2.25 2.25 0 0 1-2.25 2.25H3.75A2.25 2.25 0 0 1 1.5 18V6ZM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0 0 21 18v-1.94l-2.69-2.689a1.5 1.5 0 0 0-2.12 0l-.88.879.97.97a.75.75 0 1 1-1.06 1.06l-5.16-5.159a1.5 1.5 0 0 0-2.12 0L3 16.061Zm10.125-7.81a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Z"
+                                          clipRule="evenodd"
+                                        />
+                                      </svg>
+                                    )}
+                                  </div>
+                                  <label className="relative mx-auto cursor-pointer rounded-md font-semibold text-primary-100 hover:text-primary-100">
+                                    <span className="rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 cursor-pointer">
+                                      Upload photos
+                                    </span>
+                                    <input
+                                      className="sr-only"
+                                      type="file"
+                                      accept=".jpg,.jpeg,.png"
+                                      multiple
+                                      onChange={(e) => {
+                                        const files = Array.from(
+                                          e.target.files || []
+                                        );
+                                        if (files.length > 0) {
+                                          const validFiles = files.filter(
+                                            (file) =>
+                                              file.size <= 10 * 1024 * 1024
+                                          );
+                                          if (
+                                            validFiles.length < files.length
+                                          ) {
+                                            toast.error(
+                                              "Some files exceed 10 MB limit."
+                                            );
+                                          }
+                                          onChange([
+                                            ...(value || []),
+                                            ...validFiles,
+                                          ]);
+                                        }
+                                      }}
+                                    />
+                                  </label>
+                                  <div>
+                                    <p className="font-semibold text-blue-500">
+                                      Drag & Drop your Photos
+                                    </p>
+                                    <p className="text-gray-500">
+                                      here or Browse up to 10 MB each
+                                    </p>
+                                  </div>
+                                </>
+                              )}
+                            />
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                  <div className="col-span-1">
-                    <label className="block text-sm/6 font-medium text-gray-900">
-                      Cover Photo
-                    </label>
-                    <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
-                      <div className="relative text-center">
-                        <div className="mt-4 flex flex-col space-y-4 text-sm/6 text-gray-600">
-                          <label className="relative mx-auto cursor-pointer rounded-md font-semibold text-primary-100 focus-within:outline-hidden hover:text-primary-100">
-                            {files.coverPhoto ? (
-                              <div className="relative">
-                                <img
-                                  src={URL.createObjectURL(files.coverPhoto)}
-                                  alt="Cover Photo Preview"
-                                  className="mx-auto size-16 object-cover"
-                                />
-                                <IoMdClose
-                                  className="absolute top-0 right-0 cursor-pointer"
-                                  onClick={() => {
-                                    setFiles((prev) => ({
-                                      ...prev,
-                                      coverPhoto: null,
-                                    }));
-                                    setFormData((prev) => ({
-                                      ...prev,
-                                      coverPhoto: null,
-                                    }));
-                                  }}
-                                />
-                              </div>
-                            ) : (
-                              <svg
-                                className="mx-auto size-12 text-gray-300"
-                                viewBox="0 0 24 24"
-                                fill="currentColor"
-                                aria-hidden="true"
-                                data-slot="icon"
-                              >
-                                <path
-                                  fillRule="evenodd"
-                                  d="M1.5 6a2.25 2.25 0 0 1 2.25-2.25h16.5A2.25 2.25 0 0 1 22.5 6v12a2.25 2.25 0 0 1-2.25 2.25H3.75A2.25 2.25 0 0 1 1.5 18V6ZM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0 0 21 18v-1.94l-2.69-2.689a1.5 1.5 0 0 0-2.12 0l-.88.879.97.97a.75.75 0 1 1-1.06 1.06l-5.16-5.159a1.5 1.5 0 0 0-2.12 0L3 16.061Zm10.125-7.81a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Z"
-                                  clipRule="evenodd"
-                                />
-                              </svg>
-                            )}
-                            <input
-                              type="file"
-                              name="coverPhoto"
-                              accept=".jpg,.jpeg,.png"
-                              onChange={(e) =>
-                                handleFileChange(e, "coverPhoto")
-                              }
-                              className="sr-only focus:outline-none active:outline-none bg-transparent"
-                            />
-                          </label>
-                          <div>
-                            <p className="font-semibold text-blue-500">
-                              Drag & Drop your Photo
-                            </p>
-                            <p className="text-gray-500">
-                              here or Browse up to 10 MB
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
 
-                  <div className="col-span-1">
+                  <div className="col-span-2">
                     <label className="block text-sm/6 font-medium text-gray-900">
-                      Gallery Photo
+                      Full Content Description
                     </label>
-                    <span className="text-xs text-gray-600 italic">
-                      Upload additional photos that will be shown inside the
-                      full post view when this impact story is opened.
-                    </span>
-                    <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
-                      <div className="relative text-center">
-                        <div className="mt-4 flex flex-col space-y-4 text-sm/6 text-gray-600">
-                          <label className="relative mx-auto cursor-pointer rounded-md font-semibold text-primary-100 focus-within:outline-hidden hover:text-primary-100">
-                            {files.galleryPhoto2 ? (
-                              <div className="relative">
-                                <img
-                                  src={URL.createObjectURL(files.galleryPhoto2)}
-                                  alt="Gallery Photo 2 Preview"
-                                  className="mx-auto size-16 object-cover"
-                                />
-                                <IoMdClose
-                                  className="absolute top-0 right-0 cursor-pointer"
-                                  onClick={() => {
-                                    setFiles((prev) => ({
-                                      ...prev,
-                                      galleryPhoto2: null,
-                                    }));
-                                    setFormData((prev) => ({
-                                      ...prev,
-                                      galleryPhoto2: null,
-                                    }));
-                                  }}
-                                />
-                              </div>
-                            ) : (
-                              <svg
-                                className="mx-auto size-12 text-gray-300"
-                                viewBox="0 0 24 24"
-                                fill="currentColor"
-                                aria-hidden="true"
-                                data-slot="icon"
-                              >
-                                <path
-                                  fillRule="evenodd"
-                                  d="M1.5 6a2.25 2.25 0 0 1 2.25-2.25h16.5A2.25 2.25 0 0 1 22.5 6v12a2.25 2.25 0 0 1-2.25 2.25H3.75A2.25 2.25 0 0 1 1.5 18V6ZM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0 0 21 18v-1.94l-2.69-2.689a1.5 1.5 0 0 0-2.12 0l-.88.879.97.97a.75.75 0 1 1-1.06 1.06l-5.16-5.159a1.5 1.5 0 0 0-2.12 0L3 16.061Zm10.125-7.81a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Z"
-                                  clipRule="evenodd"
-                                />
-                              </svg>
+                    <div className="mt-2">
+                      <Controller
+                        name={`highlightedImpacts.${index}.contentDescription2`}
+                        control={control}
+                        rules={{ maxLength: 1000 }}
+                        render={({ field }) => (
+                          <textarea
+                            placeholder="write something here..."
+                            className={cn(
+                              "block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-100 focus:ring-offset-2",
+                              errors?.highlightedImpacts?.[index]
+                                ?.contentDescription2 && "border-red-500"
                             )}
-                            <input
-                              type="file"
-                              name="galleryPhoto2"
-                              accept=".jpg,.jpeg,.png"
-                              onChange={(e) =>
-                                handleFileChange(e, "galleryPhoto2")
-                              }
-                              className="sr-only focus:outline-none active:outline-none bg-transparent"
-                            />
-                          </label>
-                          <div>
-                            <p className="font-semibold text-blue-500">
-                              Drag & Drop your Photo
-                            </p>
-                            <p className="text-gray-500">
-                              here or Browse up to 10 MB
-                            </p>
-                          </div>
-                        </div>
-                      </div>
+                            rows={4}
+                            {...field}
+                          />
+                        )}
+                      />
+                      {errors.highlightedImpacts?.[index]
+                        ?.contentDescription2 && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {
+                            errors?.highlightedImpacts[index]
+                              ?.contentDescription2?.message
+                          }
+                        </p>
+                      )}
                     </div>
                   </div>
                 </div>
-
-                <div className="col-span-2">
-                  <label className="block text-sm/6 font-medium text-gray-900">
-                    Full Content Description
-                  </label>
-                  <div className="mt-2">
-                    <textarea
-                      name="contentDescription2"
-                      placeholder="write something here..."
-                      className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-100 focus:ring-offset-2"
-                      value={formData.contentDescription2}
-                      onChange={handleInputChange}
-                      rows={4}
-                      maxLength={1000}
-                    />
-                  </div>
-                </div>
-
-                <div className="flex justify-end space-x-4 col-span-2">
-                  <FaSquarePlus className="text-blue-600 cursor-pointer hover:text-blue-700" />
-                  <FaTrash
-                    className="text-red-500 hover:text-red-600 cursor-pointer size-4"
-                    onClick={clearForm}
-                  />
-                </div>
-              </div>
-            </section>
+              </section>
+            ))}
+            <div className="flex justify-end">
+              <button
+                type="button"
+                onClick={() =>
+                  appendHighlightedImpact({
+                    id: uuidv4(),
+                    message1: "",
+                    title2: "",
+                    impactTags2: "",
+                    date2: "",
+                    message2: "",
+                    writersName2: "",
+                    contentDescription2: "",
+                    writerPhoto2: null,
+                    coverPhoto: null,
+                    galleryPhoto2: [],
+                  })
+                }
+                className="text-blue-600 hover:text-blue-700 flex items-center -mt-4 gap-2"
+              >
+                <FaSquarePlus className="size-5" />
+                Add Highlighted Impact
+              </button>
+            </div>
 
             <div className="col-span-2">
               <div className="mt-2">
-                <input
-                  type="text"
-                  name="addImpact"
-                  placeholder="Add this impact to..."
-                  className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-100 focus:ring-offset-2"
-                  value={formData.addImpact}
-                  onChange={handleInputChange}
-                  required
-                  maxLength={50}
+                <Controller
+                  name="projectName"
+                  control={control}
+                  rules={{
+                    required: "Project name is required",
+                    maxLength: 50,
+                  }}
+                  render={({ field }) => (
+                    <input
+                      type="text"
+                      placeholder="Add this impact to..."
+                      className={cn(
+                        "block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-100 focus:ring-offset-2",
+                        errors.projectName && "border-red-500"
+                      )}
+                      {...field}
+                    />
+                  )}
                 />
+                {errors.projectName && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors?.projectName?.message}
+                  </p>
+                )}
               </div>
             </div>
 
@@ -891,9 +1194,12 @@ export default function ImpactPage() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="bg-primary-100 hover:opacity-90 text-white px-4 md:px-10 py-1 md:py-3 rounded-md disabled:opacity-50"
+                className={cn(
+                  "bg-primary-100 hover:opacity-90 text-white px-4 md:px-10 py-1 md:py-3 rounded-md disabled:opacity-50",
+                  isSubmitting && "cursor-not-allowed opacity-50"
+                )}
               >
-                Submit
+                {isSubmitting ? "Submitting..." : "Submit"}
               </button>
 
               <button

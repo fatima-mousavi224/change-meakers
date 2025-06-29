@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { uploadCardImage } from "lib/uploadCardImage";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import { Trash } from "lucide-react";
 
 interface OfferIcon {
   iconTitle: string;
@@ -30,19 +31,37 @@ export default function Offer() {
     reset,
     setValue,
     watch,
+    getValues,
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
     defaultValues: {
-      offerIcons: [
-        { iconTitle: "", shortDescription: "" },
-        { iconTitle: "", shortDescription: "" },
-      ],
+      offerIcons: [{ iconTitle: "", shortDescription: "" }],
     },
   });
 
   const offerIcons = watch("offerIcons"); // watch for offerIcons array
-  const projectId = localStorage.getItem("projectId");
+  const projectId =
+    typeof window !== "undefined" ? localStorage.getItem("projectId") : null;
   const router = useRouter();
+
+  // Add a new offer icon
+  const handleAddOfferIcon = () => {
+    const current = getValues("offerIcons") || [];
+    setValue("offerIcons", [
+      ...current,
+      { iconTitle: "", shortDescription: "" },
+    ]);
+  };
+
+  // Remove an offer icon by index
+  const handleRemoveOfferIcon = (index: number) => {
+    const current = getValues("offerIcons") || [];
+    if (current.length <= 1) return; // Always keep at least one
+    setValue(
+      "offerIcons",
+      current.filter((_, i) => i !== index)
+    );
+  };
 
   const setRef = (name: string) => (el: HTMLInputElement | null) => {
     if (el) el.value = ""; // optional: reset file input
@@ -119,12 +138,30 @@ export default function Offer() {
           <h2 className="text-xl font-semibold mb-4 text-sky-800">
             7. ‘What We Offer?’ Section
           </h2>
+          <div className="flex flex-col gap-4 mb-4">
+            <button
+              type="button"
+              className="self-end px-4 py-2 bg-green-600 text-white rounded-md shadow hover:bg-green-700 transition"
+              onClick={handleAddOfferIcon}
+            >
+              Add Offer Icon
+            </button>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {[0, 1].map((index) => (
+            {offerIcons.map((icon, index) => (
               <div
                 key={index}
-                className="border border-gray-300 border-dashed rounded-xl px-4 py-6"
+                className="border border-gray-300 border-dashed rounded-xl px-4 py-6 relative"
               >
+                {offerIcons.length > 1 && (
+                  <button
+                    type="button"
+                    className="absolute top-2 right-2 px-2 py-1 text-red-500  rounded hover:text-red-600 text-xs"
+                    onClick={() => handleRemoveOfferIcon(index)}
+                  >
+                    <Trash size={16} />
+                  </button>
+                )}
                 <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                   <div className="relative">
                     <label
