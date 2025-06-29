@@ -3,9 +3,10 @@
 import Tabs from "@/components/create-project-tabs/Tabs";
 import { cn } from "@/lib/utils";
 import { uploadCardImage } from "lib/uploadCardImage";
+import { Trash } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React, { useRef, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useFieldArray } from "react-hook-form";
 import { toast } from "react-hot-toast";
 
 export default function NewsletterForm() {
@@ -20,7 +21,18 @@ export default function NewsletterForm() {
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
-  } = useForm();
+  } = useForm({
+    defaultValues: {
+      sectionTitleNewsletter: "",
+      sectionDescriptionNewsletter: "",
+      newsletterItems: [{ url: "", date: "", title: "", description: "" }],
+    },
+  });
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "newsletterItems",
+  });
 
   const setRef = (name: string) => (el: HTMLInputElement | null) => {
     fileInputRefs.current[name] = el;
@@ -84,7 +96,6 @@ export default function NewsletterForm() {
       ...data,
       newsletterItems: newsletterItemsWithImages,
     };
-
 
     try {
       const res = await fetch(`/api/projects/${projectId}`, {
@@ -176,14 +187,27 @@ export default function NewsletterForm() {
           </div>
 
           {/* Items */}
-          <div className="mt-5 grid grid-cols-1 md:grid-cols-2 gap-3">
-            {[0, 1].map((index) => {
+
+          <div className="mt-5 flex flex-col gap-10">
+            {fields.map((item, index) => {
               const imageKey = `newsletterImage${index + 1}`;
               return (
                 <div
-                  key={index}
-                  className="border border-dashed border-gray-300 rounded-md px-4 py-4 flex flex-col xl:flex-row gap-4"
+                  key={item.id}
+                  className="border border-dashed border-gray-300 rounded-md px-4 py-4 flex flex-col xl:flex-row gap-4 relative"
                 >
+                  {/* Remove Button */}
+                  {fields.length > 1 && (
+                    <button
+                      type="button"
+                      className="absolute -top-5 right-1 text-red-500 hover:text-red-700 text-xl font-bold"
+                      onClick={() => remove(index)}
+                      title="Remove"
+                    >
+                      <Trash size={16} />
+                    </button>
+                  )}
+
                   {/* Image Upload */}
                   <div className="flex-1">
                     <div className="relative text-center border border-dashed rounded-lg px-6 py-2">
@@ -194,25 +218,6 @@ export default function NewsletterForm() {
                             alt=""
                             className="w-16 h-16 mx-auto object-cover"
                           />
-                          <span
-                            className="absolute top-0 right-0 cursor-pointer"
-                            onClick={() => {
-                              setFiles((prev) => ({
-                                ...prev,
-                                [imageKey]: null,
-                              }));
-                              setImagePreviews((prev) => {
-                                const newPreviews = { ...prev };
-                                delete newPreviews[imageKey];
-                                return newPreviews;
-                              });
-                              if (fileInputRefs.current[imageKey]) {
-                                fileInputRefs.current[imageKey]!.value = "";
-                              }
-                            }}
-                          >
-                            ✖
-                          </span>
                         </div>
                       ) : (
                         <svg
@@ -293,6 +298,15 @@ export default function NewsletterForm() {
                 </div>
               );
             })}
+            <button
+              type="button"
+              className="mt-4 w-fit px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 self-end"
+              onClick={() =>
+                append({ url: "", date: "", title: "", description: "" })
+              }
+            >
+              + Add Newsletter Item
+            </button>
           </div>
 
           {/* Submit and Clear Buttons */}

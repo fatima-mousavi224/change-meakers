@@ -54,6 +54,8 @@ export async function PATCH(
     const body = await req.json();
     const {
       heroSections,
+      sections,
+      photoAlbum,
       voices,
       offerIcons,
       teamCards,
@@ -64,19 +66,41 @@ export async function PATCH(
       ...rest
     } = body;
 
-    // Remove all existing voices for this project
-    await prisma.voice.deleteMany({
-      where: { projectId: params.id },
-    });
-    await prisma.offerIcon.deleteMany({
-      where: { projectId: params.id },
-    });
-
     // Create new heroSections if provided
     if (Array.isArray(heroSections) && heroSections.length > 0) {
       await prisma.heroSection.createMany({
         data: heroSections.map((h) => ({
           ...h,
+          projectId: params.id,
+        })),
+      });
+    }
+
+    // Create new status icon if provided
+    if (Array.isArray(sections) && sections.length > 0) {
+      await prisma.statusAndIcon.createMany({
+        data: sections.map((s) => ({
+          ...s,
+          projectId: params.id,
+        })),
+      });
+    }
+
+    // Create new status icon if provided
+    if (Array.isArray(sections) && sections.length > 0) {
+      await prisma.statusAndIcon.createMany({
+        data: sections.map((s) => ({
+          ...s,
+          projectId: params.id,
+        })),
+      });
+    }
+
+    // Create new photo item if provided
+    if (Array.isArray(photoAlbum) && photoAlbum.length > 0) {
+      await prisma.photoAlbum.createMany({
+        data: photoAlbum.map((p) => ({
+          ...p,
           projectId: params.id,
         })),
       });

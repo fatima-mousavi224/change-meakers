@@ -1,6 +1,7 @@
 "use client";
 import Tabs from "@/components/create-project-tabs/Tabs";
 import { uploadCardImage } from "lib/uploadCardImage";
+import { Trash } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React, { useRef } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -8,66 +9,100 @@ import toast from "react-hot-toast";
 import { cn } from "utilities/cn";
 
 function PhotoAlbum() {
-  // Add this ref to store file input references
-  const fileInputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
-  // Add useForm hook
+  const fileInputRefs = useRef<Array<HTMLInputElement | null>>([]);
   const {
     control,
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
     register,
+    setValue,
+    getValues,
   } = useForm();
 
-  // State for files and image previews
-  const [files, setFiles] = React.useState<{ [key: string]: File | null }>({});
-  const [imagePreviews, setImagePreviews] = React.useState<{
-    [key: string]: string;
-  }>({});
-
+  // Dynamic photo album items
+  const [photoAlbumItems, setPhotoAlbumItems] = React.useState<
+    Array<{
+      image: File | null;
+      imagePreview: string;
+      title: string;
+      description: string;
+    }>
+  >([{ image: null, imagePreview: "", title: "", description: "" }]);
   const projectId = localStorage.getItem("projectId");
   const router = useRouter();
 
   function handleFileChange(
     e: React.ChangeEvent<HTMLInputElement>,
-    arg1: string
+    idx: number
   ): void {
     const file = e.target.files && e.target.files[0];
     if (file) {
-      setFiles((prev) => ({ ...prev, [arg1]: file }));
       const reader = new FileReader();
       reader.onloadend = () => {
-        setImagePreviews((prev) => ({
-          ...prev,
-          [arg1]: reader.result as string,
-        }));
+        setPhotoAlbumItems((prev) => {
+          const updated = [...prev];
+          updated[idx] = {
+            ...updated[idx],
+            image: file,
+            imagePreview: reader.result as string,
+          };
+          return updated;
+        });
       };
       reader.readAsDataURL(file);
     }
   }
 
-  // Define the onSubmitPhotoAlbum function
+  function handleInputChange(
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    idx: number
+  ) {
+    const { name, value } = e.target;
+    setPhotoAlbumItems((prev) => {
+      const updated = [...prev];
+      updated[idx] = {
+        ...updated[idx],
+        [name]: value,
+      };
+      return updated;
+    });
+  }
+
+  function addPhotoAlbumItem() {
+    setPhotoAlbumItems((prev) => [
+      ...prev,
+      { image: null, imagePreview: "", title: "", description: "" },
+    ]);
+  }
+
+  function removePhotoAlbumItem(idx: number) {
+    setPhotoAlbumItems((prev) => prev.filter((_, i) => i !== idx));
+    fileInputRefs.current.splice(idx, 1);
+  }
+
   const onSubmit = async (data: any) => {
     try {
-      // 1. Collect image files from local files state
-      const imageKeys = [1, 2, 3, 4].map((i) => `photoAlbumImage${i}`);
-      const uploadedImageUrls: { [key: string]: string } = {};
-      for (const key of imageKeys) {
-        const file = files[key]; // Use local files state
-        if (file) {
-          // Call uploadCardImage for each file
-          // @ts-ignore
-          const url = await uploadCardImage(file);
-          uploadedImageUrls[key] = url;
-        }
-      }
-      // 2. Prepare payload
+      // Upload images and build items array
+      const items = await Promise.all(
+        photoAlbumItems.map(async (item) => {
+          let imageUrl = "";
+          if (item.image) {
+            // @ts-ignore
+            imageUrl = await uploadCardImage(item.image);
+          }
+          return {
+            image: imageUrl,
+            title: item.title,
+            description: item.description,
+          };
+        })
+      );
       const payload = {
         sectionTitlePhoto: data.sectionTitlePhoto,
         sectionDescriptionPhoto: data.sectionDescriptionPhoto,
-        ...uploadedImageUrls,
+        photoAlbum: items,
       };
-      // 3. Send PATCH request
       const response = await fetch(`/api/projects/${projectId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -90,11 +125,12 @@ function PhotoAlbum() {
     }
   };
 
-  // Clear form handler
   function clearPhotoAlbumForm() {
     reset();
-    setFiles({});
-    setImagePreviews({});
+    setPhotoAlbumItems([
+      { image: null, imagePreview: "", title: "", description: "" },
+    ]);
+    fileInputRefs.current = [];
   }
 
   return (
@@ -169,42 +205,19 @@ function PhotoAlbum() {
             </div>
           </div>
           <div className="mt-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-            {[1, 2, 3, 4].map((index) => (
+            {photoAlbumItems.map((item, idx) => (
               <div
-                key={index}
-                className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-2"
+                key={idx}
+                className="mt-2 flex flex-col justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-2 relative"
               >
                 <div className="relative text-center">
-                  {files[`photoAlbumImage${index}`] ? (
+                  {item.imagePreview ? (
                     <div className="relative">
                       <img
-                        src={imagePreviews[`photoAlbumImage${index}`]}
-                        alt={`Photo Album Image ${index} Preview`}
+                        src={item.imagePreview}
+                        alt={`Photo Album Image ${idx + 1} Preview`}
                         className="mx-auto w-16 h-16 object-cover"
                       />
-                      <span
-                        className="absolute top-0 right-0 cursor-pointer"
-                        onClick={() => {
-                          setFiles((prev) => ({
-                            ...prev,
-                            [`photoAlbumImage${index}`]: null,
-                          }));
-                          setImagePreviews((prev) => {
-                            const newPreviews = { ...prev };
-                            delete newPreviews[`photoAlbumImage${index}`];
-                            return newPreviews;
-                          });
-                          if (
-                            fileInputRefs.current[`photoAlbumImage${index}`]
-                          ) {
-                            fileInputRefs.current[
-                              `photoAlbumImage${index}`
-                            ]!.value = "";
-                          }
-                        }}
-                      >
-                        ✖
-                      </span>
                     </div>
                   ) : (
                     <svg
@@ -220,17 +233,12 @@ function PhotoAlbum() {
                     </svg>
                   )}
                   <input
-                    {...register(`photoAlbumImage${index}`)}
                     type="file"
                     accept=".jpg,.jpeg,.png"
-                    onChange={(e) =>
-                      handleFileChange(e, `photoAlbumImage${index}`)
-                    }
+                    onChange={(e) => handleFileChange(e, idx)}
                     className="absolute inset-0 opacity-0 cursor-pointer"
                     ref={(el) => {
-                      if (fileInputRefs && fileInputRefs.current) {
-                        fileInputRefs.current[`photoAlbumImage${index}`] = el;
-                      }
+                      fileInputRefs.current[idx] = el;
                     }}
                   />
                   <p className="mt-4 font-semibold text-blue-500">
@@ -238,8 +246,42 @@ function PhotoAlbum() {
                   </p>
                   <p className="text-gray-500">here or Browse up to 10 MB</p>
                 </div>
+                <input
+                  type="text"
+                  name="title"
+                  value={item.title}
+                  onChange={(e) => handleInputChange(e, idx)}
+                  placeholder="Image Title"
+                  className="mt-2 block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2"
+                />
+                <textarea
+                  name="description"
+                  value={item.description}
+                  onChange={(e) => handleInputChange(e, idx)}
+                  placeholder="Image Description"
+                  className="mt-2 block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2"
+                  rows={2}
+                />
+                {photoAlbumItems.length > 1 && (
+                  <button
+                    type="button"
+                    className="absolute top-2 right-2 text-red-500 transition duration-200 hover:text-red-600  flex items-center justify-center text-xs"
+                    onClick={() => removePhotoAlbumItem(idx)}
+                  >
+                    <Trash size={16} />
+                  </button>
+                )}
               </div>
             ))}
+          </div>
+          <div className="flex justify-end mt-2">
+            <button
+              type="button"
+              className="bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-600"
+              onClick={addPhotoAlbumItem}
+            >
+              + Add Photo
+            </button>
           </div>
           <div className="flex justify-between mt-4">
             <button

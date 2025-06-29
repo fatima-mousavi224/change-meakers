@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { uploadCardImage } from "lib/uploadCardImage";
 import { cn } from "@/lib/utils";
+import { Trash } from "lucide-react";
 
 interface Voice {
   quote: string;
@@ -190,39 +191,26 @@ export default function VoicesFromClassroomForm() {
                 {fields.map((field, index) => (
                   <div
                     key={field.id}
-                    className="border border-gray-400 rounded-lg border-dashed px-5 py-4 w-full"
+                    className="border border-gray-400 rounded-lg border-dashed px-5 py-4 w-full relative"
                   >
+                    {/* Remove button */}
+                    {fields.length > 1 && (
+                      <button
+                        type="button"
+                        className="absolute top-2 right-2 text-red-500 hover:text-red-700 text-lg font-bold z-10"
+                        onClick={() => remove(index)}
+                        title="Remove voice"
+                      >
+                        <Trash size={16} />
+                      </button>
+                    )}
+
                     <textarea
                       {...register(`voices.${index}.quote` as const)}
                       placeholder="Write something here..."
                       rows={3}
                       className="my-3 w-full border-none focus:ring-0 resize-none"
                     />
-
-                    {/* <div className="flex justify-center md:justify-end mb-6 md:mb-0 space-x-4">
-                      <span
-                        className="text-blue-600 cursor-pointer w-4 h-4 hover:text-blue-800"
-                        onClick={() =>
-                          append({ quote: "", name: "", description: "" })
-                        }
-                        title="Add"
-                      >
-                        <FaSquarePlus />
-                      </span>
-                      <span
-                        className="text-red-600 cursor-pointer w-4 h-4 hover:text-red-800"
-                        onClick={() => remove(index)}
-                        title="Remove"
-                      >
-                        <FaTrash />
-                      </span>
-                      <span
-                        className="text-blue-600 cursor-pointer w-4 h-4 hover:text-blue-800"
-                        title="Edit"
-                      >
-                        <FaRegEdit />
-                      </span>
-                    </div> */}
 
                     <div className="flex flex-col md:flex-row space-y-3 md:space-y-0 mt-4 space-x-4 items-center">
                       <div className="relative">
@@ -268,6 +256,23 @@ export default function VoicesFromClassroomForm() {
                     </div>
                   </div>
                 ))}
+              </div>
+              <div className="flex  mt-4 ">
+                <button
+                  type="button"
+                  className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition"
+                  onClick={() => {
+                    append({
+                      quote: "",
+                      name: "",
+                      description: "",
+                      icon: null,
+                    });
+                    setIconPreviews((prev) => [...prev, null]);
+                  }}
+                >
+                  + Add Voice
+                </button>
               </div>
             </div>
           </div>

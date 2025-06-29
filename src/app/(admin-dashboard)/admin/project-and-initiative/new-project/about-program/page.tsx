@@ -1,11 +1,15 @@
 "use client";
 
 import Tabs from "@/components/create-project-tabs/Tabs";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { BsArrowRight } from "react-icons/bs";
 import { cn } from "utilities/cn";
+const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
+import "react-loading-skeleton/dist/skeleton.css";
+import "react-quill/dist/quill.snow.css";
 
 type FormData = {
   sectionTitleAbout: string;
@@ -19,6 +23,7 @@ export default function AboutProgramForm() {
     handleSubmit,
     register,
     reset,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<FormData>();
 
@@ -92,14 +97,27 @@ export default function AboutProgramForm() {
                 <label className="block text-sm/6 font-medium text-gray-900">
                   Body Text
                 </label>
-                <textarea
-                  {...register("bodyText", {
-                    required: "Body Text is required",
-                    maxLength: 1000,
-                  })}
-                  placeholder="write something here..."
-                  className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2"
-                  rows={4}
+
+                <Controller
+                  name="bodyText"
+                  control={control}
+                  defaultValue=""
+                  render={({ field }) => (
+                    <div className="block w-full rounded-md border border-dashed border-gray-900/25 focus-within:ring-2 focus-within:ring-blue-100 focus-within:ring-offset-2 px-0 py-0">
+                      <ReactQuill
+                        theme="snow"
+                        value={field.value}
+                        onChange={field.onChange}
+                        className="quill-editor mb-10"
+                        style={{
+                          border: "none",
+                          borderRadius: "0.375rem",
+                          padding: "0",
+                          minHeight: "120px",
+                        }}
+                      />
+                    </div>
+                  )}
                 />
                 {errors.bodyText && (
                   <p className="text-red-500 text-sm">

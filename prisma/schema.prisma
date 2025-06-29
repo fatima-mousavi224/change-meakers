@@ -153,14 +153,9 @@ model Project {
   projectTitle               String
   cardDescription            String
   uploadCardImage            String
-  // Hero Section Fields
   
   
-  // Status & Icons Fields
-  iconTitleStatus1           String?
-  shortDescriptionStatus1     String?
-  iconTitleStatus2            String?
-  shortDescriptionStatus2    String?
+  
   // Vision & Goal Section
   visionTitle                String?
   visionText                 String?
@@ -196,10 +191,7 @@ model Project {
   // Photo Album Section
   sectionTitlePhoto          String?
   sectionDescriptionPhoto    String?
-  photoAlbumImage1           String?
-  photoAlbumImage2           String?
-  photoAlbumImage3           String?
-  photoAlbumImage4           String?
+ 
   // Newsletter Section
   sectionTitleNewsletter     String?
   sectionDescriptionNewsletter String?
@@ -220,11 +212,10 @@ model Project {
   // Card and Hero Images
   cardImage                  String?
   
-  // Status Icons
-  statusIcon1                String?
-  statusIcon2                String?
+  
   // Relations
   heroSections              HeroSection[]
+  statusAndIcons          StatusAndIcon[]
   teamCards                  TeamCard[]
   studentItems               StudentItem[]
   voices                     Voice[]
@@ -232,8 +223,31 @@ model Project {
   relatedLinks               RelatedLink[]
   newsletterItems            NewsletterItem[]
   offerIcons                 OfferIcon[]
+  photoAlbums                 PhotoAlbum[]
   createdAt                  DateTime           @default(now())
   updatedAt                  DateTime           @updatedAt
+}
+
+model PhotoAlbum {
+  id          String      @id @default(auto()) @map("_id") @db.ObjectId
+  projectId   String      @db.ObjectId
+  image       String
+  title       String?
+  description String?
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model StatusAndIcon {
+  id          String      @id @default(auto()) @map("_id") @db.ObjectId
+  projectId   String      @db.ObjectId
+  iconTitle   String
+  shortDescription String
+  statusIcon String
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model TeamCard {
@@ -337,16 +351,31 @@ model HeroSection {
 
 model Impact {
   id                    String   @id @default(auto()) @map("_id") @db.ObjectId
-  // Standard Impact fields
+  standardImpacts       StandardImpact[]
+  highlightedImpacts    HighlightedImpact[]
+  // Project association
+  projectName           String?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+}
+
+model StandardImpact {
+  id                    String   @id @default(auto()) @map("_id") @db.ObjectId
+  impactId              String   @db.ObjectId
   title                 String
   impactTags            String
   writersName           String
   date                  DateTime
   contentDescription    String
   writerPhoto           String?
-  galleryPhoto          String?
+  galleryPhoto          String[]
   
-  // Highlighted Impact fields
+  impact                Impact   @relation(fields: [impactId], references: [id], onDelete: Cascade)
+}
+
+model HighlightedImpact {
+  id                    String   @id @default(auto()) @map("_id") @db.ObjectId
+  impactId              String   @db.ObjectId
   message1              String?
   message2              String?
   title2                String?
@@ -355,14 +384,10 @@ model Impact {
   writersName2          String?
   writerPhoto2          String?
   coverPhoto            String?
-  galleryPhoto2         String?
+  galleryPhoto2         String[]
   contentDescription2   String?
-  
-  // Project association
-  projectName           String?
-  
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
+
+  impact                Impact   @relation(fields: [impactId], references: [id], onDelete: Cascade)
 }
 
 enum PaymentStatus {
