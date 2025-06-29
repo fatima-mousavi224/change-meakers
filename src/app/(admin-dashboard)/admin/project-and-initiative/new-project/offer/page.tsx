@@ -40,8 +40,7 @@ export default function Offer() {
   });
 
   const offerIcons = watch("offerIcons"); // watch for offerIcons array
-  const projectId =
-    typeof window !== "undefined" ? localStorage.getItem("projectId") : null;
+  const projectId = localStorage.getItem("projectId");
   const router = useRouter();
 
   // Add a new offer icon
@@ -113,7 +112,7 @@ export default function Offer() {
       });
       const result = await response.json();
       if (response.ok) {
-        localStorage.setItem("projectId", result.projectId);
+        localStorage.setItem("projectId", result.id);
         toast.success("Project updated successfully!");
         router.push("/admin/project-and-initiative/new-project/team");
         reset();

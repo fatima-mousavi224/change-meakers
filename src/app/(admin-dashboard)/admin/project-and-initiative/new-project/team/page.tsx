@@ -68,7 +68,6 @@ export default function TeamSectionForm() {
   const setRef = (name: string) => (el: HTMLInputElement | null) => {
     fileInputRefs.current[name] = el;
   };
-
   const projectId = localStorage.getItem("projectId");
   const router = useRouter();
 
