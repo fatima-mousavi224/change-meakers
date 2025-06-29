@@ -38,7 +38,7 @@ const ProjectAndInitiative = ({
   const router = useRouter();
 
   // Unified data based on filter
-  const data = useMemo(() => {
+  const data: any = useMemo(() => {
     if (filter === "Projects") return projects;
     return impacts;
   }, [projects, impacts, filter]);
