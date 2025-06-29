@@ -1,11 +1,13 @@
-import React from 'react'
-import ProjectAndInitiative from './ProjectAndInitiative'
-function ProjectAndInitiativePage() {
+import React from "react";
+import ProjectAndInitiative from "./ProjectAndInitiative";
+import prisma from "@/lib/prismaDB";
+export default async function ProjectAndInitiativePage() {
+  const projects = await prisma.project.findMany({});
+  const impacts = await prisma.impact.findMany({});
+
   return (
     <div>
-        <ProjectAndInitiative />
+      <ProjectAndInitiative projects={projects} impacts={impacts} />
     </div>
-  )
+  );
 }
-
-export default ProjectAndInitiativePage

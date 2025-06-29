@@ -53,7 +53,6 @@ const slides: Slide[] = [
 ];
 
 const Programs = () => {
-
   const [activeIndex, setActiveIndex] = useState(0);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
@@ -130,7 +129,7 @@ const Programs = () => {
   ];
 
   // Team Members meet section
- 
+
   // const TeamMembers = [
   //   {
   //     name: "Laila",
@@ -204,36 +203,30 @@ const Programs = () => {
       link: "#",
     },
   ];
-  
-  const [projects, setProjects] = useState<
-    (Project & {
-      offerIcons: OfferIcon[];
-      teamCards: TeamCard[]
-    }) | null
-  >(null);
-  console.log("🚀 ~ projects id:", projects)
+
+  const [projects, setProjects] = useState<any>(null);
+  console.log("🚀 ~ projects id:", projects);
   const [loading, setLoading] = useState(true);
-  const params= useParams();
-  const id= params.id as string;
-  
-    useEffect(() => {
-      const fetchProjects = async () => {
-        try {
-          const response = await fetch(`/api/projects/${id}`, { method: "GET" });
-          if (!response.ok) throw new Error("Failed to fetch projects");
-          const data = await response.json();
-          // console.log("🚀 ~ fetchProjects ~ data:", data);
-          setProjects(data);
-        } catch (error) {
-          console.error("Error fetching projects:", error);
-        } finally {
-          setLoading(false);
-        }
-      };
-  
-      fetchProjects();
-    }, [id]);
-    
+  const params = useParams();
+  const id = params.id as string;
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const response = await fetch(`/api/projects/${id}`, { method: "GET" });
+        if (!response.ok) throw new Error("Failed to fetch projects");
+        const data = await response.json();
+        // console.log("🚀 ~ fetchProjects ~ data:", data);
+        setProjects(data);
+      } catch (error) {
+        console.error("Error fetching projects:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProjects();
+  }, [id]);
 
   return (
     <div>
@@ -250,14 +243,13 @@ const Programs = () => {
               onTouchMove={handleTouchMove}
               onTouchEnd={handleTouchEnd}
             >
-
-                <Image
-                  src={projects?.heroImage ?? "" }
-                  alt={projects?.heroTitle ?? ""}
-                  fill
-                  className={`absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-500 ease-in-out opacity-100 z-0" : "opacity-0"
+              <Image
+                src={projects?.heroImage ?? ""}
+                alt={projects?.heroTitle ?? ""}
+                fill
+                className={`absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-500 ease-in-out opacity-100 z-0" : "opacity-0"
                    rounded-[35px]`}
-                />
+              />
             </div>
 
             {/* Overlay with Static Text and Button */}
@@ -317,32 +309,44 @@ const Programs = () => {
       {/* Programs Section */}
       <section className="bg-light_gray overflow-x-hidden md:bg-white max-w-screen-2xl mx-auto mt-10 px-6">
         <div className="bg-light_gray rounded-xl py-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-6  items-center">
-            <div
-              className="flex md:px-10 space-x-3 items-center gap-2 sm:w-1/4"
-            >
-              <div className="bg-white rounded-xl p-8 shadow-sm relative">
-                <Image src={projects?.statusIcon1 ?? ""} alt={projects?.iconTitleStatus1 as string} width={500} height={500} className="absolute top-2 left-2 size-12 " />
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold">{projects?.iconTitleStatus1}</h3>
-                <p className="text-sm text-gray-500 w-40 md:w-56 line-clamp-2">
-                  {projects?.shortDescriptionStatus1}
-                </p>
-              </div>
+          <div className="flex md:px-10 space-x-3 items-center gap-2 sm:w-1/4">
+            <div className="bg-white rounded-xl p-8 shadow-sm relative">
+              <Image
+                src={projects?.statusIcon1 ?? ""}
+                alt={projects?.iconTitleStatus1 as string}
+                width={500}
+                height={500}
+                className="absolute top-2 left-2 size-12 "
+              />
             </div>
-            <div
-              className="flex md:px-10 space-x-3 items-center gap-2 sm:w-1/4"
-            >
-              <div className="bg-white rounded-xl p-8 shadow-sm relative">
-                <Image src={projects?.statusIcon2 ?? ""} alt={projects?.iconTitleStatus2 as string} width={500} height={500} className="absolute top-2 left-2 size-12 rounded-xl " />
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold">{projects?.iconTitleStatus2}</h3>
-                <p className="text-sm text-gray-500 w-40 md:w-56 line-clamp-2">
-                  {projects?.shortDescriptionStatus2}
-                </p>
-              </div>
+            <div>
+              <h3 className="text-lg font-semibold">
+                {projects?.iconTitleStatus1}
+              </h3>
+              <p className="text-sm text-gray-500 w-40 md:w-56 line-clamp-2">
+                {projects?.shortDescriptionStatus1}
+              </p>
             </div>
+          </div>
+          <div className="flex md:px-10 space-x-3 items-center gap-2 sm:w-1/4">
+            <div className="bg-white rounded-xl p-8 shadow-sm relative">
+              <Image
+                src={projects?.statusIcon2 ?? ""}
+                alt={projects?.iconTitleStatus2 as string}
+                width={500}
+                height={500}
+                className="absolute top-2 left-2 size-12 rounded-xl "
+              />
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold">
+                {projects?.iconTitleStatus2}
+              </h3>
+              <p className="text-sm text-gray-500 w-40 md:w-56 line-clamp-2">
+                {projects?.shortDescriptionStatus2}
+              </p>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -593,16 +597,24 @@ const Programs = () => {
             What We Offer?
           </h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 px-4">
-            {projects?.offerIcons.map((offer, index) => (
+            {projects?.offerIcons.map((offer: any, index: any) => (
               <div
                 key={index}
                 className="rounded-xl p-6 shadow bg-slate-50 hover:shadow-lg transition duration-300"
               >
-                <Image src={offer?.url?offer?.url:""} width={500} height={500} alt="offer icon" className="size-16 rounded-xl" />
+                <Image
+                  src={offer?.url ? offer?.url : ""}
+                  width={500}
+                  height={500}
+                  alt="offer icon"
+                  className="size-16 rounded-xl"
+                />
                 <h3 className="text-xl font-semibold mb-2 line-clamp-1">
                   {offer?.iconTitle || ""}
                 </h3>
-                <p className="text-gray-600 mb-4">{offer?.shortDescription || ""}</p>
+                <p className="text-gray-600 mb-4">
+                  {offer?.shortDescription || ""}
+                </p>
                 <a
                   href="#"
                   className="text-blue-500 font-semibold hover:underline"
@@ -616,7 +628,7 @@ const Programs = () => {
       </section>
 
       {/* Team Meet Section */}
-       <section className="max-w-screen-2xl px-4 mx-auto mt-10">
+      <section className="max-w-screen-2xl px-4 mx-auto mt-10">
         <div className="py-10 text-center">
           <div className="flex items-center mx-auto justify-center gap-2 w-28 rounded-full bg-primary-50 bg-opacity-15 p-2 mb-6">
             <Icon icon="dot" height={8} width={10} />
@@ -633,58 +645,62 @@ const Programs = () => {
           <div className="flex flex-col md:flex-row justify-center md:space-x-6 mt-8 gap-6">
             {loading || !projects ? (
               <p>Loading...</p>
-            ) : (
-              projects?.teamCards?.length ?(
-              projects?.teamCards?.map((member: TeamCard, index) => (
+            ) : projects?.teamCards?.length ? (
+              projects?.teamCards?.map((member: TeamCard, index: number) => (
                 <div
                   key={index}
                   className="bg-white rounded-lg shadow-lg md:w-1/3 relative md:h-[500px] overflow-hidden group"
                 >
-                {/* Image container */}
-                <div className="relative z-0">
-                  <Image
-                    src={member?.image ||  "/default-avatar.jpg"}
-                    alt={member?.name || "Team member"}
-                    className="rounded-t-lg h-80 md:h-96 group-hover:ease-in-out md:group-hover:h-[500px] object-cover  transition-all duration-700 ease-in-out"
-                  />
-                  <div className="border-t-8 border-sky-800  group-hover:hidden transition duration-150"></div>
-                  <div className="group-hover:py-0 py-6 group-hover:hidden transition duration-150">
-                    <h3 className="text-xl font-semibold">{member?.name}</h3>
-                    <p className="text-gray-600 mb-2">{member?.role}</p>
-                  </div>
-                  {/* Overlay details */}
-                  <div
-                    className="absolute inset-0 bg-white group-hover:ease-in-out bg-opacity-90 flex items-start justify-center p-4 
+                  {/* Image container */}
+                  <div className="relative z-0">
+                    <Image
+                      src={member?.image || "/default-avatar.jpg"}
+                      alt={member?.name || "Team member"}
+                      className="rounded-t-lg h-80 md:h-96 group-hover:ease-in-out md:group-hover:h-[500px] object-cover  transition-all duration-700 ease-in-out"
+                    />
+                    <div className="border-t-8 border-sky-800  group-hover:hidden transition duration-150"></div>
+                    <div className="group-hover:py-0 py-6 group-hover:hidden transition duration-150">
+                      <h3 className="text-xl font-semibold">{member?.name}</h3>
+                      <p className="text-gray-600 mb-2">{member?.role}</p>
+                    </div>
+                    {/* Overlay details */}
+                    <div
+                      className="absolute inset-0 bg-white group-hover:ease-in-out bg-opacity-90 flex items-start justify-center p-4 
                     translate-y-full opacity-0 transition-opacity duration-500 group-hover:translate-y-0 group-hover:opacity-100 z-10"
-                  >
-                    <div className="text-center">
-                      <div className="h-4 md:h-14 w-full bg-gray-900 absolute left-0 right-0 top-0"></div>
-                      <div className="w-full border-4 md:border-8 border-t border-sky-800 absolute top-4 md:top-14 left-0 right-0 "></div>
-                      <div className="mt-4 md:mt-20">
-                        <h3 className="text-lg md:text-xl font-semibold">
-                          {member.name}
-                        </h3>
-                        <p className="text-base md:text-base text-gray-600 mb-2">
-                          {member?.role}
-                        </p>
-                        <p className="text-sm line-clamp-6 md:text-base text-blue-500 mb-2">
-                          {member?.biography}
-                        </p>
-                        <Link
-                          href="#"
-                          className="cursor-pointer block mx-auto w-full mt-4 md:mt-20"
-                        >
-                          <FaLinkedinIn className="size-8 mx-auto bg-blue-600 text-white rounded" />
-                          <img src={member?.icon || ""} alt="members icon" className="size-8 mx-auto bg-blue-600 text-white rounded" />
-                        </Link>
+                    >
+                      <div className="text-center">
+                        <div className="h-4 md:h-14 w-full bg-gray-900 absolute left-0 right-0 top-0"></div>
+                        <div className="w-full border-4 md:border-8 border-t border-sky-800 absolute top-4 md:top-14 left-0 right-0 "></div>
+                        <div className="mt-4 md:mt-20">
+                          <h3 className="text-lg md:text-xl font-semibold">
+                            {member.name}
+                          </h3>
+                          <p className="text-base md:text-base text-gray-600 mb-2">
+                            {member?.role}
+                          </p>
+                          <p className="text-sm line-clamp-6 md:text-base text-blue-500 mb-2">
+                            {member?.biography}
+                          </p>
+                          <Link
+                            href="#"
+                            className="cursor-pointer block mx-auto w-full mt-4 md:mt-20"
+                          >
+                            <FaLinkedinIn className="size-8 mx-auto bg-blue-600 text-white rounded" />
+                            <img
+                              src={member?.icon || ""}
+                              alt="members icon"
+                              className="size-8 mx-auto bg-blue-600 text-white rounded"
+                            />
+                          </Link>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))):
-            <p>No team members round?</p>
-          )}
+              ))
+            ) : (
+              <p>No team members round?</p>
+            )}
           </div>
         </div>
       </section>
@@ -1136,26 +1152,49 @@ const Programs = () => {
 
         <div className="space-y-14 mb-20 max-w-screen-2xl px-4 mx-auto">
           <div className="flex space-x-4">
-            <span className="rounded-xl bg-light_gray p-2"><FaLink /></span>
-          <h3>RelatedLinks</h3>
+            <span className="rounded-xl bg-light_gray p-2">
+              <FaLink />
+            </span>
+            <h3>RelatedLinks</h3>
           </div>
 
           <div className="flex space-x-4">
-            <Link href="#" className="bg-slate-400 rounded-full px-4 py-1 text-sky-700 border cursor-pointer border-blue-600 hover:opacity-90">About</Link>
-            <Link href="#"  className="bg-slate-400 rounded-full px-4 py-1 text-sky-700 border cursor-pointer border-blue-600 hover:opacity-90">Programs</Link>
+            <Link
+              href="#"
+              className="bg-slate-400 rounded-full px-4 py-1 text-sky-700 border cursor-pointer border-blue-600 hover:opacity-90"
+            >
+              About
+            </Link>
+            <Link
+              href="#"
+              className="bg-slate-400 rounded-full px-4 py-1 text-sky-700 border cursor-pointer border-blue-600 hover:opacity-90"
+            >
+              Programs
+            </Link>
           </div>
 
-          <h3 className="text-3xl md:text-5xl font-bold w-sm my-14 mx-auto text-center">Need a website? Let an Afghan girl build it. 👋</h3>
+          <h3 className="text-3xl md:text-5xl font-bold w-sm my-14 mx-auto text-center">
+            Need a website? Let an Afghan girl build it. 👋
+          </h3>
 
           <div className="flex flex-col md:flex-row space-y-6 md:space-y-0 md:space-x-4 lg:space-x-0 justify-between items-center bg-light_gray px-5 lg:px-10 py-14 ">
-              <div className="bg-slate-400 p-4 rounded-full">
-                <TbMessagePause className="size-7 text-sky-800" />
+            <div className="bg-slate-400 p-4 rounded-full">
+              <TbMessagePause className="size-7 text-sky-800" />
+            </div>
+            <h4 className="text-lg md:font-bold text-slate-700 w-sm">
+              Stay updated! Subscribe to receive the latest news, events, and
+              impact stories from our work.
+            </h4>
+            <div className="flex md:w-96 rounded-lg bg-white relative">
+              <input
+                type="text"
+                placeholder="Enter Your Email Address"
+                className="py-2 border-none bg-transparent rounded-lg w-full !focus:outline-none !focus:border-none focus:ring-0 px-4 "
+              />
+              <div className="bg-blue-900 p-3 rounded-lg absolute right-0 -top-0.5  cursor-pointer hover:opacity-80">
+                <FaArrowRightLong className="text-white size-5" />
               </div>
-              <h4 className="text-lg md:font-bold text-slate-700 w-sm">Stay updated! Subscribe to receive the latest news, events, and impact stories from our work.</h4>
-              <div className="flex md:w-96 rounded-lg bg-white relative">
-                <input type="text" placeholder="Enter Your Email Address" className="py-2 border-none bg-transparent rounded-lg w-full !focus:outline-none !focus:border-none focus:ring-0 px-4 " />
-                <div className="bg-blue-900 p-3 rounded-lg absolute right-0 -top-0.5  cursor-pointer hover:opacity-80"><FaArrowRightLong className="text-white size-5" /></div>
-              </div>
+            </div>
           </div>
         </div>
       </section>
