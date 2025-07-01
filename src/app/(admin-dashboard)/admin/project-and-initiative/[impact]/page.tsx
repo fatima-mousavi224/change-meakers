@@ -307,7 +307,6 @@ export default function ImpactPage() {
                         value={formData.title}
                         onChange={handleInputChange}
                         required
-                        maxLength={50}
                       />
                     </div>
                   </div>
@@ -324,7 +323,6 @@ export default function ImpactPage() {
                         value={formData.impactTags}
                         onChange={handleInputChange}
                         required
-                        maxLength={50}
                       />
                     </div>
                   </div>
@@ -343,7 +341,6 @@ export default function ImpactPage() {
                         value={formData.writersName}
                         onChange={handleInputChange}
                         required
-                        maxLength={50}
                       />
                     </div>
                   </div>
@@ -377,7 +374,6 @@ export default function ImpactPage() {
                       onChange={handleInputChange}
                       required
                       rows={4}
-                      maxLength={1000}
                     />
                   </div>
                 </div>
@@ -549,7 +545,6 @@ export default function ImpactPage() {
                         value={formData.message1}
                         onChange={handleInputChange}
                         rows={4}
-                        maxLength={1000}
                         placeholder="write something here..."
                       />
                     </div>
@@ -566,7 +561,6 @@ export default function ImpactPage() {
                         className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-100 focus:ring-offset-2"
                         value={formData.title2}
                         onChange={handleInputChange}
-                        maxLength={50}
                       />
                     </div>
                   </div>
@@ -585,7 +579,6 @@ export default function ImpactPage() {
                         className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-100 focus:ring-offset-2"
                         value={formData.impactTags2}
                         onChange={handleInputChange}
-                        maxLength={50}
                       />
                     </div>
                   </div>
@@ -616,7 +609,6 @@ export default function ImpactPage() {
                       value={formData.message2}
                       onChange={handleInputChange}
                       rows={4}
-                      maxLength={1000}
                       placeholder="write something here..."
                     />
                   </div>
@@ -634,7 +626,6 @@ export default function ImpactPage() {
                       className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-100 focus:ring-offset-2"
                       value={formData.writersName2}
                       onChange={handleInputChange}
-                      maxLength={50}
                     />
                   </div>
                 </div>
@@ -857,7 +848,6 @@ export default function ImpactPage() {
                       value={formData.contentDescription2}
                       onChange={handleInputChange}
                       rows={4}
-                      maxLength={1000}
                     />
                   </div>
                 </div>
@@ -882,7 +872,6 @@ export default function ImpactPage() {
                   value={formData.addImpact}
                   onChange={handleInputChange}
                   required
-                  maxLength={50}
                 />
               </div>
             </div>
