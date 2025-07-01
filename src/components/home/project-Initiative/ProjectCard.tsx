@@ -1,11 +1,12 @@
 import Image from "next/image";
+import Link from "next/link";
 import React from "react";
 
 interface ProjectCardProps {
   project: {
     id: string;
     projectTitle: string;
-    cardImage?: string;
+    uploadCardImage?: string;
     cardDescription?: string;
     createdAt?: string;
     updatedAt?: string;
@@ -13,10 +14,6 @@ interface ProjectCardProps {
 }
 
 function ProjectCard({ project }: ProjectCardProps) {
-  // Default image if no cardImage is provided
-  const defaultImage = "/images/programs/human_rights/slider_1.jpg";
-  const imageSrc = project.cardImage || defaultImage;
-
   // Format the date for display
   const formatDate = (dateString?: string) => {
     if (!dateString) return "Ongoing";
@@ -28,7 +25,7 @@ function ProjectCard({ project }: ProjectCardProps) {
   return (
     <div className="max-w-sm rounded-xl overflow-hidden shadow-lg relative group">
       <Image
-        src={imageSrc}
+        src={project.uploadCardImage || ""}
         alt={project.projectTitle}
         className="w-full h-80 object-cover"
         width={400}
@@ -40,9 +37,12 @@ function ProjectCard({ project }: ProjectCardProps) {
         </p>
         <h2 className="text-lg text-gray-200 mb-4">{project.projectTitle}</h2>
         <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2">
-          <button className="bg-transparent border border-gray-200  text-gray-300 text-xs font-medium px-4 py-2 rounded-md hover:bg-gray-200 hover:text-black transition">
+          <Link
+            href={`/programs/${project.id}`}
+            className="bg-transparent border border-gray-200  text-gray-300 text-xs font-medium px-4 py-2 rounded-md hover:bg-gray-200 hover:text-black transition"
+          >
             Learn more
-          </button>
+          </Link>
         </div>
       </div>
     </div>

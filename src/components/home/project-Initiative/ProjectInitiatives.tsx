@@ -7,7 +7,7 @@ import Link from "next/link";
 interface Project {
   id: string;
   projectTitle: string;
-  cardImage?: string;
+  uploadCardImage?: string;
   cardDescription?: string;
   createdAt?: string;
   updatedAt?: string;
@@ -17,6 +17,7 @@ function ProjectInitiatives() {
   // State to track number of visible projects
   const [visibleProjects, setVisibleProjects] = useState(4); // Start with 4 for mobile
   const [projects, setProjects] = useState<Project[]>([]);
+  console.log("🚀 ~ ProjectInitiatives ~ projects:", projects);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -84,9 +85,9 @@ function ProjectInitiatives() {
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {projects.slice(0, visibleProjects).map((project) => (
-            <Link href={`/programs/${project.id}`} key={project.id}>
+            <div key={project.id}>
               <ProjectCard project={project} />
-            </Link>
+            </div>
           ))}
         </div>
         {visibleProjects < projects.length && (
