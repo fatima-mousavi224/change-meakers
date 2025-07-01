@@ -1,12 +1,12 @@
 "use client";
-import React, { useRef } from "react";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation } from "swiper/modules";
+import Image from "next/image";
+import { useRef } from "react";
+import { FaArrowLeftLong, FaArrowRightLong } from "react-icons/fa6";
+import type { Swiper as SwiperType } from "swiper";
 import "swiper/css";
 import "swiper/css/navigation";
-import Image from "next/image";
-import type { Swiper as SwiperType } from "swiper";
-import { FaArrowLeftLong, FaArrowRightLong } from "react-icons/fa6";
+import { Navigation } from "swiper/modules";
+import { Swiper, SwiperSlide } from "swiper/react";
 
 import image1 from "public/images/mission-impact/participants/1.jpg";
 import image2 from "public/images/mission-impact/participants/2.jpg";
@@ -101,7 +101,6 @@ const participantsInfo = [
     location: "Afghanistan",
   },
 ];
-
 export default function ParticipantsInfo() {
   const swiperRef = useRef<SwiperType | null>(null); // Specify type for swiperRef
 
@@ -148,18 +147,18 @@ export default function ParticipantsInfo() {
             </div>
             <div className="flex items-center gap-2">
               <Image
-                src={participant?.image ?? "/images/default-avatar.png"}
+                src={participant?.image}
                 alt="participant"
                 height={1200}
                 width={1200}
                 className="h-12 w-12 rounded-full object-cover"
               />
-              
+
               <div className="flex flex-col">
                 <p className="font-semibold">{participant?.name}</p>
-                {/* <p className="text-xs text-paragraph_color">
-                  {participant?.}
-                </p> */}
+                <p className="text-xs text-paragraph_color">
+                  {participant?.location}
+                </p>
               </div>
             </div>
           </SwiperSlide>

@@ -1,5 +1,6 @@
 import Icon from "@/components/common/IconComponent";
 import ParticipantsInfo from "./ParticipantsInfo";
+
 export default function Participants() {
   return (
     <div className="bg-light_gray lg:p-20 md:p-16 p-10 my-8">
