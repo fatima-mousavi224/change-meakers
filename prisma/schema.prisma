@@ -298,6 +298,7 @@ model LiveMoment {
   id          String      @id @default(auto()) @map("_id") @db.ObjectId
   projectId   String      @db.ObjectId
   link        String
+  image       String
   project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
