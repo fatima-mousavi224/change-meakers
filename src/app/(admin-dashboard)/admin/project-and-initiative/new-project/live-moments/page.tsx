@@ -113,7 +113,7 @@ function LiveMoments() {
                       {...field}
                       type="text"
                       placeholder="Enter the link or embed code"
-                      className="border w-full md:w-[90%] mt-2 border-gray-400 border-dashed rounded-lg text-gray-500 block placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2"
+                      className="border w-full md:w-[90%] mt-2 border-gray-400 border-dashed rounded-lg text-gray-500 block placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2 mb-2.5"
                     />
                   )}
                 />

@@ -90,14 +90,13 @@ export default function CardComponentsForm() {
 
         {/* Project Title */}
         <div className="mb-5">
-          <label className="block text-sm font-medium text-gray-900 mb-1">
+          <label className="block text-sm font-medium text-gray-900 mb-2">
             Project Title
           </label>
           <input
             type="text"
             {...register("projectTitle", {
               required: "Project Title is required",
-              maxLength: 50,
             })}
             placeholder="Write something here..."
             className="block w-full rounded-md border border-dashed border-gray-900/25 px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2"
@@ -111,13 +110,12 @@ export default function CardComponentsForm() {
 
         {/* Card Description */}
         <div className="mb-5">
-          <label className="block text-sm font-medium text-gray-900 mb-1">
+          <label className="block text-sm font-medium text-gray-900 mb-2">
             Card Description
           </label>
           <textarea
             {...register("cardDescription", {
               required: "Card Description is required",
-              maxLength: 1000,
             })}
             placeholder="Write something here..."
             className="block w-full rounded-md border border-dashed border-gray-900/25 px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2"
