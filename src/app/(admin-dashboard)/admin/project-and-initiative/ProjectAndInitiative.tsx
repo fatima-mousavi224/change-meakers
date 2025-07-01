@@ -44,7 +44,7 @@ const ProjectAndInitiative = ({
   // Search and sort logic
   const filteredData = useMemo(() => {
     let items = data.filter((item: any) => {
-      const name = item.title || item.name || "";
+      const name = item.projectName || item.projectTitle || "";
       return name.toLowerCase().includes(search.toLowerCase());
     });
     if (sort === "Newest") {
@@ -146,75 +146,111 @@ const ProjectAndInitiative = ({
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-3 mt-10">
-        {filteredData.map((item: any, index: number) => (
-          <div
-            key={item.id}
-            className="bg-white relative rounded-lg shadow p-4 flex flex-col"
-          >
-            {filter === "Projects" ? (
-              <div className="relative">
-                {/* Project images rendering logic here, adjust as needed */}
-
-                <Image
-                  src={item.heroSections?.[0]?.heroImage}
-                  alt={`${item.title} slide1`}
-                  className="w-full h-32 object-cover rounded-md"
-                  width={300}
-                  height={300}
-                />
-              </div>
-            ) : (
-              <div className="relative">
-                <Image
-                  src={item?.standardImpacts?.[0]?.galleryPhoto?.[0]}
-                  alt={`${item.title} slide1`}
-                  className="w-full h-32 object-cover rounded-md"
-                  width={300}
-                  height={300}
-                />
-              </div>
-            )}
-
-            <div className="flex justify-end mt-2">
-              <div className="flex space-x-2 justify-end items-center   text-xs  bg-sky-100 text-blue-700 px-2 py-1 rounded-full w-max">
-                <span className="w-2 h-2 bg-sky-700 rounded-full"></span>
-                {filter === "Projects" ? (
-                  <Link
-                    href={`/admin/project-and-initiative/impact/${item.id}`}
-                  >
-                    Project
-                  </Link>
-                ) : (
-                  <span>Impact</span>
-                )}
-              </div>
-            </div>
-
-            <div className="flex justify-between items-center gap-1">
-              <div className="mt-3">
-                <h3 className="text-sm font-semibold">
-                  {item.title ||
-                    item.name ||
-                    item.projectTitle ||
-                    item.projectName}
-                </h3>
-                <p className="text-gray-500 text-xs">
-                  {item.type || item.description}
-                </p>
-              </div>
-              <div className="flex gap-3 text-lg text-gray-600 mt-3">
-                <FaTrash
-                  aria-label={`Delete ${item.title || item.name}`}
-                  className="text-red-500 hover:text-red-600 cursor-pointer size-4"
-                  onClick={() => {
-                    setSelectedId(item.id);
-                    setOpenModal(true);
-                  }}
-                />
-              </div>
+        {filteredData.length === 0 ? (
+          <div className="col-span-full flex flex-col items-center justify-center py-20">
+            <img
+              src={
+                filter === "Projects"
+                  ? "/images/nodata.png"
+                  : "/images/noDonations.png"
+              }
+              alt="No data"
+              className="w-32 h-32 mb-6 opacity-80"
+            />
+            <h2 className="text-xl font-semibold text-gray-700 mb-2">
+              No {filter === "Projects" ? "Projects" : "Impacts"} Found
+            </h2>
+            <p className="text-gray-500 text-center max-w-xs mb-4">
+              {filter === "Projects"
+                ? "There are currently no projects to display. Click 'Create New Project' to add one."
+                : "There are currently no impacts to display. Click 'Create New Impact' to add one."}
+            </p>
+            <div className="flex gap-4">
+              <Link
+                href={`/admin/project-and-initiative/new-project`}
+                className="bg-gradient-to-r from-[#134C83] to-[#4497E8] text-white shadow-md hover:opacity-90 active:shadow-none px-4 py-2 rounded transition-colors duration-150 text-sm"
+              >
+                Create New Project
+              </Link>
+              <Link
+                href={`/admin/project-and-initiative/new`}
+                className="bg-gradient-to-r bg-gray-200  text-black shadow-md hover:opacity-90 active:shadow-none px-4 py-2 rounded transition-colors duration-150 text-sm"
+              >
+                Create New Impact
+              </Link>
             </div>
           </div>
-        ))}
+        ) : (
+          filteredData.map((item: any, index: number) => (
+            <div
+              key={item.id}
+              className="bg-white relative rounded-lg shadow p-4 flex flex-col"
+            >
+              {filter === "Projects" ? (
+                <div className="relative">
+                  {/* Project images rendering logic here, adjust as needed */}
+
+                  <Image
+                    src={item.heroImage?.[0]}
+                    alt={`${item.title} slide1`}
+                    className="w-full h-32 object-cover rounded-md"
+                    width={300}
+                    height={300}
+                  />
+                </div>
+              ) : (
+                <div className="relative">
+                  <Image
+                    src={item?.standardImpacts?.[0]?.galleryPhoto?.[0]}
+                    alt={`${item.title} slide1`}
+                    className="w-full h-32 object-cover rounded-md"
+                    width={300}
+                    height={300}
+                  />
+                </div>
+              )}
+
+              <div className="flex justify-end mt-2">
+                <div className="flex space-x-2 justify-end items-center   text-xs  bg-sky-100 text-blue-700 px-2 py-1 rounded-full w-max">
+                  <span className="w-2 h-2 bg-sky-700 rounded-full"></span>
+                  {filter === "Projects" ? (
+                    <Link
+                      href={`/admin/project-and-initiative/impact/${item.id}`}
+                    >
+                      Project
+                    </Link>
+                  ) : (
+                    <span>Impact</span>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex justify-between items-center gap-1">
+                <div className="mt-3">
+                  <h3 className="text-sm font-semibold">
+                    {item.title ||
+                      item.name ||
+                      item.projectTitle ||
+                      item.projectName}
+                  </h3>
+                  <p className="text-gray-500 text-xs">
+                    {item.type || item.description}
+                  </p>
+                </div>
+                <div className="flex gap-3 text-lg text-gray-600 mt-3">
+                  <FaTrash
+                    aria-label={`Delete ${item.title || item.name}`}
+                    className="text-red-500 hover:text-red-600 cursor-pointer size-4"
+                    onClick={() => {
+                      setSelectedId(item.id);
+                      setOpenModal(true);
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+          ))
+        )}
       </div>
       <Modal
         open={openModal}

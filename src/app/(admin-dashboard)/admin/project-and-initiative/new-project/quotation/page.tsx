@@ -69,13 +69,13 @@ export default function QuotationSection() {
           className="grid grid-cols-1 gap-6 mt-4"
         >
           <div className="col-span-1">
-            <label className="block text-sm/6 font-medium text-gray-900">
+            <label className="block text-sm/6 font-medium text-gray-900 mb-2">
               Add Quote
             </label>
             <Controller
               name="addQuote"
               control={control}
-              rules={{ required: "Quote is required", maxLength: 500 }}
+              rules={{ required: "Quote is required" }}
               render={({ field }) => (
                 <input
                   {...field}
@@ -91,13 +91,13 @@ export default function QuotationSection() {
           </div>
 
           <div className="col-span-1">
-            <label className="block text-sm/6 font-medium text-gray-900">
+            <label className="block text-sm/6 font-medium text-gray-900 mb-2">
               Name + Role
             </label>
             <Controller
               name="nameRole"
               control={control}
-              rules={{ required: "Name + Role is required", maxLength: 100 }}
+              rules={{ required: "Name + Role is required" }}
               render={({ field }) => (
                 <input
                   {...field}

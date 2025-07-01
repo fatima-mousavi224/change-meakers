@@ -216,13 +216,13 @@ export default function StudentsSection() {
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
             <div className="col-span-1 mt-4 md:mt-0">
-              <label className="block text-sm/6 font-medium text-gray-900">
+              <label className="block text-sm/6 font-medium text-gray-900 mb-2">
                 Section Title
               </label>
               <Controller
                 name="sectionTitleStudents"
                 control={control}
-                rules={{ required: "Section Title is required", maxLength: 50 }}
+                rules={{ required: "Section Title is required" }}
                 render={({ field }) => (
                   <input
                     {...field}
@@ -240,7 +240,7 @@ export default function StudentsSection() {
             </div>
 
             <div className="col-span-2 mt-4 md:mt-0">
-              <label className="block text-sm/6 font-medium text-gray-900">
+              <label className="block text-sm/6 font-medium text-gray-900 mb-2">
                 Section Description
               </label>
               <Controller
@@ -248,7 +248,6 @@ export default function StudentsSection() {
                 control={control}
                 rules={{
                   required: "Section Description is required",
-                  maxLength: 1000,
                 }}
                 render={({ field }) => (
                   <textarea

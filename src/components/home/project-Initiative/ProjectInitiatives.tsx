@@ -17,7 +17,6 @@ function ProjectInitiatives() {
   // State to track number of visible projects
   const [visibleProjects, setVisibleProjects] = useState(4); // Start with 4 for mobile
   const [projects, setProjects] = useState<Project[]>([]);
-  console.log("🚀 ~ ProjectInitiatives ~ projects:", projects);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

@@ -153,7 +153,14 @@ model Project {
   projectTitle               String
   cardDescription            String
   uploadCardImage            String
-  
+
+  // Hero section
+  heroTitle                  String?
+  subheading                 String?
+  slogan                     String?
+  buttonName                 String?
+  buttonLink                 String?
+  heroImage                  String[]
   
   
   // Vision & Goal Section
@@ -178,7 +185,6 @@ model Project {
   shortDescriptionMedia      String?
   videoLink                  String?
   fullVideoDescription       String?
-  mediaHeroImage             String?
   // Team Section
   sectionTitleTeam           String?
   sectionDescriptionTeam     String?
@@ -195,8 +201,6 @@ model Project {
   // Newsletter Section
   sectionTitleNewsletter     String?
   sectionDescriptionNewsletter String?
-  newsletterImage1           String?
-  newsletterImage2           String?
   // Global Goals (SDGs) Section
   sectionTitleSDGs           String?
   sectionTextSDGs            String?
@@ -210,11 +214,9 @@ model Project {
   navigationLabel            String?
   showInMainNavigation       Boolean            @default(true)
   // Card and Hero Images
-  cardImage                  String?
   
   
   // Relations
-  heroSections              HeroSection[]
   statusAndIcons          StatusAndIcon[]
   teamCards                  TeamCard[]
   studentItems               StudentItem[]
@@ -285,7 +287,7 @@ model Voice {
   projectId   String      @db.ObjectId
   quote       String?
   name        String?
-  description String?
+  location String?
   icon        String?
   project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
   createdAt   DateTime @default(now())
@@ -336,19 +338,7 @@ model OfferIcon {
   updatedAt   DateTime @updatedAt
 }
 
-model HeroSection {
-  id          String      @id @default(auto()) @map("_id") @db.ObjectId
-  projectId   String      @db.ObjectId
- heroTitle                  String?
-  subheading                 String?
-  slogan                     String?
-  buttonName                 String?
-  buttonLink                 String?
-  heroImage                  String?
-  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-}
+
 
 model Impact {
   id                    String   @id @default(auto()) @map("_id") @db.ObjectId

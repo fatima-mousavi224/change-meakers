@@ -12,7 +12,7 @@ import { Trash } from "lucide-react";
 interface Voice {
   quote: string;
   name: string;
-  description: string;
+  location: string;
   icon: File | null;
 }
 
@@ -36,9 +36,9 @@ export default function VoicesFromClassroomForm() {
       sectionTitleVoices: "",
       sectionDescriptionVoices: "",
       voices: [
-        { quote: "", name: "", description: "", icon: null },
-        { quote: "", name: "", description: "", icon: null },
-        { quote: "", name: "", description: "", icon: null },
+        { quote: "", name: "", location: "", icon: null },
+        { quote: "", name: "", location: "", icon: null },
+        { quote: "", name: "", location: "", icon: null },
       ],
     },
   });
@@ -145,14 +145,13 @@ export default function VoicesFromClassroomForm() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="md:grid grid-cols-1 md:grid-cols-3 gap-4 md:col-span-2 mt-4 md:mt-0">
               {/* Section Title */}
-              <div className="col-span-3">
-                <label className="block text-sm/6 font-medium text-gray-900">
+              <div className="col-span-3 mt-4">
+                <label className="block text-sm/6 font-medium text-gray-900 mb-2">
                   Section Title
                 </label>
                 <input
                   {...register("sectionTitleVoices", {
                     required: "Section Title is required",
-                    maxLength: 50,
                   })}
                   type="text"
                   placeholder="e.g. 'Voices from Students'"
@@ -167,13 +166,12 @@ export default function VoicesFromClassroomForm() {
 
               {/* Section Description */}
               <div className="col-span-3">
-                <label className="block text-sm/6 font-medium text-gray-900 mt-4 md:mt-0">
+                <label className="block text-sm/6 font-medium text-gray-900 mt-4 md:mt-0 mb-2">
                   Section Description
                 </label>
                 <textarea
                   {...register("sectionDescriptionVoices", {
                     required: "Section Description is required",
-                    maxLength: 1000,
                   })}
                   placeholder="Write something here..."
                   className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2"
@@ -247,9 +245,9 @@ export default function VoicesFromClassroomForm() {
                           className="placeholder:text-base xl:placeholder:text-lg border-none focus:ring-0 w-full"
                         />
                         <input
-                          {...register(`voices.${index}.description` as const)}
+                          {...register(`voices.${index}.location` as const)}
                           type="text"
-                          placeholder="Short Description block"
+                          placeholder="Enter Location"
                           className="border-none focus:ring-0 w-full"
                         />
                       </div>
@@ -265,7 +263,7 @@ export default function VoicesFromClassroomForm() {
                     append({
                       quote: "",
                       name: "",
-                      description: "",
+                      location: "",
                       icon: null,
                     });
                     setIconPreviews((prev) => [...prev, null]);

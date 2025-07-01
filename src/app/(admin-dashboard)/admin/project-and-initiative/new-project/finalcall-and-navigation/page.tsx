@@ -77,10 +77,6 @@ export default function FinalCallToActionAndNavigation() {
             control={control}
             rules={{
               required: "Final Statement is required",
-              maxLength: {
-                value: 500,
-                message: "Maximum length is 500 characters",
-              },
             }}
             render={({ field }) => (
               <input

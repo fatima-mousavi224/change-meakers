@@ -46,6 +46,10 @@ export default function Offer() {
   // Add a new offer icon
   const handleAddOfferIcon = () => {
     const current = getValues("offerIcons") || [];
+    if (current.length >= 4) {
+      toast.error("You can add a maximum of 4 offer icons.");
+      return;
+    }
     setValue("offerIcons", [
       ...current,
       { iconTitle: "", shortDescription: "" },
@@ -190,7 +194,7 @@ export default function Offer() {
                   </div>
                   <div className="flex-1 space-y-3">
                     <div>
-                      <label className="block text-sm/6 font-medium text-gray-900">
+                      <label className="block text-sm/6 font-medium text-gray-900 mb-2">
                         Icon Title
                       </label>
                       <input
@@ -205,12 +209,11 @@ export default function Offer() {
                             e.target.value
                           )
                         }
-                        maxLength={50}
                         required
                       />
                     </div>
                     <div>
-                      <label className="block text-sm/6 font-medium text-gray-900">
+                      <label className="block text-sm/6 font-medium text-gray-900 mb-2">
                         Short Description
                       </label>
                       <textarea
@@ -225,7 +228,6 @@ export default function Offer() {
                             e.target.value
                           )
                         }
-                        maxLength={200}
                         required
                       />
                     </div>

@@ -1,14 +1,15 @@
 "use client";
 import Tabs from "@/components/create-project-tabs/Tabs";
+import { uploadCardImage } from "lib/uploadCardImage";
 import { useRouter } from "next/navigation";
 import { Controller, useForm, useFieldArray } from "react-hook-form";
 import toast from "react-hot-toast";
 import { FaSquarePlus, FaTrash } from "react-icons/fa6";
 import { cn } from "utilities/cn";
 
-// Define your form type
 type LiveMoment = {
   link: string;
+  image?: string;
 };
 
 type FormData = {
@@ -20,10 +21,11 @@ function LiveMoments() {
     control,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
     defaultValues: {
-      liveMoments: [{ link: "" }],
+      liveMoments: [{ link: "", image: undefined }],
     },
   });
 
@@ -37,13 +39,29 @@ function LiveMoments() {
 
   const onSubmit = async (data: FormData) => {
     try {
+      // Upload images if any
+      const liveMomentsWithImages = await Promise.all(
+        data.liveMoments.map(async (moment, idx) => {
+          // @ts-ignore
+          if (moment.image && moment.image instanceof File) {
+            try {
+              const url = await uploadCardImage(moment.image);
+              return { ...moment, image: url };
+            } catch (e) {
+              toast.error("Failed to upload image for a live moment.");
+              return { ...moment, image: undefined };
+            }
+          }
+          return moment;
+        })
+      );
       const res = await fetch(`/api/projects/${projectId}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          ...data,
+          liveMoments: liveMomentsWithImages,
         }),
       });
       const result = await res.json();
@@ -85,7 +103,7 @@ function LiveMoments() {
               <div className="flex justify-center md:justify-end mb-6 md:mb-0 space-x-4">
                 <span
                   className="text-blue-600 cursor-pointer w-4 h-4 hover:text-blue-800"
-                  onClick={() => append({ link: "" })}
+                  onClick={() => append({ link: "", image: undefined })}
                   title="Add"
                 >
                   <FaSquarePlus />
@@ -113,7 +131,7 @@ function LiveMoments() {
                       {...field}
                       type="text"
                       placeholder="Enter the link or embed code"
-                      className="border w-full md:w-[90%] mt-2 border-gray-400 border-dashed rounded-lg text-gray-500 block placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2"
+                      className="border w-full md:w-[90%] mt-2 border-gray-400 border-dashed rounded-lg text-gray-500 block placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2 mb-2.5"
                     />
                   )}
                 />
@@ -126,6 +144,45 @@ function LiveMoments() {
                     }
                   </p>
                 )}
+                <label className="block text-sm font-medium text-gray-900 mt-2">
+                  Upload Image
+                </label>
+                <Controller
+                  name={`liveMoments.${index}.image`}
+                  control={control}
+                  render={({ field: { value, onChange, ...rest } }) => (
+                    <>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => {
+                          if (e.target.files && e.target.files[0]) {
+                            onChange(e.target.files[0]);
+                          } else {
+                            onChange(undefined);
+                          }
+                        }}
+                        className="border w-full md:w-[90%] mt-2 border-gray-400 border-dashed rounded-lg text-gray-500 block placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2 mb-2.5"
+                        {...rest}
+                      />
+                      {/* Image preview */}
+                      {value &&
+                        (typeof value === "string" ? (
+                          <img
+                            src={value}
+                            alt="Selected preview"
+                            className="mt-2 max-h-32 mb-4 rounded shadow border"
+                          />
+                        ) : (
+                          <img
+                            src={URL.createObjectURL(value)}
+                            alt="Selected preview"
+                            className="mt-2 max-h-32 mb-4 rounded shadow border"
+                          />
+                        ))}
+                    </>
+                  )}
+                />
               </div>
             </div>
           ))}

@@ -125,7 +125,7 @@ export default function NewsletterForm() {
       <form onSubmit={handleSubmit(onSubmit)}>
         {/* Section Wrapper */}
         <section className="border-2 my-6 rounded-lg p-4 md:p-8 lg:px-14 bg-white">
-          <h3 className="text-sky-800 text-xl font-semibold">
+          <h3 className="text-sky-800 text-xl font-semibold mb-4">
             12. Newsletter/Archive Document Section
           </h3>
           <p className="my-2">Label's Name</p>
@@ -137,13 +137,13 @@ export default function NewsletterForm() {
           {/* Section Title and Description */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
             <div>
-              <label className="block text-sm font-medium text-gray-900">
+              <label className="block text-sm font-medium text-gray-900 mb-2">
                 Section Title
               </label>
               <Controller
                 name="sectionTitleNewsletter"
                 control={control}
-                rules={{ required: "Section Title is required", maxLength: 50 }}
+                rules={{ required: "Section Title is required" }}
                 render={({ field }) => (
                   <input
                     {...field}
@@ -159,7 +159,7 @@ export default function NewsletterForm() {
               )}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-900">
+              <label className="block text-sm font-medium text-gray-900 mb-2">
                 Section Description
               </label>
               <Controller
@@ -167,7 +167,6 @@ export default function NewsletterForm() {
                 control={control}
                 rules={{
                   required: "Section Description is required",
-                  maxLength: 1000,
                 }}
                 render={({ field }) => (
                   <textarea

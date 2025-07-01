@@ -10,7 +10,6 @@ import Header from "@/components/current-program-page/Header";
 import ProgramsSliders from "@/components/home/programs/ProgramsSliders";
 import ParticipantsInfo from "@/components/mission-and-impact/Participants/ParticipantsInfo";
 import {
-  HeroSection,
   HighlightedImpact,
   Impact,
   LiveMoment,
@@ -37,7 +36,6 @@ import { RighArrow } from "../../icons/Icons";
 
 // Extended type to include relations
 type ProjectWithRelations = Project & {
-  heroSections: HeroSection[];
   statusAndIcons: StatusAndIcon[];
   teamCards: TeamCard[];
   studentItems: StudentItem[];
@@ -60,8 +58,7 @@ const Programs = ({
   project: ProjectWithRelations;
   impacts: ImpactWithRelations[];
 }) => {
-  console.log("🚀 ~ project:", project);
-  console.log("🚀 ~ impacts:", impacts);
+
 
   // Get all standard impacts and highlighted impacts from all impact objects
   const allStandardImpacts =
@@ -80,19 +77,22 @@ const Programs = ({
       })) || []
   );
 
-  console.log("🚀 ~ allHighlightedImpacts:", allHighlightedImpacts);
-  console.log("🚀 ~ allStandardImpacts:", allStandardImpacts);
-  console.log("🚀 ~ allImages:", allImages);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [visionGoalActiveIndex, setVisionGoalActiveIndex] = useState(0);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
+  const [visionGoalTouchStart, setVisionGoalTouchStart] = useState<
+    number | null
+  >(null);
+  const [visionGoalTouchEnd, setVisionGoalTouchEnd] = useState<number | null>(
+    null
+  );
   const [isMobile, setIsMobile] = useState(false);
   const [visibleStudents, setVisibleStudents] = useState(3); // Show 3 students initially
   const [visibleTeamCards, setVisibleTeamCards] = useState(3); // Show 3 highlighted impacts initially
   const [visibleHighlightedImpacts, setVisibleHighlightedImpacts] = useState(4); // Show 3 highlighted impacts initially
 
   // Get hero sections from project data
-  const heroSections = project?.heroSections || [];
   const studentItems = project?.studentItems || [];
 
   // Function to load more students
@@ -105,11 +105,11 @@ const Programs = ({
   };
 
   const loadMoreHighlightedImpact = () => {
-    setVisibleHighlightedImpacts(allHighlightedImpacts.length); // Load 3 more highlighted impacts
+    setVisibleHighlightedImpacts(allHighlightedImpacts.length); // Show all highlighted impacts
   };
 
   const loadLessHighlightedImpact = () => {
-    setVisibleHighlightedImpacts(3); // Load 3 less highlighted impacts
+    setVisibleHighlightedImpacts(4); // Show only 4 highlighted impacts initially
   };
 
   const loadMoreTeamCards = () => {
@@ -120,9 +120,29 @@ const Programs = ({
     setVisibleTeamCards(3); // Show only 3 team cards
   };
 
+  // Filter out null/empty hero images
+  const validHeroImages =
+    project?.heroImage?.filter((img) => img && img.trim() !== "") || [];
+
+  // Filter out null/empty vision/goal images
+  const validVisionGoalImages = [
+    project?.visionGoalImage1,
+    project?.visionGoalImage2,
+    project?.visionGoalImage3,
+    project?.visionGoalImage4,
+  ].filter((img) => img && img.trim() !== "");
+
   // Get visible students
   const visibleStudentItems = studentItems.slice(0, visibleStudents);
   const hasMoreStudents = visibleStudents < studentItems.length;
+
+  // Get visible highlighted impacts
+  const visibleHighlightedImpactsItems = allHighlightedImpacts.slice(
+    0,
+    visibleHighlightedImpacts
+  );
+  const hasMoreHighlightedImpacts =
+    visibleHighlightedImpacts < allHighlightedImpacts.length;
 
   useEffect(() => {
     const checkMobile = () => {
@@ -136,14 +156,27 @@ const Programs = ({
   }, []);
 
   useEffect(() => {
-    if (allImages.length > 1) {
+    if (validHeroImages.length > 1) {
       const interval = setInterval(() => {
-        setActiveIndex((prevIndex) => (prevIndex + 1) % allImages.length);
+        setActiveIndex((prevIndex) => (prevIndex + 1) % validHeroImages.length);
       }, 5000); // 5 seconds per slide
 
       return () => clearInterval(interval);
     }
-  }, [allImages.length]);
+  }, [validHeroImages.length]);
+
+  // Auto-slide for vision/goal slider
+  useEffect(() => {
+    if (validVisionGoalImages.length > 1) {
+      const interval = setInterval(() => {
+        setVisionGoalActiveIndex(
+          (prevIndex) => (prevIndex + 1) % validVisionGoalImages.length
+        );
+      }, 4000); // 4 seconds per slide
+
+      return () => clearInterval(interval);
+    }
+  }, [validVisionGoalImages.length]);
 
   const handleTouchStart = (e: TouchEvent) => {
     setTouchStart(e.targetTouches[0].clientX);
@@ -160,15 +193,47 @@ const Programs = ({
     const isRightSwipe = distance < -50;
 
     if (isLeftSwipe) {
-      setActiveIndex((prevIndex) => (prevIndex + 1) % allImages.length);
+      setActiveIndex((prevIndex) => (prevIndex + 1) % validHeroImages.length);
     } else if (isRightSwipe) {
       setActiveIndex(
-        (prevIndex) => (prevIndex - 1 + allImages.length) % allImages.length
+        (prevIndex) =>
+          (prevIndex - 1 + validHeroImages.length) % validHeroImages.length
       );
     }
 
     setTouchStart(null);
     setTouchEnd(null);
+  };
+
+  // Vision/Goal slider touch handlers
+  const handleVisionGoalTouchStart = (e: TouchEvent) => {
+    setVisionGoalTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const handleVisionGoalTouchMove = (e: TouchEvent) => {
+    setVisionGoalTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const handleVisionGoalTouchEnd = () => {
+    if (!visionGoalTouchStart || !visionGoalTouchEnd) return;
+    const distance = visionGoalTouchStart - visionGoalTouchEnd;
+    const isLeftSwipe = distance > 50;
+    const isRightSwipe = distance < -50;
+
+    if (isLeftSwipe) {
+      setVisionGoalActiveIndex(
+        (prevIndex) => (prevIndex + 1) % validVisionGoalImages.length
+      );
+    } else if (isRightSwipe) {
+      setVisionGoalActiveIndex(
+        (prevIndex) =>
+          (prevIndex - 1 + validVisionGoalImages.length) %
+          validVisionGoalImages.length
+      );
+    }
+
+    setVisionGoalTouchStart(null);
+    setVisionGoalTouchEnd(null);
   };
 
   const goToSlide = (index: number) => {
@@ -177,15 +242,44 @@ const Programs = ({
 
   const goToPrevious = () => {
     setActiveIndex(
-      (prevIndex) => (prevIndex - 1 + heroSections.length) % heroSections.length
+      (prevIndex) =>
+        (prevIndex - 1 + validHeroImages.length) % validHeroImages.length
     );
   };
 
   const goToNext = () => {
-    setActiveIndex((prevIndex) => (prevIndex + 1) % heroSections.length);
+    setActiveIndex((prevIndex) => (prevIndex + 1) % validHeroImages.length);
+  };
+
+  // Vision/Goal slider functions
+  const goToVisionGoalSlide = (index: number) => {
+    setVisionGoalActiveIndex(index);
+  };
+
+  const goToVisionGoalPrevious = () => {
+    setVisionGoalActiveIndex(
+      (prevIndex) =>
+        (prevIndex - 1 + validVisionGoalImages.length) %
+        validVisionGoalImages.length
+    );
+  };
+
+  const goToVisionGoalNext = () => {
+    setVisionGoalActiveIndex(
+      (prevIndex) => (prevIndex + 1) % validVisionGoalImages.length
+    );
   };
 
   console.log("🚀 ~ project id:", project);
+  console.log("🚀 ~ validHeroImages:", validHeroImages);
+  console.log("🚀 ~ validVisionGoalImages:", validVisionGoalImages);
+  console.log("🚀 ~ allHighlightedImpacts:", allHighlightedImpacts);
+  console.log("🚀 ~ visibleHighlightedImpacts:", visibleHighlightedImpacts);
+  console.log(
+    "🚀 ~ visibleHighlightedImpactsItems:",
+    visibleHighlightedImpactsItems
+  );
+  console.log("🚀 ~ hasMoreHighlightedImpacts:", hasMoreHighlightedImpacts);
 
   return (
     <div>
@@ -202,10 +296,10 @@ const Programs = ({
               onTouchMove={handleTouchMove}
               onTouchEnd={handleTouchEnd}
             >
-              {heroSections.length > 0 ? (
+              {validHeroImages.length > 0 ? (
                 <Image
-                  src={heroSections[activeIndex]?.heroImage ?? ""}
-                  alt={heroSections[activeIndex]?.heroTitle ?? ""}
+                  src={validHeroImages[activeIndex] ?? ""}
+                  alt={validHeroImages[activeIndex] ?? ""}
                   fill
                   className="absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-500 ease-in-out opacity-100 z-0 rounded-[35px]"
                 />
@@ -226,26 +320,24 @@ const Programs = ({
             {/* Overlay with Dynamic Text and Button */}
             <div className="absolute inset-0 z-20 bg-black bg-opacity-40 flex flex-col justify-end items-start sm:p-10 p-5 font-plusJakartaSans rounded-[35px]">
               <h2 className="text-3xl md:text-4xl font-bold text-white mb-2">
-                {heroSections[activeIndex]?.heroTitle ||
-                  "Welcome to Our Program"}
+                {project?.heroTitle || "Welcome to Our Program"}
               </h2>
-              {heroSections[activeIndex]?.subheading && (
+              {project?.subheading && (
                 <p className="text-sm md:text-lg text-white mb-1 font-bold font-plusJakartaSans">
-                  {heroSections[activeIndex]?.subheading}
+                  {project?.subheading}
                 </p>
               )}
-              {heroSections[activeIndex]?.slogan && (
+              {project?.slogan && (
                 <p className="text-[#F2F2F2] font-plusJakartaSans mb-3">
-                  {heroSections[activeIndex]?.slogan}
+                  {project?.slogan}
                 </p>
               )}
-              {heroSections[activeIndex]?.buttonName &&
-              heroSections[activeIndex]?.buttonLink ? (
+              {project?.buttonName && project?.buttonLink ? (
                 <Link
-                  href={heroSections[activeIndex]?.buttonLink || "/about"}
+                  href={project?.buttonLink || "/about"}
                   className="bg-white text-black_color text-md font-medium py-2 px-4 rounded-full hover:bg-gray-200 flex items-center text-center gap-2"
                 >
-                  <span>{heroSections[activeIndex]?.buttonName}</span>
+                  <span>{project?.buttonName}</span>
                   <RighArrow />
                 </Link>
               ) : (
@@ -260,9 +352,9 @@ const Programs = ({
             </div>
 
             {/* Pagination Dots in Bottom Right Corner - Only show if multiple slides */}
-            {heroSections.length > 1 && (
+            {validHeroImages.length > 1 && (
               <div className="absolute bottom-10 right-10 z-30 flex space-x-2 items-center">
-                {heroSections.map((_, index) => (
+                {validHeroImages.map((_, index) => (
                   <span
                     key={index}
                     onClick={() => goToSlide(index)}
@@ -275,7 +367,7 @@ const Programs = ({
             )}
 
             {/* Prev and Next Buttons on Borders - Only show if multiple slides */}
-            {heroSections.length > 1 && (
+            {validHeroImages.length > 1 && (
               <>
                 <button
                   onClick={goToPrevious}
@@ -309,11 +401,11 @@ const Programs = ({
                   alt={statusIcon.iconTitle}
                   width={500}
                   height={500}
-                  className="absolute top-2 left-2 size-12 "
+                  className="absolute top-2 left-3 size-10 "
                 />
               </div>
               <div>
-                <h3 className="text-lg font-semibold">
+                <h3 className="text-base font-semibold">
                   {statusIcon.iconTitle}
                 </h3>
                 <p className="text-sm text-gray-500 w-40 md:w-56 line-clamp-2">
@@ -352,55 +444,65 @@ const Programs = ({
 
                 <div
                   className="relative sm:h-[75vh] h-[40vh] overflow-hidden"
-                  onTouchStart={handleTouchStart}
-                  onTouchMove={handleTouchMove}
-                  onTouchEnd={handleTouchEnd}
+                  onTouchStart={handleVisionGoalTouchStart}
+                  onTouchMove={handleVisionGoalTouchMove}
+                  onTouchEnd={handleVisionGoalTouchEnd}
                 >
-                  {[
-                    project?.visionGoalImage1,
-                    project?.visionGoalImage2,
-                    project?.visionGoalImage3,
-                    project?.visionGoalImage4,
-                  ].map((section, index) => (
-                    <div
-                      key={index}
-                      className={cn(
-                        "absolute top-0 left-0 w-full h-full transition-opacity duration-500 ease-in-out",
-                        {
-                          "opacity-100 z-0": index === activeIndex,
-                          "opacity-0 z-0": index !== activeIndex,
-                        }
-                      )}
-                    >
-                      {/* Dark Overlay */}
-                      <div className="absolute inset-0 bg-black opacity-40 z-10"></div>
+                  {validVisionGoalImages.length > 0 ? (
+                    validVisionGoalImages.map((section, index) => (
+                      <div
+                        key={index}
+                        className={cn(
+                          "absolute top-0 left-0 w-full h-full transition-opacity duration-500 ease-in-out",
+                          {
+                            "opacity-100 z-0": index === visionGoalActiveIndex,
+                            "opacity-0 z-0": index !== visionGoalActiveIndex,
+                          }
+                        )}
+                      >
+                        {/* Dark Overlay */}
+                        <div className="absolute inset-0 bg-black opacity-40 z-10"></div>
 
-                      {/* Image */}
-                      <Image
-                        src={section ?? ""}
-                        alt={section ?? ""}
-                        fill
-                        className="w-full h-full object-cover"
-                      />
+                        {/* Image */}
+                        <Image
+                          src={section ?? ""}
+                          alt={section ?? ""}
+                          fill
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    ))
+                  ) : (
+                    <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center">
+                      <div className="text-center text-white">
+                        <h2 className="text-2xl font-bold mb-4">
+                          Vision & Goals
+                        </h2>
+                        <p className="text-lg">
+                          Our vision and goals for the future
+                        </p>
+                      </div>
                     </div>
-                  ))}
+                  )}
                 </div>
 
                 {/* Centered Pagination Dots */}
-                <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-40 flex space-x-2 items-center justify-center">
-                  {heroSections.map((_, index) => (
-                    <span
-                      key={index}
-                      onClick={() => goToSlide(index)}
-                      className={cn(
-                        "rounded-full transition-colors cursor-pointer",
-                        index === activeIndex
-                          ? "bg-white size-3"
-                          : "bg-gray-400 size-2"
-                      )}
-                    />
-                  ))}
-                </div>
+                {validVisionGoalImages.length > 1 && (
+                  <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-40 flex space-x-2 items-center justify-center">
+                    {validVisionGoalImages.map((_, index) => (
+                      <span
+                        key={index}
+                        onClick={() => goToVisionGoalSlide(index)}
+                        className={cn(
+                          "rounded-full transition-colors cursor-pointer",
+                          index === visionGoalActiveIndex
+                            ? "bg-white size-3"
+                            : "bg-gray-400 size-2"
+                        )}
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -973,38 +1075,10 @@ const Programs = ({
 
             {/* card */}
             <div className="col-span-1">
-              <div className="bg-white rounded-2xl shadow-md">
-                <Image
-                  src={allHighlightedImpacts[0]?.coverPhoto || news1}
-                  alt="card image"
-                  width={500}
-                  height={500}
-                  className="rounded-t-xl "
-                />
-                <div className="p-4 space-y-2">
-                  <h3 className="w-full text-2xl font-semibold">
-                    {allHighlightedImpacts[0]?.title2}
-                  </h3>
-                  <p className="text-sm text-gray-500">
-                    {allHighlightedImpacts[0]?.contentDescription2}
-                  </p>
-                  <span className="text-xs text-gray-500">
-                    {allHighlightedImpacts[0]?.date2 &&
-                      new Date(
-                        allHighlightedImpacts[0].date2
-                      ).toLocaleDateString()}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-          {allHighlightedImpacts.length > 1 && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 my-14">
-              {/* Map allHighlightedImpacts starting from index 1 (second item) */}
-              {allHighlightedImpacts.slice(1).map((highlighted, index) => (
-                <div key={index} className="bg-white rounded-2xl shadow-md">
+              {visibleHighlightedImpactsItems.length > 0 ? (
+                <div className="bg-white rounded-2xl shadow-md">
                   <Image
-                    src={highlighted?.coverPhoto || news1}
+                    src={visibleHighlightedImpactsItems[0]?.coverPhoto || news1}
                     alt="card image"
                     width={500}
                     height={500}
@@ -1012,36 +1086,93 @@ const Programs = ({
                   />
                   <div className="p-4 space-y-2">
                     <h3 className="w-full text-2xl font-semibold">
-                      {highlighted?.title2}
+                      {visibleHighlightedImpactsItems[0]?.title2}
                     </h3>
                     <p className="text-sm text-gray-500">
-                      {highlighted?.contentDescription2}
+                      {visibleHighlightedImpactsItems[0]?.contentDescription2}
                     </p>
                     <span className="text-xs text-gray-500">
-                      {highlighted?.date2 &&
-                        new Date(highlighted.date2).toLocaleDateString()}
+                      {visibleHighlightedImpactsItems[0]?.date2 &&
+                        new Date(
+                          visibleHighlightedImpactsItems[0].date2
+                        ).toLocaleDateString()}
                     </span>
                   </div>
                 </div>
-              ))}
+              ) : (
+                <div className="bg-white rounded-2xl shadow-md p-8 text-center">
+                  <div className="text-gray-500">
+                    <div className="text-6xl mb-4">📊</div>
+                    <h3 className="text-xl font-semibold mb-2">
+                      No Impact Data
+                    </h3>
+                    <p className="text-sm">
+                      No highlighted impacts available at the moment.
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Additional highlighted impacts grid */}
+          {visibleHighlightedImpactsItems.length > 1 && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 my-14">
+              {/* Map visible highlighted impacts starting from index 1 (second item) */}
+              {visibleHighlightedImpactsItems
+                .slice(1)
+                .map((highlighted, index) => (
+                  <div key={index} className="bg-white rounded-2xl shadow-md">
+                    <Image
+                      src={highlighted?.coverPhoto || news1}
+                      alt="card image"
+                      width={500}
+                      height={500}
+                      className="rounded-t-xl "
+                    />
+                    <div className="p-4 space-y-2">
+                      <h3 className="w-full text-2xl font-semibold">
+                        {highlighted?.title2}
+                      </h3>
+                      <p className="text-sm text-gray-500">
+                        {highlighted?.contentDescription2}
+                      </p>
+                      <span className="text-xs text-gray-500">
+                        {highlighted?.date2 &&
+                          new Date(highlighted.date2).toLocaleDateString()}
+                      </span>
+                    </div>
+                  </div>
+                ))}
             </div>
           )}
-          {/* load more button */}
-          {allHighlightedImpacts.length > 1 && (
+
+          {/* Load More/Less Button for Highlighted Impacts */}
+          {allHighlightedImpacts.length > 4 && (
             <div
               onClick={
-                visibleHighlightedImpacts < allHighlightedImpacts.length
+                hasMoreHighlightedImpacts
                   ? loadMoreHighlightedImpact
                   : loadLessHighlightedImpact
               }
               className="flex space-x-4 justify-between cursor-pointer hover:opacity-80 w-40 mt-10 shadow transition duration-150 shadow-gray-400 active:shadow-none mx-auto bg-white rounded-full px-4 py-2"
             >
-              <button className="">
-                {visibleHighlightedImpacts < allHighlightedImpacts.length
-                  ? "Load More"
-                  : "Load Less"}
+              <button className="text-sm font-medium">
+                {hasMoreHighlightedImpacts ? "Load More" : "Load Less"}
               </button>
               <TfiReload className="text-black size-5" />
+            </div>
+          )}
+
+          {/* Show total count info for highlighted impacts */}
+          {allHighlightedImpacts.length > 0 && (
+            <div className="mt-4 text-center text-sm text-gray-500">
+              Showing{" "}
+              {Math.min(
+                visibleHighlightedImpacts,
+                allHighlightedImpacts.length
+              )}{" "}
+              of {allHighlightedImpacts.length} highlighted impacts
             </div>
           )}
         </div>

@@ -74,7 +74,7 @@ export default function RelatedLinksSection() {
       <Tabs />
       <section className="border-2 my-6 rounded-lg p-4 md:p-8 lg:px-14 bg-white space-y-5 py-10">
         <h3 className="text-sky-800 font-medium text-xl">15. Related Links</h3>
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-2">
           {fields.map((field, index) => (
             <div
               key={field.id}
@@ -133,17 +133,13 @@ export default function RelatedLinksSection() {
                   control={control}
                   rules={{
                     required: "Button name is required",
-                    maxLength: {
-                      value: 30,
-                      message: "Max length is 30 characters",
-                    },
                   }}
                   render={({ field }) => (
                     <input
                       {...field}
                       type="text"
                       placeholder="Enter the button's name"
-                      className={`border w-full mt-2 border-dashed rounded-lg px-3 py-2 block placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2 ${
+                      className={`border w-full mt-2   border-dashed rounded-lg px-3 py-2 block placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2 ${
                         errors?.relatedLinks?.[index]?.buttonName
                           ? "border-red-500"
                           : "border-gray-400"
@@ -163,7 +159,7 @@ export default function RelatedLinksSection() {
             <button
               type="submit"
               className={cn(
-                "bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700",
+                "bg-blue-600 text-white px-6 py-2 mt-4 rounded-lg hover:bg-blue-700",
                 isSubmitting && "opacity-50 cursor-not-allowed"
               )}
               disabled={isSubmitting}
@@ -173,7 +169,7 @@ export default function RelatedLinksSection() {
             <button
               type="button"
               onClick={clearForm}
-              className="bg-gray-300 text-black px-6 py-2 rounded-lg hover:bg-gray-400"
+              className="bg-gray-300 text-black mt-4 px-6 py-2 rounded-lg hover:bg-gray-400"
             >
               Clear
             </button>

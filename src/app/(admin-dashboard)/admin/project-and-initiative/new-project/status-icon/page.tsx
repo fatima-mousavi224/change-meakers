@@ -104,6 +104,7 @@ export default function StatusIconsForm() {
   const sections = watch("sections");
 
   const handleAddSection = () => {
+    if (sections.length >= 4) return;
     setValue("sections", [
       ...sections,
       { iconTitle: "", shortDescription: "", statusIcon: null },
@@ -182,7 +183,7 @@ export default function StatusIconsForm() {
 
               {/* Title Input */}
               <div>
-                <label className="block text-sm font-medium text-gray-800">
+                <label className="block text-sm font-medium text-gray-800 mb-2">
                   Title
                 </label>
                 <input
@@ -200,7 +201,7 @@ export default function StatusIconsForm() {
 
               {/* Short Description */}
               <div>
-                <label className="block text-sm font-medium text-gray-800">
+                <label className="block text-sm font-medium text-gray-800 mb-2">
                   Short Description
                 </label>
                 <textarea
@@ -222,8 +223,9 @@ export default function StatusIconsForm() {
         <div className="mt-4 flex justify-end">
           <button
             type="button"
-            className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition"
+            className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
             onClick={handleAddSection}
+            disabled={sections.length >= 4}
           >
             + Add Section
           </button>

@@ -51,7 +51,7 @@ export default function ParticipantsInfo({ data }: { data: Voice[] }) {
           >
             <div className="sm:h-1/2">
               <p className="text-paragraph_color text-sm">
-                {participant?.description}
+                {participant?.quote}
               </p>
             </div>
             <div className="flex items-center gap-2">
@@ -66,7 +66,7 @@ export default function ParticipantsInfo({ data }: { data: Voice[] }) {
               <div className="flex flex-col">
                 <p className="font-semibold">{participant?.name}</p>
                 <p className="text-xs text-paragraph_color">
-                  {participant?.quote ?? ""}
+                  {participant?.location ?? ""}
                 </p>
               </div>
             </div>

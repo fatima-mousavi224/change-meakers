@@ -230,7 +230,7 @@ export default function TeamSectionForm() {
       <form onSubmit={handleSubmit(onSubmit)}>
         {/* Team Section */}
         <section className="border-2 my-6 rounded-lg p-4 md:p-8 lg:px-14 bg-white">
-          <h3 className="text-sky-800 text-xl font-semibold">
+          <h3 className="text-sky-800 text-xl font-semibold mb-4">
             8. Team Section
           </h3>
           <p>Label's Name</p>
@@ -241,14 +241,13 @@ export default function TeamSectionForm() {
 
           {/* Section Title & Description */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
-            <div className="col-span-1 mt-4 md:mt-0">
-              <label className="block text-sm/6 font-medium text-gray-900">
+            <div className="col-span-1 mt-6 md:mt-0">
+              <label className="block text-sm/6 font-medium text-gray-900 mb-2">
                 Section Title
               </label>
               <input
                 {...register("sectionTitleTeam", {
                   required: "Section Title is required",
-                  maxLength: 50,
                 })}
                 type="text"
                 placeholder="e.g. 'Our Team'"
@@ -262,13 +261,12 @@ export default function TeamSectionForm() {
             </div>
 
             <div className="col-span-2 mt-4 md:mt-0">
-              <label className="block text-sm/6 font-medium text-gray-900">
+              <label className="block text-sm/6 font-medium text-gray-900 mb-2">
                 Section Description
               </label>
               <textarea
                 {...register("sectionDescriptionTeam", {
                   required: "Section Description is required",
-                  maxLength: 1000,
                 })}
                 placeholder="write something here..."
                 className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2"
