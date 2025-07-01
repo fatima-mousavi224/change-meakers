@@ -1,15 +1,19 @@
 "use client";
 
-import { Controller, useForm, useFieldArray } from "react-hook-form";
-import { FaSquarePlus, FaTrash } from "react-icons/fa6";
-import { useRef, useState } from "react";
 import Tabs from "@/components/create-project-tabs/Tabs";
-import { FaRegEdit } from "react-icons/fa";
+import { useRef, useState } from "react";
+import { useFieldArray, useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
+import { uploadCardImage } from "lib/uploadCardImage";
+import { cn } from "@/lib/utils";
+import { Trash } from "lucide-react";
 
 interface Voice {
   quote: string;
   name: string;
-  description: string;
+  location: string;
+  icon: File | null;
 }
 
 type FormData = {
@@ -23,15 +27,18 @@ export default function VoicesFromClassroomForm() {
     handleSubmit,
     control,
     reset,
-    formState: { errors },
+    formState: { errors, isSubmitting },
+    register,
+    setValue,
+    getValues,
   } = useForm<FormData>({
     defaultValues: {
       sectionTitleVoices: "",
       sectionDescriptionVoices: "",
       voices: [
-        { quote: "", name: "", description: "" },
-        { quote: "", name: "", description: "" },
-        { quote: "", name: "", description: "" },
+        { quote: "", name: "", location: "", icon: null },
+        { quote: "", name: "", location: "", icon: null },
+        { quote: "", name: "", location: "", icon: null },
       ],
     },
   });
@@ -41,7 +48,8 @@ export default function VoicesFromClassroomForm() {
     name: "voices",
   });
 
-  const [iconPreviews, setIconPreviews] = useState<(string | null)[]>(
+  // Fix: useState must be initialized after fields is available
+  const [iconPreviews, setIconPreviews] = useState<(string | null)[]>(() =>
     Array(fields.length).fill(null)
   );
 
@@ -50,6 +58,8 @@ export default function VoicesFromClassroomForm() {
   const setRef = (name: string) => (el: HTMLInputElement | null) => {
     fileInputRefs.current[name] = el;
   };
+
+  const projectId = localStorage.getItem("projectId");
 
   const handleIconPreviewChange = (index: number, file: File | null) => {
     if (!file) return;
@@ -64,8 +74,52 @@ export default function VoicesFromClassroomForm() {
     reader.readAsDataURL(file);
   };
 
-  const onSubmit = (data: FormData) => {
-    console.log("Voices from Classroom Data:", data);
+  // Add a function to update the icon in the form state
+  const handleIconChange = (index: number, file: File | null) => {
+    // Update the icon in the form state
+    const values = getValues("voices");
+    values[index].icon = file;
+    setValue("voices", values);
+    handleIconPreviewChange(index, file);
+  };
+
+  const router = useRouter();
+
+  const onSubmit = async (data: FormData) => {
+    try {
+      // Upload all icons in parallel and replace File with URL
+      const voicesWithIconUrls = await Promise.all(
+        data.voices.map(async (voice) => {
+          let iconUrl = null;
+          if (voice.icon) {
+            iconUrl = await uploadCardImage(voice.icon);
+          }
+          return { ...voice, icon: iconUrl };
+        })
+      );
+
+      const res = await fetch(`/api/projects/${projectId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          sectionTitleVoices: data.sectionTitleVoices,
+          sectionDescriptionVoices: data.sectionDescriptionVoices,
+          voices: voicesWithIconUrls,
+        }),
+      });
+
+      const result = await res.json();
+      if (res.ok) {
+        toast.success("Voices from Classroom updated successfully!");
+        router.push(`/admin/project-and-initiative/new-project/media-block`); // Change to next section route if needed
+        reset();
+      } else {
+        toast.error(result.error || "Failed to update project.");
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      toast.error("Failed to update project. Please try again.");
+    }
   };
 
   return (
@@ -91,25 +145,17 @@ export default function VoicesFromClassroomForm() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="md:grid grid-cols-1 md:grid-cols-3 gap-4 md:col-span-2 mt-4 md:mt-0">
               {/* Section Title */}
-              <div className="col-span-3">
-                <label className="block text-sm/6 font-medium text-gray-900">
+              <div className="col-span-3 mt-4">
+                <label className="block text-sm/6 font-medium text-gray-900 mb-2">
                   Section Title
                 </label>
-                <Controller
-                  name="sectionTitleVoices"
-                  control={control}
-                  rules={{
+                <input
+                  {...register("sectionTitleVoices", {
                     required: "Section Title is required",
-                    maxLength: 50,
-                  }}
-                  render={({ field }) => (
-                    <input
-                      {...field}
-                      type="text"
-                      placeholder="e.g. 'Voices from Students'"
-                      className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2"
-                    />
-                  )}
+                  })}
+                  type="text"
+                  placeholder="e.g. 'Voices from Students'"
+                  className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2"
                 />
                 {errors.sectionTitleVoices && (
                   <p className="text-red-500 text-sm">
@@ -120,24 +166,16 @@ export default function VoicesFromClassroomForm() {
 
               {/* Section Description */}
               <div className="col-span-3">
-                <label className="block text-sm/6 font-medium text-gray-900 mt-4 md:mt-0">
+                <label className="block text-sm/6 font-medium text-gray-900 mt-4 md:mt-0 mb-2">
                   Section Description
                 </label>
-                <Controller
-                  name="sectionDescriptionVoices"
-                  control={control}
-                  rules={{
+                <textarea
+                  {...register("sectionDescriptionVoices", {
                     required: "Section Description is required",
-                    maxLength: 1000,
-                  }}
-                  render={({ field }) => (
-                    <textarea
-                      {...field}
-                      placeholder="Write something here..."
-                      className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2"
-                      rows={4}
-                    />
-                  )}
+                  })}
+                  placeholder="Write something here..."
+                  className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2"
+                  rows={4}
                 />
                 {errors.sectionDescriptionVoices && (
                   <p className="text-red-500 text-sm">
@@ -151,46 +189,26 @@ export default function VoicesFromClassroomForm() {
                 {fields.map((field, index) => (
                   <div
                     key={field.id}
-                    className="border border-gray-400 rounded-lg border-dashed px-5 py-4 w-full"
+                    className="border border-gray-400 rounded-lg border-dashed px-5 py-4 w-full relative"
                   >
-                    <Controller
-                      name={`voices.${index}.quote`}
-                      control={control}
-                      rules={{ required: false }}
-                      render={({ field }) => (
-                        <textarea
-                          {...field}
-                          placeholder="Write something here..."
-                          rows={3}
-                          className="my-3 w-full border-none focus:ring-0 resize-none"
-                        />
-                      )}
-                    />
-
-                    <div className="flex justify-center md:justify-end mb-6 md:mb-0 space-x-4">
-                      <span
-                        className="text-blue-600 cursor-pointer w-4 h-4 hover:text-blue-800"
-                        onClick={() =>
-                          append({ quote: "", name: "", description: "" })
-                        }
-                        title="Add"
-                      >
-                        <FaSquarePlus />
-                      </span>
-                      <span
-                        className="text-red-600 cursor-pointer w-4 h-4 hover:text-red-800"
+                    {/* Remove button */}
+                    {fields.length > 1 && (
+                      <button
+                        type="button"
+                        className="absolute top-2 right-2 text-red-500 hover:text-red-700 text-lg font-bold z-10"
                         onClick={() => remove(index)}
-                        title="Remove"
+                        title="Remove voice"
                       >
-                        <FaTrash />
-                      </span>
-                      <span
-                        className="text-blue-600 cursor-pointer w-4 h-4 hover:text-blue-800"
-                        title="Edit"
-                      >
-                        <FaRegEdit />
-                      </span>
-                    </div>
+                        <Trash size={16} />
+                      </button>
+                    )}
+
+                    <textarea
+                      {...register(`voices.${index}.quote` as const)}
+                      placeholder="Write something here..."
+                      rows={3}
+                      className="my-3 w-full border-none focus:ring-0 resize-none"
+                    />
 
                     <div className="flex flex-col md:flex-row space-y-3 md:space-y-0 mt-4 space-x-4 items-center">
                       <div className="relative">
@@ -206,10 +224,7 @@ export default function VoicesFromClassroomForm() {
                           className="hidden"
                           accept="image/*"
                           onChange={(e) =>
-                            handleIconPreviewChange(
-                              index,
-                              e.target.files?.[0] ?? null
-                            )
+                            handleIconChange(index, e.target.files?.[0] ?? null)
                           }
                           ref={setRef(`voiceOfClassRoomIcon${index}`)}
                         />
@@ -223,36 +238,39 @@ export default function VoicesFromClassroomForm() {
                       </div>
 
                       <div className="flex-1">
-                        <Controller
-                          name={`voices.${index}.name`}
-                          control={control}
-                          rules={{ required: false }}
-                          render={({ field }) => (
-                            <input
-                              {...field}
-                              type="text"
-                              placeholder="Student Name block"
-                              className="placeholder:text-base xl:placeholder:text-lg border-none focus:ring-0 w-full"
-                            />
-                          )}
+                        <input
+                          {...register(`voices.${index}.name` as const)}
+                          type="text"
+                          placeholder="Student Name block"
+                          className="placeholder:text-base xl:placeholder:text-lg border-none focus:ring-0 w-full"
                         />
-                        <Controller
-                          name={`voices.${index}.description`}
-                          control={control}
-                          rules={{ required: false }}
-                          render={({ field }) => (
-                            <input
-                              {...field}
-                              type="text"
-                              placeholder="Short Description block"
-                              className="border-none focus:ring-0 w-full"
-                            />
-                          )}
+                        <input
+                          {...register(`voices.${index}.location` as const)}
+                          type="text"
+                          placeholder="Enter Location"
+                          className="border-none focus:ring-0 w-full"
                         />
                       </div>
                     </div>
                   </div>
                 ))}
+              </div>
+              <div className="flex  mt-4 ">
+                <button
+                  type="button"
+                  className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition"
+                  onClick={() => {
+                    append({
+                      quote: "",
+                      name: "",
+                      location: "",
+                      icon: null,
+                    });
+                    setIconPreviews((prev) => [...prev, null]);
+                  }}
+                >
+                  + Add Voice
+                </button>
               </div>
             </div>
           </div>
@@ -262,9 +280,13 @@ export default function VoicesFromClassroomForm() {
         <div className="mt-6 flex justify-between gap-4">
           <button
             type="submit"
-            className="px-6 py-2 bg-sky-600 text-white rounded-md shadow hover:bg-sky-700 transition"
+            className={cn(
+              "px-6 py-2 bg-sky-600 text-white rounded-md shadow hover:bg-sky-700 transition",
+              isSubmitting && "opacity-50 cursor-not-allowed"
+            )}
+            disabled={isSubmitting}
           >
-            Submit
+            {isSubmitting ? "Submitting..." : "Submit"}
           </button>
           <button
             type="button"

@@ -1,8 +1,13 @@
 "use client";
 
 import Tabs from "@/components/create-project-tabs/Tabs";
+import { cn } from "@/lib/utils";
+import { uploadCardImage } from "lib/uploadCardImage";
+import { Trash } from "lucide-react";
+import { useRouter } from "next/navigation";
 import React, { useRef, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useFieldArray } from "react-hook-form";
+import { toast } from "react-hot-toast";
 
 export default function NewsletterForm() {
   const fileInputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
@@ -14,13 +19,27 @@ export default function NewsletterForm() {
   const {
     control,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
     reset,
-  } = useForm();
+  } = useForm({
+    defaultValues: {
+      sectionTitleNewsletter: "",
+      sectionDescriptionNewsletter: "",
+      newsletterItems: [{ url: "", date: "", title: "", description: "" }],
+    },
+  });
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "newsletterItems",
+  });
 
   const setRef = (name: string) => (el: HTMLInputElement | null) => {
     fileInputRefs.current[name] = el;
   };
+
+  const projectId = localStorage.getItem("projectId");
+  const router = useRouter();
 
   const handleFileChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -49,9 +68,52 @@ export default function NewsletterForm() {
     });
   };
 
-  const onSubmit = (data: any) => {
-    console.log("Newsletter Data:", data);
-    console.log("Newsletter Files:", files);
+  const onSubmit = async (data: any) => {
+    // Attach images to newsletterItems
+    let newsletterItemsWithImages = await Promise.all(
+      (data.newsletterItems || []).map(async (item: any, idx: number) => {
+        const file = files[`newsletterImage${idx + 1}`];
+        let imageUrl = null;
+        if (file) {
+          try {
+            imageUrl = await uploadCardImage(file);
+          } catch (err) {
+            toast.error(`Failed to upload image for item ${idx + 1}`);
+          }
+        }
+        // Ensure date is ISO-8601 or null
+        let date = item.date ? new Date(item.date).toISOString() : null;
+
+        return {
+          ...item,
+          date,
+          newsLetterImage: imageUrl,
+        };
+      })
+    );
+
+    const finalData = {
+      ...data,
+      newsletterItems: newsletterItemsWithImages,
+    };
+
+    try {
+      const res = await fetch(`/api/projects/${projectId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(finalData),
+      });
+      if (!res.ok) throw new Error("Failed to update project");
+      if (res.ok) {
+        localStorage.setItem("projectId", projectId!);
+        toast.success("Project updated successfully!");
+        router.push("/admin/project-and-initiative/new-project/live-moments");
+        reset();
+        setFiles({});
+      }
+    } catch (err: any) {
+      toast.error(err.message || "An error occurred");
+    }
   };
 
   return (
@@ -63,7 +125,7 @@ export default function NewsletterForm() {
       <form onSubmit={handleSubmit(onSubmit)}>
         {/* Section Wrapper */}
         <section className="border-2 my-6 rounded-lg p-4 md:p-8 lg:px-14 bg-white">
-          <h3 className="text-sky-800 text-xl font-semibold">
+          <h3 className="text-sky-800 text-xl font-semibold mb-4">
             12. Newsletter/Archive Document Section
           </h3>
           <p className="my-2">Label's Name</p>
@@ -75,13 +137,13 @@ export default function NewsletterForm() {
           {/* Section Title and Description */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
             <div>
-              <label className="block text-sm font-medium text-gray-900">
+              <label className="block text-sm font-medium text-gray-900 mb-2">
                 Section Title
               </label>
               <Controller
                 name="sectionTitleNewsletter"
                 control={control}
-                rules={{ required: "Section Title is required", maxLength: 50 }}
+                rules={{ required: "Section Title is required" }}
                 render={({ field }) => (
                   <input
                     {...field}
@@ -97,7 +159,7 @@ export default function NewsletterForm() {
               )}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-900">
+              <label className="block text-sm font-medium text-gray-900 mb-2">
                 Section Description
               </label>
               <Controller
@@ -105,7 +167,6 @@ export default function NewsletterForm() {
                 control={control}
                 rules={{
                   required: "Section Description is required",
-                  maxLength: 1000,
                 }}
                 render={({ field }) => (
                   <textarea
@@ -125,14 +186,27 @@ export default function NewsletterForm() {
           </div>
 
           {/* Items */}
-          <div className="mt-5 grid grid-cols-1 md:grid-cols-2 gap-3">
-            {[0, 1].map((index) => {
+
+          <div className="mt-5 flex flex-col gap-10">
+            {fields.map((item, index) => {
               const imageKey = `newsletterImage${index + 1}`;
               return (
                 <div
-                  key={index}
-                  className="border border-dashed border-gray-300 rounded-md px-4 py-4 flex flex-col xl:flex-row gap-4"
+                  key={item.id}
+                  className="border border-dashed border-gray-300 rounded-md px-4 py-4 flex flex-col xl:flex-row gap-4 relative"
                 >
+                  {/* Remove Button */}
+                  {fields.length > 1 && (
+                    <button
+                      type="button"
+                      className="absolute -top-5 right-1 text-red-500 hover:text-red-700 text-xl font-bold"
+                      onClick={() => remove(index)}
+                      title="Remove"
+                    >
+                      <Trash size={16} />
+                    </button>
+                  )}
+
                   {/* Image Upload */}
                   <div className="flex-1">
                     <div className="relative text-center border border-dashed rounded-lg px-6 py-2">
@@ -143,25 +217,6 @@ export default function NewsletterForm() {
                             alt=""
                             className="w-16 h-16 mx-auto object-cover"
                           />
-                          <span
-                            className="absolute top-0 right-0 cursor-pointer"
-                            onClick={() => {
-                              setFiles((prev) => ({
-                                ...prev,
-                                [imageKey]: null,
-                              }));
-                              setImagePreviews((prev) => {
-                                const newPreviews = { ...prev };
-                                delete newPreviews[imageKey];
-                                return newPreviews;
-                              });
-                              if (fileInputRefs.current[imageKey]) {
-                                fileInputRefs.current[imageKey]!.value = "";
-                              }
-                            }}
-                          >
-                            ✖
-                          </span>
                         </div>
                       ) : (
                         <svg
@@ -212,6 +267,7 @@ export default function NewsletterForm() {
                           {...field}
                           placeholder="Date"
                           className="w-full border border-dashed rounded px-2 py-1"
+                          type="date"
                         />
                       )}
                     />
@@ -241,15 +297,28 @@ export default function NewsletterForm() {
                 </div>
               );
             })}
+            <button
+              type="button"
+              className="mt-4 w-fit px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 self-end"
+              onClick={() =>
+                append({ url: "", date: "", title: "", description: "" })
+              }
+            >
+              + Add Newsletter Item
+            </button>
           </div>
 
           {/* Submit and Clear Buttons */}
           <div className="flex justify-between mt-6">
             <button
               type="submit"
-              className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
+              className={cn(
+                "bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700",
+                isSubmitting && "opacity-50 cursor-not-allowed"
+              )}
+              disabled={isSubmitting}
             >
-              Submit
+              {isSubmitting ? "Submitting..." : "Submit"}
             </button>
             <button
               type="button"

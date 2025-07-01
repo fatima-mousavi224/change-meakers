@@ -1,8 +1,11 @@
 "use client";
 
 import Tabs from "@/components/create-project-tabs/Tabs";
+import { cn } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 import React from "react";
 import { useForm, Controller } from "react-hook-form";
+import toast from "react-hot-toast";
 
 type FormData = {
   finalStatement: string;
@@ -14,7 +17,7 @@ export default function FinalCallToActionAndNavigation() {
   const {
     control,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
     reset,
   } = useForm<FormData>({
     defaultValues: {
@@ -24,8 +27,32 @@ export default function FinalCallToActionAndNavigation() {
     },
   });
 
-  const onSubmit = (data: FormData) => {
-    console.log("Final Call & Navigation Data:", data);
+  const router = useRouter();
+  const projectId = localStorage.getItem("projectId");
+
+  const onSubmit = async (data: FormData) => {
+    try {
+      const res = await fetch(`/api/projects/${projectId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...data,
+        }),
+      });
+
+      if (res.ok) {
+        const result = await res.json();
+        localStorage.setItem("projectId", result.id);
+        router.push("/admin/project-and-initiative");
+        toast.success("Final call to action and navigation settings saved!");
+      } else {
+        toast.error("Failed to save final call to action");
+      }
+    } catch (error: any) {
+      toast.error(error.message || "Something went wrong");
+    }
   };
 
   const clearForm = () => reset();
@@ -50,10 +77,6 @@ export default function FinalCallToActionAndNavigation() {
             control={control}
             rules={{
               required: "Final Statement is required",
-              maxLength: {
-                value: 500,
-                message: "Maximum length is 500 characters",
-              },
             }}
             render={({ field }) => (
               <input
@@ -126,9 +149,13 @@ export default function FinalCallToActionAndNavigation() {
         <div className="flex justify-between mt-6 px-4 md:px-14">
           <button
             type="submit"
-            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
+            className={cn(
+              "bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700",
+              isSubmitting && "opacity-50 cursor-not-allowed"
+            )}
+            disabled={isSubmitting}
           >
-            Submit
+            {isSubmitting ? "Submitting..." : "Submit"}
           </button>
           <button
             type="button"

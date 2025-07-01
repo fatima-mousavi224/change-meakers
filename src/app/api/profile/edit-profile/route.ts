@@ -6,7 +6,6 @@ import bcrypt from "bcrypt";
 export async function PUT(request: NextRequest) {
   const { name, password, email, image } = await request.json();
   const currentUser = await getCurrentUser();
-  console.log("currentUser", currentUser);
   const currentEmail = currentUser?.email;
 
   try {

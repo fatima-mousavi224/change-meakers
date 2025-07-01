@@ -1,59 +1,144 @@
-'use client'
+"use client";
 import Tabs from "@/components/create-project-tabs/Tabs";
+import { uploadCardImage } from "lib/uploadCardImage";
+import { Trash } from "lucide-react";
+import { useRouter } from "next/navigation";
 import React, { useRef } from "react";
 import { Controller, useForm } from "react-hook-form";
+import toast from "react-hot-toast";
+import { cn } from "utilities/cn";
 
 function PhotoAlbum() {
-  // Add this ref to store file input references
-  const fileInputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
-  // Add useForm hook
+  const fileInputRefs = useRef<Array<HTMLInputElement | null>>([]);
   const {
     control,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
     reset,
+    register,
+    setValue,
+    getValues,
   } = useForm();
 
-  // State for files and image previews
-  const [files, setFiles] = React.useState<{ [key: string]: File | null }>({});
-  const [imagePreviews, setImagePreviews] = React.useState<{ [key: string]: string }>({});
+  // Dynamic photo album items
+  const [photoAlbumItems, setPhotoAlbumItems] = React.useState<
+    Array<{
+      image: File | null;
+      imagePreview: string;
+      title: string;
+      description: string;
+    }>
+  >([{ image: null, imagePreview: "", title: "", description: "" }]);
+  const projectId = localStorage.getItem("projectId");
+  const router = useRouter();
 
-  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>, arg1: string): void {
+  function handleFileChange(
+    e: React.ChangeEvent<HTMLInputElement>,
+    idx: number
+  ): void {
     const file = e.target.files && e.target.files[0];
     if (file) {
-      setFiles((prev) => ({ ...prev, [arg1]: file }));
       const reader = new FileReader();
       reader.onloadend = () => {
-        setImagePreviews((prev) => ({ ...prev, [arg1]: reader.result as string }));
+        setPhotoAlbumItems((prev) => {
+          const updated = [...prev];
+          updated[idx] = {
+            ...updated[idx],
+            image: file,
+            imagePreview: reader.result as string,
+          };
+          return updated;
+        });
       };
       reader.readAsDataURL(file);
     }
   }
 
-  // Define the onSubmitPhotoAlbum function
-  function onSubmitPhotoAlbum(data: any) {
-    // Handle form submission logic here
-    console.log("Photo Album Form Data:", data);
-    console.log("Uploaded Images:", files);
-    // You can also handle files here if needed
-  }
-
-  // Clear form handler
-  function clearPhotoAlbumForm() {
-    reset();
-    setFiles({});
-    setImagePreviews({});
-    Object.values(fileInputRefs.current).forEach((input) => {
-      if (input) input.value = "";
+  function handleInputChange(
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    idx: number
+  ) {
+    const { name, value } = e.target;
+    setPhotoAlbumItems((prev) => {
+      const updated = [...prev];
+      updated[idx] = {
+        ...updated[idx],
+        [name]: value,
+      };
+      return updated;
     });
   }
 
+  function addPhotoAlbumItem() {
+    setPhotoAlbumItems((prev) => [
+      ...prev,
+      { image: null, imagePreview: "", title: "", description: "" },
+    ]);
+  }
+
+  function removePhotoAlbumItem(idx: number) {
+    setPhotoAlbumItems((prev) => prev.filter((_, i) => i !== idx));
+    fileInputRefs.current.splice(idx, 1);
+  }
+
+  const onSubmit = async (data: any) => {
+    try {
+      // Upload images and build items array
+      const items = await Promise.all(
+        photoAlbumItems.map(async (item) => {
+          let imageUrl = "";
+          if (item.image) {
+            // @ts-ignore
+            imageUrl = await uploadCardImage(item.image);
+          }
+          return {
+            image: imageUrl,
+            title: item.title,
+            description: item.description,
+          };
+        })
+      );
+      const payload = {
+        sectionTitlePhoto: data.sectionTitlePhoto,
+        sectionDescriptionPhoto: data.sectionDescriptionPhoto,
+        photoAlbum: items,
+      };
+      const response = await fetch(`/api/projects/${projectId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const result = await response.json();
+      if (!response.ok) {
+        toast.error("Failed to save photo album section.");
+      }
+      if (response.ok) {
+        localStorage.setItem("projectId", result.id);
+        toast.success("Photo album section saved successfully!");
+        router.push(`/admin/project-and-initiative/new-project/news-letter`);
+        clearPhotoAlbumForm();
+      }
+    } catch (error: any) {
+      toast.error(
+        error.message || "An error occurred while saving the project section"
+      );
+    }
+  };
+
+  function clearPhotoAlbumForm() {
+    reset();
+    setPhotoAlbumItems([
+      { image: null, imagePreview: "", title: "", description: "" },
+    ]);
+    fileInputRefs.current = [];
+  }
+
   return (
-      <div className="max-w-screen-2xl mx-auto">
-              <h2 className="text-lg md:text-3xl font-bold text-sky-800 my-6 text-center md:text-left">
-                Create New Project
-              </h2>
-              <Tabs />
+    <div className="max-w-screen-2xl mx-auto">
+      <h2 className="text-lg md:text-3xl font-bold text-sky-800 my-6 text-center md:text-left">
+        Create New Project
+      </h2>
+      <Tabs />
       {/* Photo Album Section */}
       <section className="border-2 my-6 rounded-lg p-4 md:p-8 lg:px-14 bg-white">
         <h3 className="text-sky-800 text-xl font-semibold">
@@ -64,10 +149,10 @@ function PhotoAlbum() {
           <span className="bg-sky-700 h-2 w-2 rounded-full"></span>
           <span className="text-gray-400">e.g., "Photos"</span>
         </div>
-        <form onSubmit={handleSubmit(onSubmitPhotoAlbum)}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
             <div className="col-span-1 mt-4 md:mt-0">
-              <label className="block text-sm/6 font-medium text-gray-900">
+              <label className="block text-sm/6 font-medium text-gray-900 mb-2">
                 Section Title
               </label>
               <Controller
@@ -75,7 +160,6 @@ function PhotoAlbum() {
                 control={control}
                 rules={{
                   required: "Section Title is required",
-                  maxLength: 50,
                 }}
                 render={({ field }) => (
                   <input
@@ -93,7 +177,7 @@ function PhotoAlbum() {
               )}
             </div>
             <div className="col-span-2 mt-4 md:mt-0">
-              <label className="block text-sm/6 font-medium text-gray-900">
+              <label className="block text-sm/6 font-medium text-gray-900 mb-2">
                 Section Description
               </label>
               <Controller
@@ -101,7 +185,6 @@ function PhotoAlbum() {
                 control={control}
                 rules={{
                   required: "Section Description is required",
-                  maxLength: 1000,
                 }}
                 render={({ field }) => (
                   <textarea
@@ -120,42 +203,19 @@ function PhotoAlbum() {
             </div>
           </div>
           <div className="mt-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-            {[1, 2, 3, 4].map((index) => (
+            {photoAlbumItems.map((item, idx) => (
               <div
-                key={index}
-                className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-2"
+                key={idx}
+                className="mt-2 flex flex-col justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-2 relative"
               >
                 <div className="relative text-center">
-                  {files[`photoAlbumImage${index}`] ? (
+                  {item.imagePreview ? (
                     <div className="relative">
                       <img
-                        src={imagePreviews[`photoAlbumImage${index}`]}
-                        alt={`Photo Album Image ${index} Preview`}
+                        src={item.imagePreview}
+                        alt={`Photo Album Image ${idx + 1} Preview`}
                         className="mx-auto w-16 h-16 object-cover"
                       />
-                      <span
-                        className="absolute top-0 right-0 cursor-pointer"
-                        onClick={() => {
-                          setFiles((prev) => ({
-                            ...prev,
-                            [`photoAlbumImage${index}`]: null,
-                          }));
-                          setImagePreviews((prev) => {
-                            const newPreviews = { ...prev };
-                            delete newPreviews[`photoAlbumImage${index}`];
-                            return newPreviews;
-                          });
-                          if (
-                            fileInputRefs.current[`photoAlbumImage${index}`]
-                          ) {
-                            fileInputRefs.current[
-                              `photoAlbumImage${index}`
-                            ]!.value = "";
-                          }
-                        }}
-                      >
-                        ✖
-                      </span>
                     </div>
                   ) : (
                     <svg
@@ -173,14 +233,10 @@ function PhotoAlbum() {
                   <input
                     type="file"
                     accept=".jpg,.jpeg,.png"
-                    onChange={(e) =>
-                      handleFileChange(e, `photoAlbumImage${index}`)
-                    }
+                    onChange={(e) => handleFileChange(e, idx)}
                     className="absolute inset-0 opacity-0 cursor-pointer"
-                      ref={el => {
-                      if (fileInputRefs && fileInputRefs.current) {
-                        fileInputRefs.current[`photoAlbumImage${index}`] = el;
-                      }
+                    ref={(el) => {
+                      fileInputRefs.current[idx] = el;
                     }}
                   />
                   <p className="mt-4 font-semibold text-blue-500">
@@ -188,15 +244,53 @@ function PhotoAlbum() {
                   </p>
                   <p className="text-gray-500">here or Browse up to 10 MB</p>
                 </div>
+                <input
+                  type="text"
+                  name="title"
+                  value={item.title}
+                  onChange={(e) => handleInputChange(e, idx)}
+                  placeholder="Image Title"
+                  className="mt-2 block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2"
+                />
+                <textarea
+                  name="description"
+                  value={item.description}
+                  onChange={(e) => handleInputChange(e, idx)}
+                  placeholder="Image Description"
+                  className="mt-2 block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2"
+                  rows={2}
+                />
+                {photoAlbumItems.length > 1 && (
+                  <button
+                    type="button"
+                    className="absolute top-2 right-2 text-red-500 transition duration-200 hover:text-red-600  flex items-center justify-center text-xs"
+                    onClick={() => removePhotoAlbumItem(idx)}
+                  >
+                    <Trash size={16} />
+                  </button>
+                )}
               </div>
             ))}
+          </div>
+          <div className="flex justify-end mt-2">
+            <button
+              type="button"
+              className="bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-600"
+              onClick={addPhotoAlbumItem}
+            >
+              + Add Photo
+            </button>
           </div>
           <div className="flex justify-between mt-4">
             <button
               type="submit"
-              className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+              className={cn(
+                "bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600",
+                isSubmitting && "opacity-50 cursor-not-allowed"
+              )}
+              disabled={isSubmitting}
             >
-              Submit
+              {isSubmitting ? "Submitting..." : "Submit"}
             </button>
             <button
               type="button"

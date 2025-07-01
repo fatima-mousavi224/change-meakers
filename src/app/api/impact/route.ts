@@ -1,6 +1,41 @@
 import { NextRequest, NextResponse } from "next/server";
-import { ImpactSchema } from "@/lib/schemas";
+import { z } from "zod";
 import prisma from "@/lib/prismaDB";
+
+// Define schemas for standard and highlighted impacts
+const StandardImpactSchema = z.object({
+  title: z.string().min(1, "Title is required"),
+  impactTags: z.string().min(1, "Impact tags are required"),
+  writersName: z.string().min(1, "Writer's name is required"),
+  date: z.string().min(1, "Date is required"),
+  contentDescription: z.string().min(1, "Content description is required"),
+  writerPhoto: z.string().url().nullable(),
+  galleryPhoto: z.array(z.string().url()).default([]),
+});
+
+const HighlightedImpactSchema = z.object({
+  message1: z.string().nullable(),
+  title2: z.string().nullable(),
+  impactTags2: z.string().nullable(),
+  date2: z.string().nullable(),
+  message2: z.string().nullable(),
+  writersName2: z.string().nullable(),
+  contentDescription2: z.string().nullable(),
+  writerPhoto2: z.string().url().nullable(),
+  coverPhoto: z.string().url().nullable(),
+  galleryPhoto2: z.array(z.string().url()).default([]),
+});
+
+// Define the main schema for the request body
+const ImpactSchema = z.object({
+  standardImpacts: z
+    .array(StandardImpactSchema)
+    .min(1, "At least one standard impact is required"),
+  highlightedImpacts: z
+    .array(HighlightedImpactSchema)
+    .min(1, "At least one highlighted impact is required"),
+  projectName: z.string().min(1, "Project name is required"),
+});
 
 export async function POST(request: NextRequest) {
   try {
@@ -22,39 +57,55 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const validatedData = validationResult.data;
+    const { standardImpacts, highlightedImpacts, projectName } =
+      validationResult.data;
 
-    // Convert empty strings to null for optional fields
-    const cleanedData = {
-      ...validatedData,
-      message1: validatedData.message1 || null,
-      message2: validatedData.message2 || null,
-      title2: validatedData.title2 || null,
-      date2: validatedData.date2 || null,
-      impactTags2: validatedData.impactTags2 || null,
-      writersName2: validatedData.writersName2 || null,
-      contentDescription2: validatedData.contentDescription2 || null,
-    };
+    // Prepare data for standard impacts
+    const standardImpactsData = standardImpacts.map((impact) => ({
+      title: impact.title,
+      impactTags: impact.impactTags,
+      writersName: impact.writersName,
+      date: new Date(impact.date),
+      contentDescription: impact.contentDescription,
+      writerPhoto: impact.writerPhoto || null,
+      galleryPhoto: impact.galleryPhoto || [],
+    }));
 
-    // Convert date strings to Date objects, handling optional dates
-    const impactData = {
-      ...cleanedData,
-      date: new Date(cleanedData.date),
-      date2: cleanedData.date2 ? new Date(cleanedData.date2) : null,
-      projectName: cleanedData.addImpact,
-    };
+    // Prepare data for highlighted impacts
+    const highlightedImpactsData = highlightedImpacts.map((impact) => ({
+      message1: impact.message1 || null,
+      message2: impact.message2 || null,
+      title2: impact.title2 || null,
+      date2: impact.date2 ? new Date(impact.date2) : null,
+      impactTags2: impact.impactTags2 || null,
+      writersName2: impact.writersName2 || null,
+      contentDescription2: impact.contentDescription2 || null,
+      writerPhoto2: impact.writerPhoto2 || null,
+      coverPhoto: impact.coverPhoto || null,
+      galleryPhoto2: impact.galleryPhoto2 || [],
+    }));
 
-    // Remove the addImpact field as it's mapped to projectName
-    const { addImpact, ...dataToSave } = impactData;
-
-    console.log("Data to save:", JSON.stringify(dataToSave, null, 2));
-
-    // Create the impact record in the database
+    // Create the impact record with related standard and highlighted impacts
     const impact = await prisma.impact.create({
-      data: dataToSave,
+      data: {
+        projectName: projectName,
+        standardImpacts: {
+          create: standardImpactsData,
+        },
+        highlightedImpacts: {
+          create: highlightedImpactsData,
+        },
+      },
+      include: {
+        standardImpacts: true,
+        highlightedImpacts: true,
+      },
     });
 
-    console.log("Impact created successfully:", impact);
+    console.log(
+      "Impact created successfully:",
+      JSON.stringify(impact, null, 2)
+    );
 
     return NextResponse.json(
       {
@@ -64,9 +115,8 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     );
   } catch (error) {
-    console.error("Error creating impact:", error);
+    console.error("Error creating impacts:", error);
 
-    // Provide more specific error messages
     if (error instanceof Error) {
       return NextResponse.json(
         {
@@ -80,7 +130,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         error: "Internal server error",
-        message: "Failed to create impact",
+        message: "Failed to create impacts",
       },
       { status: 500 }
     );
@@ -103,6 +153,10 @@ export async function GET(request: NextRequest) {
         orderBy: { createdAt: "desc" },
         skip,
         take: limit,
+        include: {
+          standardImpacts: true,
+          highlightedImpacts: true,
+        },
       }),
       prisma.impact.count({ where: whereClause }),
     ]);

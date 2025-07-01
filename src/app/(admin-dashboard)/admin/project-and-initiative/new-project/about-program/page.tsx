@@ -1,8 +1,15 @@
 "use client";
 
 import Tabs from "@/components/create-project-tabs/Tabs";
+import dynamic from "next/dynamic";
+import { useRouter } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 import { BsArrowRight } from "react-icons/bs";
+import { cn } from "utilities/cn";
+const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
+import "react-loading-skeleton/dist/skeleton.css";
+import "react-quill/dist/quill.snow.css";
 
 type FormData = {
   sectionTitleAbout: string;
@@ -14,13 +21,39 @@ type FormData = {
 export default function AboutProgramForm() {
   const {
     handleSubmit,
-    control,
+    register,
     reset,
-    formState: { errors },
+    control,
+    formState: { errors, isSubmitting },
   } = useForm<FormData>();
 
-  const onSubmit = (data: FormData) => {
-    console.log("About Program Data:", data);
+  const projectId = localStorage.getItem("projectId");
+  const router = useRouter();
+
+  const onSubmit = async (data: FormData) => {
+    try {
+      const res = await fetch(`/api/projects/${projectId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ ...data }),
+      });
+      const result = await res.json();
+      if (res.ok) {
+        localStorage.setItem("projectId", result.id);
+        toast.success("Program section saved successfully!");
+        router.push(
+          "/admin/project-and-initiative/new-project/voice-classroom"
+        );
+        reset();
+      } else {
+        toast.error("Failed to save Program section");
+      }
+    } catch (error) {
+      console.error("Error saving program section:", error);
+      toast.error("An error occurred while saving the program section.");
+    }
   };
 
   const handleClear = () => {
@@ -42,24 +75,16 @@ export default function AboutProgramForm() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="md:grid grid-cols-1 md:grid-cols-3 gap-4 md:col-span-2 mt-4 md:mt-0">
               <div className="col-span-3 mt-4 md:mt-0">
-                <label className="block text-sm/6 font-medium text-gray-900">
+                <label className="block text-sm/6 font-medium text-gray-900 mb-2">
                   Section Title
                 </label>
-                <Controller
-                  name="sectionTitleAbout"
-                  control={control}
-                  rules={{
+                <input
+                  {...register("sectionTitleAbout", {
                     required: "Section Title is required",
-                    maxLength: 50,
-                  }}
-                  render={({ field }) => (
-                    <input
-                      {...field}
-                      type="text"
-                      placeholder="e.g. 'About the Program'"
-                      className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2"
-                    />
-                  )}
+                  })}
+                  type="text"
+                  placeholder="e.g. 'About the Program'"
+                  className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2"
                 />
                 {errors.sectionTitleAbout && (
                   <p className="text-red-500 text-sm">
@@ -68,23 +93,29 @@ export default function AboutProgramForm() {
                 )}
               </div>
               <div className="col-span-3 mt-4 md:mt-0">
-                <label className="block text-sm/6 font-medium text-gray-900">
+                <label className="block text-sm/6 font-medium text-gray-900 mb-2">
                   Body Text
                 </label>
+
                 <Controller
                   name="bodyText"
                   control={control}
-                  rules={{
-                    required: "Body Text is required",
-                    maxLength: 1000,
-                  }}
+                  defaultValue=""
                   render={({ field }) => (
-                    <textarea
-                      {...field}
-                      placeholder="write something here..."
-                      className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2"
-                      rows={4}
-                    />
+                    <div className="block w-full rounded-md border border-dashed border-gray-900/25 focus-within:ring-2 focus-within:ring-blue-100 focus-within:ring-offset-2 px-0 py-0">
+                      <ReactQuill
+                        theme="snow"
+                        value={field.value}
+                        onChange={field.onChange}
+                        className="quill-editor mb-10"
+                        style={{
+                          border: "none",
+                          borderRadius: "0.375rem",
+                          padding: "0",
+                          minHeight: "120px",
+                        }}
+                      />
+                    </div>
                   )}
                 />
                 {errors.bodyText && (
@@ -94,24 +125,16 @@ export default function AboutProgramForm() {
                 )}
               </div>
               <div className="col-span-1 mt-4 md:mt-0 relative">
-                <label className="block text-sm/6 font-medium text-gray-900">
+                <label className="block text-sm/6 font-medium text-gray-900 mb-2">
                   Button Name
                 </label>
-                <Controller
-                  name="buttonName2"
-                  control={control}
-                  rules={{
+                <input
+                  {...register("buttonName2", {
                     required: "Button Name is required",
-                    maxLength: 50,
-                  }}
-                  render={({ field }) => (
-                    <input
-                      {...field}
-                      type="text"
-                      placeholder="Enter the button's name"
-                      className="block w-full border rounded-full border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2"
-                    />
-                  )}
+                  })}
+                  type="text"
+                  placeholder="Enter the button's name"
+                  className="block w-full border rounded-full border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2"
                 />
                 {errors.buttonName2 && (
                   <p className="text-red-500 text-sm">
@@ -128,24 +151,16 @@ export default function AboutProgramForm() {
                 </a>
               </div>
               <div className="col-span-1 mt-4 md:mt-0">
-                <label className="block text-sm/6 font-medium text-gray-900">
+                <label className="block text-sm/6 font-medium text-gray-900 mb-2">
                   Button Link
                 </label>
-                <Controller
-                  name="buttonLink2"
-                  control={control}
-                  rules={{
+                <input
+                  {...register("buttonLink2", {
                     required: "Button Link is required",
-                    maxLength: 200,
-                  }}
-                  render={({ field }) => (
-                    <input
-                      {...field}
-                      type="text"
-                      placeholder="Enter the URL"
-                      className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2"
-                    />
-                  )}
+                  })}
+                  type="text"
+                  placeholder="Enter the URL"
+                  className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2"
                 />
                 {errors.buttonLink2 && (
                   <p className="text-red-500 text-sm">
@@ -158,9 +173,13 @@ export default function AboutProgramForm() {
           <div className="mt-6 flex justify-between gap-4">
             <button
               type="submit"
-              className="px-6 py-2 bg-sky-600 text-white rounded-md shadow hover:bg-sky-700 transition"
+              className={cn(
+                "px-6 py-2 bg-sky-600 text-white rounded-md shadow hover:bg-sky-700 transition",
+                isSubmitting && "opacity-50 cursor-not-allowed"
+              )}
+              disabled={isSubmitting}
             >
-              Submit
+              {isSubmitting ? "Submitting..." : "Submit"}
             </button>
             <button
               type="button"
