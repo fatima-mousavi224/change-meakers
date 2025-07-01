@@ -118,13 +118,12 @@ export default function VisionGoalForm() {
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
           <div>
-            <label className="block text-sm font-medium text-gray-900">
+            <label className="block text-sm font-medium text-gray-900 mb-2">
               Vision Title
             </label>
             <input
               {...register("visionTitle", {
                 required: "Vision Title is required",
-                maxLength: 50,
               })}
               type="text"
               placeholder="e.g. 'Our Vision'"
@@ -138,13 +137,12 @@ export default function VisionGoalForm() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-900">
+            <label className="block text-sm font-medium text-gray-900 mb-2">
               Vision Text
             </label>
             <input
               {...register("visionText", {
                 required: "Vision Text is required",
-                maxLength: 200,
               })}
               type="text"
               placeholder="Write something here..."
@@ -158,13 +156,12 @@ export default function VisionGoalForm() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-900">
+            <label className="block text-sm font-medium text-gray-900 mb-2">
               Goal Title
             </label>
             <input
               {...register("goalTitle", {
                 required: "Goal Title is required",
-                maxLength: 50,
               })}
               type="text"
               placeholder="e.g. 'Our Goal'"
@@ -176,13 +173,12 @@ export default function VisionGoalForm() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-900">
+            <label className="block text-sm font-medium text-gray-900 mb-2">
               Goal Text
             </label>
             <input
               {...register("goalText", {
                 required: "Goal Text is required",
-                maxLength: 200,
               })}
               type="text"
               placeholder="Write something here..."

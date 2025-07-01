@@ -66,16 +66,6 @@ export async function PATCH(
       ...rest
     } = body;
 
-    // Create new heroSections if provided
-    if (Array.isArray(heroSections) && heroSections.length > 0) {
-      await prisma.heroSection.createMany({
-        data: heroSections.map((h) => ({
-          ...h,
-          projectId: params.id,
-        })),
-      });
-    }
-
     // Create new status icon if provided
     if (Array.isArray(sections) && sections.length > 0) {
       await prisma.statusAndIcon.createMany({

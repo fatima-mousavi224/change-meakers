@@ -75,13 +75,12 @@ export default function AboutProgramForm() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="md:grid grid-cols-1 md:grid-cols-3 gap-4 md:col-span-2 mt-4 md:mt-0">
               <div className="col-span-3 mt-4 md:mt-0">
-                <label className="block text-sm/6 font-medium text-gray-900">
+                <label className="block text-sm/6 font-medium text-gray-900 mb-2">
                   Section Title
                 </label>
                 <input
                   {...register("sectionTitleAbout", {
                     required: "Section Title is required",
-                    maxLength: 50,
                   })}
                   type="text"
                   placeholder="e.g. 'About the Program'"
@@ -94,7 +93,7 @@ export default function AboutProgramForm() {
                 )}
               </div>
               <div className="col-span-3 mt-4 md:mt-0">
-                <label className="block text-sm/6 font-medium text-gray-900">
+                <label className="block text-sm/6 font-medium text-gray-900 mb-2">
                   Body Text
                 </label>
 
@@ -126,13 +125,12 @@ export default function AboutProgramForm() {
                 )}
               </div>
               <div className="col-span-1 mt-4 md:mt-0 relative">
-                <label className="block text-sm/6 font-medium text-gray-900">
+                <label className="block text-sm/6 font-medium text-gray-900 mb-2">
                   Button Name
                 </label>
                 <input
                   {...register("buttonName2", {
                     required: "Button Name is required",
-                    maxLength: 50,
                   })}
                   type="text"
                   placeholder="Enter the button's name"
@@ -153,13 +151,12 @@ export default function AboutProgramForm() {
                 </a>
               </div>
               <div className="col-span-1 mt-4 md:mt-0">
-                <label className="block text-sm/6 font-medium text-gray-900">
+                <label className="block text-sm/6 font-medium text-gray-900 mb-2">
                   Button Link
                 </label>
                 <input
                   {...register("buttonLink2", {
                     required: "Button Link is required",
-                    maxLength: 200,
                   })}
                   type="text"
                   placeholder="Enter the URL"
