@@ -33,6 +33,7 @@ import line from "../../../../public/images/home-page/line.png";
 import news1 from "../../../../public/images/home-page/news-stories/news1.png";
 import rightQute from "../../../../public/images/home-page/rightQuete.png";
 import { RighArrow } from "../../icons/Icons";
+import ParticipantsInfoPrograms from "./ParticipantsInfoPrograms";
 
 // Extended type to include relations
 type ProjectWithRelations = Project & {
@@ -58,8 +59,6 @@ const Programs = ({
   project: ProjectWithRelations;
   impacts: ImpactWithRelations[];
 }) => {
-
-
   // Get all standard impacts and highlighted impacts from all impact objects
   const allStandardImpacts =
     impacts?.flatMap((impact) => impact.standardImpacts || []) || [];
@@ -550,7 +549,7 @@ const Programs = ({
           <p className="text-paragraph_color text-center text-sm md:text-base">
             {project?.sectionDescriptionStudents}
           </p>
-          <ParticipantsInfo data={project?.voices ?? []} />
+          <ParticipantsInfoPrograms data={project?.voices ?? []} />
         </div>
       </section>
 
@@ -1204,7 +1203,7 @@ const Programs = ({
           <h3 className="text-3xl font-bold text-slate-900">
             {project?.sectionTitleSDGs}
           </h3>
-          <p className="text-gray-500 my-2 max-w-2xl">
+          <p className="text-gray-500 my-2 max-w-4xl">
             {project?.sectionTextSDGs}
           </p>
           <div className="flex space-x-5 my-5">
