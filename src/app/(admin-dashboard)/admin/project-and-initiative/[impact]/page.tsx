@@ -289,7 +289,6 @@ export default function ImpactPage() {
                           control={control}
                           rules={{
                             required: "Title is required",
-                            maxLength: 50,
                           }}
                           render={({ field }) => (
                             <input
@@ -321,7 +320,6 @@ export default function ImpactPage() {
                           control={control}
                           rules={{
                             required: "Impact tags are required",
-                            maxLength: 50,
                           }}
                           render={({ field }) => (
                             <input
@@ -358,7 +356,6 @@ export default function ImpactPage() {
                           control={control}
                           rules={{
                             required: "Writer's name is required",
-                            maxLength: 50,
                           }}
                           render={({ field }) => (
                             <input
@@ -423,7 +420,6 @@ export default function ImpactPage() {
                         control={control}
                         rules={{
                           required: "Content description is required",
-                          maxLength: 1000,
                         }}
                         render={({ field }) => (
                           <textarea
@@ -672,7 +668,6 @@ export default function ImpactPage() {
                         <Controller
                           name={`highlightedImpacts.${index}.message1`}
                           control={control}
-                          rules={{ maxLength: 1000 }}
                           render={({ field }) => (
                             <textarea
                               placeholder="write something here..."
@@ -704,7 +699,6 @@ export default function ImpactPage() {
                         <Controller
                           name={`highlightedImpacts.${index}.title2`}
                           control={control}
-                          rules={{ maxLength: 50 }}
                           render={({ field }) => (
                             <input
                               type="text"
@@ -736,7 +730,6 @@ export default function ImpactPage() {
                         <Controller
                           name={`highlightedImpacts.${index}.impactTags2`}
                           control={control}
-                          rules={{ maxLength: 50 }}
                           render={({ field }) => (
                             <input
                               type="text"
@@ -797,7 +790,6 @@ export default function ImpactPage() {
                       <Controller
                         name={`highlightedImpacts.${index}.message2`}
                         control={control}
-                        rules={{ maxLength: 1000 }}
                         render={({ field }) => (
                           <textarea
                             placeholder="write something here..."
@@ -827,7 +819,6 @@ export default function ImpactPage() {
                       <Controller
                         name={`highlightedImpacts.${index}.writersName2`}
                         control={control}
-                        rules={{ maxLength: 50 }}
                         render={({ field }) => (
                           <input
                             type="text"
@@ -1108,7 +1099,6 @@ export default function ImpactPage() {
                       <Controller
                         name={`highlightedImpacts.${index}.contentDescription2`}
                         control={control}
-                        rules={{ maxLength: 1000 }}
                         render={({ field }) => (
                           <textarea
                             placeholder="write something here..."
@@ -1168,7 +1158,6 @@ export default function ImpactPage() {
                   control={control}
                   rules={{
                     required: "Project name is required",
-                    maxLength: 50,
                   }}
                   render={({ field }) => (
                     <input
