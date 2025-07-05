@@ -211,7 +211,7 @@ model Project {
   // Final Call to Action
   finalStatement             String?
   // Navigation
-  navigationLabel            String?
+  navigationLabel            String @unique
   showInMainNavigation       Boolean            @default(true)
   // Card and Hero Images
   

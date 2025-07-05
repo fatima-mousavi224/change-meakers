@@ -23,6 +23,7 @@ export async function POST(req: NextRequest) {
         projectTitle: body.projectTitle,
         cardDescription: body.cardDescription,
         uploadCardImage: body.cardImage,
+        navigationLabel: body.navigationLabel || "Home",
       },
     });
 
