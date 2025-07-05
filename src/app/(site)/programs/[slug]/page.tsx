@@ -2,10 +2,10 @@ import Programs from "@/components/home/programs/Programs";
 import prisma from "@/lib/prismaDB";
 import React from "react";
 
-async function ProgramsPage2({ params }: { params: { id: string } }) {
+async function ProgramsPage2({ params }: { params: { slug: string } }) {
   const project = await prisma.project.findUnique({
     where: {
-      id: params.id,
+      navigationLabel: params.slug,
     },
     include: {
       statusAndIcons: true,
