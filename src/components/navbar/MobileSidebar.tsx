@@ -166,6 +166,7 @@ export default function MobileSidebar({
                   <div className="flex flex-col gap-y-2">
                     <Link
                       href="/apply"
+                      onClick={() => setSidebarOpen(false)}
                       className={cn(
                         pathName === "/apply_student"
                           ? "text-primary-200 bg-light_gray font-semibold"
@@ -177,6 +178,7 @@ export default function MobileSidebar({
                     </Link>
                     <Link
                       href="/join"
+                      onClick={() => setSidebarOpen(false)}
                       className={cn(
                         pathName === "/apply_contributor"
                           ? "text-primary-200 bg-light_gray font-semibold"

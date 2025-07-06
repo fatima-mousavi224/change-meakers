@@ -26,7 +26,7 @@ const LatestNews = ({ posts }: NewsStoriesProps) => {
   }
 
   return (
-    <div className="md:bg-light_gray">
+    <div className="bg-light_gray">
       <div className="relative lg:px-20 py-12 my-10 max-w-screen-2xl px-4 mx-auto">
         <div className="flex justify-between items-center">
           <h2 className="text-2xl font-bold text-center md:text-left">

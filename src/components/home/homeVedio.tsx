@@ -22,10 +22,10 @@ export default function HomeVideo() {
         <iframe
           src="https://www.youtube.com/embed/FLL63GwTaFQ"
           allowFullScreen
-          className="rounded-2xl shadow-lg sm:w-[90%] w-full h-[460px] md:h-[440px]"
+          className="rounded-2xl shadow-lg sm:w-[90%] w-full h-[350px] md:h-[440px]"
         ></iframe>
         {/* Caption Overlay with Small Primary Background */}
-     <div className="absolute md:-bottom-6 -bottom-3 -z-10 md:right-8 -right-3 bg-primary-100 px-3 py-1 text-sm text-white h-32 w-44 rounded-2xl">
+     <div className="absolute md:-bottom-6 -bottom-4 -z-10 md:right-8 -right-3 bg-primary-100 px-3 py-1 text-sm text-white h-32 w-44 rounded-2xl">
      </div>
       </div>
     </div>
