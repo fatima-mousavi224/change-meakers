@@ -179,6 +179,7 @@ model Project {
   buttonLink2                String?
   // Voices Section
   sectionTitleVoices         String?
+  voicesLabelName           String?
   sectionDescriptionVoices   String?
   // Media Block Section
   heroTitleMedia             String?
@@ -186,20 +187,24 @@ model Project {
   videoLink                  String?
   fullVideoDescription       String?
   // Team Section
+  teamLabelName              String?
   sectionTitleTeam           String?
   sectionDescriptionTeam     String?
   // Students Section
+  studentLabelName            String?
   sectionTitleStudents       String?
   sectionDescriptionStudents String?
   // Quotation Section
   addQuote                   String?
   nameRole                   String?
   // Photo Album Section
+  photoAlbumLabelName       String?
   sectionTitlePhoto          String?
   sectionDescriptionPhoto    String?
  
   // Newsletter Section
   sectionTitleNewsletter     String?
+  newsletterLabelName        String?
   sectionDescriptionNewsletter String?
   // Global Goals (SDGs) Section
   sectionTitleSDGs           String?

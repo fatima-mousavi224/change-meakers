@@ -278,8 +278,13 @@ const Programs = ({
     "🚀 ~ visibleHighlightedImpactsItems:",
     visibleHighlightedImpactsItems
   );
-  console.log("🚀 ~ hasMoreHighlightedImpacts:", hasMoreHighlightedImpacts);
 
+  function getEmbedUrl(url: string | undefined) {
+  if (!url) return "";
+  const videoIdMatch = url.match(/(?:\/shorts\/|v=)([a-zA-Z0-9_-]{11})/);
+  const videoId = videoIdMatch ? videoIdMatch[1] : "";
+  return videoId ? `https://www.youtube.com/embed/${videoId}` : "";
+}
   return (
     <div>
       {/* Hero section */}
@@ -540,7 +545,7 @@ const Programs = ({
           <div className="flex items-center mx-auto justify-center gap-2 w-40 rounded-2xl bg-primary-50 bg-opacity-15 p-2">
             <Icon icon="dot" height={8} width={10} />
             <span className="text-xs text-primary-50 font-semibold">
-              Our Students
+              {project.voicesLabelName ?? "Voices"}
             </span>
           </div>
           <h3 className="text-2xl md:text-3xl my-2 lg:text-4xl 2xl:text-5xl text-center py-2 font-semibold">
@@ -568,15 +573,11 @@ const Programs = ({
           </div>
 
           {/* Right Section: Video Embed */}
-          <div className="relative w-full md:w-[45%]">
-            <iframe
-              src={project?.videoLink ?? ""}
-              allowFullScreen
-              className="rounded-2xl shadow-lg sm:w-[90%] w-full h-[200px] md:h-[300px] lg:h-[400px]"
-            ></iframe>
-            {/* Caption Overlay with Small Primary Background */}
-            <div className="absolute md:-bottom-6 -bottom-3 -z-10 md:right-4 -right-3 bg-primary-100 px-3 py-1 text-sm text-white h-32 w-32 rounded-2xl" />
-          </div>
+          <iframe
+            src={getEmbedUrl(project?.videoLink ?? "")}
+            allowFullScreen
+            className="rounded-2xl shadow-lg sm:w-[90%] w-full h-[200px] md:h-[300px] lg:h-[400px]"
+          ></iframe>
         </div>
       </section>
 
@@ -621,7 +622,7 @@ const Programs = ({
         <div className="py-10 text-center">
           <div className="flex items-center mx-auto justify-center gap-2 w-28 rounded-full bg-primary-50 bg-opacity-15 p-2 mb-6">
             <Icon icon="dot" height={8} width={10} />
-            <span className=" text-primary-50 font-semibold">Team</span>
+            <span className=" text-primary-50 font-semibold">{project?.teamLabelName ?? "Team"}</span>
           </div>
           <h2 className="text-2xl md:text-4xl font-semibold mb-4">
             {project?.sectionTitleTeam}
@@ -675,7 +676,7 @@ const Programs = ({
                           <p className="text-base md:text-base text-gray-600 mb-2">
                             {member?.role}
                           </p>
-                          <p className="text-sm line-clamp-6 md:text-base text-blue-500 mb-2">
+                          <p className="text-sm line-clamp-6 md:text-base text-gray-500 mb-2">
                             {member?.biography}
                           </p>
                           {member?.link && (
@@ -736,7 +737,7 @@ const Programs = ({
         <div className="py-10 text-center">
           <div className="flex items-center mx-auto justify-center gap-2 w-28 rounded-full bg-primary-50 bg-opacity-15 p-2 mb-6">
             <Icon icon="dot" height={8} width={10} />
-            <span className=" text-primary-50 font-semibold">Students</span>
+            <span className=" text-primary-50 font-semibold">{project?.studentLabelName ?? "Students"}</span>
           </div>
           <h2 className="text-2xl md:text-4xl font-semibold mb-4">
             {project?.sectionTitleStudents}
@@ -794,7 +795,7 @@ const Programs = ({
                           <p className="text-base md:text-base text-gray-600 mb-2">
                             {member?.role ?? "Student Role"}
                           </p>
-                          <p className="text-sm line-clamp-6 md:text-base text-blue-500 mb-2">
+                          <p className="text-sm line-clamp-6 md:text-base text-gray-500 mb-2">
                             {member?.biography ??
                               "Student biography will appear here."}
                           </p>
@@ -890,6 +891,10 @@ const Programs = ({
       {/* inside classroom section */}
       <section className="max-w-screen-2xl px-4 mx-auto mt-10">
         <div className="flex flex-col gap-10 ">
+            <div className="bg-primary-50 bg-opacity-10 mx-auto rounded-full w-fit px-4 h-10 flex items-center justify-center gap-2">
+              <span className="size-2 rounded-full bg-primary-50"></span>
+              <p className="text-primary-50 font-semibold text-base">{project?.photoAlbumLabelName ?? "Photo"}</p>
+            </div>
           <div className="flex flex-col gap-4 items-center justify-center max-w-screen-2xl mx-auto">
             <Header btnName="Photos" title={project?.sectionTitlePhoto ?? ""} />
             <p className="text-center text-sm md:text-base text-gray-600 md:max-w-2xl mx-auto">
@@ -910,7 +915,7 @@ const Programs = ({
             <Icon icon="dot" height={8} width={10} />
             <span className=" text-primary-50 font-semibold">
               {" "}
-              Newsletter Archive
+              {project?.newsletterLabelName ?? "newsLetter"}
             </span>
           </div>
           <h1 className="text-3xl font-bold mb-2">
@@ -1243,7 +1248,7 @@ const Programs = ({
             {project?.relatedLinks?.map((link) => (
               <Link
                 href={link?.buttonLink}
-                className="bg-slate-400 rounded-full px-4 py-1 text-sky-700 border cursor-pointer border-blue-600 hover:opacity-90"
+                className="bg-slate-300 rounded-full px-4 py-1 text-sky-700 border cursor-pointer border-sky-800 hover:opacity-90"
               >
                 {link?.buttonName}
               </Link>
@@ -1251,7 +1256,7 @@ const Programs = ({
           </div>
 
           <h3 className="text-3xl md:text-5xl font-bold w-sm my-14 mx-auto text-center">
-            Need a website? Let an Afghan girl build it. 👋
+            {project?.finalStatement ?? "Need a website? Let an Afghan girl build it. 👋"}
           </h3>
 
           {/* subscribe section */}

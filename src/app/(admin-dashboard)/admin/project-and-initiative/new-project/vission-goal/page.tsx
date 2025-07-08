@@ -7,6 +7,8 @@ import { uploadCardImage } from "lib/uploadCardImage";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { useTabs } from "@/components/context/TabsContext";
+import DeleteModal from "@/components/delete-modal/deleteModal";
 
 interface VisionGoalFormValues {
   visionTitle: string;
@@ -17,6 +19,7 @@ interface VisionGoalFormValues {
 }
 
 export default function VisionGoalForm() {
+  const { hideTab } = useTabs();
   const {
     register,
     handleSubmit,
@@ -103,19 +106,45 @@ export default function VisionGoalForm() {
     }
   };
 
+  // delete section button handler
+  const [showModal, setShowModal] = useState(false);
+  const [deleteSection, setDeleteSection] = useState("block");
+  const handleDeleteSection = () => {
+    setDeleteSection((prev) => (prev === "block" ? "hidden" : "block"));
+    setShowModal(false);
+    router.push("/admin/project-and-initiative/new-project/about-program");
+    toast.success("Vission-goal section deleted successfully!");
+    reset();
+    hideTab("/vission-goal");
+  };
+
   return (
     <div className="max-w-screen-2xl mx-auto">
-      <h2 className="text-lg md:text-3xl font-bold text-sky-800 my-6 text-center md:text-left">
-        Create New Project
-      </h2>
+        <h2 className="text-lg md:text-3xl font-bold text-sky-800 my-6 text-center md:text-left">
+          Create New Project
+        </h2>
       <Tabs />
+      <DeleteModal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        onDelete={handleDeleteSection}
+      />
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="border-2 rounded-lg p-4 md:p-8 lg:px-14 bg-white mt-8"
+        className={`${deleteSection} border-2 rounded-lg p-4 md:p-8 lg:px-14 bg-white mt-8 `}
       >
-        <h3 className="text-sky-800 text-xl font-semibold">
-          3. Vision & Goal Section
-        </h3>
+        <div className="flex justify-between items-center mb-8">
+          <h3 className="text-sky-800 text-xl font-semibold">
+            3. Vision & Goal Section
+          </h3>
+          <button
+            type="button"
+            onClick={() => setShowModal(true)}
+            className="bg-red-500 rounded-lg px-4 py-2 transition-all duration-150 shadow-md active:shadow-none text-white"
+          >
+            Delete this section
+          </button>
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
           <div>
             <label className="block text-sm font-medium text-gray-900 mb-2">

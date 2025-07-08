@@ -3,6 +3,7 @@
 import clsx from "clsx";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTabs } from "../context/TabsContext";
 
 const tabs = [
   {
@@ -29,6 +30,9 @@ const tabs = [
 ];
 
 export default function Tabs() {
+  const { hiddenTabs } = useTabs();
+  console.log("Hidden Tabs:", hiddenTabs);
+  const visibleTabs = tabs.filter(tab => !hiddenTabs.includes(tab.pathName));
   const pathname = usePathname();
   const baseRoute = "/admin/project-and-initiative/new-project/";
   return (
@@ -48,13 +52,13 @@ export default function Tabs() {
             }
           }}
         >
-          {tabs.map((tab) =>
+          {visibleTabs.map((tab) =>
             tab.href ? (
               <option key={tab.name} value={tab.name}>
                 {tab.name}
               </option>
             ) : (
-              <option key={tab.name} value={tab.name} disabled>
+              <option key={tab.name} value={tab.name}>
                 {tab.name}
               </option>
             )
@@ -64,7 +68,7 @@ export default function Tabs() {
 
       {/* Desktop: Horizontal Tabs */}
       <div className="hidden md:flex flex-wrap gap-2 items-center">
-        {tabs.map((tab) => {
+        {visibleTabs.map((tab) => {
           // Highlight if current path matches tab.pathName
           const isPathActive = pathname.endsWith(tab.pathName);
           if (tab.href) {
@@ -82,7 +86,7 @@ export default function Tabs() {
                 {tab.name}
               </Link>
             );
-          } else {
+             } else {
             return (
               <span
                 key={tab.name}
@@ -95,7 +99,7 @@ export default function Tabs() {
                 {tab.name}
               </span>
             );
-          }
+          } 
         })}
       </div>
     </div>

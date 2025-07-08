@@ -7,6 +7,8 @@ import { uploadCardImage } from "lib/uploadCardImage";
 import { cn } from "@/lib/utils";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import DeleteModal from "@/components/delete-modal/deleteModal";
+import { useTabs } from "@/components/context/TabsContext";
 
 type StudentItem = {
   name: string;
@@ -17,21 +19,26 @@ type StudentItem = {
 };
 
 type FormData = {
+  studentLabelName: string;
   sectionTitleStudents: string;
   sectionDescriptionStudents: string;
   studentItems: StudentItem[];
 };
 
 export default function StudentsSection() {
+  const { hideTab } = useTabs();
+
   const {
     control,
     handleSubmit,
     reset,
     setValue,
     watch,
+    register,
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
     defaultValues: {
+      studentLabelName: "",
       sectionTitleStudents: "",
       sectionDescriptionStudents: "",
       studentItems: [],
@@ -197,22 +204,62 @@ export default function StudentsSection() {
     });
   };
 
+  // delete section button handler
+  const [showModal, setShowModal] = useState(false);
+  const [deleteSection, setDeleteSection] = useState("block");
+  const handleDeleteSection = () => {
+    setDeleteSection((prev) => (prev === "block" ? "hidden" : "block"));
+    setShowModal(false);
+    router.push("/admin/project-and-initiative/new-project/quotation");
+    toast.success("Students section deleted successfully!");
+    reset();
+    hideTab("/students");
+  };
+
   return (
     <div className="max-w-screen-2xl mx-auto">
       <h2 className="text-lg md:text-3xl font-bold text-sky-800 my-6 text-center md:text-left">
         Create New Project
       </h2>
       <Tabs />
-      <section className="border-2 my-6 rounded-lg p-4 md:p-8 lg:px-14 bg-white">
-        <h3 className="text-sky-800 text-xl font-semibold">
-          9. Students Section
-        </h3>
-        <p>Label's Name</p>
-        <div className="bg-gray-200 w-40 space-x-4 px-2 my-2 py-2 rounded-full flex justify-center items-center">
-          <span className="bg-sky-700 h-2 w-2 rounded-full"></span>
-          <span className="text-gray-400">e.g., "Students"</span>
+      <section
+        className={`${deleteSection} border-2 my-6 rounded-lg p-4 md:p-8 lg:px-14 bg-white `}
+      >
+        <div className="flex justify-between items-center mb-8">
+          <h3 className="text-sky-800 text-xl font-semibold">
+            9. Students Section
+          </h3>
+          <button
+            type="button"
+            onClick={() => setShowModal(true)}
+            className="bg-red-500 rounded-lg px-4 py-2 transition-all duration-150 shadow-md active:shadow-none text-white"
+          >
+            Delete this section
+          </button>
         </div>
+        <p>Label's Name</p>
+        <div className="flex items-center py-1 px-4 bg-gray-200 rounded-full w-52 my-2">
+          <span className="w-2 h-2 bg-sky-700  p-1.5 rounded-full"></span>
+          <input
+            {...register("studentLabelName", {
+              required: "studentLabelName is required",
+            })}
+            type="text"
+            placeholder="e.g., 'Students'"
+            className="border-none outline-none focus:bg-transparent focus:ring-0 bg-transparent w-40 placeholder:text-gray-400"
+          />
+        </div>
+        {errors.studentLabelName && (
+          <p className="text-red-500 text-sm">
+            {errors.studentLabelName.message}
+          </p>
+        )}
 
+        <DeleteModal
+          isOpen={showModal}
+          onClose={() => setShowModal(false)}
+          onDelete={handleDeleteSection}
+        />
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
             <div className="col-span-1 mt-4 md:mt-0">

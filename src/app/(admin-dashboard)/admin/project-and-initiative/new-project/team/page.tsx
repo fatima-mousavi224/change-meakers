@@ -1,6 +1,8 @@
 "use client";
 
+import { useTabs } from "@/components/context/TabsContext";
 import Tabs from "@/components/create-project-tabs/Tabs";
+import DeleteModal from "@/components/delete-modal/deleteModal";
 import { cn } from "@/lib/utils";
 import { uploadCardImage } from "lib/uploadCardImage";
 import { useRouter } from "next/navigation";
@@ -18,12 +20,14 @@ type TeamCard = {
 };
 
 type FormData = {
+  teamLabelName: string;
   sectionTitleTeam: string;
   sectionDescriptionTeam: string;
   teamCards: TeamCard[];
 };
 
 export default function TeamSectionForm() {
+  const { hideTab } = useTabs();
   const {
     handleSubmit,
     reset,
@@ -34,6 +38,7 @@ export default function TeamSectionForm() {
     getValues,
   } = useForm<FormData>({
     defaultValues: {
+      teamLabelName: "",
       sectionTitleTeam: "",
       sectionDescriptionTeam: "",
       teamCards: [
@@ -154,6 +159,7 @@ export default function TeamSectionForm() {
         body: JSON.stringify(payload),
       });
       const result = await response.json();
+      console.log("🚀 ~ onSubmit ~ result for students:", result)
       if (response.ok) {
         localStorage.setItem("projectId", result.id);
         toast.success("Team section updated successfully!");
@@ -170,6 +176,7 @@ export default function TeamSectionForm() {
   // Clear all form fields + previews + files
   const handleClear = () => {
     reset({
+      teamLabelName: "",
       sectionTitleTeam: "",
       sectionDescriptionTeam: "",
       teamCards: Array(3).fill({
@@ -221,23 +228,61 @@ export default function TeamSectionForm() {
     delete fileInputRefs.current[`StatusIcon${index}`];
   };
 
+  // delete section button handler
+  const [showModal, setShowModal] = useState(false);
+  const [deleteSection, setDeleteSection] = useState("block");
+  const handleDeleteSection = () => {
+    setDeleteSection((prev) => (prev === "block" ? "hidden" : "block"));
+    setShowModal(false);
+    router.push("/admin/project-and-initiative/new-project/students");
+    toast.success("Team section deleted successfully!");
+    reset();
+    hideTab("/team");
+  };
+
   return (
     <div className="max-w-screen-2xl mx-auto">
       <h2 className="text-lg md:text-3xl font-bold text-sky-800 my-6 text-center md:text-left">
         Create New Project
       </h2>
       <Tabs />
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <DeleteModal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        onDelete={handleDeleteSection}
+      />
+      <form onSubmit={handleSubmit(onSubmit)} className={`${deleteSection}`}>
         {/* Team Section */}
         <section className="border-2 my-6 rounded-lg p-4 md:p-8 lg:px-14 bg-white">
-          <h3 className="text-sky-800 text-xl font-semibold mb-4">
-            8. Team Section
-          </h3>
-          <p>Label's Name</p>
-          <div className="bg-gray-200 w-40 space-x-4 px-2 my-2 py-2 rounded-full flex justify-center items-center">
-            <span className="bg-sky-700 h-2 w-2 rounded-full"></span>
-            <span className="text-gray-400">e.g., "Team"</span>
+          <div className="flex justify-between items-center mb-8">
+            <h3 className="text-sky-800 text-xl font-semibold mb-4">
+              8. Team Section
+            </h3>
+            <button
+              type="button"
+              onClick={() => setShowModal(true)}
+              className="bg-red-500 rounded-lg px-4 py-2 transition-all duration-150 shadow-md active:shadow-none text-white"
+            >
+              Delete this section
+            </button>
           </div>
+          <p>Label's Name</p>
+          <div className="flex items-center py-1 px-4 bg-gray-200 rounded-full w-52 my-2">
+            <span className="w-2 h-2 bg-sky-700  p-1.5 rounded-full"></span>
+            <input
+              {...register("teamLabelName", {
+                required: "teamLabelName is required",
+              })}
+              type="text"
+              placeholder="e.g., 'Team'"
+              className="border-none outline-none focus:bg-transparent focus:ring-0 bg-transparent w-40 placeholder:text-gray-400"
+            />
+          </div>
+          {errors.teamLabelName && (
+                <p className="text-red-500 text-sm">
+                  {errors.teamLabelName.message}
+                </p>
+              )}
 
           {/* Section Title & Description */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
@@ -247,7 +292,7 @@ export default function TeamSectionForm() {
               </label>
               <input
                 {...register("sectionTitleTeam", {
-                  required: "Section Title is required",
+                  required: "team Section Title is required",
                 })}
                 type="text"
                 placeholder="e.g. 'Our Team'"

@@ -8,6 +8,8 @@ import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { cn } from "utilities/cn";
 import { Trash } from "lucide-react";
+import DeleteModal from "@/components/delete-modal/deleteModal";
+import { useTabs } from "@/components/context/TabsContext";
 
 type StatusSection = {
   iconTitle: string;
@@ -20,6 +22,8 @@ type StatusFormValues = {
 };
 
 export default function StatusIconsForm() {
+  const {hideTab} = useTabs();
+
   const {
     handleSubmit,
     setValue,
@@ -122,18 +126,42 @@ export default function StatusIconsForm() {
     if (fileInputRefs.current[idx]) fileInputRefs.current[idx]!.value = "";
   };
 
+  // delete section button handler
+  const [showModal, setShowModal] = useState(false);
+  const [deleteSection, setDeleteSection] = useState("block");
+  const handleDeleteSection = () => {
+    setDeleteSection((prev) => (prev === "block" ? "hidden" : "block"));
+    setShowModal(false);
+    router.push(`/admin/project-and-initiative/new-project/vission-goal`);
+    toast.success("Status-icon section deleted successfully!");
+    reset();
+    hideTab('/status-icon');
+  };
+
   return (
     <div className="max-w-screen-2xl mx-auto">
       <h2 className="text-lg md:text-3xl font-bold text-sky-800 my-6 text-center md:text-left">
         Create New Project
       </h2>
       <Tabs />
+       <DeleteModal  isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        onDelete={handleDeleteSection} />
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="my-8 border-2 p-6 bg-white rounded-lg"
+      className={`${deleteSection} my-8 border-2 p-6 bg-white rounded-lg `}
       >
-        <h2 className="text-xl mb-6 text-sky-800">2. Status & Icons</h2>
+        <div className="flex justify-between items-center mb-8">
+          <h2 className="text-xl mb-6 text-sky-800">2. Status & Icons</h2>
 
+          <button
+            type="button"
+            onClick={() => setShowModal(true)}
+            className="bg-red-500 rounded-lg px-4 py-2 transition-all duration-150 shadow-md active:shadow-none text-white"
+          >
+            Delete this section
+          </button>
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {sections.map((section, idx) => (
             <div

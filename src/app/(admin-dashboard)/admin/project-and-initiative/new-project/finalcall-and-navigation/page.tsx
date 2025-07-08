@@ -1,9 +1,11 @@
 "use client";
 
+import { useTabs } from "@/components/context/TabsContext";
 import Tabs from "@/components/create-project-tabs/Tabs";
+import DeleteModal from "@/components/delete-modal/deleteModal";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
-import React from "react";
+import React, { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import toast from "react-hot-toast";
 
@@ -14,6 +16,7 @@ type FormData = {
 };
 
 export default function FinalCallToActionAndNavigation() {
+  const { hideTab } = useTabs();
   const {
     control,
     handleSubmit,
@@ -57,18 +60,46 @@ export default function FinalCallToActionAndNavigation() {
 
   const clearForm = () => reset();
 
+    // delete section button handler
+      const [showModal, setShowModal] = useState(false);
+      const [deleteSection, setDeleteSection] = useState("block");
+      const handleDeleteSection = () => {
+        setDeleteSection((prev) => (prev === "block" ? "hidden" : "block"));
+        setShowModal(false);
+        router.push("/admin/project-and-initiative");
+    
+        toast.success("Finalcall-and-navigation section deleted successfully!");
+        reset();
+        hideTab("/finalcall-and-navigation");
+      };
+
   return (
     <div className="max-w-screen-2xl mx-auto">
       <h2 className="text-lg md:text-3xl font-bold text-sky-800 my-6 text-center md:text-left">
         Create New Project
       </h2>
       <Tabs />
-      <form onSubmit={handleSubmit(onSubmit)} className="my-6 space-y-8">
+      <DeleteModal
+                isOpen={showModal}
+                onClose={() => setShowModal(false)}
+                onDelete={handleDeleteSection}
+              />
+      <form onSubmit={handleSubmit(onSubmit)} className={`${deleteSection} my-6 space-y-8 `}>
         {/* Final Call to Action / Statement Section */}
         <section className="border-2 rounded-lg p-4 md:p-8 lg:px-14 bg-white">
+          
+             <div className="flex justify-between items-center mb-8">
           <h3 className="text-xl font-medium text-sky-800">
             16. Final Call to Action / Statement
           </h3>
+          <button
+            type="button"
+            onClick={() => setShowModal(true)}
+            className="bg-red-500 rounded-lg px-4 py-2 transition-all duration-150 shadow-md active:shadow-none text-white"
+          >
+            Delete this section
+          </button>
+        </div>
           <label className="block mt-4 font-medium text-gray-900">
             Final Big Statement
           </label>

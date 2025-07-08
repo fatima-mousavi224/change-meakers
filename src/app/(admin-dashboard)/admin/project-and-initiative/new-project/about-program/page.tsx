@@ -10,6 +10,9 @@ import { cn } from "utilities/cn";
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 import "react-loading-skeleton/dist/skeleton.css";
 import "react-quill/dist/quill.snow.css";
+import DeleteModal from "@/components/delete-modal/deleteModal";
+import { useState } from "react";
+import { useTabs } from "@/components/context/TabsContext";
 
 type FormData = {
   sectionTitleAbout: string;
@@ -19,6 +22,8 @@ type FormData = {
 };
 
 export default function AboutProgramForm() {
+  const { hideTab } = useTabs();
+
   const {
     handleSubmit,
     register,
@@ -60,18 +65,44 @@ export default function AboutProgramForm() {
     reset();
   };
 
+   // delete section button handler
+  const [showModal, setShowModal] = useState(false);
+  const [deleteSection, setDeleteSection] = useState("block");
+  const handleDeleteSection = () => {
+    setDeleteSection((prev) => (prev === "block" ? "hidden" : "block"));
+    setShowModal(false);
+    router.push("/admin/project-and-initiative/new-project/voice-classroom");
+    toast.success("About-program section deleted successfully!");
+    reset();
+    hideTab("/about-program");
+  };
+
   return (
     <div className="max-w-screen-2xl mx-auto">
       <h2 className="text-lg md:text-3xl font-bold text-sky-800 my-6 text-center md:text-left">
         Create New Project
       </h2>
       <Tabs />
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <DeleteModal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        onDelete={handleDeleteSection}
+      />
+      <form onSubmit={handleSubmit(onSubmit)} className={`${deleteSection}`}>
         {/* About Program Section */}
         <section className="border-2 rounded-lg p-4 md:p-8 lg:px-14 bg-white">
-          <h2 className="text-xl font-semibold mb-4 text-sky-800">
-            4. About Program Section
-          </h2>
+          <div className="flex justify-between items-center mb-8">
+            <h2 className="text-xl font-semibold mb-4 text-sky-800">
+              4. About Program Section
+            </h2>
+            <button
+              type="button"
+              onClick={() => setShowModal(true)}
+              className="bg-red-500 rounded-lg px-4 py-2 transition-all duration-150 shadow-md active:shadow-none text-white"
+            >
+              Delete this section
+            </button>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="md:grid grid-cols-1 md:grid-cols-3 gap-4 md:col-span-2 mt-4 md:mt-0">
               <div className="col-span-3 mt-4 md:mt-0">
