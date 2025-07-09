@@ -13,6 +13,8 @@ import { FaSquarePlus, FaTrash } from "react-icons/fa6";
 import { toast } from "react-hot-toast";
 import { v4 as uuidv4 } from "uuid";
 import { cn } from "@/lib/utils";
+import ProjectSelector from "@/components/common/ProjectSelector";
+import ImpactTable from "@/components/admin/ImpactTable";
 
 interface StandardImpact {
   id: string;
@@ -43,6 +45,36 @@ interface FormData {
   standardImpacts: StandardImpact[];
   highlightedImpacts: HighlightedImpact[];
   projectName: string;
+}
+
+interface ImpactFromAPI {
+  id: string;
+  projectName: string;
+  createdAt: string;
+  updatedAt: string;
+  standardImpacts: {
+    id: string;
+    title: string;
+    impactTags: string;
+    writersName: string;
+    date: string;
+    contentDescription: string;
+    writerPhoto: string | null;
+    galleryPhoto: string[];
+  }[];
+  highlightedImpacts: {
+    id: string;
+    message1: string | null;
+    title2: string | null;
+    impactTags2: string | null;
+    date2: string | null;
+    message2: string | null;
+    writersName2: string | null;
+    contentDescription2: string | null;
+    writerPhoto2: string | null;
+    coverPhoto: string | null;
+    galleryPhoto2: string[];
+  }[];
 }
 
 export default function ImpactPage() {
@@ -106,6 +138,11 @@ export default function ImpactPage() {
   const [submitStatus, setSubmitStatus] = React.useState<
     "success" | "error" | null
   >(null);
+  const [refreshTrigger, setRefreshTrigger] = React.useState(0);
+  const [isEditMode, setIsEditMode] = React.useState(false);
+  const [editingImpactId, setEditingImpactId] = React.useState<string | null>(null);
+  const [projectFilter, setProjectFilter] = React.useState("");
+  const [cameFromSimpleList, setCameFromSimpleList] = React.useState(false);
 
   const uploadImageUrl = async (
     file: File,
@@ -219,8 +256,11 @@ export default function ImpactPage() {
 
       console.log("Sending data to API:", formDataToSend);
 
-      const response = await fetch("/api/impact", {
-        method: "POST",
+      const apiUrl = isEditMode ? `/api/impact/${editingImpactId}` : "/api/impact";
+      const method = isEditMode ? "PUT" : "POST";
+
+      const response = await fetch(apiUrl, {
+        method: method,
         headers: {
           "Content-Type": "application/json",
         },
@@ -229,9 +269,20 @@ export default function ImpactPage() {
 
       if (response.ok) {
         setSubmitStatus("success");
-        setSubmitMessage("Form submitted successfully");
-        toast.success("Impact created successfully");
-        reset();
+        setSubmitMessage(isEditMode ? "Impact updated successfully" : "Impact created successfully");
+        toast.success(isEditMode ? "Impact updated successfully" : "Impact created successfully");
+        
+        // If user came from simple list and this was an edit, redirect back
+        if (isEditMode && cameFromSimpleList) {
+          setTimeout(() => {
+            window.location.href = "/admin/impacts?success=updated";
+          }, 1500); // Give time for toast to show
+        } else {
+          reset();
+          setIsEditMode(false);
+          setEditingImpactId(null);
+          setRefreshTrigger(prev => prev + 1); // Trigger table refresh
+        }
       } else {
         const errorData = await response.json();
         console.error("API Error:", errorData);
@@ -250,16 +301,164 @@ export default function ImpactPage() {
     reset();
     setSubmitMessage("");
     setSubmitStatus(null);
+    setIsEditMode(false);
+    setEditingImpactId(null);
+    setCameFromSimpleList(false);
   };
+
+  const handleEditImpact = (impact: ImpactFromAPI) => {
+    setIsEditMode(true);
+    setEditingImpactId(impact.id);
+    
+    // Convert API data to form format
+    const standardImpacts = impact.standardImpacts.map(standard => ({
+      id: standard.id,
+      title: standard.title,
+      impactTags: standard.impactTags,
+      writersName: standard.writersName,
+      date: standard.date.split('T')[0], // Convert to YYYY-MM-DD format
+      contentDescription: standard.contentDescription,
+      writerPhoto: null, // We'll keep files as null since we can't reconstruct File objects
+      galleryPhoto: [],
+    }));
+
+    const highlightedImpacts = impact.highlightedImpacts.map(highlighted => ({
+      id: highlighted.id,
+      message1: highlighted.message1 || "",
+      title2: highlighted.title2 || "",
+      impactTags2: highlighted.impactTags2 || "",
+      date2: highlighted.date2 ? highlighted.date2.split('T')[0] : "",
+      message2: highlighted.message2 || "",
+      writersName2: highlighted.writersName2 || "",
+      contentDescription2: highlighted.contentDescription2 || "",
+      writerPhoto2: null,
+      coverPhoto: null,
+      galleryPhoto2: [],
+    }));
+
+    // Populate form with impact data
+    reset({
+      standardImpacts: standardImpacts.length > 0 ? standardImpacts : [{
+        id: uuidv4(),
+        title: "",
+        impactTags: "",
+        writersName: "",
+        date: "",
+        contentDescription: "",
+        writerPhoto: null,
+        galleryPhoto: [],
+      }],
+      highlightedImpacts: highlightedImpacts.length > 0 ? highlightedImpacts : [{
+        id: uuidv4(),
+        message1: "",
+        title2: "",
+        impactTags2: "",
+        date2: "",
+        message2: "",
+        writersName2: "",
+        contentDescription2: "",
+        writerPhoto2: null,
+        coverPhoto: null,
+        galleryPhoto2: [],
+      }],
+      projectName: impact.projectName,
+    });
+
+    setSubmitMessage("");
+    setSubmitStatus(null);
+  };
+
+  // Check for edit parameter and load data from sessionStorage
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const editId = urlParams.get('edit');
+      
+      if (editId) {
+        const storedData = sessionStorage.getItem('editImpactData');
+        if (storedData) {
+          try {
+            const impactData = JSON.parse(storedData) as ImpactFromAPI;
+            handleEditImpact(impactData);
+            setCameFromSimpleList(true); // Mark that user came from simple list
+            // Clear the stored data after use
+            sessionStorage.removeItem('editImpactData');
+            // Clean URL
+            window.history.replaceState({}, '', window.location.pathname);
+          } catch (error) {
+            console.error('Error parsing stored impact data:', error);
+          }
+        }
+      }
+    }
+  }, []);
 
   return (
     <div className="flex mt-4 max-w-screen-2xl mx-auto">
       <main className="mx-auto">
         <div className="xl:px-20 mx-auto">
           <h2 className="text-lg md:text-3xl font-bold text-sky-800 my-12 text-center md:text-left">
-            Create New Impact for a Project
+            Impact Management
           </h2>
-          <form className="mt-12 space-y-8" onSubmit={handleSubmit(onSubmit)}>
+          
+          {/* Existing Impacts Table */}
+          <div className="mb-12">
+            <div className="mb-6 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+              <h3 className="text-xl font-semibold text-gray-900">Existing Impact Stories</h3>
+              <div className="flex items-center gap-3">
+                <label className="text-sm font-medium text-gray-700">Filter by Project:</label>
+                <ProjectSelector
+                  value={projectFilter}
+                  onChange={setProjectFilter}
+                  placeholder="All projects"
+                  className="min-w-[200px]"
+                />
+                {projectFilter && (
+                  <button
+                    onClick={() => setProjectFilter("")}
+                    className="text-sm text-gray-500 hover:text-gray-700 underline"
+                  >
+                    Clear filter
+                  </button>
+                )}
+              </div>
+            </div>
+            <ImpactTable 
+              refreshTrigger={refreshTrigger} 
+              projectFilter={projectFilter || undefined}
+              onEditImpact={handleEditImpact}
+            />
+          </div>
+
+          <h3 className="text-lg md:text-2xl font-bold text-sky-800 mb-8 text-center md:text-left">
+            {isEditMode ? "Edit Impact" : "Create New Impact for a Project"}
+          </h3>
+          
+          {isEditMode && (
+            <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-md">
+              <p className="text-blue-800 text-sm">
+                <strong>Editing Mode:</strong> You are currently editing an existing impact. 
+                <button
+                  type="button"
+                  onClick={clearForm}
+                  className="ml-2 text-blue-600 underline hover:text-blue-800"
+                >
+                  Cancel and create new
+                </button>
+                {cameFromSimpleList && (
+                  <button
+                    type="button"
+                    onClick={() => window.location.href = "/admin/impacts"}
+                    className="ml-2 text-blue-600 underline hover:text-blue-800"
+                  >
+                    Back to impacts list
+                  </button>
+                )}
+              </p>
+            </div>
+          )}
+          
+          <form id="impact-form" className="mt-8 space-y-8" onSubmit={handleSubmit(onSubmit)}>
             {standardImpactFields.map((impact, index) => (
               <section
                 key={impact.id}
@@ -1152,22 +1351,22 @@ export default function ImpactPage() {
             </div>
 
             <div className="col-span-2">
+              <label className="block text-sm/6 font-medium text-gray-900 mb-2">
+                Add this impact to...
+              </label>
               <div className="mt-2">
                 <Controller
                   name="projectName"
                   control={control}
                   rules={{
-                    required: "Project name is required",
+                    required: "Project selection is required",
                   }}
-                  render={({ field }) => (
-                    <input
-                      type="text"
-                      placeholder="Add this impact to..."
-                      className={cn(
-                        "block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-100 focus:ring-offset-2",
-                        errors.projectName && "border-red-500"
-                      )}
-                      {...field}
+                  render={({ field: { value, onChange } }) => (
+                    <ProjectSelector
+                      value={value}
+                      onChange={onChange}
+                      placeholder="Search and select a project..."
+                      error={!!errors.projectName}
                     />
                   )}
                 />
@@ -1188,7 +1387,10 @@ export default function ImpactPage() {
                   isSubmitting && "cursor-not-allowed opacity-50"
                 )}
               >
-                {isSubmitting ? "Submitting..." : "Submit"}
+                {isSubmitting 
+                  ? (isEditMode ? "Updating..." : "Creating...") 
+                  : (isEditMode ? "Update Impact" : "Create Impact")
+                }
               </button>
 
               <button

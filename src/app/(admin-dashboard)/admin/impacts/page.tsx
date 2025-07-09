@@ -6,6 +6,7 @@ export default function ImpactsPage() {
   const [impacts, setImpacts] = useState<Impact[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 10,
@@ -16,6 +17,22 @@ export default function ImpactsPage() {
   useEffect(() => {
     fetchImpacts();
   }, [pagination.page]);
+
+  // Check for success message from URL params
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const success = urlParams.get('success');
+      
+      if (success === 'updated') {
+        setSuccessMessage('Impact updated successfully!');
+        // Clean URL
+        window.history.replaceState({}, '', window.location.pathname);
+        // Auto-hide message after 5 seconds
+        setTimeout(() => setSuccessMessage(null), 5000);
+      }
+    }
+  }, []);
 
   const fetchImpacts = async () => {
     try {
@@ -81,6 +98,33 @@ export default function ImpactsPage() {
 
   return (
     <div className="p-6">
+      {successMessage && (
+        <div className="mb-4 bg-green-50 border border-green-200 rounded-md p-4">
+          <div className="flex">
+            <div className="flex-shrink-0">
+              <svg className="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <div className="ml-3">
+              <p className="text-sm font-medium text-green-800">{successMessage}</p>
+            </div>
+            <div className="ml-auto pl-3">
+              <div className="-mx-1.5 -my-1.5">
+                <button
+                  onClick={() => setSuccessMessage(null)}
+                  className="inline-flex bg-green-50 rounded-md p-1.5 text-green-500 hover:bg-green-100"
+                >
+                  <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Impact Management</h1>
         <a
@@ -96,12 +140,6 @@ export default function ImpactsPage() {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Title
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Writer
-                </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Project
                 </th>
@@ -119,24 +157,13 @@ export default function ImpactsPage() {
             <tbody className="bg-white divide-y divide-gray-200">
               {impacts.map((impact) => (
                 <tr key={impact.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">
-                      {impact.title}
-                    </div>
-                    <div className="text-sm text-gray-500">
-                      {impact.impactTags}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">
-                      {impact.writersName}
-                    </div>
-                  </td>
+
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-900">
                       {impact.projectName || "N/A"}
                     </div>
                   </td>
+
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-900">
                       {formatDate(impact.date)}
