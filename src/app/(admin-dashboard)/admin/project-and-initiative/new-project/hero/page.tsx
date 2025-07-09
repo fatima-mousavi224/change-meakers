@@ -1,6 +1,8 @@
 "use client";
 
+import { useTabs } from "@/components/context/TabsContext";
 import Tabs from "@/components/create-project-tabs/Tabs";
+import DeleteModal from "@/components/delete-modal/deleteModal";
 import { uploadCardImage } from "lib/uploadCardImage";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
@@ -19,8 +21,10 @@ type HeroSection = {
 };
 
 export default function HeroPage() {
-  type HeroFormValues = HeroSection;
+  const {hideTab} = useTabs();
 
+  type HeroFormValues = HeroSection;
+  
   const {
     handleSubmit,
     register,
@@ -121,19 +125,38 @@ export default function HeroPage() {
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
+  // delete section button handler
+  const [showModal, setShowModal] = useState(false);
+  const [deleteSection, setDeleteSection] = useState('block');
+  const handleDeleteSection = () => {
+    setDeleteSection(prev=> prev === 'block' ? 'hidden' : 'block');
+    setShowModal(false);
+    router.push("/admin/project-and-initiative/new-project/status-icon");
+    toast.success("Hero section deleted successfully!");
+    reset();
+    hideTab('/hero');
+  }
+  
   return (
     <div className="max-w-screen-2xl mx-auto">
       <h2 className="text-lg md:text-3xl font-bold text-sky-800 my-6 text-center md:text-left">
         Create New Project
       </h2>
       <Tabs />
+
+      <DeleteModal  isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        onDelete={handleDeleteSection} />
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="border-2 rounded-lg my-6 p-6 md:p-8 lg:px-14 bg-white"
+        className={`${deleteSection} border-2 rounded-lg my-6 p-6 md:p-8 lg:px-14 bg-white `}
       >
-        <h2 className="text-xl font-semibold mb-6 text-sky-800">
-          1. Hero Section
-        </h2>
+        <div className="flex justify-between items-center mb-8">
+          <h2 className="text-xl font-semibold text-sky-800">
+            1. Hero Section
+          </h2>
+          <button type="button" onClick={() => setShowModal(true)} className="bg-red-500 rounded-lg px-4 py-2 transition-all duration-150 shadow-md active:shadow-none text-white">Delete this section</button>
+        </div>
         <div className="border rounded-lg p-4 mb-8 bg-gray-50">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Image Upload */}

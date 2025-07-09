@@ -7,6 +7,9 @@ import { uploadCardImage } from "lib/uploadCardImage";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { Trash } from "lucide-react";
+import DeleteModal from "@/components/delete-modal/deleteModal";
+import { useState } from "react";
+import { useTabs } from "@/components/context/TabsContext";
 
 interface OfferIcon {
   iconTitle: string;
@@ -26,6 +29,7 @@ type FormData = {
 };
 
 export default function Offer() {
+  const { hideTab } = useTabs();
   const {
     handleSubmit,
     reset,
@@ -129,18 +133,44 @@ export default function Offer() {
     }
   };
 
+  // delete section button handler
+  const [showModal, setShowModal] = useState(false);
+  const [deleteSection, setDeleteSection] = useState("block");
+  const handleDeleteSection = () => {
+    setDeleteSection((prev) => (prev === "block" ? "hidden" : "block"));
+    setShowModal(false);
+    router.push("/admin/project-and-initiative/new-project/team");
+    toast.success("Offer section deleted successfully!");
+    reset();
+    hideTab("/offer");
+  };
+
   return (
     <div className="max-w-screen-2xl mx-auto">
       <h2 className="text-lg md:text-3xl font-bold text-sky-800 my-6 text-center md:text-left">
         Create New Project
       </h2>
       <Tabs />
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <DeleteModal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        onDelete={handleDeleteSection}
+      />
+      <form onSubmit={handleSubmit(onSubmit)} className={`${deleteSection}`}>
         {/* Offer Icons Section */}
         <section className="border-2 my-6 rounded-lg p-4 md:p-8 lg:px-14 bg-white">
-          <h2 className="text-xl font-semibold mb-4 text-sky-800">
-            7. ‘What We Offer?’ Section
-          </h2>
+          <div className="flex justify-between items-center mb-8">
+            <h2 className="text-xl font-semibold mb-4 text-sky-800">
+              7. ‘What We Offer?’ Section
+            </h2>
+            <button
+              type="button"
+              onClick={() => setShowModal(true)}
+              className="bg-red-500 rounded-lg px-4 py-2 transition-all duration-150 shadow-md active:shadow-none text-white"
+            >
+              Delete this section
+            </button>
+          </div>
           <div className="flex flex-col gap-4 mb-4">
             <button
               type="button"

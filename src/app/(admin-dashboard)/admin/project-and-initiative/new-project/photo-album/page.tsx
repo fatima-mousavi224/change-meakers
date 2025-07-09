@@ -1,14 +1,17 @@
 "use client";
+import { useTabs } from "@/components/context/TabsContext";
 import Tabs from "@/components/create-project-tabs/Tabs";
+import DeleteModal from "@/components/delete-modal/deleteModal";
 import { uploadCardImage } from "lib/uploadCardImage";
 import { Trash } from "lucide-react";
 import { useRouter } from "next/navigation";
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { cn } from "utilities/cn";
 
 function PhotoAlbum() {
+  const { hideTab } = useTabs();
   const fileInputRefs = useRef<Array<HTMLInputElement | null>>([]);
   const {
     control,
@@ -25,11 +28,13 @@ function PhotoAlbum() {
     Array<{
       image: File | null;
       imagePreview: string;
+      photoAlbumLabelName: string;
       title: string;
       description: string;
     }>
-  >([{ image: null, imagePreview: "", title: "", description: "" }]);
+  >([{ image: null, imagePreview: "",photoAlbumLabelName: "", title: "", description: "" }]);
   const projectId = localStorage.getItem("projectId");
+  console.log("🚀 ~ PhotoAlbum ~ projectId:", projectId)
   const router = useRouter();
 
   function handleFileChange(
@@ -72,7 +77,7 @@ function PhotoAlbum() {
   function addPhotoAlbumItem() {
     setPhotoAlbumItems((prev) => [
       ...prev,
-      { image: null, imagePreview: "", title: "", description: "" },
+      { image: null, imagePreview: "",photoAlbumLabelName: "", title: "", description: "" },
     ]);
   }
 
@@ -99,6 +104,7 @@ function PhotoAlbum() {
         })
       );
       const payload = {
+        photoAlbumLabelName: data.photoAlbumLabelName,
         sectionTitlePhoto: data.sectionTitlePhoto,
         sectionDescriptionPhoto: data.sectionDescriptionPhoto,
         photoAlbum: items,
@@ -109,6 +115,7 @@ function PhotoAlbum() {
         body: JSON.stringify(payload),
       });
       const result = await response.json();
+      console.log("🚀 ~ onSubmit ~ result:", result)
       if (!response.ok) {
         toast.error("Failed to save photo album section.");
       }
@@ -128,10 +135,23 @@ function PhotoAlbum() {
   function clearPhotoAlbumForm() {
     reset();
     setPhotoAlbumItems([
-      { image: null, imagePreview: "", title: "", description: "" },
+      { image: null, imagePreview: "",photoAlbumLabelName: "", title: "", description: "" },
     ]);
     fileInputRefs.current = [];
   }
+
+  // delete section button handler
+  const [showModal, setShowModal] = useState(false);
+  const [deleteSection, setDeleteSection] = useState("block");
+  const handleDeleteSection = () => {
+    setDeleteSection((prev) => (prev === "block" ? "hidden" : "block"));
+    setShowModal(false);
+    router.push(`/admin/project-and-initiative/new-project/news-letter`);
+
+    toast.success("Photo-album section deleted successfully!");
+    reset();
+    hideTab("/photo-album");
+  };
 
   return (
     <div className="max-w-screen-2xl mx-auto">
@@ -140,15 +160,38 @@ function PhotoAlbum() {
       </h2>
       <Tabs />
       {/* Photo Album Section */}
-      <section className="border-2 my-6 rounded-lg p-4 md:p-8 lg:px-14 bg-white">
-        <h3 className="text-sky-800 text-xl font-semibold">
-          11. Photo Album Section
-        </h3>
-        <p className="my-2">Label's Name</p>
-        <div className="bg-gray-200 w-40 space-x-4 px-2 my-2 py-2 rounded-full flex justify-center items-center">
-          <span className="bg-sky-700 h-2 w-2 rounded-full"></span>
-          <span className="text-gray-400">e.g., "Photos"</span>
+      <section
+        className={`${deleteSection} border-2 my-6 rounded-lg p-4 md:p-8 lg:px-14 bg-white `}
+      >
+        <div className="flex justify-between items-center mb-8">
+          <h3 className="text-sky-800 text-xl font-semibold">
+            11. Photo Album Section
+          </h3>
+          <button
+            type="button"
+            onClick={() => setShowModal(true)}
+            className="bg-red-500 rounded-lg px-4 py-2 transition-all duration-150 shadow-md active:shadow-none text-white"
+          >
+            Delete this section
+          </button>
         </div>
+        <p className="my-2">Label's Name</p>
+        <div className="bg-gray-200 w-48 px-4 my-2 py-1 rounded-full flex items-center">
+         <span className="w-2 h-2 bg-sky-700  p-1.5 rounded-full"></span>
+            <input
+              {...register("photoAlbumLabelName", {
+                required: "photoAlbumLabelName is required",
+              })}
+              type="text"
+              placeholder="e.g., 'photo album'"
+              className="border-none outline-none focus:bg-transparent focus:ring-0 bg-transparent w-40 placeholder:text-gray-400"
+            />
+        </div>
+        <DeleteModal
+          isOpen={showModal}
+          onClose={() => setShowModal(false)}
+          onDelete={handleDeleteSection}
+        />
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
             <div className="col-span-1 mt-4 md:mt-0">

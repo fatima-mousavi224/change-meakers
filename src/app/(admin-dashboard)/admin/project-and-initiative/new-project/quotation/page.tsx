@@ -1,7 +1,10 @@
 "use client";
+import { useTabs } from "@/components/context/TabsContext";
 import Tabs from "@/components/create-project-tabs/Tabs";
+import DeleteModal from "@/components/delete-modal/deleteModal";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 
@@ -11,6 +14,7 @@ type FormData = {
 };
 
 export default function QuotationSection() {
+  const { hideTab } = useTabs();
   const {
     control,
     handleSubmit,
@@ -54,16 +58,44 @@ export default function QuotationSection() {
     reset();
   };
 
+  // delete section button handler
+  const [showModal, setShowModal] = useState(false);
+  const [deleteSection, setDeleteSection] = useState("block");
+  const handleDeleteSection = () => {
+    setDeleteSection((prev) => (prev === "block" ? "hidden" : "block"));
+    setShowModal(false);
+    router.push(`/admin/project-and-initiative/new-project/photo-album`);
+
+    toast.success("Quotation section deleted successfully!");
+    reset();
+    hideTab("/quotation");
+  };
+
   return (
     <div className="max-w-screen-2xl mx-auto">
       <h2 className="text-lg md:text-3xl font-bold text-sky-800 my-6 text-center md:text-left">
         Create New Project
       </h2>
       <Tabs />
-      <section className="border-2 my-6 rounded-lg p-4 md:p-8 lg:px-14 bg-white">
-        <h3 className="text-sky-800 text-xl font-semibold">
-          10. Quotation Section
-        </h3>
+      <section className={`${deleteSection} border-2 my-6 rounded-lg p-4 md:p-8 lg:px-14 bg-white `}>
+        <div className="flex justify-between items-center mb-8">
+          <h3 className="text-sky-800 text-xl font-semibold">
+            10. Quotation Section
+          </h3>
+          <button
+            type="button"
+            onClick={() => setShowModal(true)}
+            className="bg-red-500 rounded-lg px-4 py-2 transition-all duration-150 shadow-md active:shadow-none text-white"
+          >
+            Delete this section
+          </button>
+        </div>
+
+        <DeleteModal
+          isOpen={showModal}
+          onClose={() => setShowModal(false)}
+          onDelete={handleDeleteSection}
+        />
         <form
           onSubmit={handleSubmit(onSubmit)}
           className="grid grid-cols-1 gap-6 mt-4"

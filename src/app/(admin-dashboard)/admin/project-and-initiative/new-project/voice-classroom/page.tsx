@@ -8,6 +8,8 @@ import toast from "react-hot-toast";
 import { uploadCardImage } from "lib/uploadCardImage";
 import { cn } from "@/lib/utils";
 import { Trash } from "lucide-react";
+import DeleteModal from "@/components/delete-modal/deleteModal";
+import { useTabs } from "@/components/context/TabsContext";
 
 interface Voice {
   quote: string;
@@ -18,11 +20,14 @@ interface Voice {
 
 type FormData = {
   sectionTitleVoices: string;
+  voicesLabelName: string;
   sectionDescriptionVoices: string;
   voices: Voice[];
 };
 
 export default function VoicesFromClassroomForm() {
+  const { hideTab } = useTabs();
+
   const {
     handleSubmit,
     control,
@@ -33,6 +38,7 @@ export default function VoicesFromClassroomForm() {
     getValues,
   } = useForm<FormData>({
     defaultValues: {
+      voicesLabelName: "",
       sectionTitleVoices: "",
       sectionDescriptionVoices: "",
       voices: [
@@ -102,13 +108,16 @@ export default function VoicesFromClassroomForm() {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          voicesLabelName: data.voicesLabelName,
           sectionTitleVoices: data.sectionTitleVoices,
           sectionDescriptionVoices: data.sectionDescriptionVoices,
           voices: voicesWithIconUrls,
         }),
       });
+      console.log("🚀 ~ onSubmit ~ res:", res);
 
       const result = await res.json();
+      console.log("🚀 ~ onSubmit ~ result:", result);
       if (res.ok) {
         toast.success("Voices from Classroom updated successfully!");
         router.push(`/admin/project-and-initiative/new-project/media-block`); // Change to next section route if needed
@@ -122,25 +131,64 @@ export default function VoicesFromClassroomForm() {
     }
   };
 
+  // delete section button handler
+  const [showModal, setShowModal] = useState(false);
+  const [deleteSection, setDeleteSection] = useState("block");
+  const handleDeleteSection = () => {
+    setDeleteSection((prev) => (prev === "block" ? "hidden" : "block"));
+    setShowModal(false);
+    router.push(`/admin/project-and-initiative/new-project/media-block`);
+    toast.success("Voice-classroom section deleted successfully!");
+    reset();
+    hideTab("/voice-classroom");
+  };
+
   return (
     <div className="max-w-screen-2xl mx-auto">
       <h2 className="text-lg md:text-3xl font-bold text-sky-800 my-6 text-center md:text-left">
         Create New Project
       </h2>
       <Tabs />
-      <form onSubmit={handleSubmit(onSubmit)} className="max-w-5xl mx-auto">
+      <DeleteModal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        onDelete={handleDeleteSection}
+      />
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className={`${deleteSection} max-w-5xl mx-auto `}
+      >
         <section className="border-2 rounded-lg p-4 md:p-8 lg:px-14 bg-white">
-          <h2 className="text-xl font-semibold mb-4 text-sky-800">
-            5. Voices from the Classroom
-          </h2>
+          <div className="flex justify-between items-center mb-8">
+            <h2 className="text-xl font-semibold mb-4 text-sky-800">
+              5. Voices from the Classroom
+            </h2>
+            <button
+              type="button"
+              onClick={() => setShowModal(true)}
+              className="bg-red-500 rounded-lg px-4 py-2 transition-all duration-150 shadow-md active:shadow-none text-white"
+            >
+              Delete this section
+            </button>
+          </div>
 
           <span className="block text-lg my-2">Label's Name</span>
-          <div className="flex items-center justify-center space-x-3 py-2 px-2 bg-gray-200 rounded-full w-52 my-2">
-            <span className="w-2 h-2 bg-sky-700 rounded-full"></span>
-            <span className="block text-lg text-gray-400">
-              e.g., "For Students"
-            </span>
+          <div className="flex items-center py-1 px-4 bg-gray-200 rounded-full w-52 my-2">
+            <span className="w-2 h-2 bg-sky-700  p-1.5 rounded-full"></span>
+            <input
+              {...register("voicesLabelName", {
+                required: "voicesLabelName is required",
+              })}
+              type="text"
+              placeholder="e.g., 'For Students'"
+              className="border-none outline-none focus:bg-transparent focus:ring-0 bg-transparent w-40 placeholder:text-gray-400"
+            />
           </div>
+            {errors.voicesLabelName && (
+              <p className="text-red-500 text-sm">
+                {errors.voicesLabelName.message}
+              </p>
+            )}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="md:grid grid-cols-1 md:grid-cols-3 gap-4 md:col-span-2 mt-4 md:mt-0">

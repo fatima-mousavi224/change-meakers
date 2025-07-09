@@ -1,9 +1,11 @@
 "use client";
 
+import { useTabs } from "@/components/context/TabsContext";
 import Tabs from "@/components/create-project-tabs/Tabs";
+import DeleteModal from "@/components/delete-modal/deleteModal";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 
@@ -15,6 +17,7 @@ type FormData = {
 };
 
 export default function MediaBlockSection() {
+  const { hideTab } = useTabs();
   const {
     handleSubmit,
     reset,
@@ -46,6 +49,7 @@ export default function MediaBlockSection() {
         body: JSON.stringify(payload),
       });
       const result = await res.json();
+      console.log("🚀 ~ onSubmit ~ result:", result);
       if (res.ok) {
         localStorage.setItem("projectId", result.id);
         reset();
@@ -59,17 +63,46 @@ export default function MediaBlockSection() {
     }
   };
 
+  // delete section button handler
+  const [showModal, setShowModal] = useState(false);
+  const [deleteSection, setDeleteSection] = useState("block");
+  const handleDeleteSection = () => {
+    setDeleteSection((prev) => (prev === "block" ? "hidden" : "block"));
+    setShowModal(false);
+    router.push("/admin/project-and-initiative/new-project/offer");
+    toast.success("Media-block section deleted successfully!");
+    reset();
+    hideTab("/media-block");
+  };
+
   return (
     <div className="max-w-screen-2xl mx-auto">
       <h2 className="text-lg md:text-3xl font-bold text-sky-800 my-6 text-center md:text-left">
         Create New Project
       </h2>
       <Tabs />
-      <form onSubmit={handleSubmit(onSubmit)} className="max-w-5xl mx-auto">
+      <DeleteModal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        onDelete={handleDeleteSection}
+      />
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className={`${deleteSection} max-w-5xl mx-auto `}
+      >
         <section className="border-2 my-6 rounded-lg p-4 md:p-8 lg:px-14 bg-white">
-          <h2 className="text-xl font-semibold mb-4 text-sky-800">
-            6. Media Block Section
-          </h2>
+          <div className="flex justify-between items-center mb-8">
+            <h2 className="text-xl font-semibold mb-4 text-sky-800">
+              6. Media Block Section
+            </h2>
+            <button
+              type="button"
+              onClick={() => setShowModal(true)}
+              className="bg-red-500 rounded-lg px-4 py-2 transition-all duration-150 shadow-md active:shadow-none text-white"
+            >
+              Delete this section
+            </button>
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Text Inputs */}

@@ -1,7 +1,10 @@
 "use client";
+import { useTabs } from "@/components/context/TabsContext";
 import Tabs from "@/components/create-project-tabs/Tabs";
+import DeleteModal from "@/components/delete-modal/deleteModal";
 import { uploadCardImage } from "lib/uploadCardImage";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { Controller, useForm, useFieldArray } from "react-hook-form";
 import toast from "react-hot-toast";
 import { FaSquarePlus, FaTrash } from "react-icons/fa6";
@@ -17,6 +20,7 @@ type FormData = {
 };
 
 function LiveMoments() {
+  const { hideTab } = useTabs();
   const {
     control,
     handleSubmit,
@@ -83,6 +87,19 @@ function LiveMoments() {
     });
   };
 
+  // delete section button handler
+  const [showModal, setShowModal] = useState(false);
+  const [deleteSection, setDeleteSection] = useState("block");
+  const handleDeleteSection = () => {
+    setDeleteSection((prev) => (prev === "block" ? "hidden" : "block"));
+    setShowModal(false);
+    router.push(`/admin/project-and-initiative/new-project/global-goals`);
+
+    toast.success("Live-moments section deleted successfully!");
+    reset();
+    hideTab("/live-moments");
+  };
+
   return (
     <div>
       <h2 className="text-lg md:text-3xl font-bold text-sky-800 my-6 text-center md:text-left">
@@ -90,10 +107,26 @@ function LiveMoments() {
       </h2>
       <Tabs />
 
-      <section className="border-2 my-6 rounded-lg p-4 md:p-8 lg:px-14 bg-white space-y-5 py-10">
-        <h3 className="text-sky-800 font-medium text-xl">
-          13. Live Moments: Follow Us
-        </h3>
+      <section
+        className={`${deleteSection} border-2 my-6 rounded-lg p-4 md:p-8 lg:px-14 bg-white space-y-5 py-10 `}
+      >
+        <div className="flex justify-between items-center mb-8">
+          <h3 className="text-sky-800 font-medium text-xl">
+            13. Live Moments: Follow Us
+          </h3>
+          <button
+            type="button"
+            onClick={() => setShowModal(true)}
+            className="bg-red-500 rounded-lg px-4 py-2 transition-all duration-150 shadow-md active:shadow-none text-white"
+          >
+            Delete this section
+          </button>
+        </div>
+        <DeleteModal
+          isOpen={showModal}
+          onClose={() => setShowModal(false)}
+          onDelete={handleDeleteSection}
+        />
         <form onSubmit={handleSubmit(onSubmit)}>
           {fields.map((field, index) => (
             <div

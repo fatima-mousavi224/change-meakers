@@ -1,3 +1,4 @@
+import { TabsProvider } from "@/components/context/TabsContext";
 import NavBarAndSidebar from "@/components/navbar/NavBar&SideBar";
 import { siteConfig } from "@/constant/config";
 import "@/styles/globals.css";
@@ -58,7 +59,9 @@ export default async function AdminLayout({
       <body className="bg-dashboard_body_bg">
         <div>
           <Toaster position="bottom-right" />
-          <NavBarAndSidebar currentUser={user} children={children} />
+          <TabsProvider>
+            <NavBarAndSidebar currentUser={user} children={children} />
+          </TabsProvider>
         </div>
       </body>
     </html>

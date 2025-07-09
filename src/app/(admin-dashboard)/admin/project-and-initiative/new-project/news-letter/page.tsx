@@ -1,6 +1,8 @@
 "use client";
 
+import { useTabs } from "@/components/context/TabsContext";
 import Tabs from "@/components/create-project-tabs/Tabs";
+import DeleteModal from "@/components/delete-modal/deleteModal";
 import { cn } from "@/lib/utils";
 import { uploadCardImage } from "lib/uploadCardImage";
 import { Trash } from "lucide-react";
@@ -10,6 +12,7 @@ import { Controller, useForm, useFieldArray } from "react-hook-form";
 import { toast } from "react-hot-toast";
 
 export default function NewsletterForm() {
+  const { hideTab } = useTabs();
   const fileInputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
   const [files, setFiles] = useState<{ [key: string]: File | null }>({});
   const [imagePreviews, setImagePreviews] = useState<{ [key: string]: string }>(
@@ -21,9 +24,11 @@ export default function NewsletterForm() {
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
+    register,
   } = useForm({
     defaultValues: {
       sectionTitleNewsletter: "",
+      studentLabelName: "",
       sectionDescriptionNewsletter: "",
       newsletterItems: [{ url: "", date: "", title: "", description: "" }],
     },
@@ -111,10 +116,25 @@ export default function NewsletterForm() {
         reset();
         setFiles({});
       }
+      console.log("🚀 ~ onSubmit ~ res:", res)
     } catch (err: any) {
       toast.error(err.message || "An error occurred");
     }
   };
+
+  // delete section button handler
+  const [showModal, setShowModal] = useState(false);
+  const [deleteSection, setDeleteSection] = useState("block");
+  const handleDeleteSection = () => {
+    setDeleteSection((prev) => (prev === "block" ? "hidden" : "block"));
+    setShowModal(false);
+    router.push("/admin/project-and-initiative/new-project/live-moments");
+
+    toast.success("News-letter section deleted successfully!");
+    reset();
+    hideTab("/news-letter");
+  };
+
 
   return (
     <div className="max-w-screen-2xl mx-auto">
@@ -122,17 +142,44 @@ export default function NewsletterForm() {
         Create New Project
       </h2>
       <Tabs />
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <DeleteModal
+                isOpen={showModal}
+                onClose={() => setShowModal(false)}
+                onDelete={handleDeleteSection}
+              />
+      <form onSubmit={handleSubmit(onSubmit)} className={`${deleteSection}`}>
         {/* Section Wrapper */}
         <section className="border-2 my-6 rounded-lg p-4 md:p-8 lg:px-14 bg-white">
+          
+           <div className="flex justify-between items-center mb-8">
           <h3 className="text-sky-800 text-xl font-semibold mb-4">
             12. Newsletter/Archive Document Section
           </h3>
+          <button
+            type="button"
+            onClick={() => setShowModal(true)}
+            className="bg-red-500 rounded-lg px-4 py-2 transition-all duration-150 shadow-md active:shadow-none text-white"
+          >
+            Delete this section
+          </button>
+        </div>
           <p className="my-2">Label's Name</p>
-          <div className="bg-gray-200 w-48 px-2 py-2 rounded-full flex justify-center items-center space-x-4">
-            <span className="bg-sky-700 h-2 w-2 rounded-full"></span>
-            <span className="text-gray-400">e.g., "Newsletter"</span>
+          <div className="bg-gray-200 w-48 px-4 py-2 rounded-full flex items-center">
+            <span className="bg-sky-700 h-2 w-2 p-1.5 rounded-full"></span>
+            <input 
+                {...register("studentLabelName", {
+                required: "studentLabelName is required",
+              })}
+            type="text"
+            placeholder="e.g., 'Newsletter'"
+            className="border-none outline-none focus:bg-transparent focus:ring-0 bg-transparent w-40 placeholder:text-gray-400"
+            />
           </div>
+           {errors.studentLabelName && (
+                <p className="text-red-500 text-sm">
+                  {errors.studentLabelName.message as string}
+                </p>
+              )}
 
           {/* Section Title and Description */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">

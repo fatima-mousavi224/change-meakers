@@ -7,6 +7,8 @@ import { cn } from "@/lib/utils";
 import toast from "react-hot-toast";
 import { uploadCardImage } from "lib/uploadCardImage";
 import { useRouter } from "next/navigation";
+import DeleteModal from "@/components/delete-modal/deleteModal";
+import { useTabs } from "@/components/context/TabsContext";
 
 // Define the form data type
 type FormData = {
@@ -15,6 +17,7 @@ type FormData = {
 };
 
 export default function GlobalGoalsSection() {
+  const { hideTab } = useTabs();
   const fileInputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
   const [files, setFiles] = useState<{ [key: string]: File | null }>({});
   const [imagePreviews, setImagePreviews] = useState<{ [key: string]: string }>(
@@ -104,17 +107,46 @@ export default function GlobalGoalsSection() {
     }
   };
 
+  // delete section button handler
+  const [showModal, setShowModal] = useState(false);
+  const [deleteSection, setDeleteSection] = useState("block");
+  const handleDeleteSection = () => {
+    setDeleteSection((prev) => (prev === "block" ? "hidden" : "block"));
+    setShowModal(false);
+    router.push("/admin/project-and-initiative/new-project/related-links");
+
+    toast.success("Global-goals section deleted successfully!");
+    reset();
+    hideTab("/global-goals");
+  };
+
   return (
     <div className="max-w-screen-2xl mx-auto">
       <h2 className="text-lg md:text-3xl font-bold text-sky-800 my-6 text-center md:text-left">
         Create New Project
       </h2>
       <Tabs />
-      <section className="border-2 my-6 rounded-lg p-4 md:p-8 lg:px-14 bg-white">
-        <h3 className="text-sky-800 text-xl font-semibold">
-          14. Global Goals (SDGs)
-        </h3>
+      <section
+        className={`${deleteSection} border-2 my-6 rounded-lg p-4 md:p-8 lg:px-14 bg-white `}
+      >
+        <div className="flex justify-between items-center mb-8">
+          <h3 className="text-sky-800 text-xl font-semibold">
+            14. Global Goals (SDGs)
+          </h3>
+          <button
+            type="button"
+            onClick={() => setShowModal(true)}
+            className="bg-red-500 rounded-lg px-4 py-2 transition-all duration-150 shadow-md active:shadow-none text-white"
+          >
+            Delete this section
+          </button>
+        </div>
         <p className="my-2">Label's Name</p>
+        <DeleteModal
+          isOpen={showModal}
+          onClose={() => setShowModal(false)}
+          onDelete={handleDeleteSection}
+        />
         <form onSubmit={handleSubmit(onSubmitSDGs)}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
             <div className="col-span-1 mt-4 md:mt-0">
