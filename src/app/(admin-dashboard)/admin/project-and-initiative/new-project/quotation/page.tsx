@@ -137,7 +137,7 @@ export default function QuotationSection() {
                 />
                 {errors.quotations?.[index]?.quote && (
                   <p className="text-red-500 text-sm">
-                    {errors.quotations[index].quote.message}
+                    {errors?.quotations[index]?.quote?.message ?? ""}
                   </p>
                 )}
               </div>
@@ -161,7 +161,7 @@ export default function QuotationSection() {
                 />
                 {errors.quotations?.[index]?.nameRole && (
                   <p className="text-red-500 text-sm">
-                    {errors.quotations[index].nameRole.message}
+                    {errors?.quotations[index]?.nameRole?.message ?? ""}
                   </p>
                 )}
               </div>
