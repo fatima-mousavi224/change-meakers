@@ -19,6 +19,7 @@ interface OfferIcon {
 }
 
 type FormData = {
+  WhatWeOfferSectionTitle: string;
   sectionTitleAbout: string;
   bodyText: string;
   buttonName2: string;
@@ -32,6 +33,7 @@ export default function Offer() {
   const { hideTab } = useTabs();
   const {
     handleSubmit,
+    register,
     reset,
     setValue,
     watch,
@@ -39,6 +41,7 @@ export default function Offer() {
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
     defaultValues: {
+      WhatWeOfferSectionTitle: "",
       offerIcons: [{ iconTitle: "", shortDescription: "" }],
     },
   });
@@ -107,6 +110,7 @@ export default function Offer() {
     );
 
     const payload = {
+      WhatWeOfferSectionTitle: data.WhatWeOfferSectionTitle,
       offerIcons: offerIconsWithUrls,
     };
 
@@ -170,6 +174,21 @@ export default function Offer() {
             >
               Delete this section
             </button>
+          </div>
+
+          <div className="mb-5">
+            <label className="block text-sm/6 font-medium text-gray-900 mb-2">
+              What We Offer Section Title
+            </label>
+            <input
+            {...register("WhatWeOfferSectionTitle", { required: true })}
+            placeholder="Write something here..."
+            className="block w-full rounded-md border border-dashed border-gray-900/25 px-6 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2"
+          />
+           {/* Error */}
+            {errors?.WhatWeOfferSectionTitle && (
+              <p className="text-red-500 text-sm">{errors.WhatWeOfferSectionTitle?.message}</p>
+            )}
           </div>
           <div className="flex flex-col gap-4 mb-4">
             <button
