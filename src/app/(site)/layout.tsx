@@ -75,7 +75,7 @@ export default async function RootLayout({
           }}
         />
         <React.Suspense fallback="loading...">
-          <NavBar user={user} posts={posts} />
+          {/* <NavBar user={user} posts={posts} /> */}
         </React.Suspense>
         <React.Suspense fallback="loading...">
           <SearchModal posts={posts} />

@@ -17,15 +17,18 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
+    const randomString = Math.random().toString(36).substring(2, 15);
 
     const project = await prisma.project.create({
       data: {
         projectTitle: body.projectTitle,
         cardDescription: body.cardDescription,
         uploadCardImage: body.cardImage,
-        navigationLabel: body.navigationLabel || "Home",
+        navigationLabel: body.navigationLabel || randomString,
       },
     });
+    console.log("Project created successfully:", project);
+    
 
     return NextResponse.json(project, { status: 201 });
   } catch (error) {
