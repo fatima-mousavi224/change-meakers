@@ -31,7 +31,6 @@ const tabs = [
 
 export default function Tabs() {
   const { hiddenTabs } = useTabs();
-  console.log("Hidden Tabs:", hiddenTabs);
   const visibleTabs = tabs.filter(tab => !hiddenTabs.includes(tab.pathName));
   const pathname = usePathname();
   const baseRoute = "/admin/project-and-initiative/new-project/";
@@ -86,7 +85,8 @@ export default function Tabs() {
                 {tab.name}
               </Link>
             );
-             } else {
+             }
+              else {
             return (
               <span
                 key={tab.name}
