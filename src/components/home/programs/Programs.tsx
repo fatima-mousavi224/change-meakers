@@ -179,7 +179,6 @@ const Programs = ({
         );
       }, 4000); // 4 seconds per slide
 
-      console.log("🚀 ~ project?.Quotation::::::::::::::>>>>>>>", project?.quotations)
       return () => clearInterval(interval);
     }
   }, [validVisionGoalImages.length]);
@@ -276,13 +275,24 @@ const Programs = ({
     );
   };
 
- 
   function getEmbedUrl(url: string | undefined) {
     if (!url) return "";
     const videoIdMatch = url.match(/(?:\/shorts\/|v=)([a-zA-Z0-9_-]{11})/);
     const videoId = videoIdMatch ? videoIdMatch[1] : "";
     return videoId ? `https://www.youtube.com/embed/${videoId}` : "";
   }
+
+  const [expandedIndexes, setExpandedIndexes] = useState<number[]>([]);
+
+  const toggleExpand = (index: number) => {
+    setExpandedIndexes(
+      (prev) =>
+        prev.includes(index)
+          ? prev.filter((i) => i !== index) // collapse
+          : [...prev, index] // expand
+    );
+  };
+
   return (
     <div>
       {/* Hero section */}
@@ -583,34 +593,50 @@ const Programs = ({
       <section className="max-w-screen-2xl px-4 mx-auto  py-12">
         <div className="mt-5">
           <h2 className="text-3xl font-bold mb-8 text-center">
-            What We Offer?
+            {project?.WhatWeOfferSectionTitle || "What We Offer?"}
           </h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 px-4">
-            {project?.offerIcons?.map((offer: any, index: any) => (
-              <div
-                key={index}
-                className="rounded-xl p-6 shadow border border-gray-200 hover:shadow-lg transition duration-300"
-              >
-                <div className="size-16 rounded-full bg-slate-200">
-                  <Image
-                    src={offer?.url ? offer?.url : ""}
-                    width={500}
-                    height={500}
-                    alt="offer icon"
-                    className="size-16 rounded-full p-2"
-                  />
+            {project?.offerIcons?.map((offer: any, index: number) => {
+              const isExpanded = expandedIndexes.includes(index);
+
+              
+              return (
+                <div
+                  key={index}
+                  className="rounded-xl p-6 shadow border border-gray-200 hover:shadow-lg transition duration-300"
+                >
+                  <div className="size-16 rounded-full bg-slate-200">
+                    <Image
+                      src={offer?.url || ""}
+                      width={500}
+                      height={500}
+                      alt="offer icon"
+                      className="size-16 rounded-full p-2"
+                    />
+                  </div>
+                  <h3 className="text-lg font-medium my-2 line-clamp-2">
+                    {offer?.iconTitle || ""}
+                  </h3>
+                  <p
+                    className={`text-gray-600 mb-4 ${
+                      isExpanded ? "" : "line-clamp-3"
+                    }`}
+                  >
+                    {offer?.shortDescription || ""}
+                  </p>
+
+                  {offer?.shortDescription?.split(" ").length > 20 && (
+                    <button
+                      type="button"
+                      onClick={() => toggleExpand(index)}
+                      className="text-blue-500 hover:underline text-sm cursor-pointer"
+                    >
+                      {isExpanded ? "Show Less" : "Learn More"}
+                    </button>
+                  )}
                 </div>
-                <h3 className="text-lg font-medium my-2 line-clamp-2">
-                  {offer?.iconTitle || ""}
-                </h3>
-                <p className="text-gray-600 mb-4">
-                  {offer?.shortDescription || ""}
-                </p>
-                <a href="#" className="text-blue-500 hover:underline">
-                  Learn More
-                </a>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
@@ -863,60 +889,70 @@ const Programs = ({
       {/* Quotation section */}
       <section className="bg-blue-900 mt-10 lg:py-10">
         <div className=" max-w-screen-2xl mx-auto flex justify-center text-white py-6 md:p-16">
-           
-            {
-              project?.quotations?.length > 1 ? (
-           <div className="w-full max-w-7xl mx-auto px-4 py-10">
+          {project?.quotations?.length > 1 ? (
+            <div className="w-full max-w-7xl mx-auto px-4 py-10">
               <Swiper
                 navigation={true}
                 modules={[Navigation]}
                 className="mySwiper"
-                style={{ height: 'auto' }} // auto height
+                style={{ height: "auto" }} // auto height
               >
                 {project?.quotations?.map((quote, index) => (
-                  <SwiperSlide
-                    key={index}
-                  >
+                  <SwiperSlide key={index}>
                     <div className="flex flex-row mx-auto justify-center md:justify-between md:px-24 space-x-5 md:space-x-0 items-center md:py-10">
-                       <Image
-                      src={leftQute}
-                      alt="left quete"
-                      width={500}
-                      height={500}
-                      className="w-4 md:w-28 -translate-y-2 md:-translate-y-16"
-                    />
-                   <div className="flex flex-col">
-                     <p className="text-xs md:text-2xl text-gray-200 max-w-xl">
-                      {quote.quote}
-                    </p>
-                    <p className="text-xs md:text-2xl text-gray-400 mt-4 italic">
-                      - {quote.nameRole}
-                    </p>
-                   </div>
                       <Image
-                      src={rightQute}
-                      alt="left quete"
-                      width={500}
-                      height={500}
-                      className="w-4 md:w-28"
-                    />
+                        src={leftQute}
+                        alt="left quete"
+                        width={500}
+                        height={500}
+                        className="w-4 md:w-28 -translate-y-2 md:-translate-y-16"
+                      />
+                      <div className="flex flex-col">
+                        <p className="text-xs md:text-2xl text-gray-200 max-w-xl">
+                          {quote.quote}
+                        </p>
+                        <p className="text-xs md:text-2xl text-gray-400 mt-4 italic">
+                          - {quote.nameRole}
+                        </p>
+                      </div>
+                      <Image
+                        src={rightQute}
+                        alt="left quete"
+                        width={500}
+                        height={500}
+                        className="w-4 md:w-28"
+                      />
                     </div>
                   </SwiperSlide>
                 ))}
               </Swiper>
             </div>
-              ):
-              (
-              <div>
-              <p className="flex-1 text-xl md:text-2xl text-gray-300">
-                {project?.quotations?.[0]?.quote ?? "No quote available."}
-              </p>
-              <p className="text-xl md:text-2xl text-center text-gray-300 mt-4">
-                - {project?.quotations?.[0]?.nameRole ?? "Anonymous"}
-              </p>
+          ) : (
+            <div className="flex mx-auto justify-center md:justify-between items-center space-x-16">
+              <Image
+                src={leftQute}
+                alt="left quete"
+                width={500}
+                height={500}
+                className="w-4 md:w-28 -translate-y-2 md:-translate-y-16"
+              />
+              <div className="flex flex-col items-center md:items-start">
+                <p className="flex-1 text-xl md:text-2xl text-gray-300">
+                  {project?.quotations?.[0]?.quote ?? "No quote available."}
+                </p>
+                <p className="text-xl md:text-2xl text-center text-gray-300 mt-4">
+                  - {project?.quotations?.[0]?.nameRole ?? "Anonymous"}
+                </p>
+              </div>
+              <Image
+                src={rightQute}
+                alt="left quete"
+                width={500}
+                height={500}
+                className="w-4 md:w-28"
+              />
             </div>
-              )
-            }
+          )}
         </div>
       </section>
 

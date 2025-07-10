@@ -186,6 +186,8 @@ model Project {
   shortDescriptionMedia      String?
   videoLink                  String?
   fullVideoDescription       String?
+  // What We Offer Section
+  WhatWeOfferSectionTitle    String?
   // Team Section
   teamLabelName              String?
   sectionTitleTeam           String?
