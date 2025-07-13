@@ -208,7 +208,7 @@ export default function ImpactFormModal({
   };
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
-    console.log("data", data);
+
     
     try {
       setLoading(true);
@@ -258,7 +258,6 @@ export default function ImpactFormModal({
         galleryPhotoUrls = existingGalleryPhotos;
       }
 
-      console.log("links", authorPhotoUrl, coverPhotoUrl, galleryPhotoUrls);
 
       if (!authorPhotoUrl || !coverPhotoUrl || galleryPhotoUrls.length === 0) {
         toast.error("Please ensure all required photos are uploaded successfully");
@@ -279,7 +278,7 @@ export default function ImpactFormModal({
       };
 
       if (impactId) {
-        await axios.patch(`/api/impact/${impactId}`, impactData);
+        await axios.put(`/api/impact/${impactId}`, impactData);
         toast.success("Impact updated successfully");
       } else {
         await axios.post("/api/impact", impactData);
@@ -494,11 +493,7 @@ export default function ImpactFormModal({
                               if (fileList && fileList.length > 0) {
                                 const file = fileList[0];
                                 if (validateFile(file)) {
-                                  setValue("authorPhoto", fileList, { shouldValidate: true });
                                   setAuthorPhotoPreview(URL.createObjectURL(file));
-                                  toast.success("Author photo selected successfully");
-                                } else {
-                                  e.target.value = "";
                                 }
                               }
                             }}
@@ -563,11 +558,7 @@ export default function ImpactFormModal({
                               if (fileList && fileList.length > 0) {
                                 const file = fileList[0];
                                 if (validateFile(file)) {
-                                  setValue("coverPhoto", fileList, { shouldValidate: true });
                                   setCoverPhotoPreview(URL.createObjectURL(file));
-                                  toast.success("Cover photo selected successfully");
-                                } else {
-                                  e.target.value = "";
                                 }
                               }
                             }}
@@ -634,7 +625,6 @@ export default function ImpactFormModal({
                                 const files = Array.from(fileList);
                                 const validFiles = files.filter(validateFile);
                                 if (validFiles.length > 0) {
-                                  setValue("galleryPhoto", fileList, { shouldValidate: true });
                                   setGalleryPhotoPreviews(
                                     validFiles.map((file) => ({
                                       url: URL.createObjectURL(file),
