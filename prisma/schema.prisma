@@ -348,7 +348,7 @@ model OfferIcon {
 model Impact {
   id                    String   @id @default(auto()) @map("_id") @db.ObjectId
   title                 String?
-  date                  DateTime?
+  date                  String?
   impactTags            String?
   author                String?
   authorPhoto           String?

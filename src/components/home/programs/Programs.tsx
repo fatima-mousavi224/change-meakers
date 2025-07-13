@@ -46,6 +46,7 @@ type ProjectWithRelations = Project & {
   newsletterItems: NewsletterItem[];
   photoAlbums: PhotoAlbum[];
   offerIcons: OfferIcon[];
+  projectTitle: string;
 };
 
 type ImpactWithRelations = Impact & {

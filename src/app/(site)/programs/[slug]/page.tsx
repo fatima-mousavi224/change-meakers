@@ -8,6 +8,7 @@ async function ProgramsPage2({ params }: { params: { slug: string } }) {
       navigationLabel: params.slug,
     },
     include: {
+      projectTitle: true,
       statusAndIcons: true,
       teamCards: true,
       studentItems: true,
@@ -25,9 +26,8 @@ async function ProgramsPage2({ params }: { params: { slug: string } }) {
   }
 
   const impacts = await prisma.impact.findMany({
-    include: {
-      standardImpacts: true,
-      highlightedImpacts: true,
+    where: {
+      projectName: project.projectTitle,
     },
   });
 

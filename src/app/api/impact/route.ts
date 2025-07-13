@@ -5,14 +5,14 @@ import prisma from "@/lib/prismaDB";
 // Define schemas for standard and highlighted impacts
 const ImpactSchema = z.object({
   title: z.string().min(1, "Title is required"),
-  date: z.date().optional(),
+  date: z.string().optional(),
   description: z.string().min(1, "Description is required"),
   author: z.string().min(1, "Author is required"),
   impactTags: z.string().optional(),
   projectName: z.string().optional(),
-  coverPhoto: z.string().optional(),
-  galleryPhoto: z.array(z.string().url()).default([]),
-  authorPhoto: z.string().optional(),
+  coverPhoto: z.string().optional().nullable(),
+  galleryPhoto: z.array(z.string()).default([]),
+  authorPhoto: z.string().optional().nullable(),
 });
 
 

@@ -7,12 +7,12 @@ import prisma from "@/lib/prismaDB";
   // Define the main schema for the request body
   const ImpactUpdateSchema = z.object({
     title: z.string().optional(),
-    date: z.date().optional(),
+    date: z.string().optional(),
     impactTags: z.string().optional(),
     author: z.string().optional(),
-    authorPhoto: z.string().optional(),
-    coverPhoto: z.string().optional(),
-    galleryPhoto: z.array(z.string().url()).default([]),
+    authorPhoto: z.string().optional().nullable(),
+    coverPhoto: z.string().optional().nullable(),
+    galleryPhoto: z.array(z.string()).default([]),
   });
 
 export async function GET(
