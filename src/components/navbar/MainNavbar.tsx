@@ -81,7 +81,7 @@ export default function MainNavBar({
   };
 
   return (
-    <nav className="bg-white max-w-screen-2xl sm:px-4 px-2 mx-auto" id="#one">
+    <nav className="bg-white w-f max-w-screen-2xl sm:px-4 px-2 mx-auto" id="#one">
       <div className="w-full border-b py-2">
         <div className="flex justify-between items-center p-2  h-16 gap-4">
           <div className="flex items-center justify-center sm:gap-4 gap-2">

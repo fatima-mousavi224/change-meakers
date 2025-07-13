@@ -63,9 +63,10 @@ export async function PATCH(
       newsletterItems,
       liveMoments,
       relatedLinks,
+      quotations,
       ...rest
     } = body;
-
+    
     // Create new status icon if provided
     if (Array.isArray(sections) && sections.length > 0) {
       await prisma.statusAndIcon.createMany({
@@ -149,6 +150,16 @@ export async function PATCH(
     if (Array.isArray(liveMoments) && liveMoments.length > 0) {
       await prisma.liveMoment.createMany({
         data: liveMoments.map((l) => ({
+          ...l,
+          projectId: params.id,
+        })),
+      });
+    }
+
+    // Create Quotation if provided
+    if (Array.isArray(quotations) && quotations.length > 0) {
+      await prisma.quotation.createMany({
+        data: quotations.map((l) => ({
           ...l,
           projectId: params.id,
         })),

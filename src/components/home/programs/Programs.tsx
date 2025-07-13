@@ -21,6 +21,7 @@ import {
   StudentItem,
   TeamCard,
   Voice,
+  Quotation,
 } from "@prisma/client";
 import { CiCalendar } from "react-icons/ci";
 import { FaLink, FaLinkedinIn } from "react-icons/fa6";
@@ -32,6 +33,10 @@ import news1 from "../../../../public/images/home-page/news-stories/news1.png";
 import rightQute from "../../../../public/images/home-page/rightQuete.png";
 import { RighArrow } from "../../icons/Icons";
 import ParticipantsInfoPrograms from "./ParticipantsInfoPrograms";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/navigation";
 
 // Extended type to include relations
 type ProjectWithRelations = Project & {
@@ -39,6 +44,7 @@ type ProjectWithRelations = Project & {
   teamCards: TeamCard[];
   studentItems: StudentItem[];
   voices: Voice[];
+  quotations: Quotation[];
   liveMoments: LiveMoment[];
   relatedLinks: RelatedLink[];
   newsletterItems: NewsletterItem[];
@@ -254,22 +260,25 @@ const Programs = ({
     );
   };
 
-  console.log("🚀 ~ project id:", project);
-  console.log("🚀 ~ validHeroImages:", validHeroImages);
-  console.log("🚀 ~ validVisionGoalImages:", validVisionGoalImages);
-  console.log("🚀 ~ allImages:", allImages);
-  console.log("🚀 ~ visibleImpacts:", visibleImpacts);
-  console.log(
-    "🚀 ~ visibleImpactItems:",
-    visibleImpactItems
-  );
 
   function getEmbedUrl(url: string | undefined) {
-  if (!url) return "";
-  const videoIdMatch = url.match(/(?:\/shorts\/|v=)([a-zA-Z0-9_-]{11})/);
-  const videoId = videoIdMatch ? videoIdMatch[1] : "";
-  return videoId ? `https://www.youtube.com/embed/${videoId}` : "";
-}
+    if (!url) return "";
+    const videoIdMatch = url.match(/(?:\/shorts\/|v=)([a-zA-Z0-9_-]{11})/);
+    const videoId = videoIdMatch ? videoIdMatch[1] : "";
+    return videoId ? `https://www.youtube.com/embed/${videoId}` : "";
+  }
+
+  const [expandedIndexes, setExpandedIndexes] = useState<number[]>([]);
+
+  const toggleExpand = (index: number) => {
+    setExpandedIndexes(
+      (prev) =>
+        prev.includes(index)
+          ? prev.filter((i) => i !== index) // collapse
+          : [...prev, index] // expand
+    );
+  };
+
   return (
     <div>
       {/* Hero section */}
@@ -570,34 +579,50 @@ const Programs = ({
       <section className="max-w-screen-2xl px-4 mx-auto  py-12">
         <div className="mt-5">
           <h2 className="text-3xl font-bold mb-8 text-center">
-            What We Offer?
+            {project?.WhatWeOfferSectionTitle || "What We Offer?"}
           </h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 px-4">
-            {project?.offerIcons?.map((offer: any, index: any) => (
-              <div
-                key={index}
-                className="rounded-xl p-6 shadow border border-gray-200 hover:shadow-lg transition duration-300"
-              >
-                <div className="size-16 rounded-full bg-slate-200">
-                  <Image
-                    src={offer?.url ? offer?.url : ""}
-                    width={500}
-                    height={500}
-                    alt="offer icon"
-                    className="size-16 rounded-full p-2"
-                  />
+            {project?.offerIcons?.map((offer: any, index: number) => {
+              const isExpanded = expandedIndexes.includes(index);
+
+              
+              return (
+                <div
+                  key={index}
+                  className="rounded-xl p-6 shadow border border-gray-200 hover:shadow-lg transition duration-300"
+                >
+                  <div className="size-16 rounded-full bg-slate-200">
+                    <Image
+                      src={offer?.url || ""}
+                      width={500}
+                      height={500}
+                      alt="offer icon"
+                      className="size-16 rounded-full p-2"
+                    />
+                  </div>
+                  <h3 className="text-lg font-medium my-2 line-clamp-2">
+                    {offer?.iconTitle || ""}
+                  </h3>
+                  <p
+                    className={`text-gray-600 mb-4 ${
+                      isExpanded ? "" : "line-clamp-3"
+                    }`}
+                  >
+                    {offer?.shortDescription || ""}
+                  </p>
+
+                  {offer?.shortDescription?.split(" ").length > 20 && (
+                    <button
+                      type="button"
+                      onClick={() => toggleExpand(index)}
+                      className="text-blue-500 hover:underline text-sm cursor-pointer"
+                    >
+                      {isExpanded ? "Show Less" : "Learn More"}
+                    </button>
+                  )}
                 </div>
-                <h3 className="text-lg font-medium my-2 line-clamp-2">
-                  {offer?.iconTitle || ""}
-                </h3>
-                <p className="text-gray-600 mb-4">
-                  {offer?.shortDescription || ""}
-                </p>
-                <a href="#" className="text-blue-500 hover:underline">
-                  Learn More
-                </a>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
@@ -607,7 +632,9 @@ const Programs = ({
         <div className="py-10 text-center">
           <div className="flex items-center mx-auto justify-center gap-2 w-28 rounded-full bg-primary-50 bg-opacity-15 p-2 mb-6">
             <Icon icon="dot" height={8} width={10} />
-            <span className=" text-primary-50 font-semibold">{project?.teamLabelName ?? "Team"}</span>
+            <span className=" text-primary-50 font-semibold">
+              {project?.teamLabelName ?? "Team"}
+            </span>
           </div>
           <h2 className="text-2xl md:text-4xl font-semibold mb-4">
             {project?.sectionTitleTeam}
@@ -722,7 +749,9 @@ const Programs = ({
         <div className="py-10 text-center">
           <div className="flex items-center mx-auto justify-center gap-2 w-28 rounded-full bg-primary-50 bg-opacity-15 p-2 mb-6">
             <Icon icon="dot" height={8} width={10} />
-            <span className=" text-primary-50 font-semibold">{project?.studentLabelName ?? "Students"}</span>
+            <span className=" text-primary-50 font-semibold">
+              {project?.studentLabelName ?? "Students"}
+            </span>
           </div>
           <h2 className="text-2xl md:text-4xl font-semibold mb-4">
             {project?.sectionTitleStudents}
@@ -845,41 +874,83 @@ const Programs = ({
 
       {/* Quotation section */}
       <section className="bg-blue-900 mt-10 lg:py-10">
-        <div className=" max-w-screen-2xl px-4 mx-auto flex justify-center text-white py-6 md:p-16">
-          <div className="flex space-x-3 md:space-x-12 items-center mb-4">
-            <Image
-              src={leftQute}
-              alt="left quete"
-              width={500}
-              height={500}
-              className="w-8 md:w-28 -translate-y-16"
-            />
-            <div>
-              <p className="flex-1 text-xs md:text-lg text-gray-300">
-                {project?.addQuote}
-              </p>
-              <p className="text-xs md:text-lg text-center text-gray-300 mt-4">
-                - {project?.nameRole}
-              </p>
+        <div className=" max-w-screen-2xl mx-auto flex justify-center text-white py-6 md:p-16">
+          {project?.quotations?.length > 1 ? (
+            <div className="w-full max-w-7xl mx-auto px-4 py-10">
+              <Swiper
+                navigation={true}
+                modules={[Navigation]}
+                className="mySwiper"
+                style={{ height: "auto" }} // auto height
+              >
+                {project?.quotations?.map((quote, index) => (
+                  <SwiperSlide key={index}>
+                    <div className="flex flex-row mx-auto justify-center md:justify-between md:px-24 space-x-5 md:space-x-0 items-center md:py-10">
+                      <Image
+                        src={leftQute}
+                        alt="left quete"
+                        width={500}
+                        height={500}
+                        className="w-4 md:w-28 -translate-y-2 md:-translate-y-16"
+                      />
+                      <div className="flex flex-col">
+                        <p className="text-xs md:text-2xl text-gray-200 max-w-xl">
+                          {quote.quote}
+                        </p>
+                        <p className="text-xs md:text-2xl text-gray-400 mt-4 italic">
+                          - {quote.nameRole}
+                        </p>
+                      </div>
+                      <Image
+                        src={rightQute}
+                        alt="left quete"
+                        width={500}
+                        height={500}
+                        className="w-4 md:w-28"
+                      />
+                    </div>
+                  </SwiperSlide>
+                ))}
+              </Swiper>
             </div>
-            <Image
-              src={rightQute}
-              alt="left quete"
-              width={500}
-              height={500}
-              className="w-8 md:w-28"
-            />
-          </div>
+          ) : (
+            <div className="flex mx-auto justify-center md:justify-between items-center space-x-16">
+              <Image
+                src={leftQute}
+                alt="left quete"
+                width={500}
+                height={500}
+                className="w-4 md:w-28 -translate-y-2 md:-translate-y-16"
+              />
+              <div className="flex flex-col items-center md:items-start">
+                <p className="flex-1 text-xl md:text-2xl text-gray-300">
+                  {project?.quotations?.[0]?.quote ?? "No quote available."}
+                </p>
+                <p className="text-xl md:text-2xl text-center text-gray-300 mt-4">
+                  - {project?.quotations?.[0]?.nameRole ?? "Anonymous"}
+                </p>
+              </div>
+              <Image
+                src={rightQute}
+                alt="left quete"
+                width={500}
+                height={500}
+                className="w-4 md:w-28"
+              />
+            </div>
+          )}
         </div>
       </section>
 
       {/* inside classroom section */}
       <section className="max-w-screen-2xl px-4 mx-auto mt-10">
         <div className="flex flex-col gap-10 ">
-            <div className="bg-primary-50 bg-opacity-10 mx-auto rounded-full w-fit px-4 h-10 flex items-center justify-center gap-2">
-              <span className="size-2 rounded-full bg-primary-50"></span>
-              <p className="text-primary-50 font-semibold text-base">{project?.photoAlbumLabelName ?? "Photo"}</p>
-            </div>
+          <div className="bg-primary-50 bg-opacity-10 mx-auto rounded-full w-fit px-4 h-10 flex items-center justify-center gap-2">
+            <span className="size-2 rounded-full bg-primary-50"></span>
+            <p className="text-primary-50 font-semibold text-base">
+              {project?.photoAlbumLabelName ?? "Photo"}
+            </p>
+          </div>
           <div className="flex flex-col gap-4 items-center justify-center max-w-screen-2xl mx-auto">
             <Header btnName="Photos" title={project?.sectionTitlePhoto ?? ""} />
             <p className="text-center text-sm md:text-base text-gray-600 md:max-w-2xl mx-auto">
@@ -1072,7 +1143,7 @@ const Programs = ({
           <p className="text-gray-500 my-2 max-w-4xl">
             {project?.sectionTextSDGs}
           </p>
-          <div className="flex space-x-5 my-5">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 my-5">
             {[
               project?.sdgsImage1,
               project?.sdgsImage2,
@@ -1117,7 +1188,8 @@ const Programs = ({
           </div>
 
           <h3 className="text-3xl md:text-5xl font-bold w-sm my-14 mx-auto text-center">
-            {project?.finalStatement ?? "Need a website? Let an Afghan girl build it. 👋"}
+            {project?.finalStatement ??
+              "Need a website? Let an Afghan girl build it. 👋"}
           </h3>
 
           {/* subscribe section */}

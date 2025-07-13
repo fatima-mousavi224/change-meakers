@@ -17,8 +17,10 @@ async function ProgramsPage2({ params }: { params: { slug: string } }) {
       liveMoments: true,
       relatedLinks: true,
       newsletterItems: true,
+      quotations: true,
     },
   });
+  console.log("🚀 ~ ProgramsPage2 ~ project:", project)
 
   if (!project) {
     return <div>Project not found</div>;

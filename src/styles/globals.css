@@ -331,3 +331,10 @@ html {
 .swiper-pagination-bullet-active{
   background-color: white !important;
 }
+
+@media screen and (max-width: 570px) {
+.swiper-button-next::after , .swiper-button-prev::after {
+ font-size: 25px !important
+}
+  
+}
