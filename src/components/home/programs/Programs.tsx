@@ -10,7 +10,6 @@ import Header from "@/components/current-program-page/Header";
 import ProgramsSliders from "@/components/home/programs/ProgramsSliders";
 import ParticipantsInfo from "@/components/mission-and-impact/Participants/ParticipantsInfo";
 import {
-  HighlightedImpact,
   Impact,
   LiveMoment,
   NewsletterItem,
@@ -18,7 +17,6 @@ import {
   PhotoAlbum,
   Project,
   RelatedLink,
-  StandardImpact,
   StatusAndIcon,
   StudentItem,
   TeamCard,
@@ -49,33 +47,23 @@ type ProjectWithRelations = Project & {
   projectTitle: string;
 };
 
-type ImpactWithRelations = Impact & {
-  highlightedImpacts: HighlightedImpact[];
-  standardImpacts: StandardImpact[];
-};
 const Programs = ({
   project,
   impacts,
 }: {
   project: ProjectWithRelations;
-  impacts: ImpactWithRelations[];
+  impacts: Impact[];
 }) => {
-  // Get all standard impacts and highlighted impacts from all impact objects
-  const allStandardImpacts =
-    impacts?.flatMap((impact) => impact.standardImpacts || []) || [];
-  const allHighlightedImpacts =
-    impacts?.flatMap((impact) => impact.highlightedImpacts || []) || [];
-
-  // Create a flat array of all images from all standard impacts
-  const allImages = allStandardImpacts.flatMap(
+  // Create a flat array of all images from all impacts
+  const allImages = impacts?.flatMap(
     (impact) =>
-      impact.galleryPhoto?.map((image, imageIndex) => ({
+      impact.galleryPhoto?.map((image: string, imageIndex: number) => ({
         image,
         impact,
         imageIndex,
-        impactIndex: allStandardImpacts.indexOf(impact),
+        impactIndex: impacts.indexOf(impact),
       })) || []
-  );
+  ) || [];
 
   const [activeIndex, setActiveIndex] = useState(0);
   const [visionGoalActiveIndex, setVisionGoalActiveIndex] = useState(0);
@@ -89,27 +77,27 @@ const Programs = ({
   );
   const [isMobile, setIsMobile] = useState(false);
   const [visibleStudents, setVisibleStudents] = useState(3); // Show 3 students initially
-  const [visibleTeamCards, setVisibleTeamCards] = useState(3); // Show 3 highlighted impacts initially
-  const [visibleHighlightedImpacts, setVisibleHighlightedImpacts] = useState(4); // Show 3 highlighted impacts initially
+  const [visibleTeamCards, setVisibleTeamCards] = useState(3); // Show 3 team cards initially
+  const [visibleImpacts, setVisibleImpacts] = useState(4); // Show 4 impacts initially
 
   // Get hero sections from project data
   const studentItems = project?.studentItems || [];
 
   // Function to load more students
   const loadMoreStudents = () => {
-    setVisibleStudents(studentItems.length); // Load 3 more students
+    setVisibleStudents(studentItems.length); // Load all students
   };
 
   const loadLessStudents = () => {
     setVisibleStudents(3); // Load 3 less students
   };
 
-  const loadMoreHighlightedImpact = () => {
-    setVisibleHighlightedImpacts(allHighlightedImpacts.length); // Show all highlighted impacts
+  const loadMoreImpacts = () => {
+    setVisibleImpacts(impacts.length); // Show all impacts
   };
 
-  const loadLessHighlightedImpact = () => {
-    setVisibleHighlightedImpacts(4); // Show only 4 highlighted impacts initially
+  const loadLessImpacts = () => {
+    setVisibleImpacts(4); // Show only 4 impacts initially
   };
 
   const loadMoreTeamCards = () => {
@@ -136,13 +124,9 @@ const Programs = ({
   const visibleStudentItems = studentItems.slice(0, visibleStudents);
   const hasMoreStudents = visibleStudents < studentItems.length;
 
-  // Get visible highlighted impacts
-  const visibleHighlightedImpactsItems = allHighlightedImpacts.slice(
-    0,
-    visibleHighlightedImpacts
-  );
-  const hasMoreHighlightedImpacts =
-    visibleHighlightedImpacts < allHighlightedImpacts.length;
+  // Get visible impacts
+  const visibleImpactItems = impacts.slice(0, visibleImpacts);
+  const hasMoreImpacts = visibleImpacts < impacts.length;
 
   useEffect(() => {
     const checkMobile = () => {
@@ -273,11 +257,11 @@ const Programs = ({
   console.log("🚀 ~ project id:", project);
   console.log("🚀 ~ validHeroImages:", validHeroImages);
   console.log("🚀 ~ validVisionGoalImages:", validVisionGoalImages);
-  console.log("🚀 ~ allHighlightedImpacts:", allHighlightedImpacts);
-  console.log("🚀 ~ visibleHighlightedImpacts:", visibleHighlightedImpacts);
+  console.log("🚀 ~ allImages:", allImages);
+  console.log("🚀 ~ visibleImpacts:", visibleImpacts);
   console.log(
-    "🚀 ~ visibleHighlightedImpactsItems:",
-    visibleHighlightedImpactsItems
+    "🚀 ~ visibleImpactItems:",
+    visibleImpactItems
   );
 
   function getEmbedUrl(url: string | undefined) {
@@ -975,209 +959,85 @@ const Programs = ({
         <div className="max-w-screen-2xl px-4 mx-auto py-10">
           <h3 className="text-4xl font-semibold mt-5 mb-10">Impact</h3>
 
-          {/* card and slider */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* slider section */}
-            <div className="col-span-2">
-              <div className="grid col-span-1">
-                <div className="w-full">
-                  <div className="relative overflow-hidden rounded-xl shadow-lg z-20">
-                    {/* Full Gradient Overlay */}
-                    <div className="absolute h-80  md:h-[440px] lg:h-[450px] xl:h-[565px] inset-0 bg-gradient-to-t from-primary-50 via-transparent to-transparent opacity-90 z-30 rounded-xl"></div>
-
-                    <div
-                      className="relative h-80 md:h-[440px] lg:h-[450px] xl:h-[565px] overflow-hidden"
-                      onTouchStart={handleTouchStart}
-                      onTouchMove={handleTouchMove}
-                      onTouchEnd={handleTouchEnd}
-                    >
-                      {allImages.map(({ image }, index) => (
-                        <div
-                          key={index}
-                          className={cn(
-                            "absolute top-0 left-0 w-full h-80 md:h-[440px] lg:h-[450px] xl:h-[565px] transition-opacity duration-500 ease-in-out",
-                            {
-                              "opacity-100 z-0": index === activeIndex,
-                              "opacity-0 z-0": index !== activeIndex,
-                            }
-                          )}
-                        >
-                          {/* Dark Overlay */}
-                          <div className="absolute inset-0 bg-black opacity-40 z-10"></div>
-
-                          {/* Image */}
-                          {image ? (
-                            <Image
-                              src={image || ""}
-                              alt="Impact image"
-                              width={500}
-                              height={500}
-                              className="w-full h-80 md:h-[440px] lg:h-[450px] xl:h-[530px] 2xl:xl:h-[600px] object-cover"
-                            />
-                          ) : (
-                            <div className="w-full h-80 md:h-[440px] lg:h-[450px] xl:h-[530px] 2xl:xl:h-[555px] bg-gray-300 flex items-center justify-center">
-                              <div className="text-gray-500 text-center">
-                                <div className="text-6xl mb-2">📸</div>
-                                <p className="text-sm">No Image</p>
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-
-                    {/* Centered Pagination Dots */}
-                    <div className="absolute bottom-10 right-10 transform z-40 flex space-x-2 items-center justify-center">
-                      {allImages.map(({ image }, index) => (
-                        <span
-                          key={index}
-                          onClick={() => goToSlide(index)}
-                          className={cn(
-                            "rounded-full transition-colors cursor-pointer",
-                            index === activeIndex
-                              ? "bg-white size-3"
-                              : "bg-gray-400 size-2"
-                          )}
-                        />
-                      ))}
-                    </div>
-
-                    {/* profile */}
-                    <div className=" absolute left-4 md:left-10 bottom-20 z-50">
-                      <div className="flex space-x-5 items-center">
-                        <Image
-                          src={
-                            allImages[activeIndex]?.impact?.writerPhoto || ""
-                          }
-                          alt="profile image"
-                          width={50}
-                          height={50}
-                          className="rounded-full size-14"
-                        />
-                        <div>
-                          <h3 className="text-sm md:text-base text-gray-300">
-                            {allImages[activeIndex]?.impact?.writersName}
-                          </h3>
-                          <h3 className="text-base md:text-lg md:font-semibold text-slate-100">
-                            {allImages[activeIndex]?.impact?.title}
-                          </h3>
-                          <p className="text-sm text-gray-300">
-                            {allImages[activeIndex]?.impact?.date &&
-                              new Date(
-                                allImages[activeIndex].impact.date
-                              ).toLocaleDateString("en-US", {
-                                month: "long",
-                                year: "numeric",
-                              })}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* card */}
-            <div className="col-span-1">
-              {visibleHighlightedImpactsItems.length > 0 ? (
-                <div className="bg-white rounded-2xl shadow-md">
-                  <Image
-                    src={visibleHighlightedImpactsItems[0]?.coverPhoto || news1}
-                    alt="card image"
-                    width={500}
-                    height={500}
-                    className="rounded-t-xl "
-                  />
-                  <div className="p-4 space-y-2">
-                    <h3 className="w-full text-2xl font-semibold">
-                      {visibleHighlightedImpactsItems[0]?.title2}
-                    </h3>
-                    <p className="text-sm text-gray-500">
-                      {visibleHighlightedImpactsItems[0]?.contentDescription2}
-                    </p>
+          {/* Impact cards grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {visibleImpactItems.map((impact, index) => (
+              <Link href={`/impact/${impact.id}`} key={impact.id}>
+              <div key={impact.id} className="bg-white rounded-2xl shadow-md overflow-hidden">
+                <Image
+                  src={impact?.coverPhoto || news1}
+                  alt={impact?.title || "Impact image"}
+                  width={500}
+                  height={500}
+                  className="w-full h-48 md:h-60 object-cover"
+                />
+                <div className="p-4 space-y-2">
+                  <h3 className="text-lg font-semibold line-clamp-2">
+                    {impact?.title}
+                  </h3>
+                  
+                  <p className="text-sm text-gray-500 line-clamp-3" dangerouslySetInnerHTML={{ __html: impact?.description || "" }} />
+                  <div className="flex items-center justify-between">
                     <span className="text-xs text-gray-500">
-                      {visibleHighlightedImpactsItems[0]?.date2 &&
-                        new Date(
-                          visibleHighlightedImpactsItems[0].date2
-                        ).toLocaleDateString()}
+                      {impact?.date &&
+                        new Date(impact.date).toLocaleDateString()}
+                    </span>
+                    <span className="text-xs text-blue-600 font-medium">
+                      {impact?.author}
                     </span>
                   </div>
+                  {impact?.impactTags && (
+                    <div className="flex flex-wrap gap-1 mt-2">
+                      {impact.impactTags.split(',').slice(0, 3).map((tag, tagIndex) => (
+                        <span
+                          key={tagIndex}
+                          className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full"
+                        >
+                          {tag.trim()}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
-              ) : (
-                <div className="bg-white rounded-2xl shadow-md p-8 text-center">
-                  <div className="text-gray-500">
-                    <div className="text-6xl mb-4">📊</div>
-                    <h3 className="text-xl font-semibold mb-2">
-                      No Impact Data
-                    </h3>
-                    <p className="text-sm">
-                      No highlighted impacts available at the moment.
-                    </p>
-                  </div>
-                </div>
-              )}
-            </div>
+              </div>
+              </Link>
+            ))}
           </div>
 
-          {/* Additional highlighted impacts grid */}
-          {visibleHighlightedImpactsItems.length > 1 && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 my-14">
-              {/* Map visible highlighted impacts starting from index 1 (second item) */}
-              {visibleHighlightedImpactsItems
-                .slice(1)
-                .map((highlighted, index) => (
-                  <div key={index} className="bg-white rounded-2xl shadow-md">
-                    <Image
-                      src={highlighted?.coverPhoto || news1}
-                      alt="card image"
-                      width={500}
-                      height={500}
-                      className="rounded-t-xl "
-                    />
-                    <div className="p-4 space-y-2">
-                      <h3 className="w-full text-2xl font-semibold">
-                        {highlighted?.title2}
-                      </h3>
-                      <p className="text-sm text-gray-500">
-                        {highlighted?.contentDescription2}
-                      </p>
-                      <span className="text-xs text-gray-500">
-                        {highlighted?.date2 &&
-                          new Date(highlighted.date2).toLocaleDateString()}
-                      </span>
-                    </div>
-                  </div>
-                ))}
+          {/* No impacts message */}
+          {impacts.length === 0 && (
+            <div className="text-center py-16">
+              <div className="text-gray-500">
+                <div className="text-6xl mb-4">📊</div>
+                <h3 className="text-xl font-semibold mb-2">
+                  No Impact Data
+                </h3>
+                <p className="text-sm">
+                  No impacts available at the moment.
+                </p>
+              </div>
             </div>
           )}
 
-          {/* Load More/Less Button for Highlighted Impacts */}
-          {allHighlightedImpacts.length > 4 && (
-            <div
-              onClick={
-                hasMoreHighlightedImpacts
-                  ? loadMoreHighlightedImpact
-                  : loadLessHighlightedImpact
-              }
-              className="flex space-x-4 justify-between cursor-pointer hover:opacity-80 w-40 mt-10 shadow transition duration-150 shadow-gray-400 active:shadow-none mx-auto bg-white rounded-full px-4 py-2"
-            >
-              <button className="text-sm font-medium">
-                {hasMoreHighlightedImpacts ? "Load More" : "Load Less"}
-              </button>
-              <TfiReload className="text-black size-5" />
+          {/* Load More/Less Button for Impacts */}
+          {impacts.length > 4 && (
+            <div className="flex justify-center mt-10">
+              <div
+                onClick={hasMoreImpacts ? loadMoreImpacts : loadLessImpacts}
+                className="flex space-x-4 justify-between cursor-pointer hover:opacity-80 w-40 shadow transition duration-150 shadow-gray-400 active:shadow-none bg-white rounded-full px-4 py-2"
+              >
+                <button className="text-sm font-medium">
+                  {hasMoreImpacts ? "Load More" : "Load Less"}
+                </button>
+                <TfiReload className="text-black size-5" />
+              </div>
             </div>
           )}
 
-          {/* Show total count info for highlighted impacts */}
-          {allHighlightedImpacts.length > 0 && (
+          {/* Show total count info for impacts */}
+          {impacts.length > 0 && (
             <div className="mt-4 text-center text-sm text-gray-500">
-              Showing{" "}
-              {Math.min(
-                visibleHighlightedImpacts,
-                allHighlightedImpacts.length
-              )}{" "}
-              of {allHighlightedImpacts.length} highlighted impacts
+              Showing {Math.min(visibleImpacts, impacts.length)} of {impacts.length} impacts
             </div>
           )}
         </div>

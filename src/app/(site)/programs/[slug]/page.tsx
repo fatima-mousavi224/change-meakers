@@ -8,7 +8,6 @@ async function ProgramsPage2({ params }: { params: { slug: string } }) {
       navigationLabel: params.slug,
     },
     include: {
-      projectTitle: true,
       statusAndIcons: true,
       teamCards: true,
       studentItems: true,
@@ -32,9 +31,7 @@ async function ProgramsPage2({ params }: { params: { slug: string } }) {
   });
 
   return (
-    <div>
       <Programs project={project} impacts={impacts} />
-    </div>
   );
 }
 
