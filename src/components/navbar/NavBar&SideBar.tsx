@@ -52,7 +52,7 @@ const navigation = [
     icon: IoMdClipboard,
   },
   {
-    name: "Impacts",
+    name: "Project Impacts",
     href: "/admin/impacts",
     icon: IoMdClipboard,
   },

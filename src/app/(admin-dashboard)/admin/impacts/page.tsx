@@ -88,14 +88,6 @@ export default function ImpactsPage() {
     );
   }
 
-  if (error) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <div className="text-red-500">Error: {error}</div>
-      </div>
-    );
-  }
-
   return (
     <div className="p-6">
       {successMessage && (
@@ -128,7 +120,7 @@ export default function ImpactsPage() {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Impact Management</h1>
         <a
-          href="/admin/project-and-initiative/impact"
+          href="/admin/impacts/impact"
           className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
         >
           Create New Impact

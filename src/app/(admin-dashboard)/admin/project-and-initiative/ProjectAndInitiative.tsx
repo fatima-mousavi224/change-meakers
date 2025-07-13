@@ -1,5 +1,5 @@
 "use client";
-import { Impact, Project } from "@prisma/client";
+import {  Project } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -12,19 +12,13 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import Modal from "../../../../components/common/Modal";
 
-const FILTER_OPTIONS = [
-  { label: "Projects", value: "Projects" },
-  { label: "Impacts", value: "Impacts" },
-];
 
 interface ProjectAndInitiativeProps {
   projects: Project[];
-  impacts: Impact[];
 }
 
 const ProjectAndInitiative = ({
   projects,
-  impacts,
 }: ProjectAndInitiativeProps) => {
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("All");
@@ -37,9 +31,8 @@ const ProjectAndInitiative = ({
 
   // Unified data based on filter
   const data: any = useMemo(() => {
-    if (filter === "Projects") return projects;
-    return impacts;
-  }, [projects, impacts, filter]);
+    return projects;
+  }, [projects]);
 
   // Search and sort logic
   const filteredData = useMemo(() => {
@@ -88,20 +81,6 @@ const ProjectAndInitiative = ({
 
   return (
     <div className="min-h-screen md:p-6">
-      <div className="relative flex justify-center md:justify-end">
-        <select
-          className="bg-[#134C83] text-white px-4 py-2 rounded shadow-md flex items-center gap-2 w-36 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-        >
-          {FILTER_OPTIONS.map((opt) => (
-            <option key={opt.value} value={opt.value}>
-              {opt.label}
-            </option>
-          ))}
-        </select>
-        <IoIosArrowDown className="absolute right-3 top-3 text-white" />
-      </div>
 
       <div className="flex flex-col xl:flex-row space-y-4 gap-4  md:space-y-0 justify-between items-center mb-6 pt-4 lg:pt-10">
         <div className="flex gap-4">
@@ -110,12 +89,6 @@ const ProjectAndInitiative = ({
             className="bg-gradient-to-r from-[#134C83] to-[#4497E8] text-white shadow-md hover:opacity-90 active:shadow-none px-4 py-2 rounded transition-colors duration-150 text-sm"
           >
             Create New Project
-          </Link>
-          <Link
-            href={`/admin/project-and-initiative/new`}
-            className="bg-gradient-to-r bg-gray-200  text-black shadow-md hover:opacity-90 active:shadow-none px-4 py-2 rounded transition-colors duration-150 text-sm"
-          >
-            Create New Impact
           </Link>
         </div>
 
@@ -158,12 +131,11 @@ const ProjectAndInitiative = ({
               className="w-32 h-32 mb-6 opacity-80"
             />
             <h2 className="text-xl font-semibold text-gray-700 mb-2">
-              No {filter === "Projects" ? "Projects" : "Impacts"} Found
+              No Projects Found
             </h2>
             <p className="text-gray-500 text-center max-w-xs mb-4">
-              {filter === "Projects"
-                ? "There are currently no projects to display. Click 'Create New Project' to add one."
-                : "There are currently no impacts to display. Click 'Create New Impact' to add one."}
+              There are currently no projects to display. Click 'Create New
+              Project' to add one.
             </p>
             <div className="flex gap-4">
               <Link
@@ -171,12 +143,6 @@ const ProjectAndInitiative = ({
                 className="bg-gradient-to-r from-[#134C83] to-[#4497E8] text-white shadow-md hover:opacity-90 active:shadow-none px-4 py-2 rounded transition-colors duration-150 text-sm"
               >
                 Create New Project
-              </Link>
-              <Link
-                href={`/admin/project-and-initiative/new`}
-                className="bg-gradient-to-r bg-gray-200  text-black shadow-md hover:opacity-90 active:shadow-none px-4 py-2 rounded transition-colors duration-150 text-sm"
-              >
-                Create New Impact
               </Link>
             </div>
           </div>

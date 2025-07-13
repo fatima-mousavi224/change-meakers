@@ -347,44 +347,19 @@ model OfferIcon {
 
 model Impact {
   id                    String   @id @default(auto()) @map("_id") @db.ObjectId
-  standardImpacts       StandardImpact[]
-  highlightedImpacts    HighlightedImpact[]
-  // Project association
+  title                 String?
+  date                  DateTime?
+  impactTags            String?
+  author                String?
+  authorPhoto           String?
+  coverPhoto            String?
+  galleryPhoto          String[]
+  description           String?
   projectName           String?
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
 }
 
-model StandardImpact {
-  id                    String   @id @default(auto()) @map("_id") @db.ObjectId
-  impactId              String   @db.ObjectId
-  title                 String
-  impactTags            String
-  writersName           String
-  date                  DateTime
-  contentDescription    String
-  writerPhoto           String?
-  galleryPhoto          String[]
-  
-  impact                Impact   @relation(fields: [impactId], references: [id], onDelete: Cascade)
-}
-
-model HighlightedImpact {
-  id                    String   @id @default(auto()) @map("_id") @db.ObjectId
-  impactId              String   @db.ObjectId
-  message1              String?
-  message2              String?
-  title2                String?
-  date2                 DateTime?
-  impactTags2           String?
-  writersName2          String?
-  writerPhoto2          String?
-  coverPhoto            String?
-  galleryPhoto2         String[]
-  contentDescription2   String?
-
-  impact                Impact   @relation(fields: [impactId], references: [id], onDelete: Cascade)
-}
 
 enum PaymentStatus {
   PENDING
