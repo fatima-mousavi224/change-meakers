@@ -51,7 +51,11 @@ const navigation = [
     href: "/admin/project-and-initiative",
     icon: IoMdClipboard,
   },
-  
+  {
+    name: "Project Impacts",
+    href: "/admin/impacts",
+    icon: IoMdClipboard,
+  },
 ];
 
 function classNames(...classes: any) {

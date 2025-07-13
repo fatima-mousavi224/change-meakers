@@ -27,16 +27,13 @@ async function ProgramsPage2({ params }: { params: { slug: string } }) {
   }
 
   const impacts = await prisma.impact.findMany({
-    include: {
-      standardImpacts: true,
-      highlightedImpacts: true,
+    where: {
+      projectName: project.projectTitle,
     },
   });
 
   return (
-    <div>
       <Programs project={project} impacts={impacts} />
-    </div>
   );
 }
 
