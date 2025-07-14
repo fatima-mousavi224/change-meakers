@@ -89,7 +89,7 @@ export default function AdminFormModal({ open, setOpen }: AdminFormModalProps) {
           avatar: data?.avatar || [],
         });
       } catch (error) {
-        console.log("Error while fetching member", error);
+
       } finally {
         setIsDataPopulated(false);
       }
@@ -132,10 +132,8 @@ export default function AdminFormModal({ open, setOpen }: AdminFormModalProps) {
                 const progress =
                   (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
                 setMemberImageProgress(progress);
-                console.log("Upload is " + progress + "% done");
               },
               (error) => {
-                console.log("Error uploading image", error);
                 reject(error);
               },
               () => {
