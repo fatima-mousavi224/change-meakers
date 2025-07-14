@@ -282,6 +282,7 @@ const Programs = ({
   return (
     <div>
       {/* Hero section */}
+      {validHeroImages.length && (
       <section className="max-w-screen-2xl px-4 mx-auto">
         <div className="lg:px-2">
           <div className="relative w-full max-w-[96vw] mx-auto mt-3 rounded-[35px] shadow-lg z-20">
@@ -294,25 +295,15 @@ const Programs = ({
               onTouchMove={handleTouchMove}
               onTouchEnd={handleTouchEnd}
             >
-              {validHeroImages.length > 0 ? (
+              {validHeroImages.length && (
                 <Image
                   src={validHeroImages[activeIndex] ?? ""}
                   alt={validHeroImages[activeIndex] ?? ""}
                   fill
                   className="absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-500 ease-in-out opacity-100 z-0 rounded-[35px]"
                 />
-              ) : (
-                <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-blue-600 to-blue-800 rounded-[35px] flex items-center justify-center">
-                  <div className="text-center text-white">
-                    <h2 className="text-4xl font-bold mb-4">
-                      Welcome to Our Program
-                    </h2>
-                    <p className="text-xl">
-                      Empowering girls through education and technology
-                    </p>
-                  </div>
-                </div>
               )}
+            
             </div>
 
             {/* Overlay with Dynamic Text and Button */}
@@ -384,8 +375,10 @@ const Programs = ({
           </div>
         </div>
       </section>
+      )}
 
       {/* Programs Section */}
+      {project?.statusAndIcons?.length && (
       <section className="bg-light_gray overflow-x-hidden md:bg-white max-w-screen-2xl mx-auto mt-10 px-6">
         <div className="bg-light_gray rounded-xl py-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-6  items-center">
           {project?.statusAndIcons?.slice(0, 4).map((statusIcon, index) => (
@@ -414,8 +407,10 @@ const Programs = ({
           ))}
         </div>
       </section>
+      )}
 
       {/* our vission & our goal & slider section */}
+      {project?.visionTitle && project?.goalTitle && (
       <section className="max-w-screen-2xl px-6 mx-auto mt-10 overflow-x-hidden">
         <div className=" grid grid-cols-1 lg:grid-cols-2 gap-6  justify-center ">
           {/* goal and vission part */}
@@ -506,8 +501,9 @@ const Programs = ({
           </div>
         </div>
       </section>
-
+      )}
       {/* About the program section  */}
+      {project?.sectionTitleAbout && (
       <section className="max-w-screen-2xl px-4 mx-auto mt-10">
         <div className="bg-light_gray p-8 rounded-xl shadow text-gray-800 space-y-6">
           {/* Title */}
@@ -532,8 +528,9 @@ const Programs = ({
           </Link>
         </div>
       </section>
-
+      )}
       {/* Voices from the Classroom section */}
+      {project?.voicesLabelName && (
       <section className="bg-light_gray mt-10">
         <div className=" max-w-screen-2xl mx-auto lg:p-20 md:p-16 px-2 py-10 rounded-lg my-8">
           <div className="flex items-center mx-auto justify-center gap-2 w-40 rounded-2xl bg-primary-50 bg-opacity-15 p-2">
@@ -551,8 +548,9 @@ const Programs = ({
           <ParticipantsInfoPrograms data={project?.voices ?? []} />
         </div>
       </section>
-
+      )}
       {/* The journey to code */}
+      {project?.heroTitleMedia && (
       <section className="max-w-screen-2xl px-4 mx-auto mt-5">
         <div className="flex flex-col md:flex-row justify-between items-center mb-10 gap-6 md:py-20">
           {/* Left Section: Text Content */}
@@ -574,8 +572,9 @@ const Programs = ({
           ></iframe>
         </div>
       </section>
-
+      )}
       {/* What we offer section */}
+      {project?.WhatWeOfferSectionTitle && (
       <section className="max-w-screen-2xl px-4 mx-auto  py-12">
         <div className="mt-5">
           <h2 className="text-3xl font-bold mb-8 text-center">
@@ -626,8 +625,9 @@ const Programs = ({
           </div>
         </div>
       </section>
-
+      )}
       {/* Team Meet Section */}
+      {project?.teamLabelName && (
       <section className="max-w-screen-2xl px-4 mx-auto mt-10">
         <div className="py-10 text-center">
           <div className="flex items-center mx-auto justify-center gap-2 w-28 rounded-full bg-primary-50 bg-opacity-15 p-2 mb-6">
@@ -743,8 +743,9 @@ const Programs = ({
           )}
         </div>
       </section>
-
+      )}  
       {/* Students Meet Section */}
+      {project?.studentLabelName && (
       <section className="max-w-screen-2xl px-4 mx-auto mt-10">
         <div className="py-10 text-center">
           <div className="flex items-center mx-auto justify-center gap-2 w-28 rounded-full bg-primary-50 bg-opacity-15 p-2 mb-6">
@@ -871,8 +872,9 @@ const Programs = ({
           )}
         </div>
       </section>
-
+      )}
       {/* Quotation section */}
+      {project?.quotations?.length && (
       <section className="bg-blue-900 mt-10 lg:py-10">
         <div className=" max-w-screen-2xl mx-auto flex justify-center text-white py-6 md:p-16">
           {project?.quotations?.length > 1 ? (
@@ -941,8 +943,9 @@ const Programs = ({
           )}
         </div>
       </section>
-
+      )}
       {/* inside classroom section */}
+      {project?.photoAlbumLabelName && (
       <section className="max-w-screen-2xl px-4 mx-auto mt-10">
         <div className="flex flex-col gap-10 ">
           <div className="bg-primary-50 bg-opacity-10 mx-auto rounded-full w-fit px-4 h-10 flex items-center justify-center gap-2">
@@ -962,8 +965,9 @@ const Programs = ({
           </div>
         </div>
       </section>
-
+      )}    
       {/* Newsletter Archive Section */}
+      {project?.newsletterLabelName && (
       <section className="max-w-screen-2xl px-4 mx-auto mt-20">
         {/* Header */}
         <div className="text-center mb-8">
@@ -1024,8 +1028,9 @@ const Programs = ({
           ))}
         </div>
       </section>
-
+      )}
       {/* Impact section */}
+      {impacts.length && (
       <section className="bg-light_gray mt-10">
         <div className="max-w-screen-2xl px-4 mx-auto py-10">
           <h3 className="text-4xl font-semibold mt-5 mb-10">Impact</h3>
@@ -1075,21 +1080,6 @@ const Programs = ({
             ))}
           </div>
 
-          {/* No impacts message */}
-          {impacts.length === 0 && (
-            <div className="text-center py-16">
-              <div className="text-gray-500">
-                <div className="text-6xl mb-4">📊</div>
-                <h3 className="text-xl font-semibold mb-2">
-                  No Impact Data
-                </h3>
-                <p className="text-sm">
-                  No impacts available at the moment.
-                </p>
-              </div>
-            </div>
-          )}
-
           {/* Load More/Less Button for Impacts */}
           {impacts.length > 4 && (
             <div className="flex justify-center mt-10">
@@ -1113,8 +1103,9 @@ const Programs = ({
           )}
         </div>
       </section>
-
+      )}
       {/* live moments section */}
+      {project?.liveMoments?.length && (
       <section className="bg-light_gray mt-10 py-10">
         <div className="max-w-screen-2xl px-4 mx-auto">
           <h3 className="text-4xl font-bold my-8">Live Moments: Follow Us</h3>
@@ -1133,8 +1124,9 @@ const Programs = ({
           </div>
         </div>
       </section>
-
+      )}
       {/* this program support section */}
+
       <section className="mt-20">
         <div className="max-w-screen-2xl px-4 mx-auto ">
           <h3 className="text-3xl font-bold text-slate-900">
@@ -1196,6 +1188,7 @@ const Programs = ({
           <Subscribe />
         </div>
       </section>
+
     </div>
   );
 };
