@@ -1135,22 +1135,25 @@ const Programs = ({
           <p className="text-gray-500 my-2 max-w-4xl">
             {project?.sectionTextSDGs}
           </p>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 my-5">
-            {[
-              project?.sdgsImage1,
-              project?.sdgsImage2,
-              project?.sdgsImage3,
-              project?.sdgsImage4,
-            ].map((icon, index) => (
-              <Image
-                src={icon || ""}
-                alt="icons1"
-                width={500}
-                height={500}
-                className="size-20"
-              />
-            ))}
-          </div>
+             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 my-5">
+              {[
+                project?.sdgsImage1,
+                project?.sdgsImage2,
+                project?.sdgsImage3,
+                project?.sdgsImage4,
+              ]
+                .filter((icon) => icon) // This removes null, undefined, or empty strings
+                .map((icon, index) => (
+                  <Image
+                    key={index}
+                    src={icon ?? ""}
+                    alt={`icon-${index}`}
+                    width={500}
+                    height={500}
+                    className="size-20"
+                  />
+                ))}
+            </div>
         </div>
         <Image
           src={line}
