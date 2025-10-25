@@ -42,7 +42,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   const adminMailOptions = (adminEmail: string): Mail.Options => ({
     from: process.env.EMAIL,
     to: adminEmail,
-    subject: `Message from ${firstName} (${lastName})`,
+    subject: `Message from ${firstName} (${lastName}) ${email}`,
     text: `Subject: ${subject}\n\nMessage: ${message}`,
   });
 
