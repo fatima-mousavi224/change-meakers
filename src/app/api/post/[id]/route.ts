@@ -16,6 +16,7 @@ export async function PATCH(
     author,
     postDate,
     categoryId,
+    showInHome,
   } = body;
   if (
     !title ||
@@ -45,6 +46,7 @@ export async function PATCH(
         author,
         postDate: formattedPostDate,
         categoryId,
+        showInHome: Boolean(showInHome) || false,
       },
     });
 

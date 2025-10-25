@@ -16,9 +16,7 @@ export default async function HomePage() {
     const posts = await prisma.post.findMany({
     take: 10,
     where: {
-      Category: {
-        title: "Latests", 
-      },
+      showInHome: true,
     },
     orderBy: {
       postDate: "desc", 

@@ -104,10 +104,11 @@ export default function PostFormModal({
           title: data[0]?.title || "",
           author: data[0]?.author || "",
           description: data[0]?.description || "",
-          authorImage: data[0]?.authorImage || null,
-          postImages: data[0]?.postImages || [],
+          authorImage: null,
+          postImages: null,
           postDate: formatDate(data[0]?.postDate) || null,
           categoryId: data[0]?.categoryId || null,
+          showInHome: Boolean(data[0]?.showInHome) || false,
         });
       } catch (error) {
         console.log("Error while fetching post", error);
@@ -126,35 +127,42 @@ export default function PostFormModal({
         postImages: null,
         postDate: null,
         categoryId: null,
+        showInHome: false,
       });
     }
   }, [postId, reset]);
 
   useEffect(() => {
     return () => {
-      // Cleanup function to revoke object URLs
-      if (coverImagePreview) URL.revokeObjectURL(coverImagePreview);
-      imagesPreview.forEach(({ url }) => URL.revokeObjectURL(url));
+      // Cleanup function to revoke object URLs created via URL.createObjectURL
+      if (coverImagePreview && coverImagePreview.startsWith("blob:")) {
+        URL.revokeObjectURL(coverImagePreview);
+      }
+      imagesPreview.forEach(({ url }) => {
+        if (url.startsWith("blob:")) {
+          URL.revokeObjectURL(url);
+        }
+      });
     };
   }, [coverImagePreview, imagesPreview]);
 
-  const onSubmit: SubmitHandler<FieldValues> = async (data) => {
+  const onSubmit: SubmitHandler<FieldValues> = async (formData) => {
     let postCoverImage =
-      hasData && data[0]?.authorImage?.image
+      hasData && data?.[0]?.authorImage?.image
         ? data[0].authorImage.image
         : coverImagePreview;
 
-    let postImages: UploadImageType[] = hasData ? data[0]?.postImages : [];
+    let postImages: UploadImageType[] = hasData ? (data?.[0]?.postImages || []) : [];
 
     async function handlePostCoverImageUpload() {
-      if (data.authorImage?.[0]) {
+      const authorFile = formData.authorImage?.[0];
+      if (authorFile instanceof File) {
         setLoading(true);
-        const item = data.authorImage[0];
         try {
-          const fileName = new Date().getTime() + "-" + item.name;
+          const fileName = new Date().getTime() + "-" + authorFile.name;
           const storage = getStorage(firebaseApp);
           const storageRef = ref(storage, `authorImage/${fileName}`);
-          const uploadTask = uploadBytesResumable(storageRef, item);
+          const uploadTask = uploadBytesResumable(storageRef, authorFile);
           await new Promise<void>((resolve, reject) => {
             uploadTask.on(
               "state_changed",
@@ -192,12 +200,13 @@ export default function PostFormModal({
       }
     }
 
-    async function handlePostImagesUpload() {
-      if (data.postImages && data.postImages.length > 0) {
+    async function handlePostImagesUpload(postFiles: File[]) {
+      if (postFiles && postFiles.length > 0) {
         setpostImagesLoading(true);
         try {
           const newPostImages: UploadImageType[] = [];
-          for (const item of data.postImages) {
+          for (const item of postFiles) {
+            if (!(item instanceof File)) continue;
             const fileName = new Date().getTime() + "-" + item.name;
             const storage = getStorage(firebaseApp);
             const storageRef = ref(storage, `postImages/${fileName}`);
@@ -247,14 +256,36 @@ export default function PostFormModal({
     }
 
     await handlePostCoverImageUpload();
-    await handlePostImagesUpload();
+
+    // Normalize selected files from form data. Avoid treating non-File values as files.
+    const selectedPostFiles: File[] =
+      formData.postImages instanceof FileList
+        ? Array.from(formData.postImages)
+        : Array.isArray(formData.postImages)
+        ? (formData.postImages as any[]).filter((f) => f instanceof File)
+        : [];
+
+    await handlePostImagesUpload(selectedPostFiles);
+
+    // If no new images were uploaded, keep original Firebase URLs and respect removals
+    const hasNewPostImages = selectedPostFiles.length > 0;
+    if (!hasNewPostImages) {
+      const originalUrlSet = new Set(
+        (hasData ? (data?.[0]?.postImages || []) : []).map((p: UploadImageType) => p.image)
+      );
+      postImages = imagesPreview
+        .map((preview) => preview.url)
+        .filter((url) => originalUrlSet.has(url))
+        .map((url) => ({ image: url }));
+    }
 
     const postData = {
-      ...data,
+      ...formData,
       authorImage: {
-        image: postCoverImage || (hasData ? data[0]?.authorImage?.image : null),
+        image: postCoverImage || (hasData ? data?.[0]?.authorImage?.image : null),
       },
       postImages: [...postImages],
+      showInHome: Boolean(formData?.showInHome) || false,
     };
 
     if (postId) {
@@ -362,6 +393,26 @@ export default function PostFormModal({
                       {errors.title.message as string}
                     </p>
                   )}
+                </div>
+                <div>
+                  <label
+                    htmlFor="showInHome"
+                    className="block text-sm/6 font-medium text-gray-900"
+                  >
+                    Show in home page
+                  </label>
+                  <div className="mt-2.5 flex items-center gap-3">
+                    <input
+                      {...register("showInHome")}
+                      id="showInHome"
+                      name="showInHome"
+                      type="checkbox"
+                      className="h-4 w-4 rounded border-gray-300 text-primary-50 focus:ring-primary-50"
+                    />
+                    <span className="text-sm text-gray-600">
+                      Toggle to display this post on the home page
+                    </span>
+                  </div>
                 </div>
                 <div>
                   <label

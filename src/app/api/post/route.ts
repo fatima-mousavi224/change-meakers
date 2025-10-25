@@ -14,7 +14,7 @@ export async function POST(request: Request) {
       );
     }
     const body = await request.json();
-    const { title, description, postImages, postDate, categoryId } = body;
+    const { title, description, postImages, postDate, categoryId, showInHome } = body;
 
     if (!title || !description || !postImages) {
       return NextResponse.json(
@@ -28,6 +28,7 @@ export async function POST(request: Request) {
         ...body,
         postDate: formattedPostDate,
         categoryId: categoryId,
+        showInHome: Boolean(showInHome) || false,
       },
     });
     return NextResponse.json(post, { status: 201 });

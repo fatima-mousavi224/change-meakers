@@ -60,6 +60,7 @@ model Post {
   categoryId     String?    @db.ObjectId
   postImages     Image[]
   postDate       DateTime?
+  showInHome     Boolean   @default(false)
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
   Category       Category?  @relation(fields: [categoryId], references: [id])
