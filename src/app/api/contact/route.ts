@@ -40,7 +40,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   const adminEmails = process.env.ADMIN_EMAILS?.split(",") || [];
 
   const adminMailOptions = (adminEmail: string): Mail.Options => ({
-    from: process.env.EMAIL,
+    from: email,
     to: adminEmail,
     subject: `Message from ${firstName} (${lastName}) ${email}`,
     text: `Subject: ${subject}\n\nMessage: ${message}`,
