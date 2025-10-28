@@ -25,6 +25,7 @@ export default function NewsletterForm() {
     formState: { errors, isSubmitting },
     reset,
     register,
+    setValue,
   } = useForm({
     defaultValues: {
       sectionTitleNewsletter: "",
