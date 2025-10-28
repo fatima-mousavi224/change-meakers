@@ -4,8 +4,8 @@ import Tabs from "@/components/create-project-tabs/Tabs";
 import DeleteModal from "@/components/delete-modal/deleteModal";
 import { uploadCardImage } from "lib/uploadCardImage";
 import { Trash } from "lucide-react";
-import { useRouter } from "next/navigation";
-import React, { useRef, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import React, { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { cn } from "utilities/cn";
@@ -34,8 +34,36 @@ function PhotoAlbum() {
     }>
   >([{ image: null, imagePreview: "",photoAlbumLabelName: "", title: "", description: "" }]);
   const projectId = localStorage.getItem("projectId");
+  const searchParams = useSearchParams();
+  const isEdit = searchParams?.get("edit") === "1";
   console.log("🚀 ~ PhotoAlbum ~ projectId:", projectId)
   const router = useRouter();
+
+  useEffect(() => {
+    const load = async () => {
+      if (!isEdit || !projectId) return;
+      try {
+        const res = await fetch(`/api/projects/${projectId}`);
+        if (!res.ok) return;
+        const p = await res.json();
+        setValue("photoAlbumLabelName", p.photoAlbumLabelName || "");
+        setValue("sectionTitlePhoto", p.sectionTitlePhoto || "");
+        setValue("sectionDescriptionPhoto", p.sectionDescriptionPhoto || "");
+        if (Array.isArray(p.photoAlbums) && p.photoAlbums.length) {
+          setPhotoAlbumItems(
+            p.photoAlbums.map((pa: any) => ({
+              image: null,
+              imagePreview: pa.image || "",
+              photoAlbumLabelName: p.photoAlbumLabelName || "",
+              title: pa.title || "",
+              description: pa.description || "",
+            }))
+          );
+        }
+      } catch {}
+    };
+    load();
+  }, [isEdit, projectId, setValue]);
 
   function handleFileChange(
     e: React.ChangeEvent<HTMLInputElement>,
@@ -95,6 +123,8 @@ function PhotoAlbum() {
           if (item.image) {
             // @ts-ignore
             imageUrl = await uploadCardImage(item.image);
+          } else if (item.imagePreview) {
+            imageUrl = item.imagePreview;
           }
           return {
             image: imageUrl,
@@ -122,7 +152,8 @@ function PhotoAlbum() {
       if (response.ok) {
         localStorage.setItem("projectId", result.id);
         toast.success("Photo album section saved successfully!");
-        router.push(`/admin/project-and-initiative/new-project/news-letter`);
+        const suffix = isEdit ? `?edit=1&id=${projectId}` : "";
+        router.push(`/admin/project-and-initiative/new-project/news-letter${suffix}`);
         clearPhotoAlbumForm();
       }
     } catch (error: any) {
@@ -156,7 +187,7 @@ function PhotoAlbum() {
   return (
     <div className="max-w-screen-2xl mx-auto">
       <h2 className="text-lg md:text-3xl font-bold text-sky-800 my-6 text-center md:text-left">
-        Create New Project
+        {isEdit ? "Edit Project" : "Create New Project"}
       </h2>
       <Tabs />
       {/* Photo Album Section */}

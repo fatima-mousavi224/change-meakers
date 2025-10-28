@@ -2,7 +2,7 @@
 
 import Tabs from "@/components/create-project-tabs/Tabs";
 import dynamic from "next/dynamic";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { BsArrowRight } from "react-icons/bs";
@@ -11,7 +11,7 @@ const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 import "react-loading-skeleton/dist/skeleton.css";
 import "react-quill/dist/quill.snow.css";
 import DeleteModal from "@/components/delete-modal/deleteModal";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTabs } from "@/components/context/TabsContext";
 
 type FormData = {
@@ -30,9 +30,12 @@ export default function AboutProgramForm() {
     reset,
     control,
     formState: { errors, isSubmitting },
+    setValue,
   } = useForm<FormData>();
 
   const projectId = localStorage.getItem("projectId");
+  const searchParams = useSearchParams();
+  const isEdit = searchParams?.get("edit") === "1";
   const router = useRouter();
 
   const onSubmit = async (data: FormData) => {
@@ -48,8 +51,9 @@ export default function AboutProgramForm() {
       if (res.ok) {
         localStorage.setItem("projectId", result.id);
         toast.success("Program section saved successfully!");
+        const suffix = isEdit ? `?edit=1&id=${projectId}` : "";
         router.push(
-          "/admin/project-and-initiative/new-project/voice-classroom"
+          `/admin/project-and-initiative/new-project/voice-classroom${suffix}`
         );
         reset();
       } else {
@@ -64,6 +68,26 @@ export default function AboutProgramForm() {
   const handleClear = () => {
     reset();
   };
+
+  useEffect(() => {
+    const load = async () => {
+      if (!isEdit || !projectId) return;
+      try {
+        const res = await fetch(`/api/projects/${projectId}`);
+        if (!res.ok) return;
+        const p = await res.json();
+        // @ts-ignore
+        setValue("sectionTitleAbout", p.sectionTitleAbout || "");
+        // @ts-ignore
+        setValue("bodyText", p.bodyText || "");
+        // @ts-ignore
+        setValue("buttonName2", p.buttonName2 || "");
+        // @ts-ignore
+        setValue("buttonLink2", p.buttonLink2 || "");
+      } catch {}
+    };
+    load();
+  }, [isEdit, projectId]);
 
    // delete section button handler
   const [showModal, setShowModal] = useState(false);
@@ -80,7 +104,7 @@ export default function AboutProgramForm() {
   return (
     <div className="max-w-screen-2xl mx-auto">
       <h2 className="text-lg md:text-3xl font-bold text-sky-800 my-6 text-center md:text-left">
-        Create New Project
+        {isEdit ? "Edit Project" : "Create New Project"}
       </h2>
       <Tabs />
       <DeleteModal

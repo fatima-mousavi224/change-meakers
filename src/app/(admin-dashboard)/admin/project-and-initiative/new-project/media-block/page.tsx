@@ -4,8 +4,8 @@ import { useTabs } from "@/components/context/TabsContext";
 import Tabs from "@/components/create-project-tabs/Tabs";
 import DeleteModal from "@/components/delete-modal/deleteModal";
 import { cn } from "@/lib/utils";
-import { useRouter } from "next/navigation";
-import { useRef, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 
@@ -23,6 +23,7 @@ export default function MediaBlockSection() {
     reset,
     formState: { errors, isSubmitting },
     register,
+    setValue,
   } = useForm<FormData>({
     defaultValues: {
       heroTitleMedia: "",
@@ -34,7 +35,25 @@ export default function MediaBlockSection() {
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const projectId = localStorage.getItem("projectId");
+  const searchParams = useSearchParams();
+  const isEdit = searchParams?.get("edit") === "1";
   const router = useRouter();
+
+  useEffect(() => {
+    const load = async () => {
+      if (!isEdit || !projectId) return;
+      try {
+        const res = await fetch(`/api/projects/${projectId}`);
+        if (!res.ok) return;
+        const p = await res.json();
+        setValue("heroTitleMedia", p.heroTitleMedia || "");
+        setValue("shortDescriptionMedia", p.shortDescriptionMedia || "");
+        setValue("videoLink", p.videoLink || "");
+        setValue("fullVideoDescription", p.fullVideoDescription || "");
+      } catch {}
+    };
+    load();
+  }, [isEdit, projectId]);
 
   const onSubmit = async (data: FormData) => {
     try {
@@ -54,7 +73,8 @@ export default function MediaBlockSection() {
         localStorage.setItem("projectId", result.id);
         reset();
         toast.success("Media Block Section updated successfully!");
-        router.push("/admin/project-and-initiative/new-project/offer");
+        const suffix = isEdit ? `?edit=1&id=${projectId}` : "";
+        router.push(`/admin/project-and-initiative/new-project/offer${suffix}`);
       }
     } catch (error) {
       // Optionally, handle error (e.g., show an error message)
@@ -78,7 +98,7 @@ export default function MediaBlockSection() {
   return (
     <div className="max-w-screen-2xl mx-auto">
       <h2 className="text-lg md:text-3xl font-bold text-sky-800 my-6 text-center md:text-left">
-        Create New Project
+        {isEdit ? "Edit Project" : "Create New Project"}
       </h2>
       <Tabs />
       <DeleteModal

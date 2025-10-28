@@ -4,7 +4,7 @@ import { useTabs } from "@/components/context/TabsContext";
 import Tabs from "@/components/create-project-tabs/Tabs";
 import DeleteModal from "@/components/delete-modal/deleteModal";
 import { cn } from "@/lib/utils";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import React, { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import toast from "react-hot-toast";
@@ -32,6 +32,8 @@ export default function FinalCallToActionAndNavigation() {
 
   const router = useRouter();
   const projectId = localStorage.getItem("projectId");
+  const searchParams = useSearchParams();
+  const isEdit = searchParams?.get("edit") === "1";
 
   const onSubmit = async (data: FormData) => {
     try {
@@ -76,7 +78,7 @@ export default function FinalCallToActionAndNavigation() {
   return (
     <div className="max-w-screen-2xl mx-auto">
       <h2 className="text-lg md:text-3xl font-bold text-sky-800 my-6 text-center md:text-left">
-        Create New Project
+        {isEdit ? "Edit Project" : "Create New Project"}
       </h2>
       <Tabs />
       <DeleteModal

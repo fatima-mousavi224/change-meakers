@@ -6,7 +6,7 @@ import Tabs from "@/components/create-project-tabs/Tabs";
 import { cn } from "@/lib/utils";
 import toast from "react-hot-toast";
 import { uploadCardImage } from "lib/uploadCardImage";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import DeleteModal from "@/components/delete-modal/deleteModal";
 import { useTabs } from "@/components/context/TabsContext";
 
@@ -25,6 +25,8 @@ export default function GlobalGoalsSection() {
   );
 
   const projectId = localStorage.getItem("projectId");
+  const searchParams = useSearchParams();
+  const isEdit = searchParams?.get("edit") === "1";
   const router = useRouter();
 
   const {
@@ -72,7 +74,8 @@ export default function GlobalGoalsSection() {
       if (!res.ok) toast.error(result.error || "Failed to save global goals");
       if (res.ok) {
         localStorage.setItem("projectId", result.id);
-        router.push("/admin/project-and-initiative/new-project/related-links");
+        const suffix = isEdit ? `?edit=1&id=${result.id}` : "";
+        router.push(`/admin/project-and-initiative/new-project/related-links${suffix}`);
         toast.success("Global goals saved successfully!");
       }
     } catch (error: any) {
@@ -123,7 +126,7 @@ export default function GlobalGoalsSection() {
   return (
     <div className="max-w-screen-2xl mx-auto">
       <h2 className="text-lg md:text-3xl font-bold text-sky-800 my-6 text-center md:text-left">
-        Create New Project
+        {isEdit ? "Edit Project" : "Create New Project"}
       </h2>
       <Tabs />
       <section

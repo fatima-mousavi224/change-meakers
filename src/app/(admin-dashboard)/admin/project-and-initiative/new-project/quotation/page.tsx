@@ -3,8 +3,8 @@ import { useTabs } from "@/components/context/TabsContext";
 import Tabs from "@/components/create-project-tabs/Tabs";
 import DeleteModal from "@/components/delete-modal/deleteModal";
 import { cn } from "@/lib/utils";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { MdDelete } from "react-icons/md";
@@ -19,6 +19,7 @@ export default function QuotationSection() {
     control,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
     defaultValues: {
@@ -33,6 +34,25 @@ export default function QuotationSection() {
 
   const router = useRouter();
   const projectId = localStorage.getItem("projectId");
+  const searchParams = useSearchParams();
+  const isEdit = searchParams?.get("edit") === "1";
+  useEffect(() => {
+    const load = async () => {
+      if (!isEdit || !projectId) return;
+      try {
+        const res = await fetch(`/api/projects/${projectId}`);
+        if (!res.ok) return;
+        const p = await res.json();
+        if (Array.isArray(p.quotations) && p.quotations.length) {
+          setValue(
+            "quotations",
+            p.quotations.map((q: any) => ({ quote: q.quote || "", nameRole: q.nameRole || "" }))
+          );
+        }
+      } catch {}
+    };
+    load();
+  }, [isEdit, projectId, setValue]);
 
   const onSubmit = async (data: FormData) => {
     try {
@@ -49,7 +69,8 @@ export default function QuotationSection() {
       if (res.ok) {
         toast.success("Quotation saved successfully!");
         localStorage.setItem("projectId", result.id);
-        router.push(`/admin/project-and-initiative/new-project/photo-album`);
+        const suffix = isEdit ? `?edit=1&id=${projectId}` : "";
+        router.push(`/admin/project-and-initiative/new-project/photo-album${suffix}`);
         reset();
       }
     } catch (error) {
@@ -77,7 +98,7 @@ export default function QuotationSection() {
   return (
     <div className="max-w-screen-2xl mx-auto">
       <h2 className="text-lg md:text-3xl font-bold text-sky-800 my-6 text-center md:text-left">
-        Create New Project
+        {isEdit ? "Edit Project" : "Create New Project"}
       </h2>
       <Tabs />
       <section className={`${deleteSection} border-2 my-6 rounded-lg p-4 md:p-8 lg:px-14 bg-white`}>

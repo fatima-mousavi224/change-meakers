@@ -3,7 +3,7 @@ import { useTabs } from "@/components/context/TabsContext";
 import Tabs from "@/components/create-project-tabs/Tabs";
 import DeleteModal from "@/components/delete-modal/deleteModal";
 import { uploadCardImage } from "lib/uploadCardImage";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { Controller, useForm, useFieldArray } from "react-hook-form";
 import toast from "react-hot-toast";
@@ -35,6 +35,8 @@ function LiveMoments() {
 
   const router = useRouter();
   const projectId = localStorage.getItem("projectId");
+  const searchParams = useSearchParams();
+  const isEdit = searchParams?.get("edit") === "1";
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -72,7 +74,8 @@ function LiveMoments() {
       if (res.ok) {
         toast.success("Live moment saved successfully!");
         localStorage.setItem("projectId", result.id);
-        router.push(`/admin/project-and-initiative/new-project/global-goals`);
+        const suffix = isEdit ? `?edit=1&id=${result.id}` : "";
+        router.push(`/admin/project-and-initiative/new-project/global-goals${suffix}`);
         reset();
       }
     } catch (error) {
@@ -103,7 +106,7 @@ function LiveMoments() {
   return (
     <div>
       <h2 className="text-lg md:text-3xl font-bold text-sky-800 my-6 text-center md:text-left">
-        Create New Project
+        {isEdit ? "Edit Project" : "Create New Project"}
       </h2>
       <Tabs />
 

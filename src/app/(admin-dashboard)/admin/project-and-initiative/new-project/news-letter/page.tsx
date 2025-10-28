@@ -6,8 +6,8 @@ import DeleteModal from "@/components/delete-modal/deleteModal";
 import { cn } from "@/lib/utils";
 import { uploadCardImage } from "lib/uploadCardImage";
 import { Trash } from "lucide-react";
-import { useRouter } from "next/navigation";
-import React, { useRef, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import React, { useEffect, useRef, useState } from "react";
 import { Controller, useForm, useFieldArray } from "react-hook-form";
 import { toast } from "react-hot-toast";
 
@@ -25,6 +25,7 @@ export default function NewsletterForm() {
     formState: { errors, isSubmitting },
     reset,
     register,
+    setValue,
   } = useForm({
     defaultValues: {
       sectionTitleNewsletter: "",
@@ -44,7 +45,39 @@ export default function NewsletterForm() {
   };
 
   const projectId = localStorage.getItem("projectId");
+  const searchParams = useSearchParams();
+  const isEdit = searchParams?.get("edit") === "1";
   const router = useRouter();
+  useEffect(() => {
+    const load = async () => {
+      if (!isEdit || !projectId) return;
+      try {
+        const res = await fetch(`/api/projects/${projectId}`);
+        if (!res.ok) return;
+        const p = await res.json();
+        setValue("sectionTitleNewsletter", p.sectionTitleNewsletter || "");
+        setValue("studentLabelName", p.studentLabelName || "");
+        setValue("sectionDescriptionNewsletter", p.sectionDescriptionNewsletter || "");
+        if (Array.isArray(p.newsletterItems) && p.newsletterItems.length) {
+          setValue(
+            "newsletterItems",
+            p.newsletterItems.map((n: any) => ({
+              url: n.url || "",
+              date: n.date ? n.date.substring(0, 10) : "",
+              title: n.title || "",
+              description: n.description || "",
+            }))
+          );
+          const previews: any = {};
+          p.newsletterItems.forEach((n: any, idx: number) => {
+            if (n.newsLetterImage) previews[`newsletterImage${idx + 1}`] = n.newsLetterImage;
+          });
+          setImagePreviews(previews);
+        }
+      } catch {}
+    };
+    load();
+  }, [isEdit, projectId, setValue]);
 
   const handleFileChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -112,7 +145,8 @@ export default function NewsletterForm() {
       if (res.ok) {
         localStorage.setItem("projectId", projectId!);
         toast.success("Project updated successfully!");
-        router.push("/admin/project-and-initiative/new-project/live-moments");
+        const suffix = isEdit ? `?edit=1&id=${projectId}` : "";
+        router.push(`/admin/project-and-initiative/new-project/live-moments${suffix}`);
         reset();
         setFiles({});
       }
@@ -139,7 +173,7 @@ export default function NewsletterForm() {
   return (
     <div className="max-w-screen-2xl mx-auto">
       <h2 className="text-lg md:text-3xl font-bold text-sky-800 my-6 text-center md:text-left">
-        Create New Project
+        {isEdit ? "Edit Project" : "Create New Project"}
       </h2>
       <Tabs />
       <DeleteModal
