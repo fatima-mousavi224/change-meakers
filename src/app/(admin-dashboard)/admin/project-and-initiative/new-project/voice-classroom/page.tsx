@@ -1,9 +1,9 @@
 "use client";
 
 import Tabs from "@/components/create-project-tabs/Tabs";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
 import { uploadCardImage } from "lib/uploadCardImage";
 import { cn } from "@/lib/utils";
@@ -66,6 +66,30 @@ export default function VoicesFromClassroomForm() {
   };
 
   const projectId = localStorage.getItem("projectId");
+  useEffect(() => {
+    const load = async () => {
+      if (!isEdit || !projectId) return;
+      try {
+        const res = await fetch(`/api/projects/${projectId}`);
+        if (!res.ok) return;
+        const p = await res.json();
+        setValue("voicesLabelName", p.voicesLabelName || "");
+        setValue("sectionTitleVoices", p.sectionTitleVoices || "");
+        setValue("sectionDescriptionVoices", p.sectionDescriptionVoices || "");
+        if (Array.isArray(p.voices) && p.voices.length) {
+          const mapped = p.voices.map((v: any) => ({
+            quote: v.quote || "",
+            name: v.name || "",
+            location: v.location || "",
+            icon: null as File | null,
+          }));
+          setValue("voices", mapped);
+          setIconPreviews(p.voices.map((v: any) => v.icon || null));
+        }
+      } catch {}
+    };
+    load();
+  }, [isEdit, projectId, setValue]);
 
   const handleIconPreviewChange = (index: number, file: File | null) => {
     if (!file) return;
@@ -90,17 +114,21 @@ export default function VoicesFromClassroomForm() {
   };
 
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const isEdit = searchParams?.get("edit") === "1";
 
   const onSubmit = async (data: FormData) => {
     try {
       // Upload all icons in parallel and replace File with URL
       const voicesWithIconUrls = await Promise.all(
-        data.voices.map(async (voice) => {
-          let iconUrl = null;
+        data.voices.map(async (voice, idx) => {
+          let iconUrl = null as string | null;
           if (voice.icon) {
             iconUrl = await uploadCardImage(voice.icon);
+          } else if (iconPreviews[idx]) {
+            iconUrl = iconPreviews[idx]!;
           }
-          return { ...voice, icon: iconUrl };
+          return { quote: voice.quote, name: voice.name, location: voice.location, icon: iconUrl };
         })
       );
 
@@ -120,7 +148,8 @@ export default function VoicesFromClassroomForm() {
       console.log("🚀 ~ onSubmit ~ result:", result);
       if (res.ok) {
         toast.success("Voices from Classroom updated successfully!");
-        router.push(`/admin/project-and-initiative/new-project/media-block`); // Change to next section route if needed
+        const suffix = isEdit ? `?edit=1&id=${projectId}` : "";
+        router.push(`/admin/project-and-initiative/new-project/media-block${suffix}`);
         reset();
       } else {
         toast.error(result.error || "Failed to update project.");
@@ -146,7 +175,7 @@ export default function VoicesFromClassroomForm() {
   return (
     <div className="max-w-screen-2xl mx-auto">
       <h2 className="text-lg md:text-3xl font-bold text-sky-800 my-6 text-center md:text-left">
-        Create New Project
+        {isEdit ? "Edit Project" : "Create New Project"}
       </h2>
       <Tabs />
       <DeleteModal

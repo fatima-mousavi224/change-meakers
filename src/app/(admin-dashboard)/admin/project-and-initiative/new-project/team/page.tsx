@@ -5,8 +5,8 @@ import Tabs from "@/components/create-project-tabs/Tabs";
 import DeleteModal from "@/components/delete-modal/deleteModal";
 import { cn } from "@/lib/utils";
 import { uploadCardImage } from "lib/uploadCardImage";
-import { useRouter } from "next/navigation";
-import { useRef, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { FaSquarePlus, FaTrash } from "react-icons/fa6";
@@ -74,7 +74,46 @@ export default function TeamSectionForm() {
     fileInputRefs.current[name] = el;
   };
   const projectId = localStorage.getItem("projectId");
+  const searchParams = useSearchParams();
+  const isEdit = searchParams?.get("edit") === "1";
   const router = useRouter();
+
+  useEffect(() => {
+    const load = async () => {
+      if (!isEdit || !projectId) return;
+      try {
+        const res = await fetch(`/api/projects/${projectId}`);
+        if (!res.ok) return;
+        const p = await res.json();
+        setValue("teamLabelName", p.teamLabelName || "");
+        setValue("sectionTitleTeam", p.sectionTitleTeam || "");
+        setValue("sectionDescriptionTeam", p.sectionDescriptionTeam || "");
+        if (Array.isArray(p.teamCards) && p.teamCards.length) {
+          setValue(
+            "teamCards",
+            p.teamCards.map((t: any) => ({
+              name: t.name || "",
+              role: t.role || "",
+              biography: t.biography || "",
+              showLinkInput: Boolean(t.showLinkInput),
+              link: t.link || "",
+            }))
+          );
+          setTeamCardFiles({
+            images: p.teamCards.map(() => null),
+            icons: p.teamCards.map(() => null),
+          });
+          setImagePreviews(
+            p.teamCards.reduce((acc: any, t: any, idx: number) => {
+              if (t.image) acc[`teamImage${idx}`] = t.image;
+              return acc;
+            }, {})
+          );
+        }
+      } catch {}
+    };
+    load();
+  }, [isEdit, projectId, setValue]);
 
   // Handle image upload & preview for team photos
   const handleTeamImageChange = (
@@ -163,7 +202,8 @@ export default function TeamSectionForm() {
       if (response.ok) {
         localStorage.setItem("projectId", result.id);
         toast.success("Team section updated successfully!");
-        router.push("/admin/project-and-initiative/new-project/students");
+        const suffix = isEdit ? `?edit=1&id=${result.id}` : "";
+        router.push(`/admin/project-and-initiative/new-project/students${suffix}`);
         handleClear();
       }
     } catch (error: any) {
@@ -243,7 +283,7 @@ export default function TeamSectionForm() {
   return (
     <div className="max-w-screen-2xl mx-auto">
       <h2 className="text-lg md:text-3xl font-bold text-sky-800 my-6 text-center md:text-left">
-        Create New Project
+        {isEdit ? "Edit Project" : "Create New Project"}
       </h2>
       <Tabs />
       <DeleteModal

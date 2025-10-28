@@ -5,7 +5,7 @@ import { useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { uploadCardImage } from "lib/uploadCardImage";
 import toast from "react-hot-toast";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useTabs } from "@/components/context/TabsContext";
 import DeleteModal from "@/components/delete-modal/deleteModal";
@@ -38,6 +38,8 @@ export default function VisionGoalForm() {
   const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
   const router = useRouter();
   const projectId = localStorage.getItem("projectId");
+  const searchParams = useSearchParams();
+  const isEdit = searchParams?.get("edit") === "1";
 
   const setRef = (key: string) => (ref: HTMLInputElement | null) => {
     fileInputRefs.current[key] = ref;
@@ -91,7 +93,8 @@ export default function VisionGoalForm() {
       });
       if (res.ok) {
         toast.success("Vision & Goal section saved!");
-        router.push("/admin/project-and-initiative/new-project/about-program");
+        const suffix = isEdit ? `?edit=1&id=${projectId}` : "";
+        router.push(`/admin/project-and-initiative/new-project/about-program${suffix}`);
         reset();
         setImagePreviews({});
         Object.values(fileInputRefs.current).forEach((input) => {
@@ -121,7 +124,7 @@ export default function VisionGoalForm() {
   return (
     <div className="max-w-screen-2xl mx-auto">
         <h2 className="text-lg md:text-3xl font-bold text-sky-800 my-6 text-center md:text-left">
-          Create New Project
+          {isEdit ? "Edit Project" : "Create New Project"}
         </h2>
       <Tabs />
       <DeleteModal

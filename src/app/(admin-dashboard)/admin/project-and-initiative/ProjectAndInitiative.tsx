@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { FaTrash } from "react-icons/fa";
+import { FaEdit } from "react-icons/fa";
 import { IoIosArrowDown, IoIosSearch } from "react-icons/io";
 import "swiper/css";
 import "swiper/css/navigation";
@@ -204,6 +205,20 @@ const ProjectAndInitiative = ({
                   </p>
                 </div>
                 <div className="flex gap-3 text-lg text-gray-600 mt-3">
+                  <Link
+                    href={`/admin/project-and-initiative/new-project/card-components?edit=1&id=${item.id}`}
+                    className="text-blue-600 hover:text-blue-700 cursor-pointer size-4"
+                    onClick={() => {
+                      try {
+                        if (typeof window !== "undefined") {
+                          localStorage.setItem("projectId", String(item.id));
+                        }
+                      } catch {}
+                    }}
+                    aria-label={`Edit ${item.title || item.name}`}
+                  >
+                    <FaEdit className="inline-block align-middle" />
+                  </Link>
                   <FaTrash
                     aria-label={`Delete ${item.title || item.name}`}
                     className="text-red-500 hover:text-red-600 cursor-pointer size-4"

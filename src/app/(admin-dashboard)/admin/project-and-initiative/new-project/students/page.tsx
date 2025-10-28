@@ -1,12 +1,12 @@
 "use client";
 import { Controller, useForm, useFieldArray } from "react-hook-form";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FaTrash, FaSquarePlus } from "react-icons/fa6";
 import Tabs from "@/components/create-project-tabs/Tabs";
 import { uploadCardImage } from "lib/uploadCardImage";
 import { cn } from "@/lib/utils";
 import toast from "react-hot-toast";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import DeleteModal from "@/components/delete-modal/deleteModal";
 import { useTabs } from "@/components/context/TabsContext";
 
@@ -114,7 +114,44 @@ export default function StudentsSection() {
 
   const projectId =
     typeof window !== "undefined" ? localStorage.getItem("projectId") : null;
+  const searchParams = useSearchParams();
+  const isEdit = searchParams?.get("edit") === "1";
   const router = useRouter();
+  useEffect(() => {
+    const load = async () => {
+      if (!isEdit || !projectId) return;
+      try {
+        const res = await fetch(`/api/projects/${projectId}`);
+        if (!res.ok) return;
+        const p = await res.json();
+        setValue("studentLabelName", p.studentLabelName || "");
+        setValue("sectionTitleStudents", p.sectionTitleStudents || "");
+        setValue("sectionDescriptionStudents", p.sectionDescriptionStudents || "");
+        if (Array.isArray(p.studentItems) && p.studentItems.length) {
+          // initialize arrays
+          setStudentFiles({ images: p.studentItems.map(() => null), icons: p.studentItems.map(() => null) });
+          // set fields
+          setValue(
+            "studentItems",
+            p.studentItems.map((s: any) => ({
+              name: s.name || "",
+              role: s.role || "",
+              biography: s.biography || "",
+              showLinkInput: Boolean(s.showLinkInput),
+              link: s.link || "",
+            }))
+          );
+          setImagePreviews(
+            p.studentItems.reduce((acc: any, s: any, idx: number) => {
+              if (s.image) acc[`studentImage${idx}`] = s.image;
+              return acc;
+            }, {})
+          );
+        }
+      } catch {}
+    };
+    load();
+  }, [isEdit, projectId, setValue]);
 
   const onSubmit = async (data: FormData) => {
     if (!projectId) {
@@ -128,12 +165,18 @@ export default function StudentsSection() {
         let iconUrl = "";
         if (studentFiles.images[idx]) {
           imageUrl = await uploadCardImage(studentFiles.images[idx]!);
+        } else if (imagePreviews[`studentImage${idx}`]) {
+          imageUrl = imagePreviews[`studentImage${idx}`];
         }
         if (studentFiles.icons[idx]) {
           iconUrl = await uploadCardImage(studentFiles.icons[idx]!);
         }
         return {
-          ...item,
+          name: item.name,
+          role: item.role,
+          biography: item.biography,
+          link: item.link,
+          showLinkInput: Boolean(item.showLinkInput),
           image: imageUrl,
           icon: iconUrl,
         };
@@ -154,7 +197,8 @@ export default function StudentsSection() {
     if (response.ok) {
       localStorage.setItem("projectId", result.id);
       toast.success("Students section updated successfully!");
-      router.push("/admin/project-and-initiative/new-project/quotation");
+      const suffix = isEdit ? `?edit=1&id=${result.id}` : "";
+      router.push(`/admin/project-and-initiative/new-project/quotation${suffix}`);
       handleClear();
     } else {
       toast.error(result.error || "Failed to update project");
@@ -219,7 +263,7 @@ export default function StudentsSection() {
   return (
     <div className="max-w-screen-2xl mx-auto">
       <h2 className="text-lg md:text-3xl font-bold text-sky-800 my-6 text-center md:text-left">
-        Create New Project
+        {isEdit ? "Edit Project" : "Create New Project"}
       </h2>
       <Tabs />
       <section

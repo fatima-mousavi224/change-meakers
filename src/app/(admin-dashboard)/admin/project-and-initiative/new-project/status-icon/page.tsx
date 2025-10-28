@@ -1,7 +1,7 @@
 "use client";
 
 import Tabs from "@/components/create-project-tabs/Tabs";
-import { useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { uploadCardImage } from "lib/uploadCardImage";
 import toast from "react-hot-toast";
@@ -47,8 +47,29 @@ export default function StatusIconsForm() {
   const router = useRouter();
   const projectId =
     typeof window !== "undefined" ? localStorage.getItem("projectId") : null;
+  const isEdit = typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("edit") === "1" : false;
 
   const fileInputRefs = useRef<Array<HTMLInputElement | null>>([]);
+  useEffect(() => {
+    const load = async () => {
+      if (!isEdit || !projectId) return;
+      try {
+        const res = await fetch(`/api/projects/${projectId}`);
+        if (!res.ok) return;
+        const p = await res.json();
+        if (Array.isArray(p.statusAndIcons) && p.statusAndIcons.length) {
+          const mapped = p.statusAndIcons.map((s: any) => ({
+            iconTitle: s.iconTitle || "",
+            shortDescription: s.shortDescription || "",
+            statusIcon: null as File | null,
+          }));
+          setValue("sections", mapped);
+          setIconPreviews(p.statusAndIcons.map((s: any) => s.statusIcon || null));
+        }
+      } catch {}
+    };
+    load();
+  }, [isEdit, projectId, setValue]);
 
   const handleIconPreviewChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -72,13 +93,16 @@ export default function StatusIconsForm() {
   const onSubmit = async (data: StatusFormValues) => {
     try {
       const sectionsWithUrls = await Promise.all(
-        data.sections.map(async (section) => {
-          let statusIconUrl = null;
+        data.sections.map(async (section, idx) => {
+          let statusIconUrl = null as string | null;
           if (section.statusIcon) {
             statusIconUrl = await uploadCardImage(section.statusIcon);
+          } else if (iconPreviews[idx]) {
+            statusIconUrl = iconPreviews[idx]!;
           }
           return {
-            ...section,
+            iconTitle: section.iconTitle,
+            shortDescription: section.shortDescription,
             statusIcon: statusIconUrl,
           };
         })
@@ -93,7 +117,8 @@ export default function StatusIconsForm() {
       if (res.ok) {
         toast.success("Status and Icon saved successfully!");
         localStorage.setItem("projectId", result.id);
-        router.push(`/admin/project-and-initiative/new-project/vission-goal`);
+        const suffix = isEdit ? `?edit=1&id=${result.id}` : "";
+        router.push(`/admin/project-and-initiative/new-project/vission-goal${suffix}`);
         reset();
         setIconPreviews([]);
         fileInputRefs.current.forEach((ref) => {
@@ -141,7 +166,7 @@ export default function StatusIconsForm() {
   return (
     <div className="max-w-screen-2xl mx-auto">
       <h2 className="text-lg md:text-3xl font-bold text-sky-800 my-6 text-center md:text-left">
-        Create New Project
+        {isEdit ? "Edit Project" : "Create New Project"}
       </h2>
       <Tabs />
        <DeleteModal  isOpen={showModal}

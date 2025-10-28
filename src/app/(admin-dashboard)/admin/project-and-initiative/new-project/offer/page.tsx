@@ -4,11 +4,11 @@ import { useForm } from "react-hook-form";
 import Tabs from "@/components/create-project-tabs/Tabs";
 import { cn } from "@/lib/utils";
 import { uploadCardImage } from "lib/uploadCardImage";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
 import { Trash } from "lucide-react";
 import DeleteModal from "@/components/delete-modal/deleteModal";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTabs } from "@/components/context/TabsContext";
 
 interface OfferIcon {
@@ -48,7 +48,32 @@ export default function Offer() {
 
   const offerIcons = watch("offerIcons"); // watch for offerIcons array
   const projectId = localStorage.getItem("projectId");
+  const searchParams = useSearchParams();
+  const isEdit = searchParams?.get("edit") === "1";
   const router = useRouter();
+
+  useEffect(() => {
+    const load = async () => {
+      if (!isEdit || !projectId) return;
+      try {
+        const res = await fetch(`/api/projects/${projectId}`);
+        if (!res.ok) return;
+        const p = await res.json();
+        setValue("WhatWeOfferSectionTitle", p.WhatWeOfferSectionTitle || "");
+        if (Array.isArray(p.offerIcons) && p.offerIcons.length) {
+          setValue(
+            "offerIcons",
+            p.offerIcons.map((o: any) => ({
+              iconTitle: o.iconTitle || "",
+              shortDescription: o.shortDescription || "",
+              iconPreviewUrl: o.url || "",
+            }))
+          );
+        }
+      } catch {}
+    };
+    load();
+  }, [isEdit, projectId, setValue]);
 
   // Add a new offer icon
   const handleAddOfferIcon = () => {
@@ -126,7 +151,8 @@ export default function Offer() {
       if (response.ok) {
         localStorage.setItem("projectId", result.id);
         toast.success("Project updated successfully!");
-        router.push("/admin/project-and-initiative/new-project/team");
+        const suffix = isEdit ? `?edit=1&id=${projectId}` : "";
+        router.push(`/admin/project-and-initiative/new-project/team${suffix}`);
         reset();
       } else {
         toast.error(result.error || "Failed to update project.");
@@ -152,7 +178,7 @@ export default function Offer() {
   return (
     <div className="max-w-screen-2xl mx-auto">
       <h2 className="text-lg md:text-3xl font-bold text-sky-800 my-6 text-center md:text-left">
-        Create New Project
+        {isEdit ? "Edit Project" : "Create New Project"}
       </h2>
       <Tabs />
       <DeleteModal

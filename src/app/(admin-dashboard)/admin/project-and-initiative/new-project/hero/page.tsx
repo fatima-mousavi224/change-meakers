@@ -4,8 +4,8 @@ import { useTabs } from "@/components/context/TabsContext";
 import Tabs from "@/components/create-project-tabs/Tabs";
 import DeleteModal from "@/components/delete-modal/deleteModal";
 import { uploadCardImage } from "lib/uploadCardImage";
-import { useRouter } from "next/navigation";
-import { useRef, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { BsArrowRight } from "react-icons/bs";
@@ -45,8 +45,30 @@ export default function HeroPage() {
   // For image previews
   const [previews, setPreviews] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const searchParams = useSearchParams();
+  const isEdit = searchParams?.get("edit") === "1";
   const projectId = localStorage.getItem("projectId");
   const router = useRouter();
+
+  useEffect(() => {
+    const load = async () => {
+      if (!isEdit || !projectId) return;
+      try {
+        const res = await fetch(`/api/projects/${projectId}`);
+        if (!res.ok) return;
+        const p = await res.json();
+        setValue("heroTitle", p.heroTitle || "");
+        setValue("subheading", p.subheading || "");
+        setValue("slogan", p.slogan || "");
+        setValue("buttonName", p.buttonName || "");
+        setValue("buttonLink", p.buttonLink || "");
+        if (Array.isArray(p.heroImage) && p.heroImage.length) {
+          setPreviews(p.heroImage);
+        }
+      } catch {}
+    };
+    load();
+  }, [isEdit, projectId, setValue]);
 
   const onSubmit = async (data: HeroFormValues) => {
     try {
@@ -71,7 +93,8 @@ export default function HeroPage() {
       if (res.ok) {
         localStorage.setItem("projectId", result.id);
         toast.success("Hero section saved!");
-        router.push("/admin/project-and-initiative/new-project/status-icon");
+        const suffix = isEdit ? `?edit=1&id=${result.id}` : "";
+        router.push(`/admin/project-and-initiative/new-project/status-icon${suffix}`);
         reset();
         setPreviews([]);
         if (fileInputRef.current) fileInputRef.current.value = "";
@@ -140,7 +163,7 @@ export default function HeroPage() {
   return (
     <div className="max-w-screen-2xl mx-auto">
       <h2 className="text-lg md:text-3xl font-bold text-sky-800 my-6 text-center md:text-left">
-        Create New Project
+        {isEdit ? "Edit Project" : "Create New Project"}
       </h2>
       <Tabs />
 

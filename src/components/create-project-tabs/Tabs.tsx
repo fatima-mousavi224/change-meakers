@@ -2,7 +2,7 @@
 
 import clsx from "clsx";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useTabs } from "../context/TabsContext";
 
 const tabs = [
@@ -33,6 +33,9 @@ export default function Tabs() {
   const { hiddenTabs } = useTabs();
   const visibleTabs = tabs.filter(tab => !hiddenTabs.includes(tab.pathName));
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const queryString = searchParams?.toString();
+  const hasQuery = queryString && queryString.length > 0;
   const baseRoute = "/admin/project-and-initiative/new-project/";
   return (
     <div className="w-full space-y-3 mb-12">
@@ -44,10 +47,8 @@ export default function Tabs() {
           onChange={(e) => {
             const selectedTab = tabs.find((tab) => tab.name === e.target.value);
             if (selectedTab && selectedTab.href) {
-              window.location.href = `${baseRoute}${selectedTab?.href.replace(
-                /^\/+/,
-                ""
-              )}`;
+              const dest = `${baseRoute}${selectedTab?.href.replace(/^\/+/, "")}`;
+              window.location.href = hasQuery ? `${dest}?${queryString}` : dest;
             }
           }}
         >
@@ -71,7 +72,8 @@ export default function Tabs() {
           // Highlight if current path matches tab.pathName
           const isPathActive = pathname.endsWith(tab.pathName);
           if (tab.href) {
-            const fullPath = `${baseRoute}${tab.href.replace(/^\/+/, "")}`;
+            const fullPathBase = `${baseRoute}${tab.href.replace(/^\/+/, "")}`;
+            const fullPath = hasQuery ? `${fullPathBase}?${queryString}` : fullPathBase;
             return (
               <Link
                 key={tab.name}

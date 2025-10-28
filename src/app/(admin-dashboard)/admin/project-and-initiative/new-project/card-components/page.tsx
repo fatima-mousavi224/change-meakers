@@ -2,8 +2,8 @@
 
 import Tabs from "@/components/create-project-tabs/Tabs";
 import { uploadCardImage } from "lib/uploadCardImage";
-import { useRouter } from "next/navigation";
-import { useRef, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { cn } from "utilities/common";
@@ -24,9 +24,30 @@ export default function CardComponentsForm() {
   } = useForm<FormValues>();
 
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const isEdit = searchParams?.get("edit") === "1";
+  const editingId = searchParams?.get("id");
 
   const [preview, setPreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const load = async () => {
+      if (!isEdit || !editingId) return;
+      try {
+        const res = await fetch(`/api/projects/${editingId}`);
+        if (!res.ok) return;
+        const project = await res.json();
+        setValue("projectTitle", project.projectTitle || "");
+        setValue("cardDescription", project.cardDescription || "");
+        setPreview(project.uploadCardImage || null);
+        if (typeof window !== "undefined") {
+          localStorage.setItem("projectId", String(project.id));
+        }
+      } catch {}
+    };
+    load();
+  }, [isEdit, editingId, setValue]);
 
   const onSubmit = async (data: FormValues) => {
     try {
@@ -34,22 +55,45 @@ export default function CardComponentsForm() {
       if (data.cardImage) {
         cardImageUrl = await uploadCardImage(data.cardImage);
       }
-      const res = await fetch("/api/projects", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          ...data,
-          cardImage: cardImageUrl,
-        }),
-      });
-      const result = await res.json();
-      if (res.ok) {
-        toast.success("Project created successfully!");
-        localStorage.setItem("projectId", result.id);
-        router.push(`/admin/project-and-initiative/new-project/hero`);
-        reset();
+      if (isEdit && editingId) {
+        const res = await fetch(`/api/projects/${editingId}`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            projectTitle: data.projectTitle,
+            cardDescription: data.cardDescription,
+            uploadCardImage: cardImageUrl ?? undefined,
+          }),
+        });
+        const result = await res.json();
+        if (res.ok) {
+          toast.success("Project updated successfully!");
+          localStorage.setItem("projectId", result.id);
+          router.push(`/admin/project-and-initiative/new-project/hero?edit=1&id=${result.id}`);
+          reset();
+        } else {
+          toast.error(result?.error || "Failed to update project.");
+        }
+      } else {
+        const res = await fetch("/api/projects", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            ...data,
+            cardImage: cardImageUrl,
+          }),
+        });
+        const result = await res.json();
+        if (res.ok) {
+          toast.success("Project created successfully!");
+          localStorage.setItem("projectId", result.id);
+          router.push(`/admin/project-and-initiative/new-project/hero`);
+          reset();
+        }
       }
     } catch (error) {
       console.error("Error submitting form:", error);
@@ -76,7 +120,7 @@ export default function CardComponentsForm() {
   return (
     <div className="max-w-screen-2xl mx-auto">
       <h2 className="text-lg md:text-3xl font-bold text-sky-800 my-6 text-center md:text-left">
-        Create New Project
+        {isEdit ? "Edit Project" : "Create New Project"}
       </h2>
       <Tabs />
 
@@ -189,7 +233,7 @@ export default function CardComponentsForm() {
             )}
             disabled={isSubmitting}
           >
-            {isSubmitting ? "Submitting..." : "Submit"}
+            {isEdit ? (isSubmitting ? "Saving..." : "Save & Continue") : (isSubmitting ? "Submitting..." : "Submit")}
           </button>
 
           <button
