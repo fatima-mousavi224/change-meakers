@@ -64,8 +64,10 @@ export default function VoicesFromClassroomForm() {
   const setRef = (name: string) => (el: HTMLInputElement | null) => {
     fileInputRefs.current[name] = el;
   };
-
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const projectId = localStorage.getItem("projectId");
+  const isEdit = searchParams?.get("edit") === "1";
   useEffect(() => {
     const load = async () => {
       if (!isEdit || !projectId) return;
@@ -113,9 +115,8 @@ export default function VoicesFromClassroomForm() {
     handleIconPreviewChange(index, file);
   };
 
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const isEdit = searchParams?.get("edit") === "1";
+
+ 
 
   const onSubmit = async (data: FormData) => {
     try {

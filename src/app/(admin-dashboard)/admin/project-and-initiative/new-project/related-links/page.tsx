@@ -25,6 +25,7 @@ export default function RelatedLinksSection() {
     control,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
     defaultValues: {
