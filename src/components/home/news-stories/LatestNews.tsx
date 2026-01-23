@@ -34,9 +34,20 @@ const LatestNews = ({ posts }: NewsStoriesProps) => {
           </h2>
           <Link
             href="/updates"
-            className="bg-gray-800 size-8 md:size-10 flex justify-center items-center rounded-full"
+            className="bg-gray-800 size-8 md:size-10 flex justify-center items-center rounded-full group overflow-hidden"
           >
-            <GoArrowUpRight className="text-white size-5 md:size-7" />
+            <div className="relative flex flex-col h-full items-center justify-center">
+              <GoArrowUpRight
+                className="text-white size-5 md:size-7 transition-all duration-300 transform 
+                 group-hover:translate-x-8 group-hover:opacity-0"
+              />
+              {/* This second icon sits hidden above the first one */}
+              <GoArrowUpRight
+                className="text-white size-5 md:size-7 absolute -translate-x-8 opacity-0 
+                 transition-all duration-300 transform 
+                 group-hover:translate-x-0 group-hover:opacity-100"
+              />
+            </div>
           </Link>
         </div>
         <button
@@ -113,6 +124,23 @@ const LatestNews = ({ posts }: NewsStoriesProps) => {
           ))}
         </Swiper>
       </div>
+
+        <style jsx>{`
+        .group:hover .hover-bounce {
+          animation: updown 700ms cubic-bezier(.22,.9,.31,1) 1;
+        }
+        .hover-bounce {
+          display: inline-block;
+          transform: translateY(0);
+        }
+        @keyframes updown {
+          0% { transform: translateY(0); }
+          30% { transform: translateY(-10px); }
+          60% { transform: translateY(4px); }
+          100% { transform: translateY(0); }
+        }
+      `}</style>
+
     </div>
   );
 };

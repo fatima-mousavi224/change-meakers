@@ -28,14 +28,14 @@ export default async function HomePage() {
       <div className="max-w-screen-2xl px-4 mx-auto">
       <HeroSlider />
       <InfiniteBanner direction="left" />
-      <Ourchanges />
       <WhoWeAre />
+      <Ourchanges />
       {/* <NewsStories posts={posts} categories={categories} /> */}
       </div>
-      <ProjectInitiatives />
+      {/* <ProjectInitiatives /> */}
        <div className="max-w-screen-2xl px-4 mx-auto">
 
-      <HomeVedio />
+      {/* <HomeVedio /> */}
        </div>
       <LatestNews posts={posts} />
       <div className="max-w-screen-2xl px-4 mx-auto">

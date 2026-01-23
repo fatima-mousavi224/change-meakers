@@ -102,19 +102,19 @@ const HeroSlider: React.FC = () => {
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-2">
             Change Makers of the World
           </h2>
-          <p className="text-sm md:text-lg text-white mb-1 font-bold font-plusJakartaSans">
-            Our Vision: Together, we can change the world.
+          <p className="text-sm md:text-lg text-white mb-1 font-bold font-plusJakartaSans text-wrap">
+            A youth-led organization established in Afghanistan, focused on girls’ education and human rights through community-based work and international engagement.
           </p>
-          <p className="text-[#F2F2F2] font-plusJakartaSans mb-3">
+          {/* <p className="text-[#F2F2F2] font-plusJakartaSans mb-3">
             Stand With Us: #LetAfghanGirlsLearn
-          </p>
-          <Link
+          </p> */}
+          {/* <Link
             href="/about"
             className="bg-white text-black_color text-md font-medium py-2 px-4 rounded-full hover:bg-gray-200 flex items-center text-center gap-2"
           >
             <span>Learn More</span>
             <RighArrow />
-          </Link>
+          </Link> */}
         </div>
 
         {/* Pagination Dots in Bottom Right Corner */}

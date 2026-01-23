@@ -62,13 +62,13 @@ export default function Slider({ images, mobileImages }: SliderProps) {
   const currentImages = isMobile ? mobileImages : images;
 
   return (
-    <div className="lg:w-[47vw]">
+    <div className="lg:w-[47vw] h-full">
       <div className="relative overflow-hidden rounded-xl shadow-lg z-20">
         {/* Full Gradient Overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-primary-50 via-transparent to-transparent opacity-90 z-30 rounded-xl"></div>
 
         <div
-          className="relative sm:h-[75vh] h-[40vh] overflow-hidden"
+          className="relative sm:h-[90vh] h-[40vh] overflow-hidden"
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}

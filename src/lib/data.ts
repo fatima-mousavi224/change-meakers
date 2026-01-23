@@ -310,7 +310,9 @@ export const cardHumanitarianData = [
 ];
 
 export const infiniteBannerData = [
-  "Be a part of the change—your action matters",
-  "Together, we can change the world ",
-  "Change Makers of the World fights for human rights and educational equality in Afghanistan and beyond",
+  "Youth-led organization founded in Afghanistan ",
+  "Focused on girls’ education and human rights ",
+  "Community-based education initiatives ",
+  "Youth participation and leadership development ",
+  "Engagement through national and international platforms",
 ];

@@ -2,9 +2,11 @@ import Banner from '@/components/common/Banner';
 
 import { Metadata } from 'next';
 
-import OurMission from '@/components/mission-and-impact/OurMission';
+// OurMission and OurVision replaced by a redesigned component
+// import OurMission from '@/components/mission-and-impact/OurMission';
 
-import OurVision from '@/components/mission-and-impact/OurVision';
+// import OurVision from '@/components/mission-and-impact/OurVision';
+import NewMissionDesign from '@/components/mission-and-impact/NewMissionDesign';
 import Participants from '@/components/mission-and-impact/Participants';
 
 export const metadata: Metadata = {
@@ -19,10 +21,11 @@ const MissionAndImpact = () => {
         <Banner>
           <span>Mission & Impact</span>
         </Banner>
-        <OurMission />
-        <OurVision />
+        {/* <OurMission /> */}
+        {/* <OurVision /> */}
+        <NewMissionDesign />
       </div>
-      <Participants />
+      {/* <Participants /> */}
     </section>
   );
 };

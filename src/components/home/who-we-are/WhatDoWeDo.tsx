@@ -6,35 +6,27 @@ const WhatDoWeDo = () => {
     <div className="lg:w-[47vw] rounded-xl bg-[#F2F2F2] p-5 flex flex-col justify-between">
       <div>
         <h2 className="sm:text-2xl text-base font-semibold text-gray-800 mb-4">
-          What do we do?
+          Who We Are
         </h2>
         <div className="flex flex-col gap-2">
-          <p className="text-lg">Transforming lives through education</p>
+          {/* <p className="text-lg">Transforming lives through education</p> */}
           <div className="text-sm xl:text-base mb-2 text-justify text-paragraph_color xl:leading-7 leading-5">
             <p>
-              In Afghanistan, decades of development progress have been undone
-              since 2021. Today, 7.8 million children are out of school,
-              according to UNICEF.
+              Change Makers of the World is a youth-led organization established in 2020 in Kabul, Afghanistan. The organization works primarily on girls’ education and human rights, with programs and advocacy activities focused on Afghanistan.
             </p>
             <br />
             <p>
-              Despite many challenges, our dedicated volunteers both inside and
-              outside Afghanistan provide in-person and online classes and
-              programs for students.
+              Since its establishment, Change Makers of the World has implemented education-related initiatives, supported access to learning resources, and engaged young people in discussions on rights and participation. The organization’s work has taken place both inside Afghanistan and through engagement with Afghan communities and platforms abroad.
             </p>
             <br />
 
             <p>
-              We develop and support educational programs that provide quality
-              learning opportunities and essential skills to Afghan children.
-              Additionally, we distribute books and school materials, advocate
-              for their rights globally, and are committed to championing human
-              rights, especially women’s rights.
+              Alongside community-based activities, Change Makers of the World engages with international audiences to raise awareness of the realities facing Afghan girls and youth, and to contribute to public and institutional dialogue on education and rights.
             </p>
           </div>
         </div>
       </div>
-      <div className="flex justify-between">
+      {/* <div className="flex justify-between">
         <Link
           href="/current-programs"
           className="inline-block text-primary_color text-sm xl:text-base"
@@ -44,7 +36,7 @@ const WhatDoWeDo = () => {
         <Link href="/current-programs">
           <ArrowRight className="bg-black rounded-full hover:bg-opacity-80 " />
         </Link>
-      </div>
+      </div> */}
     </div>
   );
 };
