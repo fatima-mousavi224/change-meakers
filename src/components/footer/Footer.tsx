@@ -103,14 +103,14 @@ export default function Footer() {
           >
             <Telegrams className="size-6" />
           </Link>
-          <Link
+          {/* <Link
             href="https://wa.me/14172685815?text=Hi%2C%20can%20you%20help%20me%3F"
             className="hover:scale-110 duration-200"
             target="_blank"
             rel="noopener noreferrer"
           >
             <Whatsapp className="size-6" />
-          </Link>
+          </Link> */}
           <Link
             target="_blank"
             href={"https://youtube.com/@cmw_world"}
@@ -131,7 +131,7 @@ export default function Footer() {
           >
             Privacy Policy
           </Link>
-          <p className="text-sm text-gray-400">
+          {/* <p className="text-sm text-gray-400">
             WhatsApp and Phone:
             <Link
               href="https://wa.me/14172685815?text=Hi%2C%20can%20you%20help%20me%3F"
@@ -139,7 +139,7 @@ export default function Footer() {
             >
               +1 (417) 268-5815
             </Link>
-          </p>
+          </p> */}
         </div>
         {/* copy right mobile */}
         <div className="sm:hidden flex lg:flex-row flex-col gap-4 text-center justify-center text-gray-400">

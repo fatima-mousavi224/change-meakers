@@ -39,10 +39,13 @@ export default function Subscribe() {
                 <SubscriptionMessageIcon />
               </div>
             </div>
-            <h2 className="text-sm md:text-lg text-black  md:font-bold font-semibold sm:text-start text-center">
-              Stay updated! Subscribe to receive the latest news, events, and
-              impact stories from our work.
+            <div>
+
+            <h2 className="text-sm md:text-lg text-black  md:font-bold font-semibold">
+              Subscribe for Updates
             </h2>
+            <p className="text-gray-600">Receive periodic updates on reports, programs, and public announcements.</p>
+            </div>
           </div>
           <div className="lg:w-[40%] w-full">
             <form

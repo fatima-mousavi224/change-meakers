@@ -52,7 +52,7 @@ function ProjectInitiatives() {
       <div className="bg-light_gray">
         <div className="max-w-7xl mx-auto py-10 px-8">
           <h2 className="text-3xl mb-12 font-bold text-left">
-            Projects & Initiatives
+            Highlight Programs
           </h2>
           <div className="flex justify-center items-center h-64">
             <p className="text-lg">Loading projects...</p>
@@ -66,7 +66,7 @@ function ProjectInitiatives() {
       <div className="bg-light_gray">
         <div className="max-w-7xl mx-auto py-10 px-8">
           <h2 className="text-3xl mb-12 font-bold text-left">
-            Projects & Initiatives
+            Highlight Programs
           </h2>
           <div className="flex justify-center items-center h-64">
             <p className="text-lg">No projects available at the moment.</p>
@@ -80,7 +80,7 @@ function ProjectInitiatives() {
     <div className="bg-light_gray">
       <div className="max-w-7xl mx-auto py-10 px-8">
         <h2 className="text-3xl mb-12 font-bold text-left">
-          Projects & Initiatives
+          Highlight Programs
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {projects.slice(0, visibleProjects).map((project) => (

@@ -7,8 +7,7 @@ export default function Team() {
     <div className="space-y-10 pb-10">
       <Header
         btnName="Board of Directors"
-        title='"Stories Behind
-Change Makers of the World"'
+        title='Leadership'
       />
       <TeamCards />
     </div>

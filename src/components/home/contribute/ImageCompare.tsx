@@ -17,7 +17,7 @@ export default function ImageCompare({ className }: ImageCompareProps) {
   return (
     <div className={cn("shadow-md shadow-gray-900/5", className)}>
       <ReactCompareSlider
-        className="lg:h-[544px] rounded-lg"
+        className="lg:h-[300px] rounded-lg"
         itemOne={<ReactCompareSliderImage src={imgSrc[1]} alt="Image one" />}
         itemTwo={<ReactCompareSliderImage src={imgSrc[2]} />}
       />

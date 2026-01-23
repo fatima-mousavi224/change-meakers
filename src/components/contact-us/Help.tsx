@@ -33,7 +33,7 @@ export default function Help() {
         </Link>
 
         {/* Phone Section */}
-        <div
+        {/* <div
           className="relative flex items-center lg:gap-3 "
           onMouseEnter={() => setShowPhoneTooltip(true)}
           onMouseLeave={() => setShowPhoneTooltip(false)}
@@ -41,7 +41,6 @@ export default function Help() {
           <div className="w-[44px] h-[44px] rounded-[10px] bg-primary-50 bg-opacity-20 flex items-center justify-center">
             <Call />
           </div>
-          {/* Tooltip for Phone on Mobile */}
           <div className="lg:hidden">
             {showPhoneTooltip && (
               <div className="absolute left-12 top-0 bg-white shadow-md p-2 rounded-md z-10 w-40">
@@ -54,12 +53,12 @@ export default function Help() {
               </div>
             )}
           </div>
-          {/* Direct Content for Phone on Larger Screens */}
           <div className="hidden lg:flex gap-3 text-paragraph_color text-xl">
             <Link href="tel:+14172685815">+1 (417) 268-5815</Link>/
             <Link href="tel:+4915213737840">+49 1521 3737840</Link>
           </div>
-        </div>
+        </div> 
+        */}
 
         {/* Social Links Section */}
         <div

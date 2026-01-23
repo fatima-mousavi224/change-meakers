@@ -42,7 +42,7 @@ function ProjectCard({ project }: ProjectCardProps) {
             href={`/programs/${project.navigationLabel}`}
             className="bg-transparent border border-gray-200  text-gray-300 text-xs font-medium px-4 py-2 rounded-md hover:bg-gray-200 hover:text-black transition"
           >
-            Learn more
+            View Program
           </Link>
         </div>
       </div>

@@ -7,8 +7,9 @@ import background from "public/images/about/Background.jpg";
 import back from "public/images/about/back.png";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowCircleUp, ArrowRight, Instagram, Telegram } from "../icons/Icons";
-import { FaGlobe } from "react-icons/fa6";
+import { ArrowCircleUp, ArrowRight, Instagram, LinkIcon } from "../icons/Icons";
+import { FaGlobe, FaX } from "react-icons/fa6";
+import { Linkedin } from "lucide-react";
 
 const TeamCards = () => {
   return (
@@ -34,31 +35,30 @@ const TeamCards = () => {
           {/* Hover Overlay */}
           <div className="absolute inset-0 bg-white h-[376px] bg-opacity-60 flex flex-col justify-center items-center text-center text-primary-50 opacity-0 group-hover:opacity-100 transition-opacity duration-700 ease-in-out">
             <p className="text-sm px-4 text-justify">
-              Mohammad Jawid Amani is an Afghan education activist and the
-              founder of Change Makers of the World, a volunteer community
-              focused on improving education and advocating for human rights in
-              Afghanistan. He also co-founded Afghanistan’s National Youth
-              Consensus, a platform that gave young Afghans a voice in important
-              national discussions, including the Afghan peace process.
+              Mohammad Jawid Amani is the Founder and Executive Director of Change Makers of the World. He is responsible for the organization’s strategic direction, program development, and external engagement related to education and youth-focused initiatives.
+
+              His work has focused on education access and youth participation in Afghanistan, including coordination of community-based activities and engagement with national and international platforms.
             </p>
             <div className="flex gap-2 mt-4">
               <Link
                 href={"https://www.jawidamani.com/"}
+                target="_blank"
                 className="bg-primary-50 bg-opacity-15 hover:bg-opacity-30 rounded-md size-8 flex items-center justify-center"
               >
                 <FaGlobe />
               </Link>
-              <Link
+              {/* <Link
                 href={"https://www.instagram.com/jawid_amani/"}
                 className="bg-primary-50 bg-opacity-15 hover:bg-opacity-30 rounded-md size-8 flex items-center justify-center"
               >
                 <Instagram />
-              </Link>
+              </Link> */}
               <Link
-                href={"about/amani"}
+                href="www.linkedin.com/in/jawidamani/"
+                target="_blank"
                 className="bg-primary-50 bg-opacity-15 hover:bg-opacity-30 rounded-md size-8 flex items-center justify-center"
               >
-                <ArrowRight />
+                <Linkedin />
               </Link>
             </div>
           </div>
@@ -69,7 +69,7 @@ const TeamCards = () => {
           <h3 className="font-normal text-lg text-black_color">
             Mohammad Jawid Amani
           </h3>
-          <p className="text-sm text-paragraph_color">Founder</p>
+          {/* <p className="text-sm text-paragraph_color">Founder</p> */}
         </div>
       </div>
       {/* Card 2 */}
@@ -92,19 +92,16 @@ const TeamCards = () => {
           {/* Hover Overlay */}
           <div className="absolute inset-0 bg-white h-[376px] bg-opacity-60 flex flex-col justify-center items-center text-center text-primary-50 opacity-0 group-hover:opacity-100 transition-opacity duration-700 ease-in-out">
             <p className="text-sm px-4 text-justify">
-              Ms. Rahmati is the President of Change Makers of the World in the
-              USA. She has been recognized by the United States Congress for her
-              efforts to inspire women to embrace self-love, independence,
-              education, and confidence. Today, she continues to advocate for
-              human rights and stands in solidarity with the people of
-              Afghanistan during these challenging times.
+              Masuda Rahmati serves as President of Change Makers of the World in the United States. She supports organizational coordination, outreach, and engagement with partners based in the U.S., with a focus on strengthening program support and external relations.
+
+              She has a professional background in business and authorship, which informs her role in supporting the organization’s education-related initiatives and engagement efforts connected to Afghanistan.
             </p>
             <div className="flex gap-2 mt-4">
               <Link
-                href={"about/rahmati"}
+                href='https://www.masudarahmati.com/'
                 className="bg-primary-50 bg-opacity-15 hover:bg-opacity-30 rounded-md size-8 flex items-center justify-center"
               >
-                <ArrowRight />
+                <FaGlobe />
               </Link>
             </div>
           </div>
@@ -113,9 +110,9 @@ const TeamCards = () => {
         <div className="h-[10px] bg-primary-50 w-full"></div>
         <div className="p-4 text-center">
           <h3 className="font-normal text-lg text-black_color">
-            Massie Rahmati
+            Masuda Rahmati
           </h3>
-          <p className="text-sm text-paragraph_color">President - USA</p>
+          {/* <p className="text-sm text-paragraph_color">President - USA</p> */}
         </div>
       </div>
 
@@ -191,34 +188,30 @@ const TeamCards = () => {
           {/* Hover Overlay */}
           <div className="absolute inset-0 bg-white h-[376px] bg-opacity-60 flex flex-col justify-center items-center text-center text-primary-50 opacity-0 group-hover:opacity-100 transition-opacity duration-700 ease-in-out delay-100">
             <p className="text-sm px-4 text-justify">
-              Mohammad Reza Hussaini, currently based in the USA, is a leading
-              advocate for peace, education, and human rights. He is the founder
-              of the National Youth Consensus for Peace and Change Makers of the
-              World. Additionally, he leads Peshtaaz LLC, an organization
-              working on the Jobs4Peace initiative. Hussaini has partnered with
-              local organizations, the Afghan government, and the international
-              community to support and implement projects that promote human
-              rights and peace.
+              Mohammad Reza Hussaini is involved with Change Makers of the World through support to program activities connected to education and youth participation. He contributes to the organization’s work by engaging in education related and social initiatives.
+
+              Based in the United States, his involvement supports coordination and engagement related to the organization’s activities.
             </p>
             <div className="flex gap-2 mt-4">
               <Link
-                href={"https://www.rezahussaini.com/"}
+                href="https://x.com/m_rezahussaini"
+                target="_blank"
                 className="bg-primary-50 bg-opacity-15 hover:bg-opacity-30 rounded-md size-8 flex items-center justify-center"
               >
-                <FaGlobe />
+                <FaX />
               </Link>
-              <Link
+              {/* <Link
                 href={"www.instagram.com/m_rezahussaini"}
                 className="bg-primary-50 bg-opacity-15 hover:bg-opacity-30 rounded-md size-8 flex items-center justify-center"
               >
                 <Instagram />
-              </Link>
-              <Link
+              </Link> */}
+              {/* <Link
                 href={"about/hussaini"}
                 className="bg-primary-50 hover:bg-opacity-30 bg-opacity-15 rounded-md size-8 flex items-center justify-center"
               >
                 <ArrowRight />
-              </Link>
+              </Link> */}
             </div>
           </div>
         </div>
@@ -228,7 +221,7 @@ const TeamCards = () => {
           <h3 className="font-normal text-lg text-black_color">
             Mohammad Reza Hussaini
           </h3>
-          <p className="text-sm text-paragraph_color">Founder</p>
+          {/* <p className="text-sm text-paragraph_color">Founder</p> */}
         </div>
       </div>
     </div>
