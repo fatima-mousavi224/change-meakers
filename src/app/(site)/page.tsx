@@ -1,47 +1,48 @@
-import Subscribe from "@/components/contact-us/Subscribe";
-import Contribute from "@/components/home/contribute/Contribute";
-import HeroSlider from "@/components/home/hero-section/HeroSlider";
-import HomeVedio from "@/components/home/homeVedio";
-import { InfiniteBanner } from "@/components/home/infinite-banner/InfiniteBanner";
-import LatestNews from "@/components/home/news-stories/LatestNews";
-import NewsStories from "@/components/home/news-stories/news-stories";
-import Ourchanges from "@/components/home/our-changes/OurChanges";
-import ProjectInitiatives from "@/components/home/project-Initiative/ProjectInitiatives";
-import WhoWeAre from "@/components/home/who-we-are/WhoWeAre";
-import "@/lib/env";
-import prisma from "@/lib/prismaDB";
+// import Subscribe from "@/components/contact-us/Subscribe";
+// import Contribute from "@/components/home/contribute/Contribute";
+// import HeroSlider from "@/components/home/hero-section/HeroSlider";
+// import HomeVedio from "@/components/home/homeVedio";
+// import { InfiniteBanner } from "@/components/home/infinite-banner/InfiniteBanner";
+// import LatestNews from "@/components/home/news-stories/LatestNews";
+// import NewsStories from "@/components/home/news-stories/news-stories";
+// import Ourchanges from "@/components/home/our-changes/OurChanges";
+// import ProjectInitiatives from "@/components/home/project-Initiative/ProjectInitiatives";
+// import WhoWeAre from "@/components/home/who-we-are/WhoWeAre";
+// import "@/lib/env";
+// import prisma from "@/lib/prismaDB";
+import UnderDevelopment from "@/components/under-development/UnderDevelopment";
 
-export default async function HomePage() {
-  // select the 4 latest posts
-    const posts = await prisma.post.findMany({
-    take: 10,
-    where: {
-      showInHome: true,
-    },
-    orderBy: {
-      postDate: "desc", 
-    },
-  });
+export default function HomePage() {
+  // const posts = await prisma.post.findMany({
+  //   take: 10,
+  //   where: {
+  //     showInHome: true,
+  //   },
+  //   orderBy: {
+  //     postDate: "desc",
+  //   },
+  // });
 
   return (
-    <main >
-      <div className="max-w-screen-2xl px-4 mx-auto">
-      <HeroSlider />
-      <InfiniteBanner direction="left" />
-      <WhoWeAre />
-      <Ourchanges />
-      {/* <NewsStories posts={posts} categories={categories} /> */}
-      </div>
-      {/* <ProjectInitiatives /> */}
-       <div className="max-w-screen-2xl px-4 mx-auto">
+    <main>
+      <UnderDevelopment />
 
-      {/* <HomeVedio /> */}
-       </div>
+      {/* --- Original home page (commented out) --- */}
+      {/* <div className="max-w-screen-2xl px-4 mx-auto">
+        <HeroSlider />
+        <InfiniteBanner direction="left" />
+        <WhoWeAre />
+        <Ourchanges />
+      </div>
+      <ProjectInitiatives />
+      <div className="max-w-screen-2xl px-4 mx-auto">
+        <HomeVedio />
+      </div>
       <LatestNews posts={posts} />
       <div className="max-w-screen-2xl px-4 mx-auto">
-      <Contribute />
-      <Subscribe />
-      </div>
+        <Contribute />
+        <Subscribe />
+      </div> */}
     </main>
   );
 }

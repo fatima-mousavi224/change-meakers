@@ -3,7 +3,7 @@ import * as React from "react";
 
 import "@/styles/globals.css";
 import { Plus_Jakarta_Sans } from "next/font/google";
-import prisma from "@/lib/prismaDB";
+// import prisma from "@/lib/prismaDB";
 
 import { siteConfig } from "@/constant/config";
 
@@ -11,11 +11,11 @@ const plusJakartaSans = Plus_Jakarta_Sans({
   weight: ["300", "400", "500", "600", "700"],
   subsets: ["latin"],
 });
-import { getCurrentUser } from "@/utilities/getCurrentUser";
-import NavBar from "../../components/navbar/NavBar";
-import Footer from "@/components/footer/Footer";
+// import { getCurrentUser } from "@/utilities/getCurrentUser";
+// import NavBar from "../../components/navbar/NavBar";
+// import Footer from "@/components/footer/Footer";
 import { Toaster } from "react-hot-toast";
-import SearchModal from "@/components/search/SearchModal";
+// import SearchModal from "@/components/search/SearchModal";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
@@ -55,13 +55,13 @@ export const metadata: Metadata = {
   ],
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const user = await getCurrentUser();
-  const posts = await prisma.post.findMany();
+  // const user = await getCurrentUser();
+  // const posts = await prisma.post.findMany();
 
   return (
     <html>
@@ -74,14 +74,15 @@ export default async function RootLayout({
             },
           }}
         />
-        <React.Suspense fallback="loading...">
+        {/* Front-facing chrome (commented out during development) */}
+        {/* <React.Suspense fallback="loading...">
           <NavBar user={user} posts={posts} />
         </React.Suspense>
         <React.Suspense fallback="loading...">
           <SearchModal posts={posts} />
-        </React.Suspense>
+        </React.Suspense> */}
         {children}
-        <Footer />
+        {/* <Footer /> */}
       </body>
     </html>
   );
