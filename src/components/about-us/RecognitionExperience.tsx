@@ -1,8 +1,9 @@
 import React from "react";
+import { SITE_CONTAINER_CLASS } from "@/constant/siteContainer";
 
 export default function RecognitionExperience() {
   return (
-    <section className="w-full max-w-screen-2xl mx-auto px-4 py-12">
+    <section className={`w-full ${SITE_CONTAINER_CLASS} py-12`}>
       <div className="grid gap-6 lg:grid-cols-2">
         <article className="rounded-xl bg-white shadow-lg overflow-hidden">
           <div className="px-8 py-6">

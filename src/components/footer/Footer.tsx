@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import logo from "../../../public/images/logo.jpg";
+import SiteContainer from "@/components/common/SiteContainer";
 import {
   Facebook,
   Instagrams,
@@ -12,9 +13,9 @@ import {
 
 export default function Footer() {
   return (
-    <footer className="relative bg-[#F2F2F2] mt-4 lg:py-0 p-4">
+    <footer className="relative bg-[#F2F2F2] mt-4">
       {/*  Logo */}
-      <div className="lg:flex-row flex flex-col lg:gap-8 gap-4 justify-between lg:py-8  lg:border-b-2 border-b-0 border-[#BEBEBE] max-w-screen-2xl mx-auto">
+      <SiteContainer className="lg:flex-row flex flex-col lg:gap-8 gap-4 justify-between lg:py-8 py-4 lg:border-b-2 border-b-0 border-[#BEBEBE]">
         <div className="flex lg:flex-row flex-col items-center sm:space-x-4 space-y-4">
           <Image src={logo} alt="Logo" className="rounded-full w-16 h-16" />
           <span className="lg:text-lg text-sm font-bold mt-2 sm:mt-0">
@@ -68,9 +69,9 @@ export default function Footer() {
             Donate
           </Link>
         </nav>
-      </div>
+      </SiteContainer>
       {/* logos */}
-      <div className=" flex lg:flex-row flex-col justify-between max-w-screen-2xl mx-auto items-center lg:py-8 py-4">
+      <SiteContainer className="flex lg:flex-row flex-col justify-between items-center lg:py-8 py-4">
         <div className="items-center justify-center py-4 lg:py-0  lg:gap-4 gap-1 p-2 flex border-y-2 lg:mb-0 mb-2 lg:border-y-0">
           <h2 className="lg:text-xl text-sm text-black p-1 hidden sm:block">
             FOLLOW US
@@ -162,7 +163,7 @@ export default function Footer() {
             {`Copyright © ${new Date().getFullYear()} Change Makers of the World`}{" "}
           </p>
         </div>
-      </div>
+      </SiteContainer>
     </footer>
   );
 }

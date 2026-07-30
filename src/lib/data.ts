@@ -54,14 +54,14 @@ export const navigation = [
   },
   { name: "About", href: "/about", icon: "/images/navbar/2.svg" },
   {
-    name: "Mission & Impact",
-    href: "/mission&impact",
-    icon: "/images/navbar/3.svg",
-  },
-  {
     name: "Programs",
     href: "/current-programs",
     icon: "/images/navbar/2.svg",
+  },
+  {
+    name: "Opportunities",
+    href: "/apply",
+    icon: "/images/navbar/3.svg",
   },
   {
     name: "Updates",
@@ -69,11 +69,21 @@ export const navigation = [
     icon: "/images/navbar/4.svg",
   },
   {
-    name: "Contact Us",
+    name: "Contact",
     href: "/contact",
     icon: "/images/navbar/5.svg",
   },
 ];
+
+export const mobileNavigation = [
+  { name: "Home", href: "/" },
+  { name: "About", href: "/about" },
+  { name: "Programs", href: "/current-programs" },
+  { name: "Opportunities", href: "/apply" },
+  { name: "Updates", href: "/updates" },
+  { name: "Contact", href: "/contact" },
+];
+
 export const importantButtons = [
   { name: " Donate ", href: "/donate", icon: PhoneIcon },
 ];

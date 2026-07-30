@@ -48,8 +48,23 @@ export default {
         dark: "#222222",
         dashboard_body_bg: "#F4F7FE",
       },
-      keyframes: {},
-      animation: {},
+      keyframes: {
+        heartbeat: {
+          "0%, 100%": { transform: "scale(1)" },
+          "14%": { transform: "scale(1.18)" },
+          "28%": { transform: "scale(1)" },
+          "42%": { transform: "scale(1.12)" },
+          "70%": { transform: "scale(1)" },
+        },
+        shimmer: {
+          "0%": { transform: "translateX(-120%) skewX(-12deg)" },
+          "100%": { transform: "translateX(220%) skewX(-12deg)" },
+        },
+      },
+      animation: {
+        heartbeat: "heartbeat 1.8s ease-in-out infinite",
+        shimmer: "shimmer 2.5s ease-in-out infinite",
+      },
     },
   },
   plugins: [require("@tailwindcss/forms")],

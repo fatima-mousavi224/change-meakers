@@ -1,4 +1,5 @@
 import Banner from "@/components/common/Banner";
+import SiteContainer from "@/components/common/SiteContainer";
 import BlogPosts from "@/components/updates/UpdatePosts";
 import prisma from "@/lib/prismaDB";
 import { Metadata } from "next";
@@ -24,7 +25,7 @@ export default async function UpdatePage() {
   return (
     <main>
       <Suspense fallback={"loading..."}>
-        <section className="mt-4 max-w-screen-2xl px-4 mx-auto">
+        <SiteContainer as="section" className="mt-4">
             <div className="bg-common bg-no-repeat bg-center bg-cover py-24 rounded-xl  flex justify-center items-center relative">
                 <div className="absolute inset-0 bg-gradient-to-br" />
                 <h1
@@ -46,7 +47,7 @@ export default async function UpdatePage() {
             </h2>
           </div> */}
           <BlogPosts posts={posts} categories={categories} />
-        </section>
+        </SiteContainer>
       </Suspense>
     </main>
   );

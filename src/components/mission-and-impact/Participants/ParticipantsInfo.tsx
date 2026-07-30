@@ -7,6 +7,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import { Navigation } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
+import { SITE_CONTAINER_CLASS } from "@/constant/siteContainer";
 
 import image1 from "public/images/mission-impact/participants/1.jpg";
 import image2 from "public/images/mission-impact/participants/2.jpg";
@@ -105,7 +106,7 @@ export default function ParticipantsInfo() {
   const swiperRef = useRef<SwiperType | null>(null); // Specify type for swiperRef
 
   return (
-    <div className="relative md:mt-12 mt-8 mb-8 max-w-screen-2xl px-4 mx-auto">
+    <div className={`relative md:mt-12 mt-8 mb-8 ${SITE_CONTAINER_CLASS}`}>
       <Swiper
         onSwiper={(swiper: SwiperType) => (swiperRef.current = swiper)}
         modules={[Navigation]}

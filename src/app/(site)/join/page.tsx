@@ -1,5 +1,6 @@
 "use client";
 import Banner from "@/components/common/Banner";
+import SiteContainer from "@/components/common/SiteContainer";
 import React, { useState } from "react";
 import Image from "next/image";
 import { IoMdClose } from "react-icons/io";
@@ -292,7 +293,7 @@ export default function ApplyContribution() {
   };
 
   return (
-    <div className="flex mt-4 max-w-screen-2xl mx-auto px-4">
+    <SiteContainer className="flex mt-4">
       <main>
         <div className="md:px-5">
           <Banner>
@@ -1272,6 +1273,6 @@ export default function ApplyContribution() {
           </form>
         </div>
       </main>
-    </div>
+    </SiteContainer>
   );
 }

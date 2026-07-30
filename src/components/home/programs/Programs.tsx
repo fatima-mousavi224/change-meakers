@@ -5,6 +5,7 @@ import Link from "next/link";
 import { TouchEvent, useEffect, useState } from "react";
 // components/StatsCard.tsx
 import Icon from "@/components/common/IconComponent";
+import { SITE_CONTAINER_CLASS } from "@/constant/siteContainer";
 import Subscribe from "@/components/contact-us/Subscribe";
 import Header from "@/components/current-program-page/Header";
 import ProgramsSliders from "@/components/home/programs/ProgramsSliders";
@@ -283,9 +284,8 @@ const Programs = ({
     <div>
       {/* Hero section */}
       {validHeroImages.length && (
-      <section className="max-w-screen-2xl px-4 mx-auto">
-        <div className="lg:px-2">
-          <div className="relative w-full max-w-[96vw] mx-auto mt-3 rounded-[35px] shadow-lg z-20">
+      <section className={SITE_CONTAINER_CLASS}>
+        <div className="relative w-full mt-3 rounded-[35px] shadow-lg z-20">
             {/* Full Gradient Overlay */}
             <div className="absolute inset-0 bg-gradient-to-t from-blue-800 via-transparent to-transparent opacity-90 z-10 rounded-[35px]"></div>
 
@@ -373,13 +373,12 @@ const Programs = ({
               </>
             )}
           </div>
-        </div>
       </section>
       )}
 
       {/* Programs Section */}
       {project?.statusAndIcons?.length && (
-      <section className="bg-light_gray overflow-x-hidden md:bg-white max-w-screen-2xl mx-auto mt-10 px-6">
+      <section className={cn("bg-light_gray overflow-x-hidden md:bg-white mt-10", SITE_CONTAINER_CLASS)}>
         <div className="bg-light_gray rounded-xl py-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-6  items-center">
           {project?.statusAndIcons?.slice(0, 4).map((statusIcon, index) => (
             <div
@@ -411,7 +410,7 @@ const Programs = ({
 
       {/* our vission & our goal & slider section */}
       {project?.visionTitle && project?.goalTitle && (
-      <section className="max-w-screen-2xl px-6 mx-auto mt-10 overflow-x-hidden">
+      <section className={cn(SITE_CONTAINER_CLASS, "mt-10 overflow-x-hidden")}>
         <div className=" grid grid-cols-1 lg:grid-cols-2 gap-6  justify-center ">
           {/* goal and vission part */}
           <div className="grid col-span-1 gap-4">
@@ -504,7 +503,7 @@ const Programs = ({
       )}
       {/* About the program section  */}
       {project?.sectionTitleAbout && (
-      <section className="max-w-screen-2xl px-4 mx-auto mt-10">
+      <section className={cn(SITE_CONTAINER_CLASS, "mt-10")}>
         <div className="bg-light_gray p-8 rounded-xl shadow text-gray-800 space-y-6">
           {/* Title */}
           <h2 className="text-2xl font-semibold text-center">
@@ -532,7 +531,7 @@ const Programs = ({
       {/* Voices from the Classroom section */}
       {project?.voicesLabelName && (
       <section className="bg-light_gray mt-10">
-        <div className=" max-w-screen-2xl mx-auto lg:p-20 md:p-16 px-2 py-10 rounded-lg my-8">
+        <div className={cn(SITE_CONTAINER_CLASS, "lg:p-20 md:p-16 py-10 rounded-lg my-8")}>
           <div className="flex items-center mx-auto justify-center gap-2 w-40 rounded-2xl bg-primary-50 bg-opacity-15 p-2">
             <Icon icon="dot" height={8} width={10} />
             <span className="text-xs text-primary-50 font-semibold">
@@ -551,7 +550,7 @@ const Programs = ({
       )}
       {/* The journey to code */}
       {project?.heroTitleMedia && (
-      <section className="max-w-screen-2xl px-4 mx-auto mt-5">
+      <section className={cn(SITE_CONTAINER_CLASS, "mt-5")}>
         <div className="flex flex-col md:flex-row justify-between items-center mb-10 gap-6 md:py-20">
           {/* Left Section: Text Content */}
           <div className="w-full md:w-1/2">
@@ -575,7 +574,7 @@ const Programs = ({
       )}
       {/* What we offer section */}
       {project?.WhatWeOfferSectionTitle && (
-      <section className="max-w-screen-2xl px-4 mx-auto  py-12">
+      <section className={cn(SITE_CONTAINER_CLASS, "py-12")}>
         <div className="mt-5">
           <h2 className="text-3xl font-bold mb-8 text-center">
             {project?.WhatWeOfferSectionTitle || "What We Offer?"}
@@ -628,7 +627,7 @@ const Programs = ({
       )}
       {/* Team Meet Section */}
       {project?.teamLabelName && (
-      <section className="max-w-screen-2xl px-4 mx-auto mt-10">
+      <section className={cn(SITE_CONTAINER_CLASS, "mt-10")}>
         <div className="py-10 text-center">
           <div className="flex items-center mx-auto justify-center gap-2 w-28 rounded-full bg-primary-50 bg-opacity-15 p-2 mb-6">
             <Icon icon="dot" height={8} width={10} />
@@ -746,7 +745,7 @@ const Programs = ({
       )}  
       {/* Students Meet Section */}
       {project?.studentLabelName && (
-      <section className="max-w-screen-2xl px-4 mx-auto mt-10">
+      <section className={cn(SITE_CONTAINER_CLASS, "mt-10")}>
         <div className="py-10 text-center">
           <div className="flex items-center mx-auto justify-center gap-2 w-28 rounded-full bg-primary-50 bg-opacity-15 p-2 mb-6">
             <Icon icon="dot" height={8} width={10} />
@@ -876,9 +875,9 @@ const Programs = ({
       {/* Quotation section */}
       {project?.quotations?.length && (
       <section className="bg-blue-900 mt-10 lg:py-10">
-        <div className=" max-w-screen-2xl mx-auto flex justify-center text-white py-6 md:p-16">
+        <div className={cn(SITE_CONTAINER_CLASS, "flex justify-center text-white py-6 md:p-16")}>
           {project?.quotations?.length > 1 ? (
-            <div className="w-full max-w-7xl mx-auto px-4 py-10">
+            <div className={cn("w-full py-10", SITE_CONTAINER_CLASS)}>
               <Swiper
                 navigation={true}
                 modules={[Navigation]}
@@ -946,7 +945,7 @@ const Programs = ({
       )}
       {/* inside classroom section */}
       {project?.photoAlbumLabelName && (
-      <section className="max-w-screen-2xl px-4 mx-auto mt-10">
+      <section className={cn(SITE_CONTAINER_CLASS, "mt-10")}>
         <div className="flex flex-col gap-10 ">
           <div className="bg-primary-50 bg-opacity-10 mx-auto rounded-full w-fit px-4 h-10 flex items-center justify-center gap-2">
             <span className="size-2 rounded-full bg-primary-50"></span>
@@ -954,7 +953,7 @@ const Programs = ({
               {project?.photoAlbumLabelName ?? "Photo"}
             </p>
           </div>
-          <div className="flex flex-col gap-4 items-center justify-center max-w-screen-2xl mx-auto">
+          <div className={cn("flex flex-col gap-4 items-center justify-center", SITE_CONTAINER_CLASS)}>
             <Header btnName="Photos" title={project?.sectionTitlePhoto ?? ""} />
             <p className="text-center text-sm md:text-base text-gray-600 md:max-w-2xl mx-auto">
               {project?.sectionDescriptionPhoto}
@@ -968,7 +967,7 @@ const Programs = ({
       )}    
       {/* Newsletter Archive Section */}
       {project?.newsletterLabelName && (
-      <section className="max-w-screen-2xl px-4 mx-auto mt-20">
+      <section className={cn(SITE_CONTAINER_CLASS, "mt-20")}>
         {/* Header */}
         <div className="text-center mb-8">
           <div className="flex items-center mx-auto justify-center gap-2 w-48 rounded-full bg-primary-50 bg-opacity-15 p-2 mb-6">
@@ -1032,7 +1031,7 @@ const Programs = ({
       {/* Impact section */}
       {impacts.length && (
       <section className="bg-light_gray mt-10">
-        <div className="max-w-screen-2xl px-4 mx-auto py-10">
+        <div className={cn(SITE_CONTAINER_CLASS, "py-10")}>
           <h3 className="text-4xl font-semibold mt-5 mb-10">Impact</h3>
 
           {/* Impact cards grid */}
@@ -1107,7 +1106,7 @@ const Programs = ({
       {/* live moments section */}
       {project?.liveMoments?.length && (
       <section className="bg-light_gray mt-10 py-10">
-        <div className="max-w-screen-2xl px-4 mx-auto">
+        <div className={SITE_CONTAINER_CLASS}>
           <h3 className="text-4xl font-bold my-8">Live Moments: Follow Us</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-center justify-center pb-5">
             {project?.liveMoments?.map((moment) => (
@@ -1128,7 +1127,7 @@ const Programs = ({
       {/* this program support section */}
 
       <section className="mt-20">
-        <div className="max-w-screen-2xl px-4 mx-auto ">
+        <div className={SITE_CONTAINER_CLASS}>
           <h3 className="text-3xl font-bold text-slate-900">
             {project?.sectionTitleSDGs}
           </h3>
@@ -1163,7 +1162,7 @@ const Programs = ({
           className="w-full my-16"
         />
 
-        <div className="space-y-14 mb-20 max-w-screen-2xl px-4 mx-auto">
+        <div className={cn("space-y-14 mb-20", SITE_CONTAINER_CLASS)}>
           <div className="flex space-x-4">
             <span className="rounded-xl bg-light_gray p-2">
               <FaLink />

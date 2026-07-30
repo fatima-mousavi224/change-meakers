@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import ProjectCard from "./ProjectCard";
 import { TfiReload } from "react-icons/tfi";
 import Link from "next/link";
+import SiteContainer from "@/components/common/SiteContainer";
 
 interface Project {
   id: string;
@@ -50,35 +51,35 @@ function ProjectInitiatives() {
   if (loading)
     return (
       <div className="bg-light_gray">
-        <div className="max-w-7xl mx-auto py-10 px-8">
+        <SiteContainer className="py-10">
           <h2 className="text-3xl mb-12 font-bold text-left">
             Highlight Programs
           </h2>
           <div className="flex justify-center items-center h-64">
             <p className="text-lg">Loading projects...</p>
           </div>
-        </div>
+        </SiteContainer>
       </div>
     );
 
   if (!projects || projects.length === 0) {
     return (
       <div className="bg-light_gray">
-        <div className="max-w-7xl mx-auto py-10 px-8">
+        <SiteContainer className="py-10">
           <h2 className="text-3xl mb-12 font-bold text-left">
             Highlight Programs
           </h2>
           <div className="flex justify-center items-center h-64">
             <p className="text-lg">No projects available at the moment.</p>
           </div>
-        </div>
+        </SiteContainer>
       </div>
     );
   }
 
   return (
     <div className="bg-light_gray">
-      <div className="max-w-7xl mx-auto py-10 px-8">
+      <SiteContainer className="py-10">
         <h2 className="text-3xl mb-12 font-bold text-left">
           Highlight Programs
         </h2>
@@ -108,7 +109,7 @@ function ProjectInitiatives() {
             <TfiReload className="text-black size-5" />
           </div>
         )}
-      </div>
+      </SiteContainer>
     </div>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { ReactNode, useState } from "react";
+import { SITE_CONTAINER_CLASS } from "@/constant/siteContainer";
 import CurrentProgramBanner from "./CurrentProgramBanner";
 import EducationAccess from "./EducationAccess";
 import HumanRights from "./HumanRights";
@@ -33,7 +34,7 @@ export default function CurrentProgram() {
 
   return (
     <div className="overflow-x-hidden mt-4">
-      <div className=" px-4 max-w-screen-2xl mx-auto">
+      <div className={SITE_CONTAINER_CLASS}>
         <CurrentProgramBanner
           activeButton={activeButton}
           setActiveButton={setActiveButton}

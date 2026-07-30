@@ -1,4 +1,5 @@
 import MissionSlider from "@/components/mission-and-impact/OurMission/MissionSlider";
+import SiteContainer from "@/components/common/SiteContainer";
 import Link from "next/link";
 import { MdArrowBackIos } from "react-icons/md";
 
@@ -6,7 +7,7 @@ import { MdArrowBackIos } from "react-icons/md";
 
 export default function Details() {
     return (
-        <div className="flex flex-col max-w-screen-2xl px-4 mx-auto  my-4">
+        <SiteContainer className="flex flex-col my-4">
                <div className="md:h-[656px]  w-full">
             <MissionSlider />
             </div>
@@ -32,6 +33,6 @@ export default function Details() {
                     </Link>
                 </button>
             </div>
-        </div>
+        </SiteContainer>
     )
 }

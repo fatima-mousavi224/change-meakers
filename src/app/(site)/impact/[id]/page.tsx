@@ -1,4 +1,5 @@
 import ImpactDetails from "@/components/impact/ImpactDetails";
+import SiteContainer from "@/components/common/SiteContainer";
 import { siteConfig } from "@/constant/config";
 import prisma from "@/lib/prismaDB";
 
@@ -14,10 +15,10 @@ export default async function DetailsImpactPage({
   });
 
   return (
-    <main className="min-h-screen max-w-screen-2xl  mx-auto px-4">
+    <SiteContainer as="main" className="min-h-screen">
       {/* @ts-ignore */}
       <ImpactDetails {...impact} />
-    </main>
+    </SiteContainer>
   );
 }
 

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { SITE_CONTAINER_CLASS } from "@/constant/siteContainer";
 import { ArrowCircleDown, ArrowCircleUp } from "../icons/Icons";
 
 type CardProps = {
@@ -20,7 +21,7 @@ export default function Card({ cardData }: CardData) {
   };
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:mt-10 mt-4 max-w-screen-2xl px-4 mx-auto">
+    <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:mt-10 mt-4 ${SITE_CONTAINER_CLASS}`}>
       {cardData.map((item, index) => {
         const isExpanded = expandedIndex === index;
 

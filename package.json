@@ -14,7 +14,7 @@
     "test": "jest",
     "format": "prettier -w .",
     "format:check": "prettier -c .",
-    "postinstall": "if [ \"$VERCEL\" != \"1\" ]; then husky install; fi",
+    "postinstall": "prisma generate && if [ \"$VERCEL\" != \"1\" ]; then husky install; fi",
     "postbuild": "next-sitemap --config next-sitemap.config.js"
   },
   "dependencies": {

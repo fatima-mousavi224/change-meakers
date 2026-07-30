@@ -1,4 +1,5 @@
 import Banner from '@/components/common/Banner';
+import SiteContainer from '@/components/common/SiteContainer';
 
 import { Metadata } from 'next';
 
@@ -17,14 +18,14 @@ export const metadata: Metadata = {
 const MissionAndImpact = () => {
   return (
     <section className=''>
-      <div className='mt-4 max-w-screen-2xl px-4 mx-auto'>
+      <SiteContainer className="mt-4">
         <Banner>
           <span>Mission & Impact</span>
         </Banner>
         {/* <OurMission /> */}
         {/* <OurVision /> */}
         <NewMissionDesign />
-      </div>
+      </SiteContainer>
       {/* <Participants /> */}
     </section>
   );

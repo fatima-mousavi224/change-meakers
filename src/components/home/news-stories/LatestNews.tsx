@@ -12,6 +12,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import NoDataMessage from "@/components/common/NoDataMessage";
+import SiteContainer from "@/components/common/SiteContainer";
 
 interface NewsStoriesProps {
   posts: Post[];
@@ -27,7 +28,7 @@ const LatestNews = ({ posts }: NewsStoriesProps) => {
 
   return (
     <div className="bg-light_gray">
-      <div className="relative lg:px-20 py-12 my-10 max-w-screen-2xl px-4 mx-auto">
+      <SiteContainer className="relative py-12 my-10">
         <div className="flex justify-between items-center">
           <h2 className="text-2xl font-bold text-center md:text-left">
             Latest News
@@ -123,7 +124,7 @@ const LatestNews = ({ posts }: NewsStoriesProps) => {
             </SwiperSlide>
           ))}
         </Swiper>
-      </div>
+      </SiteContainer>
 
         <style jsx>{`
         .group:hover .hover-bounce {

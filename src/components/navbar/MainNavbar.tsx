@@ -1,15 +1,19 @@
 "use client";
-import { Instagram, Telegram } from "@/icons/Icons";
+import AnimatedDonateButton from "@/components/common/AnimatedDonateButton";
+import SocialIconButton from "@/components/common/SocialIconButton";
+import SiteContainer from "@/components/common/SiteContainer";
+import { socialLinks } from "@/constant/socialLinks";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-import { Post, User } from "@prisma/client";
+import type { Post, User } from "@/types/database";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import logo from "../../../public/images/logo.jpg";
-import { DonateIcon, Profile, Search, Setting } from "../icons/Icons";
+import { Profile, Search, Setting } from "../icons/Icons";
 import SearchResultList from "../search/SearchResult";
-import { ChevronDownIcon } from '@heroicons/react/20/solid'
+import NavMenuLink from "./NavMenuLink";
+import { isNavLinkActive } from "@/utilities/isNavLinkActive";
 
 interface Props {
   navigation: Array<{ name: string; href: string; current?: boolean }>;
@@ -19,24 +23,17 @@ interface Props {
   posts: Post[];
 }
 
-type item = {
-  href: string;
-  name: string;
-};
-
 export default function MainNavBar({
   navigation,
-  importantBtns,
   setSidebarOpen,
   user,
   posts,
 }: Props) {
-  const [open, setOpen] = useState(false);
   const params = useSearchParams();
   const router = useRouter();
   const [searchResults, setSearchResults] = useState<Post[]>([]);
   const [searchInitiated, setSearchInitiated] = useState(false);
-  const [openMenu, setOpenMenu] = useState(false);
+  const pathName = usePathname();
 
   const handleSearch = async (query: string) => {
     if (query.trim() === "") {
@@ -54,223 +51,152 @@ export default function MainNavBar({
 
   useEffect(() => {
     const searchParam = params.get("search");
-    if (searchParam === "o") {
-      setOpen(true);
-    } else if (searchParam === "c") {
-      setOpen(false);
+    if (searchParam === "c") {
       setSearchResults([]);
     }
   }, [params]);
 
-  const pathName = usePathname();
-  // const dashboardTxt =
-  //   user?.role === "ADMIN" ? "Admin Dashboard" : "User Dashboard";
-
-  // const dashboardLink = user?.role === "ADMIN" ? "/admin" : "/dashboard";
-
   const handleSearchClick = () => {
-    if (!open) {
-      router.push("?search=open");
-    }
+    router.push("?search=open");
   };
 
   const largeScreenSearchClick = () => {
-    if (!open) {
-      router.push("?search=o");
-    }
+    router.push("?search=o");
   };
 
   return (
-    <nav className="bg-white w-f max-w-screen-2xl sm:px-4 px-2 mx-auto" id="#one">
-      <div className="w-full border-b py-2">
-        <div className="flex justify-between items-center p-2  h-16 gap-4">
-          <div className="flex items-center justify-center sm:gap-4 gap-2">
-            <div className="sm:size-14 size-9 flex items-center">
-              <Link href="/" className="sm:size-14 size-9">
-                <Image
-                  src={logo}
-                  height={800}
-                  width={800}
-                  alt="Change Makers Logo"
-                />
+    <nav className="w-full bg-white" id="#one">
+      <SiteContainer>
+        {/* Top row: logo | search | donate */}
+        <div className="border-b border-gray-200">
+          <div className="flex h-[72px] items-center gap-4 lg:gap-6">
+            <div className="flex min-w-0 flex-1 items-center gap-4 lg:gap-6">
+              <Link href="/" className="flex shrink-0 items-center gap-3">
+                <div className="size-12 shrink-0 overflow-hidden rounded-full sm:size-14">
+                  <Image
+                    src={logo}
+                    height={800}
+                    width={800}
+                    alt="Change Makers Logo"
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+                <p className="hidden text-nowrap text-sm font-semibold text-primary-50 sm:block">
+                  Change Makers of the World
+                </p>
               </Link>
-            </div>
-            <p className="text-primary-50 font-semibold sm:text-base text-xs text-nowrap">
-              Change Makers of the World
-            </p>
 
-            <div className="relative">
-              {/* laptop screen search */}
-              <div
-                className="flex-1 items-center justify-center px-2 lg:ml-6 lg:justify-end hidden lg:flex"
-                onClick={largeScreenSearchClick}
-              >
-                <div className="grid w-full max-w-lg grid-cols-1 lg:max-w-xs">
-                  <input
-                    name="search"
-                    type="search"
-                    placeholder="Search"
-                    onChange={(e) => handleSearch(e.target.value)}
-                    className="outline-none border-none focus:outline-none focus:ring-0 w-full bg-transparent text-gray-700 col-start-1 row-start-1 block  rounded-[10px] lg:w-[300px] bg-white py-1.5 pl-10 pr-3 text-base  outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-primary-50 sm:text-sm/6"
-                  />
-                  <MagnifyingGlassIcon
-                    aria-hidden="true"
-                    className="pointer-events-none col-start-1 row-start-1 ml-3 size-5 self-center text-gray-400"
-                  />
+              <div className="relative hidden lg:block">
+                <div
+                  className="w-[492px] shrink-0"
+                  onClick={largeScreenSearchClick}
+                >
+                  <div className="relative">
+                    <MagnifyingGlassIcon
+                      aria-hidden="true"
+                      className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-gray-400"
+                    />
+                    <input
+                      name="search"
+                      type="search"
+                      placeholder="Search"
+                      onChange={(e) => handleSearch(e.target.value)}
+                      className="block w-full rounded-[10px] border border-[#F2F2F2] bg-white py-2.5 pl-11 pr-4 text-[14px] leading-[20px] text-gray-700 placeholder:text-gray-400 focus:border-primary-50 focus:outline-none focus:ring-1 focus:ring-primary-50"
+                    />
+                  </div>
                 </div>
-              </div>
 
-              {searchResults.length > 0 && params.get("search") === "o" && (
-                <div className="absolute left-7 top-16 shadow-lg rounded-md p-4 z-50 bg-[#F2F2F2] text-primary-50 max-w-lg w-[400px] hidden lg:block">
-                  <SearchResultList searchResults={searchResults} />
-                </div>
-              )}
-              {searchResults.length === 0 &&
-                searchInitiated &&
-                params.get("search") === "o" && (
-                  <div className="absolute left-7 top-16 shadow-lg rounded-md p-4 z-50 text-primary-50 bg-[#F2F2F2]  max-w-lg w-[400px] hidden lg:block">
-                    No post found!
+                {searchResults.length > 0 && params.get("search") === "o" && (
+                  <div className="absolute left-0 top-[calc(100%+8px)] z-50 w-[492px] rounded-md bg-light_gray p-4 text-primary-50 shadow-lg">
+                    <SearchResultList searchResults={searchResults} />
                   </div>
                 )}
+                {searchResults.length === 0 &&
+                  searchInitiated &&
+                  params.get("search") === "o" && (
+                    <div className="absolute left-0 top-[calc(100%+8px)] z-50 w-[492px] rounded-md bg-light_gray p-4 text-primary-50 shadow-lg">
+                      No post found!
+                    </div>
+                  )}
+              </div>
             </div>
-            {/* laptop overlay of the seaarch bar */}
+
             {params.get("search") === "o" && (
               <div
-                className="absolute inset-0 "
-                onClick={() => {
-                  setOpen(false);
-                  router.push("?search=c");
-                }}
+                className="fixed inset-0 z-40"
+                onClick={() => router.push("?search=c")}
+                aria-hidden="true"
               />
             )}
-          </div>
-          <div className="flex items-center justify-center">
-            <div className="flex items-center justify-center gap-2 lg:hidden">
-              <div className="flex items-center gap-2">
+
+            <div className="ml-auto flex shrink-0 items-center gap-2">
+              <div className="flex items-center gap-2 lg:hidden">
                 <button
                   onClick={handleSearchClick}
-                  className="text-sm font-bold duration-150 hover:scale-105 bg-[#F2F2F2] rounded-lg sm:p-2 sm:size-[34px] size-[30px] flex items-center justify-center"
+                  className="flex size-[34px] items-center justify-center rounded-lg bg-light_gray sm:size-[34px]"
+                  aria-label="Search"
                 >
-                  <Search className="size-4  duration-150 hover:scale-105" />
+                  <Search className="size-4" />
                 </button>
                 {user?.role === "ADMIN" && (
                   <Link
-                    href={"/admin"}
-                    className="text-sm font-bold duration-150 hover:scale-105 bg-[#F2F2F2] rounded-lg p-2 sm:size-[34px] size-[30px] flex items-center justify-center"
+                    href="/admin"
+                    className="flex size-[34px] items-center justify-center rounded-lg bg-light_gray"
+                    aria-label="Admin dashboard"
                   >
-                    <Profile className=" size-4 duration-150 hover:scale-105" />
+                    <Profile className="size-4" />
                   </Link>
                 )}
-              </div>
-              <button
-                className="text-sm font-bold duration-150 hover:scale-105 bg-[#F2F2F2] rounded-lg p-2 sm:size-[34px] size-[30px] flex items-center justify-center"
-                aria-hidden="true"
-                onClick={() => setSidebarOpen(true)}
-              >
-                <Setting className="size-3 duration-150 hover:scale-105" />
-              </button>
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="justify-center hidden lg:flex text-sm px-8 py-2 bg-primary-50 rounded-md text-white duration-300 font-semibold  hover:bg-primary-200 transition-all cursor-pointer">
-                {importantBtns.map((item: item, index: number) => (
-                  <Link
-                    key={index}
-                    href={
-                      "https://www.gofundme.com/f/HelpAfghanGirlsLearn/donate?attribution_id=undefined&utm_campaign=unknown&utm_medium=customer&utm_source=website_widget"
-                    }
-                    target="_blank"
-                    className="flex items-center gap-2"
-                  >
-                    {item.name}
-                    <DonateIcon />
-                  </Link>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="w-full border-b py-5 lg:block hidden">
-        <div className="items-center justify-between hidden gap-3 px-2  lg:flex">
-          <div className="flex items-center gap-3">
-            {/* menu items  */}
-            {navigation.map((item, index) => (
-              <div key={index} className="">
-                <Link
-                  href={item.href}
-                  className={`${
-                    pathName == item.href
-                      ? "text-primary-50 border-b-2 border-b-primary-50 px-2 py-1 font-medium text-base"
-                      : "hover:text-primary-50 hover:border-b-2 hover:border-b-primary-50 px-2 py-1.5 font-medium transition-colors duration-300 text-base"
-                  } `}
-                >
-                  {item.name}
-                </Link>
-              </div>
-            ))}
-          </div>
-
-          <div className="space-x-3 flex items-center justify-center">
-            <Link
-              href={"https://t.me/cmworld_org"}
-              className="text-sm font-bold duration-150 hover:scale-105 bg-[#F2F2F2] rounded-lg p-2"
-              aria-hidden="true"
-            >
-              <Telegram className="w-6 h-6 duration-150 hover:scale-105" />
-            </Link>
-            <Link
-              href={"https://www.instagram.com/cmw.world"}
-              className="text-sm font-bold duration-150 hover:scale-105 bg-[#F2F2F2] rounded-lg p-2"
-              aria-hidden="true"
-            >
-              <Instagram className="w-6 h-6 duration-150 hover:scale-105" />
-            </Link>
-            <div className="relative inline-block text-left">
-              <div>
                 <button
-                  className="text-sm  duration-150 hover:scale-105 bg-[#F2F2F2] rounded-lg p-2 flex gap-2"
-                  onClick={() => setOpenMenu(!openMenu)}
+                  className="flex size-[34px] items-center justify-center rounded-lg bg-light_gray"
+                  aria-label="Open menu"
+                  onClick={() => setSidebarOpen(true)}
                 >
-                  Join Us
-                  <ChevronDownIcon
-                    aria-hidden="true"
-                    className="-mr-1 size-5 text-gray-400"
-                  />
+                  <Setting className="size-3" />
                 </button>
               </div>
 
-              {openMenu && (
-                <div className="absolute right-0 mt-2 w-44 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black/5 transition focus:outline-hidden z-40 overflow-hidden">
-                  <div className="">
-                    <Link
-                      href="/apply"
-                      className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:text-gray-900 data-focus:outline-hidden hover:bg-gray-100 hover:text-gray-900 transition-all duration-300"
-                      onClick={() => setOpenMenu(false)}
-                    >
-                      Apply as a Student
-                    </Link>
-                    <Link
-                      href="/join"
-                      className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:text-gray-900 data-focus:outline-hidden hover:bg-gray-100 hover:text-gray-900 transition-all duration-300"
-                      onClick={() => setOpenMenu(false)}
-                    >
-                      Join as a Contributor
-                    </Link>
-                  </div>
-                </div>
-              )}
+              <AnimatedDonateButton className="hidden rounded-[12px] lg:inline-flex" />
             </div>
-            {user !== null && (
-              <Link
-                href="/admin"
-                className="font-semibold text-sm text-primary-50 duration-150 hover:scale-105 bg-[#F2F2F2] rounded-lg w-full  p-2.5"
-              >
-                Admin Dashboard
-              </Link>
-            )}
           </div>
         </div>
-      </div>
+
+        {/* Bottom row: nav links | social icons */}
+        <div className="hidden border-b border-gray-200 py-3 lg:block">
+          <div className="flex items-center justify-between gap-6">
+            <div className="flex flex-wrap items-center gap-1">
+              {navigation.map((item) => (
+                <NavMenuLink
+                  key={item.name}
+                  href={item.href}
+                  label={item.name}
+                  active={isNavLinkActive(pathName, item.href)}
+                  variant="desktop"
+                />
+              ))}
+            </div>
+
+            <div className="flex shrink-0 items-center gap-3">
+              {socialLinks.map(({ href, label, src }) => (
+                <SocialIconButton
+                  key={label}
+                  href={href}
+                  label={label}
+                  src={src}
+                />
+              ))}
+              {user !== null && (
+                <Link
+                  href="/admin"
+                  className="rounded-xl bg-gray-100 px-3 py-2 text-[14px] font-medium leading-[20px] text-primary-50 transition-colors hover:bg-gray-200"
+                >
+                  Admin
+                </Link>
+              )}
+            </div>
+          </div>
+        </div>
+      </SiteContainer>
     </nav>
   );
 }

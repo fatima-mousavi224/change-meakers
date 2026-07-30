@@ -7,6 +7,8 @@ import { RighArrow } from "../../icons/Icons";
 import image1 from "../../../../public/images/home-page/hero-section/slide1.png";
 import image2 from "../../../../public/images/home-page/hero-section/slide2.png";
 import image3 from "../../../../public/images/home-page/hero-section/slide3.png";
+// import image4 from "../images/home-page/hero-section/slide4.jpg"
+import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 
 interface Slide {
   image: StaticImageData;
@@ -17,6 +19,7 @@ const slides: Slide[] = [
   { image: image1 },
   { image: image2 },
   { image: image3 },
+  // { image: image4 },
 ];
 
 const HeroSlider: React.FC = () => {
@@ -39,7 +42,7 @@ const HeroSlider: React.FC = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       setActiveIndex((prevIndex) => (prevIndex + 1) % slides.length);
-    }, 3000);
+    }, 4000);
 
     return () => clearInterval(interval);
   }, []);
@@ -62,7 +65,7 @@ const HeroSlider: React.FC = () => {
       setActiveIndex((prevIndex) => (prevIndex + 1) % slides.length);
     } else if (isRightSwipe) {
       setActiveIndex(
-        (prevIndex) => (prevIndex - 1 + slides.length) % slides.length
+        (prevIndex) => (prevIndex - 1 + slides.length) % slides.length,
       );
     }
 
@@ -71,79 +74,99 @@ const HeroSlider: React.FC = () => {
   };
 
   return (
-    <div className="lg:px-2">
-      <div className="relative w-full max-w-[96vw] mx-auto mt-3 rounded-[35px] shadow-lg z-20">
-        {/* Full Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-blue-800 via-transparent to-transparent opacity-90 z-10 rounded-[35px]"></div>
+    <div className="w-full px-4 sm:px-8 my-8">
+      {/* Outer wrapper giving space so arrows can hang off the image sides */}
+      <div className="relative max-w-[1370px] mx-auto">
+        {/* Main Card Container */}
+        <div className="relative w-full rounded-[24px] overflow-hidden shadow-md z-10">
+          {/* Subtle Dark Bottom Gradient (Image remains clear) */}
+          <div
+            className="absolute inset-0 z-10 rounded-[24px] pointer-events-none"
+            style={{
+              background:
+                "linear-gradient(188.75deg, rgba(4, 17, 29, 0) 20%, rgba(19, 76, 131, 0.75) 100%)",
+            }}
+          />
 
-        <div
-          className="relative w-full sm:h-[80vh] h-[70vh] overflow-hidden"
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
-        >
-          {slides.map((slide, index) => (
-            <Image
-              key={index}
-              src={
-                isMobile && slide.mobileImage ? slide.mobileImage : slide.image
-              }
-              alt={`Slide ${index + 1}`}
-              fill
-              className={`absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-500 ease-in-out ${
-                index === activeIndex ? "opacity-100 z-0" : "opacity-0"
-              } rounded-[35px]`}
-            />
-          ))}
-        </div>
-
-        {/* Overlay with Static Text and Button */}
-        <div className="absolute inset-0 z-20 bg-black bg-opacity-40 flex flex-col justify-end items-start sm:p-10 p-5 font-plusJakartaSans rounded-[35px]">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-2">
-            Change Makers of the World
-          </h2>
-          <p className="text-sm md:text-lg text-white mb-1 font-bold font-plusJakartaSans text-wrap">
-            A youth-led organization established in Afghanistan, focused on girls’ education and human rights through community-based work and international engagement.
-          </p>
-          {/* <p className="text-[#F2F2F2] font-plusJakartaSans mb-3">
-            Stand With Us: #LetAfghanGirlsLearn
-          </p> */}
-          {/* <Link
-            href="/about"
-            className="bg-white text-black_color text-md font-medium py-2 px-4 rounded-full hover:bg-gray-200 flex items-center text-center gap-2"
+          {/* Slider Images */}
+          <div
+            className="relative w-full sm:h-[88vh] h-[65vh] overflow-hidden"
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
           >
-            <span>Learn More</span>
-            <RighArrow />
-          </Link> */}
+            {slides.map((slide, index) => (
+              <Image
+                key={index}
+                src={
+                  isMobile && slide.mobileImage
+                    ? slide.mobileImage
+                    : slide.image
+                }
+                alt={`Slide ${index + 1}`}
+                fill
+                priority={index === 0}
+                className={`absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-500 ease-in-out ${
+                  index === activeIndex ? "opacity-100 z-0" : "opacity-0"
+                }`}
+              />
+            ))}
+          </div>
+
+          {/* Text Overlay & Button */}
+          <div className="absolute inset-0 z-20 flex flex-col justify-end items-start p-6 sm:p-10 md:p-14 font-plusJakartaSans">
+            <div className="max-w-3xl mb-2">
+              <h1 className="text-[26px] sm:text-[36px] md:text-[46px] font-bold text-white leading-[122%] mb-2 md:mb-6">
+                A better Afghanistan begins with educated girls and empowered
+                youth.
+              </h1>
+              <p className="text-[15px] md:text-[18px] font-normal text-white/90 leading-[120%] mb-5">
+                This is why Change Makers of the World exists.
+              </p>
+              {/* Button with 12px border radius & link to /about */}
+              <Link
+                href="/about"
+                className="group inline-flex items-center justify-center gap-2 bg-white text-[#252525] font-medium text-sm md:text-base py-2.5 px-5 rounded-[12px] shadow hover:bg-gray-100 transition-colors duration-200"
+              >
+                <span>Who We Are</span>
+                <span className="inline-flex items-center justify-center transition-transform duration-300 ease-out group-hover:translate-x-1.5">
+                  <RighArrow className="w-3 h-3 text-[#252525]" />
+                </span>
+              </Link>{" "}
+            </div>
+          </div>
+
+          <div className="absolute bottom-6 right-8 md:bottom-8 md:right-10 z-30 flex space-x-2 items-center">
+            {slides.map((_, index) => (
+              <span
+                key={index}
+                onClick={() => setActiveIndex(index)}
+                className={`cursor-pointer transition-all duration-300 rounded-full ${
+                  index === activeIndex
+                    ? "w-3 h-3 bg-white"
+                    : "w-2 h-2 bg-white/40 hover:bg-white/70"
+                }`}
+              />
+            ))}
+          </div>
         </div>
 
-        {/* Pagination Dots in Bottom Right Corner */}
-        <div className="absolute bottom-10 right-10 z-30 flex space-x-2 items-center">
-          {slides.map((_, index) => (
-            <span
-              key={index}
-              onClick={() => setActiveIndex(index)}
-              className={`size-2 rounded-full transition-colors cursor-pointer ${
-                index === activeIndex ? "bg-white size-3" : "bg-gray-400"
-              }`}
-            />
-          ))}
-        </div>
-
-        {/* Prev and Next Buttons on Borders */}
         <button
           onClick={() =>
             setActiveIndex((activeIndex - 1 + slides.length) % slides.length)
           }
-          className="absolute -left-5 top-1/2 shadow-2xl transform -translate-y-1/2 hover:bg-gradient-to-l hover:from-[#bebebe66] hover:to-[#FFFFFF00] bg-gradient-to-l from-[#FFFFFF66] to-[#FFFFFF00] text-xl text-primary-50 w-10 h-10 rounded-[14px] p-1 z-30 items-center justify-center sm:flex hidden"
+          aria-label="Previous Slide"
+          className="absolute -left-4 sm:-left-6 top-1/2 -translate-y-1/2 z-30 backdrop-blur-md bg-white/60 border border-white/40  hover:bg-white w-10 h-10 md:w-14 md:h-14 rounded-[12px] items-center justify-center shadow-lg transition-all duration-200 sm:flex hidden"
         >
-          &#10094;
+          <ChevronLeft className="text-[#134C83] h-8 w-8" />
         </button>
+
         <button
           onClick={() => setActiveIndex((activeIndex + 1) % slides.length)}
-          className="absolute -right-5 top-1/2 transform shadow-2xl -translate-y-1/2 bg-gradient-to-r from-[#FFFFFF66] to-[#FFFFFF00] sm:flex hidden hover:bg-gradient-to-r hover:from-[#bebebe66] hover:to-[#FFFFFF00] text-xl text-blue-600 w-10 h-10 rounded-[14PX] p-1 z-30 items-center justify-center"
+          aria-label="Next Slide"
+          className="absolute -right-4 sm:-right-6 top-1/2 -translate-y-1/2 z-30 backdrop-blur-md bg-white/60 border border-white/40  hover:bg-white w-10 h-10 md:w-14 md:h-14 rounded-[12px] items-center justify-center shadow-lg transition-all duration-200 sm:flex hidden"
         >
-          &#10095;
+          <ChevronRight className="text-[#134C83] h-8 w-8" />
         </button>
       </div>
     </div>

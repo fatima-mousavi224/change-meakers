@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import { buttonContents } from "./CurrentProgram";
+import { SITE_CONTAINER_CLASS } from "@/constant/siteContainer";
 import { cn } from "@/utilities/cn";
 
 interface CurrentProgramBannerProps {
@@ -12,7 +13,7 @@ export default function CurrentProgramBanner({
   setActiveButton,
 }: CurrentProgramBannerProps) {
   return (
-    <div className="bg-bannerProgram bg-no-repeat bg-center bg-cover h-[65vh] rounded-[20px] mt-4 flex justify-center items-center relative max-w-screen-2xl px-4 mx-auto">
+    <div className={cn("bg-bannerProgram bg-no-repeat bg-center bg-cover h-[65vh] rounded-[20px] mt-4 flex justify-center items-center relative", SITE_CONTAINER_CLASS)}>
       <div className="absolute inset-0 " />
       <div className="flex flex-col sm:gap-8 gap-4 justify-center items-center text-center text-white px-4">
         <h1

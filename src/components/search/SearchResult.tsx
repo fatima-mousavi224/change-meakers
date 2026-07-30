@@ -1,5 +1,5 @@
 import { ChevronRightIcon } from "@heroicons/react/20/solid";
-import { Post } from "@prisma/client";
+import type { Post } from "@/types/database";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";

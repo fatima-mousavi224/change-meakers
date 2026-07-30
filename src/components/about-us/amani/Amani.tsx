@@ -1,9 +1,10 @@
 import Hero from "./Hero";
 import InformationAmani from "./InformationAmani";
+import { SITE_CONTAINER_CLASS } from "@/constant/siteContainer";
 
 export default function Amani() {
   return (
-    <div className="max-w-screen-2xl px-4 mx-auto pb-20">
+    <div className={`${SITE_CONTAINER_CLASS} pb-20`}>
       <Hero />
       <InformationAmani />
     </div>

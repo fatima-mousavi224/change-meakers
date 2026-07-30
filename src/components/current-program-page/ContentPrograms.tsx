@@ -1,9 +1,10 @@
 import React from 'react';
+import { SITE_CONTAINER_CLASS } from '@/constant/siteContainer';
 
 export default function MissionOverview() {
     return (
         <div className="bg-gray-50 py-20 sm:py-28">
-            <div className="mx-auto max-w-2xl px-6 lg:max-w-7xl lg:px-8">
+            <div className={SITE_CONTAINER_CLASS}>
 
                 <div className="mt-10 grid grid-cols-1 gap-4 sm:mt-16 lg:grid-cols-6 lg:grid-rows-2">
 

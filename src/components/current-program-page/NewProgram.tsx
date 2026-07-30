@@ -1,11 +1,12 @@
 import React, { Suspense } from 'react'
+import { SITE_CONTAINER_CLASS } from '@/constant/siteContainer'
 import MissionOverview from './ContentPrograms'
 import ProjectInitiatives from '../home/project-Initiative/ProjectInitiatives'
 
 export default function NewProgram() {
   return (
           <Suspense fallback={"loading..."}>
-            <section className="mt-4 max-w-screen-2xl px-4 mx-auto">
+            <section className={`mt-4 ${SITE_CONTAINER_CLASS}`}>
                 <div className="overflow-x-hidden mt-4">
                     <div className="bg-common bg-no-repeat bg-center bg-cover py-24 rounded-xl  flex justify-center items-center relative">
                         <div className="absolute inset-0 bg-gradient-to-br" />

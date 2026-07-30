@@ -3,9 +3,11 @@ import Help from "./Help";
 import ContactForm from "./ContactForm";
 import Subscribe from "./Subscribe";
 
+import { SITE_CONTAINER_CLASS } from "@/constant/siteContainer";
+
 export default function ContactUs() {
   return (
-    <div className="max-w-screen-2xl px-4 mx-auto my-4">
+    <div className={`${SITE_CONTAINER_CLASS} my-4`}>
       <div className="bg-bannerProgram bg-no-repeat bg-center bg-cover h-[40vh] rounded-[20px] flex justify-center items-center relative">
         <div className="absolute inset-0 flex items-center justify-center w-full text-white font-bold text-3xl md:text-5xl ">
           <h1>Contact Us</h1>
