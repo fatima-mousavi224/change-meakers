@@ -2,6 +2,7 @@ import Subscribe from "@/components/contact-us/Subscribe";
 import SiteContainer from "@/components/common/SiteContainer";
 import Contribute from "@/components/home/contribute/Contribute";
 import HeroSlider from "@/components/home/hero-section/HeroSlider";
+import WhatWeDo from "@/components/home/what-we-do/WhatWeDo";
 import HomeVedio from "@/components/home/homeVedio";
 import LatestNews from "@/components/home/news-stories/LatestNews";
 import Ourchanges from "@/components/home/our-changes/OurChanges";
@@ -24,6 +25,7 @@ export default async function HomePage() {
     <main>
       <SiteContainer>
         <HeroSlider />
+        <WhatWeDo />
         <Ourchanges />
         <HomeVedio />
       </SiteContainer>
