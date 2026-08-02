@@ -4,6 +4,7 @@ import Contribute from "@/components/home/contribute/Contribute";
 import HeroSlider from "@/components/home/hero-section/HeroSlider";
 import WhatWeDo from "@/components/home/what-we-do/WhatWeDo";
 import OurInitiatives from "@/components/home/our-initiatives/OurInitiatives";
+import GetInvolved from "@/components/home/get-involved/GetInvolved";
 import LatestNews from "@/components/home/news-stories/LatestNews";
 import ProjectInitiatives from "@/components/home/project-Initiative/ProjectInitiatives";
 import "@/lib/env";
@@ -26,6 +27,7 @@ export default async function HomePage() {
         <HeroSlider />
         <WhatWeDo />
         <OurInitiatives />
+        <GetInvolved />
       </SiteContainer>
       <ProjectInitiatives />
       <LatestNews posts={posts} />
