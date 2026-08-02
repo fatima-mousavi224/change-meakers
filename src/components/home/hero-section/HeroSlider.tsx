@@ -7,7 +7,7 @@ import { RighArrow } from "../../icons/Icons";
 import image1 from "../../../../public/images/home-page/hero-section/slide1.png";
 import image2 from "../../../../public/images/home-page/hero-section/slide2.png";
 import image3 from "../../../../public/images/home-page/hero-section/slide3.png";
-// import image4 from "../images/home-page/hero-section/slide4.jpg"
+import image4 from "../../../../public/images/home-page/hero-section/slide4.jpg";
 import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 
 interface Slide {
@@ -19,7 +19,7 @@ const slides: Slide[] = [
   { image: image1 },
   { image: image2 },
   { image: image3 },
-  // { image: image4 },
+  { image: image4 },
 ];
 
 const HeroSlider: React.FC = () => {
@@ -42,7 +42,7 @@ const HeroSlider: React.FC = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       setActiveIndex((prevIndex) => (prevIndex + 1) % slides.length);
-    }, 4000);
+    }, 9000);
 
     return () => clearInterval(interval);
   }, []);
@@ -174,3 +174,4 @@ const HeroSlider: React.FC = () => {
 };
 
 export default HeroSlider;
+

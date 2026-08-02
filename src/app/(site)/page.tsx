@@ -5,7 +5,6 @@ import HeroSlider from "@/components/home/hero-section/HeroSlider";
 import WhatWeDo from "@/components/home/what-we-do/WhatWeDo";
 import HomeVedio from "@/components/home/homeVedio";
 import LatestNews from "@/components/home/news-stories/LatestNews";
-import Ourchanges from "@/components/home/our-changes/OurChanges";
 import ProjectInitiatives from "@/components/home/project-Initiative/ProjectInitiatives";
 import "@/lib/env";
 import prisma from "@/lib/prismaDB";
@@ -26,7 +25,6 @@ export default async function HomePage() {
       <SiteContainer>
         <HeroSlider />
         <WhatWeDo />
-        <Ourchanges />
         <HomeVedio />
       </SiteContainer>
       <ProjectInitiatives />
