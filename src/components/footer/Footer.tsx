@@ -1,167 +1,67 @@
+import SiteContainer from "@/components/common/SiteContainer";
+import FooterSocialLinks from "@/components/footer/FooterSocialLinks";
+import {
+  FOOTER_COPYRIGHT_START_YEAR,
+  FOOTER_NAV_LINKS,
+} from "@/constant/footerNavLinks";
 import Image from "next/image";
 import Link from "next/link";
 import logo from "../../../public/images/logo.jpg";
-import SiteContainer from "@/components/common/SiteContainer";
-import {
-  Facebook,
-  Instagrams,
-  Telegrams,
-  Twitter,
-  Whatsapp,
-  Youtube,
-} from "@/icons/Icons";
 
 export default function Footer() {
+  const currentYear = new Date().getFullYear();
+
   return (
-    <footer className="relative bg-[#F2F2F2] mt-4">
-      {/*  Logo */}
-      <SiteContainer className="lg:flex-row flex flex-col lg:gap-8 gap-4 justify-between lg:py-8 py-4 lg:border-b-2 border-b-0 border-[#BEBEBE]">
-        <div className="flex lg:flex-row flex-col items-center sm:space-x-4 space-y-4">
-          <Image src={logo} alt="Logo" className="rounded-full w-16 h-16" />
-          <span className="lg:text-lg text-sm font-bold mt-2 sm:mt-0">
-            Change Makers of the World
-          </span>
-        </div>
-        {/* links */}
-        <nav className="flex lg:flex-row text-gray-500  flex-col items-center gap-3 shrink-0 lg:text-[16px] lg:text-sm">
-          <Link
-            href="/"
-            className="hover:text-opacity-80 duration-200 transition-all "
-          >
-            Home
-          </Link>
-          <Link
-            href="/about"
-            className="hover:text-opacity-80 duration-200 transition-all "
-          >
-            About
-          </Link>
-          <Link
-            href="/mission&impact"
-            className="hover:text-opacity-80 duration-200 transition-all "
-          >
-            Mission & Impact
-          </Link>
-          <Link
-            href="/current-programs"
-            className="hover:text-opacity-80 duration-200 transition-all "
-          >
-            Current Programs
+    <footer className="mt-10 bg-[#F5F5F5]">
+      <SiteContainer className="py-8 lg:py-10">
+        <div className="flex flex-col items-center justify-between gap-6 lg:flex-row lg:items-center">
+          <Link href="/" className="flex items-center gap-3 sm:gap-4">
+            <Image
+              src={logo}
+              alt="Change Makers of the World logo"
+              width={64}
+              height={64}
+              className="size-14 rounded-full object-cover sm:size-[60px]"
+            />
+            <span className="font-plusJakartaSans text-base font-bold text-[#252525] sm:text-[17px]">
+              Change Makers of the World
+            </span>
           </Link>
 
-          <Link
-            href="/updates"
-            className="hover:text-opacity-80 duration-200 transition-all "
-          >
-            Updates
-          </Link>
-          <Link
-            href="/contact"
-            className="hover:text-opacity-80 duration-200 transition-all "
-          >
-            Contact
-          </Link>
-          <Link
-            href="https://www.gofundme.com/f/HelpAfghanGirlsLearn/donate?attribution_id=undefined&utm_campaign=unknown&utm_medium=customer&utm_source=website_widget"
-            target="_blank"
-            className="hover:text-opacity-80 duration-200 transition-all"
-          >
-            Donate
-          </Link>
-        </nav>
+          <nav className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 lg:justify-end lg:gap-x-8">
+            {FOOTER_NAV_LINKS.map(({ label, href }) => (
+              <Link
+                key={label}
+                href={href}
+                className="font-plusJakartaSans text-[14px] font-medium text-[#252525] transition-colors duration-200 hover:text-primary-50 sm:text-[15px]"
+              >
+                {label}
+              </Link>
+            ))}
+          </nav>
+        </div>
       </SiteContainer>
-      {/* logos */}
-      <SiteContainer className="flex lg:flex-row flex-col justify-between items-center lg:py-8 py-4">
-        <div className="items-center justify-center py-4 lg:py-0  lg:gap-4 gap-1 p-2 flex border-y-2 lg:mb-0 mb-2 lg:border-y-0">
-          <h2 className="lg:text-xl text-sm text-black p-1 hidden sm:block">
-            FOLLOW US
-          </h2>
-          <Link
-            target="_blank"
-            href={"https://www.x.com/cmw_world"}
-            className="hover:scale-110 duration-200"
-          >
-            <Twitter className="size-6" />
-          </Link>
-          <Link
-            target="_blank"
-            href={"https://www.instagram.com/cmw.world"}
-            className="hover:scale-110 duration-200 "
-          >
-            <Instagrams className="size-6" />
-          </Link>
-          <Link
-            target="_blank"
-            href={"https://www.facebook.com/cmw.world"}
-            className="hover:scale-110 duration-200 "
-          >
-            <Facebook className="size-6" />
-          </Link>
-          <Link
-            target="_blank"
-            href={"https://t.me/cmworld_org"}
-            className="hover:scale-110 duration-200 "
-          >
-            <Telegrams className="size-6" />
-          </Link>
-          {/* <Link
-            href="https://wa.me/14172685815?text=Hi%2C%20can%20you%20help%20me%3F"
-            className="hover:scale-110 duration-200"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Whatsapp className="size-6" />
-          </Link> */}
-          <Link
-            target="_blank"
-            href={"https://youtube.com/@cmw_world"}
-            className="hover:scale-110 duration-200"
-          >
-            <Youtube className="size-6" />
-          </Link>
-        </div>
 
-        {/* copy right */}
-        <div className="sm:flex hidden lg:flex-row flex-col gap-4 text-center justify-center text-gray-400">
-          <p className="text-sm ">
-            {`Copyright © ${new Date().getFullYear()} Change Makers of the World`}{" "}
-          </p>
-          <Link
-            href="/privacy-policy"
-            className="text-sm text-gray-400 cursor-pointer sm:mt-0 mt-2"
-          >
-            Privacy Policy
-          </Link>
-          {/* <p className="text-sm text-gray-400">
-            WhatsApp and Phone:
+      <div className="w-full border-b border-[#DDDDDD]" aria-hidden="true" />
+
+      <SiteContainer className="py-8 lg:py-10">
+        <div className="flex flex-col items-center justify-between gap-6 lg:flex-row lg:items-center">
+          <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 lg:justify-start">
+            <span className="font-plusJakartaSans text-[15px] font-semibold text-[#252525] sm:text-base">
+              Follow Us
+            </span>
+            <FooterSocialLinks />
+          </div>
+
+          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-center font-plusJakartaSans text-[13px] text-[#717171] sm:text-[14px] lg:justify-end">
+            <span>{`Copyright © ${FOOTER_COPYRIGHT_START_YEAR}—${currentYear} Change Makers of the World`}</span>
             <Link
-              href="https://wa.me/14172685815?text=Hi%2C%20can%20you%20help%20me%3F"
-              className="pl-1"
+              href="/privacy-policy"
+              className="transition-colors duration-200 hover:text-primary-50"
             >
-              +1 (417) 268-5815
+              Privacy Policy
             </Link>
-          </p> */}
-        </div>
-        {/* copy right mobile */}
-        <div className="sm:hidden flex lg:flex-row flex-col gap-4 text-center justify-center text-gray-400">
-          <Link
-            href="/privacy-policy"
-            className="text-sm text-gray-400 cursor-pointer sm:mt-0 mt-2"
-          >
-            Privacy Policy
-          </Link>
-          <p className="text-sm text-gray-400">
-            WhatsApp and Phone:
-            <Link
-              href="https://wa.me/14172685815?text=Hi%2C%20can%20you%20help%20me%3F"
-              className="pl-1"
-            >
-              +1 (417) 268-5815
-            </Link>
-          </p>
-          <p className="text-sm ">
-            {`Copyright © ${new Date().getFullYear()} Change Makers of the World`}{" "}
-          </p>
+          </div>
         </div>
       </SiteContainer>
     </footer>
