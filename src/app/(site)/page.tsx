@@ -6,7 +6,6 @@ import WhatWeDo from "@/components/home/what-we-do/WhatWeDo";
 import OurInitiatives from "@/components/home/our-initiatives/OurInitiatives";
 import GetInvolved from "@/components/home/get-involved/GetInvolved";
 import LatestNews from "@/components/home/news-stories/LatestNews";
-import ProjectInitiatives from "@/components/home/project-Initiative/ProjectInitiatives";
 import "@/lib/env";
 import prisma from "@/lib/prismaDB";
 
@@ -29,7 +28,6 @@ export default async function HomePage() {
         <OurInitiatives />
         <GetInvolved />
       </SiteContainer>
-      <ProjectInitiatives />
       <LatestNews posts={posts} />
       <SiteContainer>
         <Contribute />
