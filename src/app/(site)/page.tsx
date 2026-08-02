@@ -1,11 +1,10 @@
-import Subscribe from "@/components/contact-us/Subscribe";
 import SiteContainer from "@/components/common/SiteContainer";
-import Contribute from "@/components/home/contribute/Contribute";
 import HeroSlider from "@/components/home/hero-section/HeroSlider";
 import WhatWeDo from "@/components/home/what-we-do/WhatWeDo";
 import OurInitiatives from "@/components/home/our-initiatives/OurInitiatives";
 import GetInvolved from "@/components/home/get-involved/GetInvolved";
 import LatestUpdates from "@/components/home/latest-updates/LatestUpdates";
+import OurPartners from "@/components/home/our-partners/OurPartners";
 import "@/lib/env";
 import prisma from "@/lib/prismaDB";
 
@@ -28,10 +27,7 @@ export default async function HomePage() {
         <OurInitiatives />
         <GetInvolved />
         <LatestUpdates posts={posts} />
-      </SiteContainer>
-      <SiteContainer>
-        <Contribute />
-        <Subscribe />
+        <OurPartners />
       </SiteContainer>
     </main>
   );
