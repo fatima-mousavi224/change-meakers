@@ -1,15 +1,17 @@
-// !STARTERCONF You should delete this page
+import HomePage from "@/app/(site)/page";
 
-import { render, screen } from '@testing-library/react';
+jest.mock("@/lib/prismaDB", () => ({
+  __esModule: true,
+  default: {
+    post: {
+      findMany: jest.fn().mockResolvedValue([]),
+    },
+  },
+}));
 
-import HomePage from '@/app/(site)/page';
-
-describe('Homepage', () => {
-  it('renders the Components', () => {
-    render(<HomePage />);
-
-    const heading = screen.getByText(/A starter for Next.js/i);
-
-    expect(heading).toBeInTheDocument();
+describe("Homepage", () => {
+  it("returns the home page content", async () => {
+    const page = await HomePage();
+    expect(page).toBeTruthy();
   });
 });

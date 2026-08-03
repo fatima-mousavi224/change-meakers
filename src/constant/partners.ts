@@ -24,5 +24,6 @@ export const PARTNERS: Partner[] = [
     width: 300,
     height: 84,
     imageClassName:
-      "h-11 max-w-[210px] sm:h-12 sm:max-w-[240px] lg:h-14 lg:max-w-[270px]",  },
+      "h-11 max-w-[210px] sm:h-12 sm:max-w-[240px] lg:h-14 lg:max-w-[270px]",
+  },
 ];
