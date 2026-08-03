@@ -1,15 +1,12 @@
-import React from "react";
-import Header from "../current-program-page/Header";
 import TeamCards from "./TeamCards";
 
 export default function Team() {
   return (
-    <div className="space-y-10 pb-10">
-      <Header
-        btnName="Board of Directors"
-        title='Leadership'
-      />
+    <section className="pb-10">
+      <h2 className="mb-10 text-center font-plusJakartaSans text-[26px] font-bold text-[#252525] sm:text-[30px] lg:text-[32px]">
+        Our Executive Team
+      </h2>
       <TeamCards />
-    </div>
+    </section>
   );
 }

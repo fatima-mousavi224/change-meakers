@@ -1,237 +1,250 @@
-import React from "react";
 
-import amani from "public/images/about/Amani.png";
-import hussaini from "public/images/about/Hussaini.png";
-import massie from "public/images/about/Massie.png";
-import background from "public/images/about/Background.jpg";
-import back from "public/images/about/back.png";
+
+
+"use client";
+
+import {
+  EXECUTIVE_TEAM,
+  INITIAL_VISIBLE_COUNT,
+  type LeadershipMember,
+  type LeadershipSocialLink,
+  type LeadershipSocialType,
+} from "@/constant/aboutLeadership";
+import { cn } from "@/utilities/cn";
+import { ArrowRightIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowCircleUp, ArrowRight, Instagram, LinkIcon } from "../icons/Icons";
-import { FaGlobe, FaX } from "react-icons/fa6";
-import { Linkedin } from "lucide-react";
+import { useState } from "react";
+import { FaFacebookF, FaGlobe } from "react-icons/fa6";
+import { motion } from "framer-motion";
 
-const TeamCards = () => {
-  return (
-    <div className="flex flex-wrap justify-center gap-6">
-      {/* Card 1 */}
+const FOOTER_HEIGHT = 92;
+const HOVER_TOP_GAP = 29;
 
-      <div
-        className="w-80 rounded-lg shadow-lg overflow-hidden border relative "
-        style={{
-          backgroundImage: `url(${back.src})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      >
-        <div className="group">
-          <Image
-            src={amani}
-            alt="Mohammad Jawid Amani"
-            width={320}
-            height={376}
-            loading="lazy"
-            sizes="320px"
-            className="h-[376px] w-full overflow-hidden object-cover object-top z-10"
-          />
-          {/* Hover Overlay */}
-          <div className="absolute inset-0 bg-white h-[376px] bg-opacity-60 flex flex-col justify-center items-center text-center text-primary-50 opacity-0 group-hover:opacity-100 transition-opacity duration-700 ease-in-out">
-            <p className="text-sm px-4 text-justify">
-              Mohammad Jawid Amani is the Founder and Executive Director of Change Makers of the World. He is responsible for the organization’s strategic direction, program development, and external engagement related to education and youth-focused initiatives.
-
-              His work has focused on education access and youth participation in Afghanistan, including coordination of community-based activities and engagement with national and international platforms.
-            </p>
-            <div className="flex gap-2 mt-4">
-              <Link
-                href={"https://www.jawidamani.com/"}
-                target="_blank"
-                className="bg-primary-50 bg-opacity-15 hover:bg-opacity-30 rounded-md size-8 flex items-center justify-center"
-              >
-                <FaGlobe />
-              </Link>
-              {/* <Link
-                href={"https://www.instagram.com/jawid_amani/"}
-                className="bg-primary-50 bg-opacity-15 hover:bg-opacity-30 rounded-md size-8 flex items-center justify-center"
-              >
-                <Instagram />
-              </Link> */}
-              <Link
-                href="www.linkedin.com/in/jawidamani/"
-                target="_blank"
-                className="bg-primary-50 bg-opacity-15 hover:bg-opacity-30 rounded-md size-8 flex items-center justify-center"
-              >
-                <Linkedin />
-              </Link>
-            </div>
-          </div>
-        </div>
-
-        <div className="h-[10px] bg-primary-50 w-full"></div>
-        <div className="p-4 text-center">
-          <h3 className="font-normal text-lg text-black_color">
-            Mohammad Jawid Amani
-          </h3>
-          {/* <p className="text-sm text-paragraph_color">Founder</p> */}
-        </div>
-      </div>
-      {/* Card 2 */}
-      <div
-        className="w-80 rounded-lg shadow-lg overflow-hidden border relative "
-        style={{
-          backgroundImage: `url(${back.src})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      >
-        <div className="group">
-          <Image
-            src={massie}
-            alt="massie"
-            width={320}
-            height={376}
-            loading="lazy"
-            sizes="320px"
-            className="h-[376px] w-full overflow-hidden object-cover object-top z-10"
-          />
-          {/* Hover Overlay */}
-          <div className="absolute inset-0 bg-white h-[376px] bg-opacity-60 flex flex-col justify-center items-center text-center text-primary-50 opacity-0 group-hover:opacity-100 transition-opacity duration-700 ease-in-out">
-            <p className="text-sm px-4 text-justify">
-              Masuda Rahmati serves as President of Change Makers of the World in the United States. She supports organizational coordination, outreach, and engagement with partners based in the U.S., with a focus on strengthening program support and external relations.
-
-              She has a professional background in business and authorship, which informs her role in supporting the organization’s education-related initiatives and engagement efforts connected to Afghanistan.
-            </p>
-            <div className="flex gap-2 mt-4">
-              <Link
-                href='https://www.masudarahmati.com/'
-                className="bg-primary-50 bg-opacity-15 hover:bg-opacity-30 rounded-md size-8 flex items-center justify-center"
-              >
-                <FaGlobe />
-              </Link>
-            </div>
-          </div>
-        </div>
-
-        <div className="h-[10px] bg-primary-50 w-full"></div>
-        <div className="p-4 text-center">
-          <h3 className="font-normal text-lg text-black_color">
-            Masuda Rahmati
-          </h3>
-          {/* <p className="text-sm text-paragraph_color">President - USA</p> */}
-        </div>
-      </div>
-
-      {/* <div
-        className="w-80 rounded-lg shadow-lg overflow-hidden border relative bg-gray-100 h-[469px]"
-        style={{
-          backgroundImage: `url(${background.src})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      >
-        <div
-          className="absolute inset-0 bg-cover bg-center"
-          style={{
-            backgroundImage: `url(${massie.src})`,
-          }}
-        ></div>
-        <div className="h-[10px] bg-primary-100 z-30 w-full mt-5"></div>
-        <Link
-          href={"about/rahmati"}
-          className="absolute bottom-0 w-full bg-white bg-opacity-80 z-10 flex flex-col items-center p-4 h-[437px]"
-        >
-          <h3 className="text-lg text-black_color">Massie Rahmati</h3>
-          <p className="text-sm text-paragraph_color mb-4">President - USA</p>
-          <p className="text-sm text-justify text-primary-50 px-4">
-            Ms. Rahmati is the President of Change Makers of the World in the
-            USA. She has been recognized by the United States Congress for her
-            efforts to inspire women to embrace self-love, independence,
-            education, and confidence. Today, she continues to advocate for
-            human rights and stands in solidarity with the people of Afghanistan
-            during these challenging times.
-          </p>
-          <div className="flex gap-2 mt-4">
-            <Link
-              href={"#"}
-              className="bg-primary-50 bg-opacity-15 rounded-md size-8 flex items-center justify-center"
-            >
-              <Telegram />
-            </Link>
-            <Link
-              href={"#"}
-              className="bg-primary-50 bg-opacity-15 rounded-md size-8 flex items-center justify-center"
-            >
-              <Instagram />
-            </Link>
-            <Link
-              href={"#"}
-              className="bg-primary-50 bg-opacity-15 rounded-md size-8 flex items-center justify-center"
-            >
-              <ArrowRight />
-            </Link>
-          </div>
-        </Link>
-      </div> */}
-
-      {/* Card 3 */}
-      <div
-        className="w-80 rounded-lg shadow-lg overflow-hidden border relative group"
-        style={{
-          backgroundImage: `url(${back.src})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      >
-        <div className="group">
-          <Image
-            src={hussaini}
-            alt="Mohammad Reza Hussaini"
-            width={320}
-            height={376}
-            loading="lazy"
-            sizes="320px"
-            className="h-[376px] w-full overflow-hidden object-cover object-top z-10"
-          />
-          {/* Hover Overlay */}
-          <div className="absolute inset-0 bg-white h-[376px] bg-opacity-60 flex flex-col justify-center items-center text-center text-primary-50 opacity-0 group-hover:opacity-100 transition-opacity duration-700 ease-in-out delay-100">
-            <p className="text-sm px-4 text-justify">
-              Mohammad Reza Hussaini is involved with Change Makers of the World through support to program activities connected to education and youth participation. He contributes to the organization’s work by engaging in education related and social initiatives.
-
-              Based in the United States, his involvement supports coordination and engagement related to the organization’s activities.
-            </p>
-            <div className="flex gap-2 mt-4">
-              <Link
-                href="https://x.com/m_rezahussaini"
-                target="_blank"
-                className="bg-primary-50 bg-opacity-15 hover:bg-opacity-30 rounded-md size-8 flex items-center justify-center"
-              >
-                <FaX />
-              </Link>
-              {/* <Link
-                href={"www.instagram.com/m_rezahussaini"}
-                className="bg-primary-50 bg-opacity-15 hover:bg-opacity-30 rounded-md size-8 flex items-center justify-center"
-              >
-                <Instagram />
-              </Link> */}
-              {/* <Link
-                href={"about/hussaini"}
-                className="bg-primary-50 hover:bg-opacity-30 bg-opacity-15 rounded-md size-8 flex items-center justify-center"
-              >
-                <ArrowRight />
-              </Link> */}
-            </div>
-          </div>
-        </div>
-
-        <div className="h-[10px] bg-primary-50 w-full"></div>
-        <div className="p-4 text-center">
-          <h3 className="font-normal text-lg text-black_color">
-            Mohammad Reza Hussaini
-          </h3>
-          {/* <p className="text-sm text-paragraph_color">Founder</p> */}
-        </div>
-      </div>
-    </div>
-  );
+const SOCIAL_ICON_SRC: Partial<Record<LeadershipSocialType, string>> = {
+  linkedin: "/icons/linkdin.png",
+  instagram: "/icons/instagram.png",
+  x: "/icons/twiter.png",
 };
 
-export default TeamCards;
+const SOCIAL_LABELS: Record<LeadershipSocialType, string> = {
+  website: "Website",
+  linkedin: "LinkedIn",
+  instagram: "Instagram",
+  x: "X",
+  facebook: "Facebook",
+};
+
+function LeadershipSocialIcon({
+  social,
+}: {
+  social: LeadershipSocialLink;
+}) {
+  const label = SOCIAL_LABELS[social.type];
+  const iconSrc = SOCIAL_ICON_SRC[social.type];
+
+  return (
+    <motion.div
+      whileHover={{
+        scale: 1.12,
+        y: -3,
+        rotate: 2,
+      }}
+      whileTap={{
+        scale: 0.95,
+      }}
+      transition={{
+        type: "spring",
+        stiffness: 400,
+        damping: 15,
+      }}
+      className="inline-flex"
+    >
+      <Link
+        href={social.href}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={label}
+        className="flex size-10 items-center justify-center rounded-[10px] bg-[#134C8333] text-[#134C83] transition-all duration-300 hover:bg-[#C5DFF5] hover:shadow-[0_8px_20px_rgba(19,76,131,0.18)]"
+        onClick={(event) => event.stopPropagation()}
+      >
+        {social.type === "website" ? (
+          <FaGlobe className="size-5" />
+        ) : social.type === "facebook" ? (
+          <FaFacebookF className="size-5" />
+        ) : iconSrc ? (
+          <Image
+            src={iconSrc}
+            alt=""
+            width={16}
+            height={16}
+            className="size-6 object-contain"
+            aria-hidden
+          />
+        ) : null}
+      </Link>
+    </motion.div>
+  );
+}
+
+function CardPortrait({ member }: { member: LeadershipMember }) {
+  return (
+    <Image
+      src={member.image}
+      alt={member.name}
+      fill
+      className="object-cover"
+      style={{
+        objectPosition: member.imageObjectPosition ?? "50% 15%",
+      }}
+      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+    />
+  );
+}
+
+function LeadershipCard({
+  member,
+  showRoleInFooter,
+}: {
+  member: LeadershipMember;
+  showRoleInFooter: boolean;
+}) {
+  const [isActive, setIsActive] = useState(false);
+
+  return (
+    <article
+      className="relative h-[400px] w-full max-w-[300px] cursor-pointer overflow-hidden rounded-[15px] bg-white shadow-[0_4px_20px_rgba(19,76,131,0.1)] sm:h-[420px] sm:max-w-none sm:w-[calc(50%-10px)] lg:h-[440px] lg:w-[calc(33.333%-22px)]"
+      onMouseEnter={() => setIsActive(true)}
+      onMouseLeave={() => setIsActive(false)}
+      onFocus={() => setIsActive(true)}
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) {
+          setIsActive(false);
+        }
+      }}
+      onClick={() => setIsActive((current) => !current)}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          setIsActive((current) => !current);
+        }
+      }}
+      role="button"
+      tabIndex={0}
+      aria-label={`${member.name} profile`}
+    >
+      {/* Image */}
+      <div className="absolute inset-0 overflow-hidden bg-[#E8EEF4]">
+        <CardPortrait member={member} />
+      </div>
+
+      {/* Default footer */}
+      {!isActive ? (
+        <div
+          className="absolute inset-x-0 bottom-0 flex flex-col bg-white"
+          style={{ height: FOOTER_HEIGHT }}
+        >
+          <div className="h-[5px] w-full shrink-0 bg-[#134C83]" />
+
+          <div className="flex flex-1 flex-col items-center justify-center px-4 text-center">
+            <h3 className="font-plusJakartaSans text-[15px] font-medium text-[#252525] sm:text-[18px]">
+              {member.name}
+            </h3>
+
+            {showRoleInFooter && member.role ? (
+              <p className="mt-1 font-plusJakartaSans text-[12px] text-[#717171] sm:text-[14px]">
+                {member.role}
+              </p>
+            ) : null}
+          </div>
+        </div>
+      ) : null}
+
+      {/* Hover overlay */}
+      <div
+        className={cn(
+          "absolute inset-x-0 bottom-0 z-10 flex flex-col overflow-hidden rounded-b-[15px] border-t-[5px] border-[#134C83] will-change-transform transition-transform duration-[550ms] ease-[cubic-bezier(0.22,1,0.36,1)]",
+          isActive
+            ? "pointer-events-auto translate-y-0"
+            : "pointer-events-none translate-y-full"
+        )}
+        style={{ top: HOVER_TOP_GAP }}
+        aria-hidden={!isActive}
+      >
+        <div className="relative flex min-h-0 flex-1 flex-col bg-white/75 px-4 pb-5 pt-4 text-center backdrop-blur-[3px] sm:px-5">
+          <h3 className="font-plusJakartaSans text-[16px] font-normal text-[#252525] sm:text-[20px]">
+            {member.name}
+          </h3>
+
+          {member.role ? (
+            <p className="mt-1 font-plusJakartaSans text-[13px] font-normal text-[#252525] sm:text-[14px]">
+              {member.role}
+            </p>
+          ) : null}
+
+          <p className="mt-3 flex-1 overflow-y-auto font-plusJakartaSans text-[12px] font-normal leading-[20px] text-[#0A4062] sm:text-[15px] sm:leading-[22px]">
+            {member.bio}
+          </p>
+
+          {member.socials.length > 0 ? (
+            <div className="mt-4 flex flex-wrap justify-center gap-2">
+              {member.socials.map((social) => (
+                <LeadershipSocialIcon
+                  key={social.type}
+                  social={social}
+                />
+              ))}
+            </div>
+          ) : null}
+        </div>
+      </div>
+    </article>
+  );
+}
+
+export default function TeamCards() {
+  const [showAll, setShowAll] = useState(false);
+
+  const visibleMembers = showAll
+    ? EXECUTIVE_TEAM
+    : EXECUTIVE_TEAM.slice(0, INITIAL_VISIBLE_COUNT);
+
+  const canToggle =
+    EXECUTIVE_TEAM.length > INITIAL_VISIBLE_COUNT;
+
+  return (
+    <div className="space-y-10">
+      <div className="mx-auto flex max-w-[1100px] flex-wrap justify-center gap-5 sm:gap-6 lg:gap-8">
+        {visibleMembers.map((member) => (
+          <LeadershipCard
+            key={member.id}
+            member={member}
+            showRoleInFooter={showAll}
+          />
+        ))}
+      </div>
+
+      {canToggle ? (
+        <div className="flex justify-center">
+          <button
+            type="button"
+            onClick={() => setShowAll((current) => !current)}
+            className="group inline-flex w-fit items-center gap-2 rounded-xl border border-[#D0D5DD] px-5 py-2.5 font-plusJakartaSans text-[13px] font-medium text-black_color transition-colors duration-200 hover:border-primary-50 hover:bg-primary-50 hover:text-white sm:text-[14px]"
+          >
+            <span>{showAll ? "Show Less" : "View More"}</span>
+
+            <ArrowRightIcon
+              className={cn(
+                "size-4 stroke-[2] transition-transform duration-200",
+                showAll
+                  ? "rotate-[-90deg] group-hover:-translate-y-1"
+                  : "group-hover:translate-x-1"
+              )}
+              aria-hidden
+            />
+          </button>
+        </div>
+      ) : null}
+    </div>
+  );
+}
