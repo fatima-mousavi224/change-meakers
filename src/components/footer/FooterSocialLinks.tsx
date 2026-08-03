@@ -1,11 +1,16 @@
 "use client";
 
 import { FOOTER_SOCIAL_LINKS } from "@/constant/footerSocialLinks";
+import { cn } from "@/utilities/cn";
 import Link from "next/link";
 
-export default function FooterSocialLinks() {
+type FooterSocialLinksProps = {
+  className?: string;
+};
+
+export default function FooterSocialLinks({ className }: FooterSocialLinksProps) {
   return (
-    <div className="flex flex-wrap items-center gap-2">
+    <div className={cn("flex flex-wrap items-center gap-2", className)}>
       {FOOTER_SOCIAL_LINKS.map(({ href, label, Icon }, index) => (
         <Link
           key={label}
