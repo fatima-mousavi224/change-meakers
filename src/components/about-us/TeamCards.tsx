@@ -212,39 +212,38 @@ export default function TeamCards() {
   const canToggle =
     EXECUTIVE_TEAM.length > INITIAL_VISIBLE_COUNT;
 
-  return (
-    <div className="space-y-10">
-      <div className="mx-auto flex max-w-[1100px] flex-wrap justify-center gap-5 sm:gap-6 lg:gap-8">
-        {visibleMembers.map((member) => (
-          <LeadershipCard
-            key={member.id}
-            member={member}
-            showRoleInFooter={showAll}
-          />
-        ))}
-      </div>
-
-      {canToggle ? (
-        <div className="flex justify-center">
-          <button
-            type="button"
-            onClick={() => setShowAll((current) => !current)}
-            className="group inline-flex w-fit items-center gap-2 rounded-xl border border-[#D0D5DD] px-5 py-2.5 font-plusJakartaSans text-[13px] font-medium text-black_color transition-colors duration-200 hover:border-primary-50 hover:bg-primary-50 hover:text-white sm:text-[14px]"
-          >
-            <span>{showAll ? "Show Less" : "View More"}</span>
-
-            <ArrowRightIcon
-              className={cn(
-                "size-4 stroke-[2] transition-transform duration-200",
-                showAll
-                  ? "rotate-[-90deg] group-hover:-translate-y-1"
-                  : "group-hover:translate-x-1"
-              )}
-              aria-hidden
-            />
-          </button>
-        </div>
-      ) : null}
+return (
+  <div className="space-y-10">
+    <div className="mx-auto flex w-full max-w-[1100px] flex-wrap justify-center gap-5 px-4 sm:gap-6 sm:px-0 lg:gap-8">
+      {visibleMembers.map((member) => (
+        <LeadershipCard
+          key={member.id}
+          member={member}
+          showRoleInFooter={showAll}
+        />
+      ))}
     </div>
-  );
-}
+
+    {canToggle ? (
+      <div className="flex justify-center">
+        <button
+          type="button"
+          onClick={() => setShowAll((current) => !current)}
+          className="group inline-flex w-fit items-center gap-2 rounded-xl border border-[#D0D5DD] px-5 py-2.5 font-plusJakartaSans text-[13px] font-medium text-black_color transition-colors duration-200 hover:border-primary-50 hover:bg-primary-50 hover:text-white sm:text-[14px]"
+        >
+          <span>{showAll ? "Show Less" : "View More"}</span>
+
+          <ArrowRightIcon
+            className={cn(
+              "size-4 stroke-[2] transition-transform duration-200",
+              showAll
+                ? "rotate-[-90deg] group-hover:-translate-y-1"
+                : "group-hover:translate-x-1"
+            )}
+            aria-hidden
+          />
+        </button>
+      </div>
+    ) : null}
+  </div>
+);}

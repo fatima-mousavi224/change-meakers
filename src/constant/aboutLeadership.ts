@@ -1,5 +1,3 @@
-
-
 export type LeadershipSocialType =
   | "website"
   | "linkedin"
@@ -34,21 +32,11 @@ export const EXECUTIVE_TEAM: LeadershipMember[] = [
     image: "/images/about/jawid-amani.jpg",
     imageObjectPosition: "50% 22%",
     socials: [
-      {
-        type: "website",
-        href: "https://www.jawidamani.com",
-      },
-      {
-        type: "linkedin",
-        href: "https://www.linkedin.com/in/jawidamani",
-      },
-      {
-        type: "instagram",
-        href: "https://www.instagram.com/jawid_amani",
-      },
+      { type: "website", href: "https://www.jawidamani.com" },
+      { type: "linkedin", href: "https://www.linkedin.com/in/jawidamani" },
+      { type: "instagram", href: "https://www.instagram.com/jawid_amani" },
     ],
   },
-
   {
     id: "masuda-rahmati",
     name: "Masuda Rahmati",
@@ -56,14 +44,8 @@ export const EXECUTIVE_TEAM: LeadershipMember[] = [
     bio: "Masuda Rahmati serves as President of Change Makers of the World in the United States. She supports organizational coordination, outreach, and engagement with U.S.-based partners, helping strengthen external relations and program support for CMW's education initiatives in Afghanistan. She has a background in business and authorship and is the author of Pain to Power: I Choose to Love Myself.",
     image: "/images/about/masuda-rahmati.png",
     imageObjectPosition: "50% 12%",
-    socials: [
-      {
-        type: "website",
-        href: "https://www.masudarahmati.com",
-      },
-    ],
+    socials: [{ type: "website", href: "https://www.masudarahmati.com" }],
   },
-
   {
     id: "reza-hussaini",
     name: "Mohammad Reza Hussaini",
@@ -71,34 +53,24 @@ export const EXECUTIVE_TEAM: LeadershipMember[] = [
     image: "/images/about/mohmad-reza-hosainii.png",
     imageObjectPosition: "50% 15%",
     socials: [
-      {
-        type: "x",
-        href: "https://x.com/m_rezahussaini",
-      },
-      {
-        type: "facebook",
-        href: "https://www.facebook.com/RealRezaHussainii",
-      },
+      { type: "x", href: "https://x.com/m_rezahussaini" },
+      { type: "facebook", href: "https://www.facebook.com/RealRezaHussainii" },
     ],
   },
-
   {
     id: "jamshid-nazari",
     name: "Jamshid Nazari",
     role: "Programs Director",
     bio: "Jamshid Nazari supports Change Makers of the World by coordinating and managing program activities inside Afghanistan, especially in Kabul. He has experience in youth focused initiatives and public health related community work, with involvement in programs and events both inside Afghanistan and abroad.",
     image: "/images/about/jamshed-nazari.png",
-    imageObjectPosition: "50% 15%",
     socials: [],
   },
-
   {
     id: "sayeed-mahdi-mousavi",
     name: "Sayeed Mahdi Mousavi",
     role: "Digital Operations Coordinator",
     bio: "Sayeed Mahdi Mousavi supports Change Makers of the World through website development, digital operations, and technical support. He also assists with the coordination of selected in-person activities inside Afghanistan. He holds a bachelor's degree in Computer Science and runs a technology company in Afghanistan.",
     image: "/images/about/mahdi-mousavi.png",
-    imageObjectPosition: "50% 15%",
     socials: [
       {
         type: "linkedin",
@@ -106,14 +78,12 @@ export const EXECUTIVE_TEAM: LeadershipMember[] = [
       },
     ],
   },
-
   {
     id: "masooma-hossaini",
     name: "Masooma Hossaini",
     role: "Girls Academy Manager",
     bio: "Masooma Hossaini directs the Afghan Girls Tech Academy in Herat, an in-person learning space for girls run by Change Makers of the World. She supports female students in learning computer skills and introductory coding in a safe educational environment. She has experience in computer related learning and helps manage the academy's daily activities and student support.",
     image: "/images/about/masoma-hosanii.png",
-    imageObjectPosition: "50% 15%",
     socials: [
       {
         type: "linkedin",
@@ -121,14 +91,12 @@ export const EXECUTIVE_TEAM: LeadershipMember[] = [
       },
     ],
   },
-
   {
     id: "sima-gul-hassani",
     name: "Sima Gul Hassani",
     role: "Education & Scholarships Manager",
     bio: "Sima Gul Hassani supports Change Makers of the World by coordinating scholarship information and education opportunities for Afghan girls. She helps share national and international opportunities through CMW's networks, supporting students in accessing scholarships, learning programs, and other educational pathways. She also contributes to consultation meetings with Afghan girls and empowerment activities for Afghan female diaspora communities in Europe.",
     image: "/images/about/simagul-hsainii.png",
-    imageObjectPosition: "50% 15%",
     socials: [
       {
         type: "linkedin",
@@ -136,14 +104,12 @@ export const EXECUTIVE_TEAM: LeadershipMember[] = [
       },
     ],
   },
-
   {
     id: "sajjad-mousavi",
     name: "Sajjad Mousavi",
     role: "UX/UI Designer",
     bio: "Sajjad Mousavi supports Change Makers of the World by designing and improving the organization's website and digital platforms. He creates clear, user-friendly interfaces, develops page layouts and prototypes, and helps ensure a consistent visual experience across the organization's online work. He also collaborates with the team on the continued development of CMW's digital projects.",
     image: "/images/about/sajjad-mousavi.png",
-    imageObjectPosition: "50% 15%",
     socials: [
       {
         type: "linkedin",

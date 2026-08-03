@@ -1,4 +1,5 @@
 import About from "@/components/about-us/hero";
+import AdvisoryBoard from "@/components/about-us/AdvisoryBoard";
 import MissionImpact from "@/components/about-us/MissionImpact";
 // import Primary from "@/components/about-us/primary";
 import Team from "@/components/about-us/team";
@@ -12,6 +13,7 @@ export default function Page() {
       <MissionImpact />
       {/* <Primary /> */}
       <Team />
+      <AdvisoryBoard />
     </SiteContainer>
   );
 }
