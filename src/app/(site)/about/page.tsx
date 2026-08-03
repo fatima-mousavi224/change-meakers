@@ -7,7 +7,7 @@ import React from "react";
 
 export default function Page() {
   return (
-    <SiteContainer className="sm:space-y-20 space-y-10">
+    <SiteContainer className="space-y-12 sm:space-y-16 lg:space-y-20">
       <About />
       <RecognitionExperience />
       {/* <Primary /> */}
