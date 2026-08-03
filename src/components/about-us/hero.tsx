@@ -8,14 +8,28 @@ type CollageImageProps = {
   src: string;
   alt: string;
   className?: string;
+  priority?: boolean;
 };
 
-function CollageImage({ src, alt, className }: CollageImageProps) {
+function CollageImage({
+  src,
+  alt,
+  className,
+  priority = false,
+}: CollageImageProps) {
   return (
     <div
       className={`relative overflow-hidden rounded-[20px] ${className ?? ""}`}
     >
-      <Image src={src} alt={alt} fill className="object-cover" sizes="25vw" />
+      <Image
+        src={src}
+        alt={alt}
+        fill
+        className="object-cover"
+        sizes="(max-width: 1024px) 50vw, 25vw"
+        priority={priority}
+        loading={priority ? undefined : "lazy"}
+      />
     </div>
   );
 }
@@ -24,7 +38,7 @@ export default function About() {
   const { certificate, meeting, workshop, presentation } = ABOUT_INTRO_IMAGES;
 
   return (
-    <section className="py-8 lg:px-[16px] lg:py-14 px-4">
+    <section className="px-4 py-8 lg:px-[16px] lg:pt-8">
       <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:gap-12">
         <div className="order-2 lg:order-1 md:pt-10">
           <h1 className="font-plusJakartaSans text-[26px] font-bold leading-tight text-[#252525] sm:text-[30px] lg:text-[32px]">
@@ -44,6 +58,7 @@ export default function About() {
               src={certificate.src}
               alt={certificate.alt}
               className="h-[240px] sm:h-[285px] lg:h-[340px]"
+              priority
             />
             <CollageImage
               src={meeting.src}

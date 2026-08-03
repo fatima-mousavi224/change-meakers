@@ -3,9 +3,9 @@ import * as React from "react";
 
 import "@/styles/globals.css";
 import { Plus_Jakarta_Sans } from "next/font/google";
-import prisma from "@/lib/prismaDB";
 import Footer from "@/components/footer/Footer";
 import SearchModal from "@/components/search/SearchModal";
+import { getNavbarPosts } from "@/lib/getNavbarPosts";
 import { getCurrentUser } from "@/utilities/getCurrentUser";
 import NavBar from "../../components/navbar/NavBar";
 import { Toaster } from "react-hot-toast";
@@ -60,8 +60,10 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const user = await getCurrentUser();
-  const posts = await prisma.post.findMany();
+  const [user, posts] = await Promise.all([
+    getCurrentUser(),
+    getNavbarPosts(),
+  ]);
 
   return (
     <html>

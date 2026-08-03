@@ -28,9 +28,11 @@ const TeamCards = () => {
           <Image
             src={amani}
             alt="Mohammad Jawid Amani"
-            width={1200}
-            height={1200}
-            className="w-full h-[376px] object-cover object-top overflow-hidden z-10"
+            width={320}
+            height={376}
+            loading="lazy"
+            sizes="320px"
+            className="h-[376px] w-full overflow-hidden object-cover object-top z-10"
           />
           {/* Hover Overlay */}
           <div className="absolute inset-0 bg-white h-[376px] bg-opacity-60 flex flex-col justify-center items-center text-center text-primary-50 opacity-0 group-hover:opacity-100 transition-opacity duration-700 ease-in-out">
@@ -85,9 +87,11 @@ const TeamCards = () => {
           <Image
             src={massie}
             alt="massie"
-            width={1200}
-            height={1200}
-            className="w-full h-[376px] object-cover object-top overflow-hidden z-10"
+            width={320}
+            height={376}
+            loading="lazy"
+            sizes="320px"
+            className="h-[376px] w-full overflow-hidden object-cover object-top z-10"
           />
           {/* Hover Overlay */}
           <div className="absolute inset-0 bg-white h-[376px] bg-opacity-60 flex flex-col justify-center items-center text-center text-primary-50 opacity-0 group-hover:opacity-100 transition-opacity duration-700 ease-in-out">
@@ -181,9 +185,11 @@ const TeamCards = () => {
           <Image
             src={hussaini}
             alt="Mohammad Reza Hussaini"
-            width={1200}
-            height={1200}
-            className="w-full h-[376px] object-cover object-top z-10 overflow-hidden"
+            width={320}
+            height={376}
+            loading="lazy"
+            sizes="320px"
+            className="h-[376px] w-full overflow-hidden object-cover object-top z-10"
           />
           {/* Hover Overlay */}
           <div className="absolute inset-0 bg-white h-[376px] bg-opacity-60 flex flex-col justify-center items-center text-center text-primary-50 opacity-0 group-hover:opacity-100 transition-opacity duration-700 ease-in-out delay-100">
