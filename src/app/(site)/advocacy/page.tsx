@@ -5,19 +5,16 @@ import ProgramRelatedSections from "@/components/current-program-page/ProgramRel
 import { getLatestPosts } from "@/lib/getLatestPosts";
 
 export const metadata: Metadata = {
-  title: "Youth Empowerment Programs",
-  description: "Youth Empowerment Programs at Change Makers of the World",
+  title: "Advocacy Programs",
+  description: "Advocacy Programs at Change Makers of the World",
 };
 
-export default async function CurrentProgramsPage() {
+export default async function AdvocacyPage() {
   const posts = await getLatestPosts(3);
 
   return (
     <>
-      <ProgramPage
-        activeCategoryId="youth-empowerment"
-        heroTitle="Youth Empowerment"
-      />
+      <ProgramPage activeCategoryId="advocacy" heroTitle="Advocacy" />
       <ProgramRelatedSections posts={posts} />
     </>
   );

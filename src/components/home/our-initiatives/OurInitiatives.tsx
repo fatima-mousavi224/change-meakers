@@ -1,13 +1,23 @@
 "use client";
 
+import SectionHeading from "@/components/common/SectionHeading";
 import { INITIATIVES, INITIATIVES_PER_PAGE } from "@/constant/initiatives";
+import { cn } from "@/utilities/cn";
 import { useEffect, useMemo, useRef, useState } from "react";
 import InitiativeCard from "./InitiativeCard";
 
 const AUTO_PLAY_MS = 3000;
 const MOBILE_BREAKPOINT = 1024;
 
-export default function OurInitiatives() {
+type OurInitiativesProps = {
+  title?: string;
+  className?: string;
+};
+
+export default function OurInitiatives({
+  title = "Our Initiatives",
+  className,
+}: OurInitiativesProps) {
   const [currentPage, setCurrentPage] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
   const mobileScrollRef = useRef<HTMLDivElement>(null);
@@ -66,21 +76,8 @@ export default function OurInitiatives() {
   }, [currentPage, isMobile]);
 
   return (
-    <section className="py-8 lg:py-6 lg:px-[16px] px-4">
-      <div className="mb-8 flex items-center gap-6 lg:mb-10">
-        <h2 className="shrink-0 font-plusJakartaSans text-[22px] font-bold text-[#000000] sm:text-[34px] lg:text-[36px]">
-          Our Initiatives
-        </h2>
-        <div className="flex min-w-0 flex-1 items-center mt-2">
-          <div className="h-px flex-1 bg-[#9E9E9E]" />
-
-          <span className="mx-5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-[1.5px] border-[#9E9E9E] bg-white">
-            <span className="h-3 w-3 rounded-full bg-[#9E9E9E]" />
-          </span>
-
-          <div className="h-px md:w-24 w-6 bg-[#9E9E9E]" />
-        </div>{" "}
-      </div>
+    <section className={cn("px-4 py-8 lg:px-[16px] lg:py-6", className)}>
+      <SectionHeading title={title} />
 
       {/* Mobile: one row, 1 full card + half of next visible */}
       <div
