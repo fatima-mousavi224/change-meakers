@@ -8,6 +8,7 @@ const publicPaths = [
   "/about",
   "/mission&impact",
   "/current-programs",
+  "/apply",
   "/contact",
   "/sign-up",
 ];

@@ -9,6 +9,10 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
 
+  experimental: {
+    serverComponentsExternalPackages: ["@prisma/client"],
+  },
+
   async redirects() {
     return [
       {
