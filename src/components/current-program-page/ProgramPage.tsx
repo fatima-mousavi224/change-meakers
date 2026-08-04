@@ -2,7 +2,10 @@ import Image from "next/image";
 import React, { Suspense } from "react";
 
 import { SITE_CONTAINER_CLASS } from "@/constant/siteContainer";
-import type { ProgramCategoryId } from "@/constant/programTabs";
+import {
+  getProgramCategory,
+  type ProgramCategoryId,
+} from "@/constant/programTabs";
 import ProgramPageSection from "./ProgramPageSection";
 
 const PROGRAM_HERO_GRADIENT =
@@ -10,29 +13,27 @@ const PROGRAM_HERO_GRADIENT =
 
 type ProgramPageProps = {
   activeCategoryId: ProgramCategoryId;
-  heroTitle: string;
-  heroImage?: string;
-  heroImageAlt?: string;
 };
 
-export default function ProgramPage({
-  activeCategoryId,
-  heroTitle,
-  heroImage = "/images/program-hero-image.jpg",
-  heroImageAlt,
-}: ProgramPageProps) {
+export default function ProgramPage({ activeCategoryId }: ProgramPageProps) {
+  const category = getProgramCategory(activeCategoryId);
+
   return (
     <Suspense fallback={"loading..."}>
       <section className={`mt-8 ${SITE_CONTAINER_CLASS}`}>
         <div className="relative mt-4 overflow-hidden rounded-[24px] shadow-md">
           <div className="relative h-[50vh] min-h-[360px] w-full overflow-hidden sm:min-h-[420px] lg:min-h-[480px]">
             <Image
-              src={heroImage}
-              alt={heroImageAlt ?? heroTitle}
+              src={category.heroImage}
+              alt={category.label}
               fill
               priority
               quality={100}
-              className="object-cover object-[center_28%]"
+              className="object-cover"
+              style={{
+                objectPosition:
+                  category.heroImagePosition?.replace(/_/g, " ") ?? "center",
+              }}
               sizes="(max-width: 1440px) 100vw, 1440px"
             />
           </div>
@@ -44,7 +45,7 @@ export default function ProgramPage({
 
           <div className="absolute inset-0 z-20 flex items-center justify-center">
             <h1 className="font-plusJakartaSans text-[28px] font-bold leading-tight text-white sm:text-[36px] lg:text-[44px]">
-              {heroTitle}
+              {category.label}
             </h1>
           </div>
         </div>

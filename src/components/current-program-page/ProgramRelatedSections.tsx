@@ -2,14 +2,19 @@ import SiteContainer from "@/components/common/SiteContainer";
 import type { UpdatePost } from "@/components/home/latest-updates/LatestUpdateCard";
 import OurInitiatives from "@/components/home/our-initiatives/OurInitiatives";
 import LatestUpdates from "@/components/home/latest-updates/LatestUpdates";
+import type { ProgramCategoryId } from "@/constant/programTabs";
 
 type ProgramRelatedSectionsProps = {
   posts: UpdatePost[];
+  activeCategoryId: ProgramCategoryId;
 };
 
 export default function ProgramRelatedSections({
   posts,
+  activeCategoryId,
 }: ProgramRelatedSectionsProps) {
+  const isYouthEmpowerment = activeCategoryId === "youth-empowerment";
+
   return (
     <SiteContainer className="pb-4">
       <OurInitiatives
@@ -20,6 +25,8 @@ export default function ProgramRelatedSections({
         title="Related Updates"
         posts={posts}
         viewAllText="View More"
+        collapseText="Show Less"
+        viewAllMode={isYouthEmpowerment ? "expand" : "link"}
         className="py-0 pb-0 pt-6 lg:pt-8"
         viewAllClassName="mt-6"
       />

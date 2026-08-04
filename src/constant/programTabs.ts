@@ -15,6 +15,8 @@ export type ProgramCategory = {
   label: string;
   href: string;
   icon: LucideIcon;
+  heroImage: string;
+  heroImagePosition?: string;
   purpose: ProgramSection;
   activities: ProgramSection;
 };
@@ -25,6 +27,8 @@ export const PROGRAM_CATEGORIES: ProgramCategory[] = [
     label: "Youth Empowerment",
     href: "/current-programs",
     icon: Users,
+    heroImage: "/images/program-hero-image.jpg",
+    heroImagePosition: "center_28%",
     purpose: {
       title: "Purpose",
       paragraphs: [
@@ -46,50 +50,59 @@ export const PROGRAM_CATEGORIES: ProgramCategory[] = [
   {
     id: "girls-education",
     label: "Girls' Education",
-    href: "/girls-education",
+    href: "/current-programs/girls-education",
     icon: GraduationCap,
+    heroImage: "/images/girls-education-hero-image.jpg",
+    heroImagePosition: "center center",
     purpose: {
       title: "Purpose",
       paragraphs: [
-        "Change Makers of the World works to support Afghan girls' access to learning at a time when formal schooling remains restricted for many. Education programs form the core of our activities and are designed to help girls continue learning through structured, capacity-based approaches tailored to local conditions.",
-        "Our Girls' Education initiatives focus on creating safe learning environments, providing instructional support, and sharing educational resources that help students maintain continuity in their studies. Particular attention is given to girls who face additional barriers related to location, cost, and access to materials.",
-        "These programs aim to strengthen academic confidence, support skill development, and help participants prepare for future educational and professional pathways through both in-person and online learning opportunities.",
+        "Change Makers of the World believes that girls' education is essential to the future of every society. When girls have access to learning, families, communities, and future generations benefit.",
+        "Afghanistan remains the only country in the world where girls face severe restrictions on access to secondary and higher education. In this context, supporting continued learning opportunities for Afghan girls remains one of CMW's core priorities.",
+        "Our Girls Education Programs aim to help Afghan girls continue learning through safe in-person initiatives inside Afghanistan and accessible online opportunities available to learners in different locations.",
       ],
     },
     activities: {
       title: "Activities",
       paragraphs: [
-        "CMW supports girls' education through in-person learning spaces in Afghanistan, including community-based programs in Kabul and Herat, as well as online instruction in school subjects and preparatory courses.",
-        "Activities include structured classes, recorded lessons, supplementary learning materials, scholarship information sharing, and coordination of locally implemented education initiatives.",
-        "Through these programs, participants gain access to learning resources, mentorship, and guidance that support self-paced study and continued educational progress.",
-        "Many of these activities are implemented in cooperation with local educators, community organizations, and international partner institutions committed to supporting Afghan girls' education.",
+        "CMW supports in-person learning spaces in Kabul and Herat, including the Afghan Girls Tech Academy, where students can study together, exchange knowledge, and participate in educational activities in a supportive environment. These spaces also provide English language learning, digital skills training, and practical courses designed to help participants prepare for future employment opportunities in technology and related fields.",
+        "In addition, CMW offers a wide range of online educational programs for Afghan girls. These include foreign language courses such as English, German, and Italian, as well as computer and technology training, introductory coding, AI-focused sessions, academic writing, CV preparation, and personal development workshops. Programs are delivered through structured timelines with the support of volunteer teachers and mentors.",
+        "CMW also supports selected students in preparing for standardized international examinations such as TOEFL, IELTS, and SAT, helping qualified participants pursue scholarship opportunities and higher education abroad.",
+        "Through partnerships with international organizations, including International Orphan Care and Flowers for Future International, CMW has also supported Afghan girls through online schooling and accredited educational opportunities. In all activities, participant safety and privacy remain a priority.",
+        "CMW continues to explore new ways to expand access to learning resources for Afghan girls, including recorded educational content and digital platforms that can reach students across Afghanistan.",
       ],
     },
   },
   {
     id: "advocacy",
     label: "Advocacy",
-    href: "/advocacy",
+    href: "/current-programs/advocacy",
     icon: Megaphone,
+    heroImage: "/images/advocacy-hero-image.jpg",
+    heroImagePosition: "center center",
     purpose: {
       title: "Purpose",
       paragraphs: [
-        "Change Makers of the World engages in advocacy to raise awareness about education access and human rights issues affecting Afghan girls and youth. As a non-political and non-religious volunteer community, we support structured dialogue on rights, inclusion, and equal opportunity.",
-        "Our Advocacy initiatives aim to amplify the voices of Afghan youth on public platforms, encourage international engagement on education and human rights, and document experiences that reflect the realities facing communities in Afghanistan.",
-        "These efforts are designed to support informed public understanding, strengthen coordination with partners, and contribute to broader human rights efforts while operating within defined organizational scope and resource limits.",
+        "Change Makers of the World advocates for meaningful youth inclusion in decision-making and for Afghan girls' access to secondary school and university education.",
+        "Inside Afghanistan, the focus is on supporting safe civic participation and creating spaces, mainly through digital platforms, where young people and girls can share their views, raise concerns, and speak about issues affecting their futures.",
+        "Internationally, CMW works to keep Afghanistan from being forgotten, raise awareness of current challenges, and continue support for Afghan girls' right to education and broader opportunities.",
       ],
     },
     activities: {
       title: "Activities",
       paragraphs: [
-        "CMW participates in structured dialogue and coordination with partners regarding education access, human rights, and youth inclusion through meetings, public statements, and collaborative initiatives.",
-        "Activities include storytelling and documentation that reflects lived experiences through written profiles and interviews, conducted with attention to safety, consent, and participant wellbeing.",
-        "The organization also supports awareness efforts related to girls' education and human rights, including engagement with international forums, partner institutions, and public advocacy campaigns.",
-        "Many of these activities are implemented in cooperation with local organizations in Afghanistan and international partner institutions committed to supporting education and human rights.",
+        "CMW organizes online meetings, discussions, campaigns, and events that bring together youth, students, educators, and community members to discuss key issues related to Afghanistan and education.",
+        "CMW was among the founding organizations that helped establish the National Youth Consensus for Peace in 2021, a network of 244 organizations from all 34 provinces of Afghanistan that supported meaningful youth participation in the peace process.",
+        "The organization also contributed to the creation of the Afghan Youth Coalition (AYC), a platform focused on documenting the situation of Afghan youth and presenting their priorities through research, consultations, and targeted advocacy.",
+        "International advocacy efforts are carried out through cooperation with partner organizations, public forums, and youth networks in Europe, North America, and other regions.",
       ],
     },
   },
 ];
+
+export const PROGRAM_CATEGORY_IDS = PROGRAM_CATEGORIES.map(
+  (category) => category.id,
+);
 
 export function getProgramCategory(id: ProgramCategoryId): ProgramCategory {
   const category = PROGRAM_CATEGORIES.find((item) => item.id === id);
@@ -97,4 +110,10 @@ export function getProgramCategory(id: ProgramCategoryId): ProgramCategory {
     throw new Error(`Unknown program category: ${id}`);
   }
   return category;
+}
+
+export function isProgramCategoryId(
+  value: string,
+): value is ProgramCategoryId {
+  return PROGRAM_CATEGORY_IDS.includes(value as ProgramCategoryId);
 }

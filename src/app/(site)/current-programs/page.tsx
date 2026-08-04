@@ -1,24 +1,20 @@
 import { Metadata } from "next";
 
-import ProgramPage from "@/components/current-program-page/ProgramPage";
-import ProgramRelatedSections from "@/components/current-program-page/ProgramRelatedSections";
+import ProgramCategoryView from "@/components/current-program-page/ProgramCategoryView";
+import { getProgramCategory } from "@/constant/programTabs";
 import { getLatestPosts } from "@/lib/getLatestPosts";
 
+const category = getProgramCategory("youth-empowerment");
+
 export const metadata: Metadata = {
-  title: "Youth Empowerment Programs",
-  description: "Youth Empowerment Programs at Change Makers of the World",
+  title: `${category.label} Programs`,
+  description: `${category.label} programs at Change Makers of the World`,
 };
 
 export default async function CurrentProgramsPage() {
-  const posts = await getLatestPosts(3);
+  const posts = await getLatestPosts(12);
 
   return (
-    <>
-      <ProgramPage
-        activeCategoryId="youth-empowerment"
-        heroTitle="Youth Empowerment"
-      />
-      <ProgramRelatedSections posts={posts} />
-    </>
+    <ProgramCategoryView activeCategoryId="youth-empowerment" posts={posts} />
   );
 }
