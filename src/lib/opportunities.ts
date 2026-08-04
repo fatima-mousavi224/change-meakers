@@ -25,6 +25,9 @@ function serializeOpportunity(opportunity: {
   image: string;
   deadline: Date;
   applicationUrl: string | null;
+  resourceProvider: string | null;
+  mainSource: string | null;
+  postedDate: Date | null;
   published: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -39,6 +42,9 @@ function serializeOpportunity(opportunity: {
     image: opportunity.image,
     deadline: opportunity.deadline.toISOString(),
     applicationUrl: opportunity.applicationUrl,
+    resourceProvider: opportunity.resourceProvider,
+    mainSource: opportunity.mainSource,
+    postedDate: opportunity.postedDate?.toISOString() ?? null,
     published: opportunity.published,
     createdAt: opportunity.createdAt.toISOString(),
     updatedAt: opportunity.updatedAt.toISOString(),

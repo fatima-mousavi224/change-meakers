@@ -40,6 +40,9 @@ export type OpportunityItem = {
   image: string;
   deadline: string;
   applicationUrl: string | null;
+  resourceProvider: string | null;
+  mainSource: string | null;
+  postedDate: string | null;
   published: boolean;
   createdAt: string;
   updatedAt: string;

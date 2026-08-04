@@ -372,18 +372,21 @@ model Impact {
 }
 
 model Opportunity {
-  id              String   @id @default(auto()) @map("_id") @db.ObjectId
-  title           String
-  excerpt         String
-  content         String
-  category        String
-  location        String
-  image           String
-  deadline        DateTime
-  applicationUrl  String?
-  published       Boolean  @default(true)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id               String    @id @default(auto()) @map("_id") @db.ObjectId
+  title            String
+  excerpt          String
+  content          String
+  category         String
+  location         String
+  image            String
+  deadline         DateTime
+  applicationUrl   String?
+  resourceProvider String?
+  mainSource       String?
+  postedDate       DateTime?
+  published        Boolean   @default(true)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 }
 
 

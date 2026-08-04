@@ -11,10 +11,13 @@ const SAMPLE_OPPORTUNITIES = [
     content:
       "This scholarship opportunity supports Afghan students interested in leadership, communication, and public speaking.\n\nApplicants should demonstrate a strong commitment to community engagement and educational growth. Selected participants will receive mentorship, application guidance, and support preparing for international education pathways.",
     category: "High School Scholarships",
-    location: "Japan",
+    location: "Kabul, Afghanistan",
     image: "/images/update-component-image.jpg",
-    deadline: new Date("2026-08-25T00:00:00.000Z"),
-    applicationUrl: "https://example.com/apply",
+    deadline: new Date("2026-07-01T00:00:00.000Z"),
+    applicationUrl: "https://www.whitehouse.gov/AfghanGirls",
+    resourceProvider: "Mohammad Jawid Amani",
+    mainSource: "https://www.whitehouse.gov/AfghanGirls",
+    postedDate: new Date("2026-07-04T00:00:00.000Z"),
   },
   {
     title:
