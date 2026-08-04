@@ -1,6 +1,6 @@
 "use client";
-import Banner from "@/components/common/Banner";
 import SiteContainer from "@/components/common/SiteContainer";
+import OpportunityHubHero from "@/components/opportunities/OpportunityHubHero";
 import React, { useState } from "react";
 import Image from "next/image";
 import { IoMdClose } from "react-icons/io";
@@ -333,14 +333,11 @@ export default function StudentApplication() {
   };
 
   return (
-    <SiteContainer className="flex mt-4">
+    <>
+      <OpportunityHubHero />
+      <SiteContainer className="flex mt-4">
       <main>
         <div className="md:px-5">
-          <Banner>
-            <span className="text-lg md:text-5xl block font-bold">
-              Student Application Portal
-            </span>
-          </Banner>
           <div className="px-8 py-6 border-2 rounded-lg mt-12">
             <h1 className="text-2xl font-bold">
               Universal Contributor Application Form
@@ -1233,5 +1230,6 @@ export default function StudentApplication() {
         </div>
       </main>
     </SiteContainer>
+    </>
   );
 }
