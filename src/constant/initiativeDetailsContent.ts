@@ -9,6 +9,22 @@ export type InitiativeSocialLink = {
   href: string;
 };
 
+import type { ContentDetailModalContent } from "@/types/contentDetailModal";
+
+export type InitiativeAtAGlanceCard = {
+  title: string;
+  /** Image cards use image + short description; text cards use body copy only */
+  variant: "image" | "text";
+  image?: string;
+  imageAlt?: string;
+  description: string;
+  readMoreHref?: string;
+  showReadMore?: boolean;
+  readMoreModal?: ContentDetailModalContent;
+  /** Use "large" for assets with extra padding (e.g. map illustrations) */
+  imageScale?: "default" | "large";
+};
+
 export type InitiativeDetailContent = {
   heroImage: string;
   heroLogo?: string;
@@ -16,6 +32,7 @@ export type InitiativeDetailContent = {
   heroImagePosition?: string;
   introParagraphs: string[];
   socialLinks?: InitiativeSocialLink[];
+  atGlanceCards?: InitiativeAtAGlanceCard[];
 };
 
 export const INITIATIVE_DETAIL_CONTENT: Record<string, InitiativeDetailContent> =
@@ -48,6 +65,44 @@ export const INITIATIVE_DETAIL_CONTENT: Record<string, InitiativeDetailContent> 
         "Students receive training in basic computer skills and English through a combination of in-person support and online instruction provided by partner tutors and educators. Outside of scheduled learning hours, the space remains open for students to continue studying, practicing, and using available resources.",
         "The program focuses on practical learning. It aims to help students build skills they can use for further education, remote work, or entry-level opportunities in digital and technology-related fields. Many participants are girls who were unable to complete their formal schooling.",
         "As a result of the program, some students have passed English language tests such as Duolingo, while others have started working on small projects or secured paid opportunities. In Herat, a group of students is currently contributing to the development of a local digital platform, MyHerat.com, designed to provide information and services for residents and visitors.",
+      ],
+      atGlanceCards: [
+        {
+          title: "Kabul & Herat",
+          variant: "image",
+          image: "/images/initiatives-datils/kabul&herat-flag.png",
+          imageAlt: "Map of Afghanistan highlighting Kabul and Herat provinces",
+          description: "Two active learning spaces inside Afghanistan.",
+          imageScale: "large",
+          readMoreModal: {
+            title: "Kabul & Herat",
+            image: "/images/initiatives-datils/kabul&herat-flag.png",
+            imageAlt: "Map of Afghanistan highlighting Kabul and Herat provinces",
+            imageScale: "large",
+            paragraphs: [
+              "Two active learning spaces inside Afghanistan. The Afghan Girls Tech Academy is an informal learning space established in 2024 in Herat and Kabul to support Afghan girls who no longer have access to formal education.",
+              "The academy provides a safe and open environment where students can gather, study, and work together. Currently, more than 25 girls are part of the program across both locations. Each group participates in a six-month cycle, after which new students are selected.",
+              "Students receive training in basic computer skills and English through a combination of in-person support and online instruction provided by partner tutors and educators. Outside of scheduled learning hours, the space remains open for students to continue studying, practicing, and using available resources.",
+              "The program focuses on practical learning. It aims to help students build skills they can use for further education, remote work, or entry-level opportunities in digital and technology-related fields. Many participants are girls who were unable to complete their formal schooling.",
+              "As a result of the program, some students have passed English language tests such as Duolingo, while others have started working on small projects or secured paid opportunities. In Herat, a group of students is currently contributing to the development of a local digital platform, MyHerat.com, designed to provide information and services for residents and visitors.",
+            ],
+          },
+        },
+        {
+          title: "Computer & English Training",
+          variant: "image",
+          image: "/images/initiatives-datils/tv-image.png",
+          imageAlt: "Computer monitor showing English language training",
+          description:
+            "Students learn basic computer skills, English, and digital tools through in-person support and online instruction.",
+        },
+        {
+          title: "My Herat.com",
+          variant: "text",
+          description:
+            "Herat students are contributing to MyHerat.com, a local digital platform being developed to share city information, useful services, and opportunities for residents and visitors. The project gives students practical experience in digital work while helping them apply their skills to something connected to their own city. Students take part in developing and managing content for the platform, gaining experience beyond classroom learning. The project also gives them an opportunity to build practical skills that can support their future education and employment.",
+          readMoreHref: "https://www.myherat.com",
+        },
       ],
     },
     "afghan-youth-coalition": {
