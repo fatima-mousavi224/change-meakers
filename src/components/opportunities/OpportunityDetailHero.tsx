@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import SiteContainer from "@/components/common/SiteContainer";
 import type { OpportunityItem } from "@/constant/opportunities";
+import { OPPORTUNITY_DETAIL_SECTION_CLASS } from "@/constant/opportunityDetailLayout";
 import { cn } from "@/utilities/cn";
 
 const DETAIL_HERO_BACKGROUND = "/images/detailscard-background-image.png";
@@ -69,7 +70,9 @@ export default function OpportunityDetailHero({
         aria-hidden
       />
 
-      <SiteContainer className="relative px-6 py-10 sm:px-10 sm:py-12 md:px-14 lg:px-20 lg:py-16">
+      <SiteContainer
+        className={`relative py-10 sm:py-12 lg:py-16 ${OPPORTUNITY_DETAIL_SECTION_CLASS}`}
+      >
         <Link
           href="/apply"
           className="inline-flex items-center gap-2 font-plusJakartaSans text-[15px] font-medium text-white transition-opacity hover:opacity-80 sm:text-[16px]"

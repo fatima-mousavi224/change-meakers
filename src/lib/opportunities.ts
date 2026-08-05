@@ -4,6 +4,11 @@ import {
   type OpportunityListResponse,
   type OpportunitySort,
 } from "@/constant/opportunities";
+import {
+  legacyContentToBlocks,
+  parseOpportunityContentBlocks,
+  type OpportunityContentBlock,
+} from "@/constant/opportunityContentBlocks";
 import prisma from "@/lib/prismaDB";
 
 type GetOpportunitiesParams = {
@@ -15,28 +20,38 @@ type GetOpportunitiesParams = {
   sort?: OpportunitySort;
 };
 
-function serializeOpportunity(opportunity: {
-  id: string;
-  title: string;
-  excerpt: string;
-  content: string;
-  category: string;
-  location: string;
-  image: string;
-  deadline: Date;
-  applicationUrl: string | null;
-  resourceProvider: string | null;
-  mainSource: string | null;
-  postedDate: Date | null;
-  published: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-}): OpportunityItem {
+function serializeOpportunity(
+  opportunity: {
+    id: string;
+    title: string;
+    excerpt: string;
+    content: string;
+    contentBlocks: unknown;
+    category: string;
+    location: string;
+    image: string;
+    deadline: Date;
+    applicationUrl: string | null;
+    resourceProvider: string | null;
+    mainSource: string | null;
+    postedDate: Date | null;
+    published: boolean;
+    createdAt: Date;
+    updatedAt: Date;
+  },
+  resolvedBlocks?: OpportunityContentBlock[],
+): OpportunityItem {
+  const parsedBlocks = parseOpportunityContentBlocks(opportunity.contentBlocks);
+  const contentBlocks =
+    resolvedBlocks ??
+    (parsedBlocks.length ? parsedBlocks : legacyContentToBlocks(opportunity.content));
+
   return {
     id: opportunity.id,
     title: opportunity.title,
     excerpt: opportunity.excerpt,
     content: opportunity.content,
+    contentBlocks,
     category: opportunity.category,
     location: opportunity.location,
     image: opportunity.image,
@@ -49,6 +64,40 @@ function serializeOpportunity(opportunity: {
     createdAt: opportunity.createdAt.toISOString(),
     updatedAt: opportunity.updatedAt.toISOString(),
   };
+}
+
+async function resolveContentBlocks(
+  id: string,
+  contentBlocks: unknown,
+  content: string,
+) {
+  const parsed = parseOpportunityContentBlocks(contentBlocks);
+  if (parsed.length) {
+    return parsed;
+  }
+
+  try {
+    const raw = await prisma.opportunity.findRaw({
+      filter: {
+        _id: { $eq: { $oid: id } },
+      },
+      options: {
+        projection: { contentBlocks: 1 },
+      },
+    });
+
+    if (Array.isArray(raw) && raw[0]) {
+      const fromDb = (raw[0] as { contentBlocks?: unknown }).contentBlocks;
+      const parsedFromDb = parseOpportunityContentBlocks(fromDb);
+      if (parsedFromDb.length) {
+        return parsedFromDb;
+      }
+    }
+  } catch (error) {
+    console.error("Failed to load opportunity content blocks:", error);
+  }
+
+  return legacyContentToBlocks(content);
 }
 
 export async function getOpportunities({
@@ -105,5 +154,15 @@ export async function getOpportunityById(id: string) {
     where: { id, published: true },
   });
 
-  return opportunity ? serializeOpportunity(opportunity) : null;
+  if (!opportunity) {
+    return null;
+  }
+
+  const contentBlocks = await resolveContentBlocks(
+    id,
+    (opportunity as { contentBlocks?: unknown }).contentBlocks,
+    opportunity.content,
+  );
+
+  return serializeOpportunity(opportunity, contentBlocks);
 }

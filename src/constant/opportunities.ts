@@ -28,13 +28,18 @@ export type OpportunityCategory = (typeof OPPORTUNITY_CATEGORIES)[number];
 export type OpportunityLocation = (typeof OPPORTUNITY_LOCATIONS)[number];
 export type OpportunitySort = (typeof OPPORTUNITY_SORT_OPTIONS)[number]["value"];
 
+import type { OpportunityContentBlock } from "@/constant/opportunityContentBlocks";
+
 export const OPPORTUNITIES_PER_PAGE = 4;
+
+export type { OpportunityContentBlock };
 
 export type OpportunityItem = {
   id: string;
   title: string;
   excerpt: string;
   content: string;
+  contentBlocks: OpportunityContentBlock[];
   category: string;
   location: string;
   image: string;

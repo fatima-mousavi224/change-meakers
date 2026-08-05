@@ -376,6 +376,7 @@ model Opportunity {
   title            String
   excerpt          String
   content          String
+  contentBlocks    Json?
   category         String
   location         String
   image            String
