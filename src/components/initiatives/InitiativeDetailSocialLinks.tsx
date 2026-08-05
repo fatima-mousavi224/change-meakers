@@ -1,0 +1,68 @@
+"use client";
+
+import type { InitiativeSocialLink } from "@/constant/initiativeDetailsContent";
+import { cn } from "@/utilities/cn";
+import {
+  FaGithub,
+  FaGlobe,
+  FaInstagram,
+  FaLinkedinIn,
+} from "react-icons/fa6";
+import Link from "next/link";
+import type { IconType } from "react-icons";
+
+const SOCIAL_CONFIG: Record<
+  InitiativeSocialLink["type"],
+  { label: string; Icon: IconType }
+> = {
+  website: { label: "Website", Icon: FaGlobe },
+  instagram: { label: "Instagram", Icon: FaInstagram },
+  linkedin: { label: "LinkedIn", Icon: FaLinkedinIn },
+  github: { label: "GitHub", Icon: FaGithub },
+};
+
+type InitiativeDetailSocialLinksProps = {
+  links: InitiativeSocialLink[];
+  className?: string;
+};
+
+export default function InitiativeDetailSocialLinks({
+  links,
+  className,
+}: InitiativeDetailSocialLinksProps) {
+  if (!links.length) {
+    return null;
+  }
+
+  return (
+    <div
+      className={cn(
+        "inline-flex items-center gap-0.5 rounded-[4px] border-[3px] border-[#F2F2F2] bg-[#FFFFFF] px-1.5 py-1.5 sm:gap-1.5 sm:px-2.5 sm:py-2",
+        className,
+      )}
+    >
+      {links.map((link, index) => {
+        const { label, Icon } = SOCIAL_CONFIG[link.type];
+
+        return (
+          <Link
+            key={`${link.type}-${link.href}`}
+            href={link.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={label}
+            className="group inline-flex animate-footer-social-in transition-transform duration-300 ease-out hover:-translate-y-1.5 active:translate-y-0"
+            style={{ animationDelay: `${index * 80}ms` }}
+          >
+            <span className="flex size-[36px] items-center justify-center rounded-[4px] bg-transparent text-[#A1A1AA] transition-all duration-300 ease-out group-hover:bg-[#252525] group-hover:text-white group-active:scale-95 sm:size-[48px] lg:size-[51px]">
+              <Icon
+                className="size-[17px] transition-all duration-300 ease-out sm:size-[22px]"
+                aria-hidden
+              />
+            </span>
+          </Link>
+        );
+      })}
+    </div>
+  );
+}

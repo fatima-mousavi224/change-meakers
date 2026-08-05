@@ -164,7 +164,7 @@ export default function MainNavBar({
         {/* Bottom row: nav links | social icons */}
         <div className="hidden border-b border-gray-200 py-3 lg:block">
           <div className="flex items-center justify-between gap-6">
-            <div className="flex flex-wrap items-center gap-1">
+            <div className="flex flex-wrap items-center gap-1 -mb-px">
               {navigation.map((item) => (
                 <NavMenuLink
                   key={item.name}

@@ -1,6 +1,10 @@
 "use client";
 
-import { INITIATIVE_GRADIENT, type Initiative } from "@/constant/initiatives";
+import {
+  getInitiativeDetailPath,
+  INITIATIVE_GRADIENT,
+  type Initiative,
+} from "@/constant/initiatives";
 import { ArrowRightIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import Link from "next/link";
@@ -10,7 +14,7 @@ type InitiativeCardProps = {
 };
 
 export default function InitiativeCard({ initiative }: InitiativeCardProps) {
-  const isExternal = initiative.href.startsWith("http");
+  const detailHref = getInitiativeDetailPath(initiative.id);
 
   return (
     <article className="group relative h-[340px] overflow-hidden rounded-[16px] sm:h-[380px] lg:h-[390px]">
@@ -57,9 +61,7 @@ export default function InitiativeCard({ initiative }: InitiativeCardProps) {
           </p>
 
           <Link
-            href={initiative.href}
-            target={isExternal ? "_blank" : undefined}
-            rel={isExternal ? "noopener noreferrer" : undefined}
+            href={detailHref}
             className="group/btn mt-4 inline-flex items-center gap-2 rounded-lg border border-white px-4 py-2 font-plusJakartaSans text-[10px] font-medium text-white transition-colors duration-200 hover:border-primary-50 hover:bg-primary-50 sm:text-[12px]"
           >
             
