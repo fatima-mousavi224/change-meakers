@@ -53,9 +53,13 @@ const FOOTER_SOCIAL_LINKS: FooterSocialLink[] = [
 
 type FooterSocialLinksProps = {
   className?: string;
+  compact?: boolean;
 };
 
-export default function FooterSocialLinks({ className }: FooterSocialLinksProps) {
+export default function FooterSocialLinks({
+  className,
+  compact = false,
+}: FooterSocialLinksProps) {
   return (
     <div className={cn("flex flex-wrap items-center gap-2", className)}>
       {FOOTER_SOCIAL_LINKS.map(({ href, label, Icon }, index) => (
@@ -68,9 +72,17 @@ export default function FooterSocialLinks({ className }: FooterSocialLinksProps)
           className="group inline-flex animate-footer-social-in transition-transform duration-300 ease-out hover:-translate-y-1.5 active:translate-y-0"
           style={{ animationDelay: `${index * 80}ms` }}
         >
-          <span className="flex size-9 items-center justify-center rounded-full bg-[#252525] text-white shadow-sm transition-all duration-300 ease-out group-hover:scale-110 group-hover:bg-primary-50 group-hover:shadow-md group-active:scale-95">
+          <span
+            className={cn(
+              "flex items-center justify-center rounded-full bg-[#252525] text-white shadow-sm transition-all duration-300 ease-out group-hover:scale-110 group-hover:bg-primary-50 group-hover:shadow-md group-active:scale-95",
+              compact ? "size-6 md:size-9" : "size-9",
+            )}
+          >
             <Icon
-              className="size-[15px] transition-transform duration-300 ease-out group-hover:scale-110 group-hover:-rotate-6"
+              className={cn(
+                "transition-transform duration-300 ease-out group-hover:scale-110 group-hover:-rotate-6",
+                compact ? "size-[9px] md:size-[15px]" : "size-[15px]",
+              )}
               aria-hidden
             />
           </span>
