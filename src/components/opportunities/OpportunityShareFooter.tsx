@@ -9,6 +9,7 @@ import {
 type OpportunityShareFooterProps = {
   title: string;
   sharePath: string;
+  shareLabel?: string;
 };
 
 function buildShareLinks(title: string, sharePath: string) {
@@ -39,6 +40,7 @@ function buildShareLinks(title: string, sharePath: string) {
 export default function OpportunityShareFooter({
   title,
   sharePath,
+  shareLabel = "Share the opportunity with others",
 }: OpportunityShareFooterProps) {
   const shareLinks = buildShareLinks(title, sharePath);
 
@@ -46,7 +48,7 @@ export default function OpportunityShareFooter({
     <div className="mt-12 border-t border-[#E4E7EC] pt-8 sm:mt-14 sm:pt-10">
       <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
         <p className="font-plusJakartaSans text-[12px] font-semibold uppercase tracking-[0.12em] text-[#094181] sm:text-[13px]">
-          Share the opportunity with others
+          {shareLabel}
         </p>
 
         <div className="flex items-center gap-2">
