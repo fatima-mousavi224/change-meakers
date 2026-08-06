@@ -87,7 +87,7 @@ export default function InitiativeDetailBento({
 
   return (
     <>
-      <SiteContainer as="section" className="pb-12 sm:pb-16 lg:pb-20">
+      <SiteContainer as="section" className="pb-12 sm:pb-16 lg:pb-3">
         <div
           className={cn(
             "grid grid-cols-2 gap-3",

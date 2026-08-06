@@ -48,6 +48,21 @@ export type InitiativeBentoSection = {
   };
 };
 
+export type InitiativeLetGirlsLearnSection = {
+  hashtag: string;
+  subtitle: string;
+  /** ISO date string — live countdown from this moment (Gandomin-style) */
+  countdownStartDate: string;
+  highlightText: string;
+  description: string;
+  ctaLabel: string;
+  ctaHref: string;
+  compareBeforeImage: string;
+  compareAfterImage: string;
+  compareBeforeAlt: string;
+  compareAfterAlt: string;
+};
+
 export type InitiativeDetailContent = {
   heroImage: string;
   heroLogo?: string;
@@ -57,6 +72,7 @@ export type InitiativeDetailContent = {
   socialLinks?: InitiativeSocialLink[];
   atGlanceCards?: InitiativeAtAGlanceCard[];
   bentoSection?: InitiativeBentoSection;
+  letGirlsLearnSection?: InitiativeLetGirlsLearnSection;
 };
 
 export const INITIATIVE_DETAIL_CONTENT: Record<string, InitiativeDetailContent> =
@@ -168,6 +184,23 @@ export const INITIATIVE_DETAIL_CONTENT: Record<string, InitiativeDetailContent> 
         globeCard: {
           readMoreHref: "https://www.afghangirlstech.com/",
         },
+      },
+      letGirlsLearnSection: {
+        hashtag: "#LetAfghanGirlsLearn",
+        subtitle: "Every girl has the right to learn.",
+        countdownStartDate: "2021-08-15T00:00:00+04:30",
+        highlightText:
+          "Since Afghan girls were barred from secondary education.",
+        description:
+          "The Afghan Girls Tech Academy helps girls continue learning when formal education is no longer accessible to them.",
+        ctaLabel: "Support Their Education",
+        ctaHref:
+          "https://www.gofundme.com/f/HelpAfghanGirlsLearn/donate?attribution_id=undefined&utm_campaign=unknown&utm_medium=customer&utm_source=website_widget",
+        compareBeforeImage: "/images/home-page/about-slide-one.jpg",
+        compareAfterImage: "/images/home-page/about-slide-two.png",
+        compareBeforeAlt: "Empty classroom before girls returned to learning",
+        compareAfterAlt:
+          "Classroom filled with Afghan girls raising their hands to participate",
       },
     },
     "afghan-youth-coalition": {

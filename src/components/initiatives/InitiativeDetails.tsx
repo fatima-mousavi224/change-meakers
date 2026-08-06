@@ -4,6 +4,7 @@ import InitiativeAtAGlance from "@/components/initiatives/InitiativeAtAGlance";
 import InitiativeDetailBento from "@/components/initiatives/InitiativeDetailBento";
 import InitiativeDetailHero from "@/components/initiatives/InitiativeDetailHero";
 import InitiativeDetailIntro from "@/components/initiatives/InitiativeDetailIntro";
+import InitiativeLetGirlsLearnSection from "@/components/initiatives/InitiativeLetGirlsLearnSection";
 import { getInitiativeDetail } from "@/lib/initiativeDetails";
 
 type InitiativeDetailsProps = {
@@ -26,6 +27,11 @@ export default function InitiativeDetails({ id }: InitiativeDetailsProps) {
       ) : null}
       {initiative.bentoSection ? (
         <InitiativeDetailBento section={initiative.bentoSection} />
+      ) : null}
+      {initiative.letGirlsLearnSection ? (
+        <InitiativeLetGirlsLearnSection
+          section={initiative.letGirlsLearnSection}
+        />
       ) : null}
     </main>
   );
