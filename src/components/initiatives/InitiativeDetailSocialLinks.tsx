@@ -2,6 +2,7 @@
 
 import type { InitiativeSocialLink } from "@/constant/initiativeDetailsContent";
 import { cn } from "@/utilities/cn";
+import { FaTelegramPlane } from "react-icons/fa";
 import {
   FaFacebookF,
   FaGithub,
@@ -16,7 +17,7 @@ import type { IconType } from "react-icons";
 
 const SOCIAL_CONFIG: Record<
   InitiativeSocialLink["type"],
-  { label: string; Icon: IconType }
+  { label: string; Icon: IconType; iconClassName?: string }
 > = {
   website: { label: "Website", Icon: FaGlobe },
   facebook: { label: "Facebook", Icon: FaFacebookF },
@@ -25,6 +26,11 @@ const SOCIAL_CONFIG: Record<
   instagram: { label: "Instagram", Icon: FaInstagram },
   youtube: { label: "YouTube", Icon: FaYoutube },
   github: { label: "GitHub", Icon: FaGithub },
+  telegram: {
+    label: "Telegram",
+    Icon: FaTelegramPlane,
+    iconClassName: "size-[22px] sm:size-[28px] lg:size-[30px]",
+  },
 };
 
 type InitiativeDetailSocialLinksProps = {
@@ -48,7 +54,7 @@ export default function InitiativeDetailSocialLinks({
       )}
     >
       {links.map((link, index) => {
-        const { label, Icon } = SOCIAL_CONFIG[link.type];
+        const { label, Icon, iconClassName } = SOCIAL_CONFIG[link.type];
 
         return (
           <Link
@@ -62,7 +68,10 @@ export default function InitiativeDetailSocialLinks({
           >
             <span className="flex size-[36px] items-center justify-center rounded-[4px] bg-transparent text-[#A1A1AA] transition-all duration-300 ease-out group-hover:bg-[#252525] group-hover:text-white group-active:scale-95 sm:size-[48px] lg:size-[51px]">
               <Icon
-                className="size-[17px] transition-all duration-300 ease-out sm:size-[22px]"
+                className={cn(
+                  "size-[17px] transition-all duration-300 ease-out sm:size-[22px]",
+                  iconClassName,
+                )}
                 aria-hidden
               />
             </span>

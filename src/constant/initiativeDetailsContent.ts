@@ -5,7 +5,8 @@ export type InitiativeSocialType =
   | "linkedin"
   | "instagram"
   | "youtube"
-  | "github";
+  | "github"
+  | "telegram";
 
 export type InitiativeSocialLink = {
   type: InitiativeSocialType;
@@ -343,10 +344,17 @@ export const INITIATIVE_DETAIL_CONTENT: Record<string, InitiativeDetailContent> 
     "change-digital-library": {
       heroImage: "/images/initiatives-datils/degital-hero-image.jpg",
       heroLogo: "/images/initiatives-datils/tegitalLibrary-logo.png",
+      socialLinks: [
+        {
+          type: "telegram",
+          href: "https://t.me/cmworld_org",
+        },
+      ],
       introParagraphs: [
-        "The Change Digital Library is an online platform that provides Afghan youth with free access to educational materials, resources, and learning content.",
-        "The library supports learners who face barriers to formal education by making books, guides, and study materials available in accessible digital formats.",
-        "Through ongoing updates and community contributions, the platform helps students continue learning independently and stay connected to educational opportunities.",
+        "The Change Digital Library is an online initiative that provides free access to educational resources for Afghan youth through a Telegram-based platform. The library currently serves more than 40,000 users and has shared over 7,000 books and learning materials.",
+        "The platform focuses on making educational content accessible in a simple and practical way. Materials are shared through publicly available sources on Telegram, along with contributions from volunteers and users who submit books and documents to be distributed within the community.",
+        "The library continues to grow as more resources are added and shared, helping students access learning materials that are otherwise difficult to obtain.",
+        "About the cover photo: The cover photo was taken in 2023 during a book access campaign organized by Change Makers of the World in partnership with Iqra Bookstore, one of the largest bookstores in western Kabul. Through the initiative, Afghan youth received substantial discounts on books to encourage reading and learning. CMW has also supported additional book donation and distribution initiatives with Iqra Bookstore, providing books to Afghan youth and war-affected schools in Kabul.",
       ],
     },
     "maktab-dar-khana": {

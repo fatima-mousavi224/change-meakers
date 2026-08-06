@@ -23,6 +23,7 @@ export default function InitiativeDetailHero({
             alt={initiative.title}
             fill
             priority
+            quality={90}
             className="object-cover object-center"
             style={{
               objectPosition: initiative.heroImagePosition ?? "center top",
