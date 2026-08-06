@@ -3,10 +3,13 @@
 import type { InitiativeSocialLink } from "@/constant/initiativeDetailsContent";
 import { cn } from "@/utilities/cn";
 import {
+  FaFacebookF,
   FaGithub,
   FaGlobe,
   FaInstagram,
   FaLinkedinIn,
+  FaXTwitter,
+  FaYoutube,
 } from "react-icons/fa6";
 import Link from "next/link";
 import type { IconType } from "react-icons";
@@ -16,8 +19,11 @@ const SOCIAL_CONFIG: Record<
   { label: string; Icon: IconType }
 > = {
   website: { label: "Website", Icon: FaGlobe },
-  instagram: { label: "Instagram", Icon: FaInstagram },
+  facebook: { label: "Facebook", Icon: FaFacebookF },
+  x: { label: "X", Icon: FaXTwitter },
   linkedin: { label: "LinkedIn", Icon: FaLinkedinIn },
+  instagram: { label: "Instagram", Icon: FaInstagram },
+  youtube: { label: "YouTube", Icon: FaYoutube },
   github: { label: "GitHub", Icon: FaGithub },
 };
 

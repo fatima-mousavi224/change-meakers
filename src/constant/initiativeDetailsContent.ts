@@ -1,7 +1,10 @@
 export type InitiativeSocialType =
   | "website"
-  | "instagram"
+  | "facebook"
+  | "x"
   | "linkedin"
+  | "instagram"
+  | "youtube"
   | "github";
 
 export type InitiativeSocialLink = {
@@ -66,6 +69,8 @@ export type InitiativeLetGirlsLearnSection = {
 export type InitiativeDetailContent = {
   heroImage: string;
   heroLogo?: string;
+  /** When false, hero image renders without the blue gradient overlay */
+  heroGradient?: boolean;
   /** CSS object-position, e.g. "center 22%" to crop empty space above the focal area */
   heroImagePosition?: string;
   introParagraphs: string[];
@@ -206,10 +211,39 @@ export const INITIATIVE_DETAIL_CONTENT: Record<string, InitiativeDetailContent> 
     "afghan-youth-coalition": {
       heroImage: "/images/initiatives-datils/ayc-hero-image.png",
       heroLogo: "/images/initiatives-datils/ayc-hero-logo.png",
+      heroGradient: false,
+      heroImagePosition: "center center",
+      socialLinks: [
+        {
+          type: "website",
+          href: "https://www.afgyouth.org/",
+        },
+        {
+          type: "facebook",
+          href: "https://www.facebook.com/youthcoalition.af",
+        },
+        {
+          type: "x",
+          href: "https://x.com/YouthCoalition_",
+        },
+        {
+          type: "linkedin",
+          href: "https://www.linkedin.com/company/afghanyouth",
+        },
+        {
+          type: "instagram",
+          href: "https://www.instagram.com/youthcoalition.af",
+        },
+        {
+          type: "youtube",
+          href: "https://www.youtube.com/@youth.coalition",
+        },
+      ],
       introParagraphs: [
-        "The Afghan Youth Coalition (AYC) is a structured platform documenting the situation of Afghan youth and amplifying their voices in national and international conversations.",
-        "Through research, storytelling, and coordinated advocacy, AYC helps young people share lived experiences and contribute to discussions about education, rights, and participation.",
-        "The coalition connects youth-led groups and partners to strengthen visibility, collaboration, and evidence-based advocacy on issues affecting Afghan young people.",
+        "The Afghan Youth Coalition (AYC) is a platform established in partnership with youth groups in Afghanistan and HerDreams Society, an all-female initiative. It focuses on documenting the situation of Afghan youth and conducting research, consultations, and targeted advocacy.",
+        "AYC works primarily as a documentation and engagement platform, collecting perspectives from young people and translating them into reports, discussions, and structured outputs. The initiative builds on earlier youth efforts, including involvement in the National Youth Consensus for Peace in Afghanistan in 2021.",
+        "The work of AYC is organized around three main areas: youth research and data collection, advocacy and campaigns, and youth consultations.",
+        "Through monthly consultation meetings, Afghan youth are invited to share their views on key issues. These discussions are documented and summarized into reports. To date, AYC has conducted several consultation sessions and produced written outputs based on these engagements.",
       ],
     },
     "change-digital-library": {

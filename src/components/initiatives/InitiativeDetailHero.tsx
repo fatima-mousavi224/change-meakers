@@ -23,17 +23,19 @@ export default function InitiativeDetailHero({
             alt={initiative.title}
             fill
             priority
-            className="object-cover"
+            className="object-cover object-center"
             style={{
               objectPosition: initiative.heroImagePosition ?? "center top",
             }}
             sizes="100vw"
           />
-          <div
-            className="pointer-events-none absolute inset-0"
-            style={{ background: INITIATIVE_HERO_GRADIENT }}
-            aria-hidden
-          />
+          {initiative.heroGradient !== false ? (
+            <div
+              className="pointer-events-none absolute inset-0"
+              style={{ background: INITIATIVE_HERO_GRADIENT }}
+              aria-hidden
+            />
+          ) : null}
 
           <SiteContainer className="pointer-events-none absolute inset-x-0 bottom-0 z-10">
             <div className="relative flex items-end justify-between gap-4">
