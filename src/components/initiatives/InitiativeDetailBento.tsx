@@ -109,7 +109,7 @@ export default function InitiativeDetailBento({
           <article
             className={cn(
               BENTO_CARD_CLASS,
-              "order-2 min-h-[118px] items-center justify-center rounded-[12px] px-4 py-4 lg:order-none lg:col-span-2 lg:row-start-1 lg:rounded-[18px] lg:px-4 lg:py-3",
+              "order-2 min-h-[118px] items-center justify-center rounded-[12px] px-4 py-4 lg:order-none lg:col-span-2 lg:col-start-1 lg:row-start-1 lg:rounded-[18px] lg:px-4 lg:py-3",
             )}
           >
             <p className="font-plusJakartaSans text-[13px] text-[#575757] lg:text-[15px] font-semibold">
@@ -124,7 +124,7 @@ export default function InitiativeDetailBento({
           <article
             className={cn(
               BENTO_CARD_CLASS,
-              "order-3 min-h-[118px] justify-center rounded-[12px] px-4 py-4 lg:order-none lg:col-span-4 lg:row-start-1 lg:rounded-[18px] lg:px-5 lg:py-3",
+              "order-3 min-h-[118px] justify-center rounded-[12px] px-4 py-4 lg:order-none lg:col-span-4 lg:col-start-3 lg:row-start-1 lg:rounded-[18px] lg:px-5 lg:py-3",
             )}
           >
             <p className="font-plusJakartaSans text-[15px] font-bold text-[#000000] lg:text-[24px]">
@@ -163,12 +163,12 @@ export default function InitiativeDetailBento({
           <article
             className={cn(
               BENTO_CARD_CLASS,
-              "order-5 h-full min-h-0 rounded-[12px] px-4 py-4 lg:order-none lg:col-span-6 lg:row-start-2 lg:h-auto lg:min-h-[190px] lg:rounded-[18px] lg:px-6 lg:py-4 lg:pb-4",
+              "order-5 h-full min-h-0 rounded-[12px] px-4 py-4 lg:order-none lg:col-span-6 lg:col-start-1 lg:row-start-2 lg:h-auto lg:min-h-[190px] lg:rounded-[18px] lg:px-6 lg:py-4 lg:pb-4",
             )}
           >
             <div className="relative mx-auto h-[72px] w-[72px] lg:h-[140px] lg:w-[140px]">
               <Image
-                src={section.sixMonthCycles.icon}
+                src={section.sixMonthCycles!.icon}
                 alt=""
                 fill
                 className="scale-[1.25] object-contain object-center lg:scale-[1.80]"
@@ -176,16 +176,16 @@ export default function InitiativeDetailBento({
               />
             </div>
             <h3 className="mt-2 text-center font-plusJakartaSans text-[15px] font-bold text-[#000000] lg:mt-0 lg:text-[18px]">
-              {section.sixMonthCycles.title}
+              {section.sixMonthCycles!.title}
             </h3>
             <p className="mx-auto mt-2 max-w-[700px] flex-1 text-center font-plusJakartaSans text-[12px] leading-[18px] text-[#9E9E9E] lg:mt-2 lg:text-[16px] lg:leading-[22px]">
-              {section.sixMonthCycles.description}
+              {section.sixMonthCycles!.description}
             </p>
-            {section.sixMonthCycles.readMoreModal ? (
+            {section.sixMonthCycles!.readMoreModal ? (
               <div className="mt-auto pt-2 lg:pt-3">
                 <BentoReadMore
                   onClick={() =>
-                    openModal(section.sixMonthCycles.readMoreModal!)
+                    openModal(section.sixMonthCycles!.readMoreModal!)
                   }
                 />
               </div>
@@ -196,20 +196,20 @@ export default function InitiativeDetailBento({
           <article
             className={cn(
               BENTO_CARD_CLASS,
-              "order-6 col-span-2 min-h-[210px] rounded-[12px] px-5 py-6 lg:order-none lg:col-span-9 lg:row-start-3 lg:rounded-[18px] lg:px-8 lg:py-5",
+              "order-6 col-span-2 min-h-[210px] rounded-[12px] px-5 py-6 lg:order-none lg:col-span-9 lg:col-start-1 lg:row-start-3 lg:rounded-[18px] lg:px-8 lg:py-5",
             )}
           >
             <h3 className="text-center font-plusJakartaSans text-[16px] font-bold text-[#000000] lg:text-[20px] md:pt-4">
-              {section.studentOutcomes.title}
+              {section.studentOutcomes!.title}
             </h3>
             <p className="mx-auto mt-3 max-w-[900px] flex-1 text-center font-plusJakartaSans text-[13px] leading-[22px] text-[#9E9E9E] lg:mt-3 lg:text-[16px] lg:leading-[24px]">
-              {section.studentOutcomes.description}
+              {section.studentOutcomes!.description}
             </p>
-            {section.studentOutcomes.readMoreModal ? (
+            {section.studentOutcomes!.readMoreModal ? (
               <div className="mt-4 lg:mt-3">
                 <BentoReadMore
                   onClick={() =>
-                    openModal(section.studentOutcomes.readMoreModal!)
+                    openModal(section.studentOutcomes!.readMoreModal!)
                   }
                 />
               </div>

@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 
 import InitiativeAtAGlance from "@/components/initiatives/InitiativeAtAGlance";
 import InitiativeDetailBento from "@/components/initiatives/InitiativeDetailBento";
+import InitiativeDetailBentoAyc from "@/components/initiatives/InitiativeDetailBentoAyc";
 import InitiativeDetailHero from "@/components/initiatives/InitiativeDetailHero";
 import InitiativeDetailIntro from "@/components/initiatives/InitiativeDetailIntro";
 import InitiativeLetGirlsLearnSection from "@/components/initiatives/InitiativeLetGirlsLearnSection";
@@ -26,7 +27,11 @@ export default function InitiativeDetails({ id }: InitiativeDetailsProps) {
         <InitiativeAtAGlance cards={initiative.atGlanceCards} />
       ) : null}
       {initiative.bentoSection ? (
-        <InitiativeDetailBento section={initiative.bentoSection} />
+        initiative.bentoSection.layout === "ayc" ? (
+          <InitiativeDetailBentoAyc section={initiative.bentoSection} />
+        ) : (
+          <InitiativeDetailBento section={initiative.bentoSection} />
+        )
       ) : null}
       {initiative.letGirlsLearnSection ? (
         <InitiativeLetGirlsLearnSection

@@ -31,25 +31,41 @@ export type InitiativeAtAGlanceCard = {
 };
 
 export type InitiativeBentoSection = {
+  layout?: "default" | "ayc";
   establishedLabel: string;
   establishedYear: string;
-  studentsTitle: string;
-  studentsSubtitle: string;
   photoImage: string;
   photoAlt: string;
-  sixMonthCycles: {
+  globeCard: {
+    readMoreHref: string;
+  };
+  /** AGTA layout */
+  studentsTitle?: string;
+  studentsSubtitle?: string;
+  sixMonthCycles?: {
     title: string;
     icon: string;
     description: string;
     readMoreModal?: ContentDetailModalContent;
   };
-  studentOutcomes: {
+  studentOutcomes?: {
     title: string;
     description: string;
     readMoreModal?: ContentDetailModalContent;
   };
-  globeCard: {
-    readMoreHref: string;
+  /** AYC layout */
+  youthStats?: {
+    title: string;
+    femaleLabel: string;
+    maleLabel: string;
+    femaleIconCount: number;
+    maleIconCount: number;
+  };
+  previousWork?: {
+    title: string;
+    icon: string;
+    description: string;
+    readMoreModal?: ContentDetailModalContent;
   };
 };
 
@@ -289,6 +305,40 @@ export const INITIATIVE_DETAIL_CONTENT: Record<string, InitiativeDetailContent> 
           },
         },
       ],
+      bentoSection: {
+        layout: "ayc",
+        establishedLabel: "Established",
+        establishedYear: "2025",
+        photoImage: "/images/initiatives-datils/computerimage-ayc.jpg",
+        photoAlt:
+          "AYC digital consultation session on a laptop video conference screen",
+        youthStats: {
+          title: "100+ Youth Connected",
+          femaleLabel: "39% Female",
+          maleLabel: "61% Male",
+          femaleIconCount: 4,
+          maleIconCount: 6,
+        },
+        previousWork: {
+          title: "Built on Previous Youth Work",
+          icon: "/images/initiatives-datils/complate-ayc-logo.png",
+          description:
+            "AYC builds on earlier youth coordination efforts, including the National Youth Consensus for Peace, which brought together youth organizations from across Afghanistan.",
+          readMoreModal: {
+            title: "National Youth Consensus for Peace",
+            image: "/images/initiatives-datils/national-hero-logo.png",
+            imageAlt: "National Youth Consensus for Peace logo",
+            paragraphs: [
+              "The National Youth Consensus for Peace (NYCP), 2020–2021, brought together 244 organizations from all 34 provinces of Afghanistan.",
+              "The movement advocated for meaningful youth participation in the peace process and highlighted the role of young people in building a more inclusive future.",
+              "Through coordinated statements, dialogues, and public engagement, NYCP demonstrated the capacity of Afghan youth to contribute constructively to national conversations on peace.",
+            ],
+          },
+        },
+        globeCard: {
+          readMoreHref: "https://www.afgyouth.org/",
+        },
+      },
     },
     "change-digital-library": {
       heroImage: "/images/initiatives-datils/degital-hero-image.jpg",

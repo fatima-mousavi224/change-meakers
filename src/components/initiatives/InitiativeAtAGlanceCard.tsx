@@ -87,7 +87,7 @@ export default function InitiativeAtAGlanceCard({
           "flex h-full flex-col overflow-hidden border-0",
           isHalfMobile
             ? "min-h-[260px] rounded-[12px] px-3 py-4 sm:px-4 lg:min-h-[380px] lg:rounded-[18px] lg:px-8 lg:py-6"
-            : "col-span-2 min-h-[240px] rounded-[18px] px-5 py-5 lg:min-h-[380px] lg:px-8 lg:py-6",
+            : "col-span-2 min-h-[240px] rounded-[18px] px-5 py-5 lg:col-span-1 lg:min-h-[380px] lg:px-8 lg:py-6",
           className,
         )}
         style={{ backgroundColor: card.backgroundColor ?? "#BCCACA" }}
@@ -164,7 +164,7 @@ export default function InitiativeAtAGlanceCard({
         "flex h-full flex-col overflow-hidden border border-[#E6E6E6] bg-white",
         isHalfMobile
           ? "rounded-[12px] px-3 py-4 sm:px-4 lg:min-h-[380px] lg:rounded-[18px] lg:px-8 lg:py-6"
-          : "col-span-2 min-h-[240px] rounded-[18px] px-5 py-5 lg:min-h-[380px] lg:px-8 lg:py-6",
+          : "col-span-2 min-h-[240px] rounded-[18px] px-5 py-5 lg:col-span-1 lg:min-h-[380px] lg:px-8 lg:py-6",
         className,
       )}
     >
