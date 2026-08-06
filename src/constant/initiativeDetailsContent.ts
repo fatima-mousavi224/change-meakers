@@ -16,16 +16,18 @@ import type { ContentDetailModalContent } from "@/types/contentDetailModal";
 
 export type InitiativeAtAGlanceCard = {
   title: string;
-  /** Image cards use image + short description; text cards use body copy only */
-  variant: "image" | "text";
+  /** Image cards use image + short description; text cards use body copy only; report cards use a featured layout */
+  variant: "image" | "text" | "report";
   image?: string;
   imageAlt?: string;
   description: string;
   readMoreHref?: string;
   showReadMore?: boolean;
   readMoreModal?: ContentDetailModalContent;
-  /** Use "large" for assets with extra padding (e.g. map illustrations) */
-  imageScale?: "default" | "large";
+  /** Use "large" for assets with extra padding; "small" for compact illustrations */
+  imageScale?: "default" | "large" | "small";
+  /** Report card background color */
+  backgroundColor?: string;
 };
 
 export type InitiativeBentoSection = {
@@ -244,6 +246,48 @@ export const INITIATIVE_DETAIL_CONTENT: Record<string, InitiativeDetailContent> 
         "AYC works primarily as a documentation and engagement platform, collecting perspectives from young people and translating them into reports, discussions, and structured outputs. The initiative builds on earlier youth efforts, including involvement in the National Youth Consensus for Peace in Afghanistan in 2021.",
         "The work of AYC is organized around three main areas: youth research and data collection, advocacy and campaigns, and youth consultations.",
         "Through monthly consultation meetings, Afghan youth are invited to share their views on key issues. These discussions are documented and summarized into reports. To date, AYC has conducted several consultation sessions and produced written outputs based on these engagements.",
+      ],
+      atGlanceCards: [
+        {
+          title: "Connecting Afghan Youth",
+          variant: "image",
+          image: "/images/initiatives-datils/ayc-flag.png",
+          imageAlt:
+            "Map of Afghanistan showing connections between Afghan youth across locations",
+          description:
+            "AYC brings Afghan youth together across different locations to share their concerns, priorities, and ideas in a more organized way.",
+          imageScale: "small",
+        },
+        {
+          title:
+            "Afghan Youth Voices 2025: Pilot Digital Engagement Report",
+          variant: "report",
+          image: "/images/initiatives-datils/ayc-book.png",
+          imageAlt: "Afghan Youth Voices 2025 report cover",
+          description: "",
+          backgroundColor: "#BCCACA",
+          showReadMore: true,
+          readMoreHref:
+            "https://drive.google.com/file/d/1aw--zxORCdRJAW51rjzEhoXvsKFc6Yds/view?usp=sharing",
+        },
+        {
+          title: "Documenting Afghan Youth Realities",
+          variant: "text",
+          description:
+            "AYC documents the concerns, priorities, and experiences of Afghan youth so their realities can be reflected in research, reports, consultations, and advocacy. By collecting perspectives directly from young people, AYC helps build a clearer record of the challenges, needs, and changes shaping their lives and future across Afghanistan.",
+          showReadMore: true,
+          readMoreModal: {
+            title: "Documenting Afghan Youth Realities",
+            image: "/images/initiatives-datils/kabul&herat-flag.png",
+            imageAlt: "Map of Afghanistan highlighting Kabul and Herat provinces",
+            imageScale: "large",
+            paragraphs: [
+              "Millions of young Afghans are growing up through major changes affecting their education, employment, freedoms, and future. Yet many of their experiences remain undocumented, and reliable youth-focused data is limited.",
+              "AYC works to document these realities directly from young people through consultations, surveys, research, and reports. This is especially important as the situation of both young women and men continues to change across Afghanistan.",
+              "Documenting these experiences creates a record of what Afghan youth are facing, what they need, and what they are asking for. It also provides evidence that can support research, advocacy, and decisions affecting their future.",
+            ],
+          },
+        },
       ],
     },
     "change-digital-library": {
