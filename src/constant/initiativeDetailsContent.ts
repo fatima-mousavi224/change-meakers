@@ -25,6 +25,29 @@ export type InitiativeAtAGlanceCard = {
   imageScale?: "default" | "large";
 };
 
+export type InitiativeBentoSection = {
+  establishedLabel: string;
+  establishedYear: string;
+  studentsTitle: string;
+  studentsSubtitle: string;
+  photoImage: string;
+  photoAlt: string;
+  sixMonthCycles: {
+    title: string;
+    icon: string;
+    description: string;
+    readMoreModal?: ContentDetailModalContent;
+  };
+  studentOutcomes: {
+    title: string;
+    description: string;
+    readMoreModal?: ContentDetailModalContent;
+  };
+  globeCard: {
+    readMoreHref: string;
+  };
+};
+
 export type InitiativeDetailContent = {
   heroImage: string;
   heroLogo?: string;
@@ -33,6 +56,7 @@ export type InitiativeDetailContent = {
   introParagraphs: string[];
   socialLinks?: InitiativeSocialLink[];
   atGlanceCards?: InitiativeAtAGlanceCard[];
+  bentoSection?: InitiativeBentoSection;
 };
 
 export const INITIATIVE_DETAIL_CONTENT: Record<string, InitiativeDetailContent> =
@@ -80,11 +104,8 @@ export const INITIATIVE_DETAIL_CONTENT: Record<string, InitiativeDetailContent> 
             imageAlt: "Map of Afghanistan highlighting Kabul and Herat provinces",
             imageScale: "large",
             paragraphs: [
-              "Two active learning spaces inside Afghanistan. The Afghan Girls Tech Academy is an informal learning space established in 2024 in Herat and Kabul to support Afghan girls who no longer have access to formal education.",
-              "The academy provides a safe and open environment where students can gather, study, and work together. Currently, more than 25 girls are part of the program across both locations. Each group participates in a six-month cycle, after which new students are selected.",
-              "Students receive training in basic computer skills and English through a combination of in-person support and online instruction provided by partner tutors and educators. Outside of scheduled learning hours, the space remains open for students to continue studying, practicing, and using available resources.",
-              "The program focuses on practical learning. It aims to help students build skills they can use for further education, remote work, or entry-level opportunities in digital and technology-related fields. Many participants are girls who were unable to complete their formal schooling.",
-              "As a result of the program, some students have passed English language tests such as Duolingo, while others have started working on small projects or secured paid opportunities. In Herat, a group of students is currently contributing to the development of a local digital platform, MyHerat.com, designed to provide information and services for residents and visitors.",
+              "The Academy operates in two locations, with the Herat center managed directly by CMW and the Kabul activities supported in cooperation with a local partner organization.",
+              "In Herat, the space is also used beyond regular classes for workshops, meetings, and other activities where girls can learn and work together.",
             ],
           },
         },
@@ -104,6 +125,50 @@ export const INITIATIVE_DETAIL_CONTENT: Record<string, InitiativeDetailContent> 
           readMoreHref: "https://www.myherat.com",
         },
       ],
+      bentoSection: {
+        establishedLabel: "Established",
+        establishedYear: "2025",
+        studentsTitle: "25+ Students",
+        studentsSubtitle: "100% Female",
+        photoImage: "/images/initiatives-datils/grils-image.jpg",
+        photoAlt:
+          "Afghan Girls Tech Academy students working together on laptops",
+        sixMonthCycles: {
+          title: "Six-Month Cycles",
+          icon: "/images/initiatives-datils/six-month-class.png",
+          description:
+            "Each group follows a structured six-month learning period. Each group follows a structured six-month learning period. Each group follows a structured six-month learning period.",
+          readMoreModal: {
+            title: "Six-Month Cycles",
+            image: "/images/initiatives-datils/six-month-class.png",
+            paragraphs: [
+              "The academy provides a safe and open environment where students can gather, study, and work together. Currently, more than 25 girls are part of the program across both locations.",
+              "Each group participates in a six-month cycle, after which new students are selected. This structure allows the program to support new participants regularly while giving each group focused time to learn, practice, and build skills together.",
+            ],
+          },
+        },
+        studentOutcomes: {
+          title: "Student Outcomes",
+          description:
+            "The academy is already helping students turn learning into real next steps. Some students have passed English language tests, joined digital projects, and accessed paid work opportunities. For girls who were forced out of formal education, these outcomes show what practical learning spaces can make possible.",
+          readMoreModal: {
+            title: "Student Outcomes",
+            image: "/images/initiatives-datils/kabul&herat-flag.png",
+            imageAlt: "Map of Afghanistan highlighting Kabul and Herat provinces",
+            imageScale: "large",
+            paragraphs: [
+              "Employment and Financial Independence: Some students have been hired by local companies for digital work, including UX/UI design and web development, supporting our goal of helping students build skills for employment and greater financial independence.",
+              "English Language Achievement: Students have used the Academy's learning resources to prepare for internationally recognized English tests, including the Duolingo English Test, with some achieving strong scores.",
+              "Scholarships and Continued Education: Students have secured opportunities to continue their education. Most recently, one student received a scholarship to study toward an internationally recognized high school diploma through an online program in Canada.",
+              "Personal and Professional Skills: Through classes and group activities, students strengthen their English, communication, public speaking, teamwork, networking, and other practical skills.",
+              "Well-being and Community: The Academy provides a space where girls can meet, learn, participate in activities, and maintain social connection at a time when many educational and public opportunities for Afghan girls remain restricted.",
+            ],
+          },
+        },
+        globeCard: {
+          readMoreHref: "https://www.afghangirlstech.com/",
+        },
+      },
     },
     "afghan-youth-coalition": {
       heroImage: "/images/initiatives-datils/ayc-hero-image.png",

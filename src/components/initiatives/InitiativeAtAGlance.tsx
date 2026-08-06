@@ -23,7 +23,7 @@ export default function InitiativeAtAGlance({ cards }: InitiativeAtAGlanceProps)
 
   return (
     <>
-      <SiteContainer as="section" className="pb-12 sm:pb-16 lg:pb-20">
+      <SiteContainer as="section" className="pb-4 md:py-3">
         <SectionHeading title="At a Glance" />
 
         <div className="grid grid-cols-2 items-start gap-3 lg:grid-cols-3 lg:items-stretch lg:gap-8">
