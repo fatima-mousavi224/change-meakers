@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 
 import InitiativeAtAGlance from "@/components/initiatives/InitiativeAtAGlance";
 import InitiativeAtAGlanceDigitalLibrary from "@/components/initiatives/InitiativeAtAGlanceDigitalLibrary";
+import InitiativeDetailBentoAdditional from "@/components/initiatives/InitiativeDetailBentoAdditional";
 import InitiativeDetailBento from "@/components/initiatives/InitiativeDetailBento";
 import InitiativeDetailBentoAyc from "@/components/initiatives/InitiativeDetailBentoAyc";
 import InitiativeDetailBentoMaktab from "@/components/initiatives/InitiativeDetailBentoMaktab";
@@ -39,6 +40,10 @@ export default function InitiativeDetails({ id }: InitiativeDetailsProps) {
       ) : null}
       {initiative.bentoMaktabSection ? (
         <InitiativeDetailBentoMaktab section={initiative.bentoMaktabSection} />
+      ) : initiative.bentoAdditionalSection ? (
+        <InitiativeDetailBentoAdditional
+          section={initiative.bentoAdditionalSection}
+        />
       ) : initiative.bentoSection ? (
         initiative.bentoSection.layout === "ayc" ? (
           <InitiativeDetailBentoAyc section={initiative.bentoSection} />

@@ -84,6 +84,25 @@ export type InitiativeBentoMaktabSection = {
   };
 };
 
+export type InitiativeBentoAdditionalSection = {
+  photoImage: string;
+  photoAlt: string;
+  practicalSkills: {
+    title: string;
+    image: string;
+    imageAlt: string;
+    description: string;
+  };
+  languageLearning: {
+    title: string;
+    flags: Array<{ src: string; alt: string }>;
+    description: string;
+  };
+  globeCard: {
+    readMoreHref: string;
+  };
+};
+
 export type InitiativeBentoSection = {
   layout?: "default" | "ayc";
   establishedLabel: string;
@@ -161,6 +180,7 @@ export type InitiativeDetailContent = {
   atGlanceCards?: InitiativeAtAGlanceCard[];
   atGlanceDigitalLibrary?: InitiativeAtAGlanceDigitalLibrary;
   bentoMaktabSection?: InitiativeBentoMaktabSection;
+  bentoAdditionalSection?: InitiativeBentoAdditionalSection;
   bentoSection?: InitiativeBentoSection;
   letGirlsLearnSection?: InitiativeLetGirlsLearnSection;
 };
@@ -614,6 +634,41 @@ export const INITIATIVE_DETAIL_CONTENT: Record<string, InitiativeDetailContent> 
           ],
         },
       ],
+      bentoAdditionalSection: {
+        photoImage: "/images/initiatives-datils/additional-second-image.jpg",
+        photoAlt:
+          "Afghan girls participating in an in-person workshop session",
+        practicalSkills: {
+          title: "Practical Skills",
+          image: "/images/initiatives-datils/additional-animation-image.png",
+          imageAlt:
+            "Illustration of a woman flexing her arm, representing confidence and practical skills",
+          description:
+            "Sessions focus on useful topics such as personal development, confidence, and future planning.",
+        },
+        languageLearning: {
+          title: "Language Learning",
+          flags: [
+            {
+              src: "/images/initiatives-datils/amerca-flag.png",
+              alt: "United States flag",
+            },
+            {
+              src: "/images/initiatives-datils/germany-flag.png",
+              alt: "Germany flag",
+            },
+            {
+              src: "/images/initiatives-datils/itaila-flag.png",
+              alt: "Italy flag",
+            },
+          ],
+          description:
+            "Programs include English, German, and Italian language classes with volunteer instructors.",
+        },
+        globeCard: {
+          readMoreHref: "https://www.cmworld.org/contact",
+        },
+      },
     },
     nycp: {
       heroImage: "/images/initiatives-datils/national-hero-image.jpg",
