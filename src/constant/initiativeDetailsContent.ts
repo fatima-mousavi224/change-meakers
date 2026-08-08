@@ -55,6 +55,33 @@ export type InitiativeAtAGlanceDigitalLibrary = {
   };
 };
 
+export type InitiativeBentoMaktabSection = {
+  photoImage: string;
+  photoAlt: string;
+  partnershipsCard: {
+    title: string;
+    logos: Array<{
+      src: string;
+      alt: string;
+      width?: number;
+      height?: number;
+      className?: string;
+      imageClassName?: string;
+    }>;
+    description: string;
+    readMoreHref?: string;
+    readMoreModal?: ContentDetailModalContent;
+  };
+  comingSoon: {
+    label: string;
+    year: string;
+  };
+  youtubeCard: {
+    image: string;
+    readMoreHref: string;
+  };
+};
+
 export type InitiativeBentoSection = {
   layout?: "default" | "ayc";
   establishedLabel: string;
@@ -131,6 +158,7 @@ export type InitiativeDetailContent = {
   maktabHero?: InitiativeMaktabHero;
   atGlanceCards?: InitiativeAtAGlanceCard[];
   atGlanceDigitalLibrary?: InitiativeAtAGlanceDigitalLibrary;
+  bentoMaktabSection?: InitiativeBentoMaktabSection;
   bentoSection?: InitiativeBentoSection;
   letGirlsLearnSection?: InitiativeLetGirlsLearnSection;
 };
@@ -489,6 +517,45 @@ export const INITIATIVE_DETAIL_CONTENT: Record<string, InitiativeDetailContent> 
           showReadMore: true,
         },
       ],
+      bentoMaktabSection: {
+        photoImage: "/images/initiatives-datils/grils-image.jpg",
+        photoAlt:
+          "Afghan girls studying together with laptops in a classroom setting",
+        partnershipsCard: {
+          title: "400+ Afghan Girls Supported Through Partnerships",
+          logos: [
+            {
+              src: "/images/home-page/orbahan-cear-orgnastion.png",
+              alt: "International Orphan Care",
+              width: 200,
+              height: 56,
+            },
+            {
+              src: "/images/home-page/flower-for-the-future-orgnastion.png",
+              alt: "Flowers for the Future International",
+              width: 220,
+              height: 56,
+            },
+          ],
+          description:
+            "Including 40+ accredited high school diplomas and scholarship pathways abroad.",
+          readMoreModal: {
+            title: "400+ Afghan Girls Supported Through Partnerships",
+            paragraphs: [
+              "Through related partnerships with organizations including Eileen Murphy Foundation and Flowers for Future International, more than 400 Afghan girls in Kabul have been supported to continue their education through a combination of in-person and online learning.",
+              "Over 40 students have received accredited California high school diplomas, and a small number have secured scholarships to continue their studies abroad.",
+            ],
+          },
+        },
+        comingSoon: {
+          label: "Coming Soon",
+          year: "2026",
+        },
+        youtubeCard: {
+          image: "/images/initiatives-datils/youtube-image.png",
+          readMoreHref: "https://youtube.com/@cmw_world",
+        },
+      },
     },
     "additional-learning-programs": {
       heroImage: "/images/initiatives-datils/additional-hero-image.jpg",
