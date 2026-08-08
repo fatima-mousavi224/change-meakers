@@ -31,6 +31,27 @@ export type InitiativeAtAGlanceCard = {
   backgroundColor?: string;
 };
 
+export type InitiativeAtAGlanceDigitalLibrary = {
+  telegramLibrary: {
+    title: string;
+    description: string;
+    image: string;
+    imageAlt: string;
+  };
+  resourcesShared: {
+    title: string;
+    paragraphs: string[];
+    dividerImage: string;
+  };
+  sidebar: {
+    photoImage: string;
+    photoAlt: string;
+    telegramHref: string;
+    usersLabel: string;
+    usersCount: string;
+  };
+};
+
 export type InitiativeBentoSection = {
   layout?: "default" | "ayc";
   establishedLabel: string;
@@ -95,6 +116,7 @@ export type InitiativeDetailContent = {
   introParagraphs: string[];
   socialLinks?: InitiativeSocialLink[];
   atGlanceCards?: InitiativeAtAGlanceCard[];
+  atGlanceDigitalLibrary?: InitiativeAtAGlanceDigitalLibrary;
   bentoSection?: InitiativeBentoSection;
   letGirlsLearnSection?: InitiativeLetGirlsLearnSection;
 };
@@ -356,6 +378,32 @@ export const INITIATIVE_DETAIL_CONTENT: Record<string, InitiativeDetailContent> 
         "The library continues to grow as more resources are added and shared, helping students access learning materials that are otherwise difficult to obtain.",
         "About the cover photo: The cover photo was taken in 2023 during a book access campaign organized by Change Makers of the World in partnership with Iqra Bookstore, one of the largest bookstores in western Kabul. Through the initiative, Afghan youth received substantial discounts on books to encourage reading and learning. CMW has also supported additional book donation and distribution initiatives with Iqra Bookstore, providing books to Afghan youth and war-affected schools in Kabul.",
       ],
+      atGlanceDigitalLibrary: {
+        telegramLibrary: {
+          title: "Telegram-Based Library",
+          description:
+            "Resources are distributed through Telegram, making access simple for students already using the platform.",
+          image: "/images/initiatives-datils/degital-computer-image.png",
+          imageAlt:
+            "Illustration of a laptop, book, pencil, and lightbulb representing digital learning",
+        },
+        resourcesShared: {
+          title: "7,000+ Resources Shared",
+          paragraphs: [
+            "More than 7,000 books, documents, and learning materials have been shared through the Change Digital Library. These include study materials, reference books, language resources, and educational documents that may otherwise be difficult to find or afford. By bringing these resources together in one accessible platform, the library helps Afghan youth find useful learning materials without cost. New resources continue to be added and shared with the community.",
+          ],
+          dividerImage:
+            "/images/initiatives-datils/tgital-image-underText.png",
+        },
+        sidebar: {
+          photoImage: "/images/initiatives-datils/second-degtial-image.jpg",
+          photoAlt:
+            "Afghan youth browsing books in a bookstore during a book access campaign",
+          telegramHref: "https://t.me/cmworld_org",
+          usersLabel: "Users",
+          usersCount: "40,000+",
+        },
+      },
     },
     "maktab-dar-khana": {
       heroImage: "/images/initiatives-datils/maktab-hero-image.jpg",

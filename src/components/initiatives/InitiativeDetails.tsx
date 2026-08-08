@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 
 import InitiativeAtAGlance from "@/components/initiatives/InitiativeAtAGlance";
+import InitiativeAtAGlanceDigitalLibrary from "@/components/initiatives/InitiativeAtAGlanceDigitalLibrary";
 import InitiativeDetailBento from "@/components/initiatives/InitiativeDetailBento";
 import InitiativeDetailBentoAyc from "@/components/initiatives/InitiativeDetailBentoAyc";
 import InitiativeDetailHero from "@/components/initiatives/InitiativeDetailHero";
@@ -23,7 +24,11 @@ export default function InitiativeDetails({ id }: InitiativeDetailsProps) {
     <main>
       <InitiativeDetailHero initiative={initiative} />
       <InitiativeDetailIntro paragraphs={initiative.introParagraphs} />
-      {initiative.atGlanceCards?.length ? (
+      {initiative.atGlanceDigitalLibrary ? (
+        <InitiativeAtAGlanceDigitalLibrary
+          section={initiative.atGlanceDigitalLibrary}
+        />
+      ) : initiative.atGlanceCards?.length ? (
         <InitiativeAtAGlance cards={initiative.atGlanceCards} />
       ) : null}
       {initiative.bentoSection ? (
