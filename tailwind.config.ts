@@ -41,6 +41,7 @@ export default {
         light_gray: "#F2F2F2",
         dark_gray: "#BEBEBE",
         paragraph_color: "#717171",
+        at_glance_body: "#9E9E9E",
         black_color: "#252525",
         primary_color: "#134C83",
         secondary_color: "#E2F1FF",

@@ -19,14 +19,16 @@ function ReadMoreTrigger({
   href,
   onClick,
   className,
+  label = "Read More",
 }: {
   href?: string;
   onClick?: () => void;
   className?: string;
+  label?: string;
 }) {
   const content = (
     <>
-      <span>Read More</span>
+      <span>{label}</span>
       <ArrowRightIcon
         className={cn(
           "size-4 stroke-[2]",
@@ -44,11 +46,13 @@ function ReadMoreTrigger({
   );
 
   if (href) {
+    const isExternal = href.startsWith("http");
+
     return (
       <Link
         href={href}
-        target="_blank"
-        rel="noopener noreferrer"
+        target={isExternal ? "_blank" : undefined}
+        rel={isExternal ? "noopener noreferrer" : undefined}
         className={triggerClassName}
       >
         {content}
@@ -76,6 +80,12 @@ export default function InitiativeAtAGlanceCard({
   const showReadMore = Boolean(
     card.readMoreHref || card.readMoreModal || card.showReadMore,
   );
+  const bodyParagraphs =
+    card.paragraphs?.length && card.paragraphs.some(Boolean)
+      ? card.paragraphs
+      : card.description
+        ? [card.description]
+        : [];
   const isLargeImage = card.imageScale === "large";
   const isSmallImage = card.imageScale === "small";
   const isHalfMobile = mobileVariant === "half";
@@ -150,6 +160,7 @@ export default function InitiativeAtAGlanceCard({
             <ReadMoreTrigger
               href={card.readMoreHref}
               onClick={card.readMoreModal ? onOpenModal : undefined}
+              label={card.readMoreLabel}
               className={isHalfMobile ? "text-[12px] lg:text-[15px]" : undefined}
             />
           </div>
@@ -158,10 +169,17 @@ export default function InitiativeAtAGlanceCard({
     );
   }
 
+  const bodyTextClassName = cn(
+    "font-plusJakartaSans text-at_glance_body",
+    isHalfMobile
+      ? "text-[11px] leading-[17px] sm:text-[12px] sm:leading-[18px] lg:text-[16px] lg:leading-[28px]"
+      : "text-[15px] leading-[26px] sm:text-[16px] sm:leading-[28px]",
+  );
+
   return (
     <article
       className={cn(
-        "flex h-full flex-col overflow-hidden border border-[#E6E6E6] bg-white",
+        "flex h-full flex-col overflow-hidden border border-[#E6E6E6] bg-white [&_p]:text-at_glance_body",
         isHalfMobile
           ? "rounded-[12px] px-3 py-4 sm:px-4 lg:min-h-[380px] lg:rounded-[18px] lg:px-8 lg:py-6"
           : "col-span-2 min-h-[240px] rounded-[18px] px-5 py-5 lg:col-span-1 lg:min-h-[380px] lg:px-8 lg:py-6",
@@ -228,26 +246,29 @@ export default function InitiativeAtAGlanceCard({
 
           <p
             className={cn(
-              "text-center font-plusJakartaSans text-[#9E9E9E]",
+              "text-center",
+              bodyTextClassName,
               isHalfMobile
-                ? "max-w-none text-[11px] leading-[17px] sm:text-[12px] sm:leading-[18px] lg:max-w-[340px] lg:text-[16px] lg:leading-[28px]"
-                : "max-w-[340px] text-[15px] leading-[26px] sm:text-[16px] sm:leading-[28px]",
+                ? "max-w-none lg:max-w-[340px]"
+                : "max-w-[340px]",
             )}
           >
             {card.description}
           </p>
         </div>
       ) : (
-        <p
+        <div
           className={cn(
-            "mt-5 flex-1 font-plusJakartaSans text-[#9E9E9E]",
-            isHalfMobile
-              ? "text-[11px] leading-[17px] sm:text-[12px] sm:leading-[18px] lg:text-[16px] lg:leading-[28px]"
-              : "text-[15px] leading-[26px] sm:text-[16px] sm:leading-[28px]",
+            "mt-5 flex flex-1 flex-col gap-4",
+            isHalfMobile ? "lg:gap-5" : "gap-5",
           )}
         >
-          {card.description}
-        </p>
+          {bodyParagraphs.map((paragraph, index) => (
+            <p key={index} className={bodyTextClassName}>
+              {paragraph}
+            </p>
+          ))}
+        </div>
       )}
 
       {showReadMore ? (
@@ -260,6 +281,7 @@ export default function InitiativeAtAGlanceCard({
           <ReadMoreTrigger
             href={card.readMoreHref}
             onClick={card.readMoreModal ? onOpenModal : undefined}
+            label={card.readMoreLabel}
             className={isHalfMobile ? "text-[12px] lg:text-[15px]" : undefined}
           />
         </div>

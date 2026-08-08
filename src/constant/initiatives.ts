@@ -45,7 +45,7 @@ export const INITIATIVES: Initiative[] = [
     id: "maktab-dar-khana",
     title: "Maktab Dar Khana",
     description:
-      "A platform for Afghan girls to follow recorded formal lessons from home",
+      "A program expanding access to school education for Afghan students through recorded lessons and remote support.",
     image: "/images/Initiatives/maktab-dar-kana.jpg",
     logo: "/images/Initiatives/maktab-dar-kana-logo.png",
     buttonText: "Learn More",

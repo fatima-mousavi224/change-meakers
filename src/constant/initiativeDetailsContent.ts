@@ -22,7 +22,10 @@ export type InitiativeAtAGlanceCard = {
   image?: string;
   imageAlt?: string;
   description: string;
+  /** Text cards can use multiple body paragraphs instead of a single description */
+  paragraphs?: string[];
   readMoreHref?: string;
+  readMoreLabel?: string;
   showReadMore?: boolean;
   readMoreModal?: ContentDetailModalContent;
   /** Use "large" for assets with extra padding; "small" for compact illustrations */
@@ -447,9 +450,44 @@ export const INITIATIVE_DETAIL_CONTENT: Record<string, InitiativeDetailContent> 
         },
       },
       introParagraphs: [
-        "Maktab Dar Khana is a platform that enables Afghan girls to follow recorded formal lessons from home when attending school in person is not possible.",
-        "The program organizes structured lesson content so students can learn at their own pace while maintaining continuity in core subjects.",
-        "By combining recorded instruction with supportive follow-up, Maktab Dar Khana helps girls stay engaged with learning in safe home environments.",
+        "The Afghan Digital Learning Initiative is a program focused on expanding access to school education for Afghan students, especially girls, through recorded lessons and remote support.",
+        "During the COVID-19 period in 2020-2021, a group of private schools in Kabul developed and recorded a set of lessons in Dari, covering grades 1 to 12. These materials were originally available only to paying students.",
+        "In 2024, through a partnership with this network of schools, Change Makers of the World gained access to these recorded lessons. The initiative is now working to make this content freely available online, with plans to publish the full curriculum on YouTube so that students across Afghanistan can access it.",
+        "In addition to the video lessons, the program is developing a support system where volunteer teachers and mentors assist students as they follow the materials, helping answer questions and guide their learning.",
+        "Efforts are also underway to distribute the lessons offline through USB drives for students in areas with limited or no internet access. Expanding this part of the project depends on additional resources and external support.",
+        "Through related partnerships with organizations including Eileen Murphy Foundation and Flowers for Future International, more than 400 Afghan girls in Kabul have been supported to continue their education through a combination of in-person and online learning. Over 40 students have received accredited California high school diplomas, and a small number have secured scholarships to continue their studies abroad.",
+      ],
+      atGlanceCards: [
+        {
+          title: "For Afghan Girls",
+          variant: "image",
+          image: "/images/initiatives-datils/maktab-flag.png",
+          imageAlt:
+            "Map of Afghanistan filled with portraits of Afghan girls and women",
+          description:
+            "Supporting girls who cannot access formal schooling.",
+          imageScale: "large",
+        },
+        {
+          title: "Grades 1–12 Lessons",
+          variant: "image",
+          image: "/images/initiatives-datils/maktab-book.png",
+          imageAlt: "Open book with a lightbulb representing recorded lessons",
+          description:
+            "Recorded school lessons in Dari covering grades 1 to 12. The lessons were originally prepared and recorded by a network of private schools in Kabul.",
+        },
+        {
+          title: "Teacher & Mentor Support",
+          variant: "text",
+          description: "",
+          paragraphs: [
+            "Students following the recorded lessons may sometimes need additional help understanding a topic, answering questions, or continuing their studies independently. Volunteer teachers and mentors can provide learning support and guidance when available.",
+            "Students who need academic support while using Maktab Dar Khana can contact Change Makers of the World through our Contact page to request assistance.",
+          ],
+          readMoreHref: "https://www.cmworld.org/contact",
+          readMoreLabel: "Request Learning Support",
+          showReadMore: true,
+        },
       ],
     },
     "additional-learning-programs": {

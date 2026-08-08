@@ -153,9 +153,6 @@ export default function InitiativeDetailHeroMaktab({
         <h1 className="font-plusJakartaSans text-[26px] font-bold leading-[1.25] text-[#252525] sm:text-[32px] lg:text-[40px]">
           {displayTitle}
         </h1>
-        <p className="mx-auto mt-3 max-w-[820px] font-plusJakartaSans text-[15px] leading-relaxed text-[#667085] sm:mt-4 sm:text-[16px] lg:text-[18px]">
-          {initiative.description}
-        </p>
       </SiteContainer>
     </section>
   );
