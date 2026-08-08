@@ -106,6 +106,16 @@ export type InitiativeLetGirlsLearnSection = {
   compareAfterAlt: string;
 };
 
+export type InitiativeMaktabHero = {
+  heroTitle?: string;
+  dariText: string;
+  dariCalligraphyImage?: string;
+  englishQuote: {
+    text: string;
+    attribution: string;
+  };
+};
+
 export type InitiativeDetailContent = {
   heroImage: string;
   heroLogo?: string;
@@ -115,6 +125,7 @@ export type InitiativeDetailContent = {
   heroImagePosition?: string;
   introParagraphs: string[];
   socialLinks?: InitiativeSocialLink[];
+  maktabHero?: InitiativeMaktabHero;
   atGlanceCards?: InitiativeAtAGlanceCard[];
   atGlanceDigitalLibrary?: InitiativeAtAGlanceDigitalLibrary;
   bentoSection?: InitiativeBentoSection;
@@ -408,6 +419,33 @@ export const INITIATIVE_DETAIL_CONTENT: Record<string, InitiativeDetailContent> 
     "maktab-dar-khana": {
       heroImage: "/images/initiatives-datils/maktab-hero-image.jpg",
       heroLogo: "/images/initiatives-datils/maktab-logo.png",
+      heroImagePosition: "center 94%",
+      socialLinks: [
+        {
+          type: "website",
+          href: "https://www.maktab93.com/",
+        },
+        {
+          type: "facebook",
+          href: "https://www.facebook.com/cmw.world",
+        },
+        {
+          type: "instagram",
+          href: "https://www.instagram.com/cmw.world",
+        },
+        {
+          type: "linkedin",
+          href: "https://www.linkedin.com/company/cmw-world/",
+        },
+      ],
+      maktabHero: {
+        heroTitle: "Maktab Dar Khana (School At Home)",
+        dariText: "توانا بود هر که دانا بود",
+        englishQuote: {
+          text: "The wise are the truly powerful; through knowledge, even an old heart becomes young.",
+          attribution: "Ferdowsi, Shahnamah",
+        },
+      },
       introParagraphs: [
         "Maktab Dar Khana is a platform that enables Afghan girls to follow recorded formal lessons from home when attending school in person is not possible.",
         "The program organizes structured lesson content so students can learn at their own pace while maintaining continuity in core subjects.",

@@ -5,6 +5,7 @@ import InitiativeAtAGlanceDigitalLibrary from "@/components/initiatives/Initiati
 import InitiativeDetailBento from "@/components/initiatives/InitiativeDetailBento";
 import InitiativeDetailBentoAyc from "@/components/initiatives/InitiativeDetailBentoAyc";
 import InitiativeDetailHero from "@/components/initiatives/InitiativeDetailHero";
+import InitiativeDetailHeroMaktab from "@/components/initiatives/InitiativeDetailHeroMaktab";
 import InitiativeDetailIntro from "@/components/initiatives/InitiativeDetailIntro";
 import InitiativeLetGirlsLearnSection from "@/components/initiatives/InitiativeLetGirlsLearnSection";
 import { getInitiativeDetail } from "@/lib/initiativeDetails";
@@ -22,7 +23,11 @@ export default function InitiativeDetails({ id }: InitiativeDetailsProps) {
 
   return (
     <main>
-      <InitiativeDetailHero initiative={initiative} />
+      {initiative.maktabHero ? (
+        <InitiativeDetailHeroMaktab initiative={initiative} />
+      ) : (
+        <InitiativeDetailHero initiative={initiative} />
+      )}
       <InitiativeDetailIntro paragraphs={initiative.introParagraphs} />
       {initiative.atGlanceDigitalLibrary ? (
         <InitiativeAtAGlanceDigitalLibrary
