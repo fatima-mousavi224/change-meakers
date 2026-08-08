@@ -179,6 +179,27 @@ export type InitiativeIntroCta = {
   href: string;
 };
 
+export type InitiativeAtAGlanceNycpSection = {
+  organizationsCard: {
+    title: string;
+    image: string;
+    imageAlt: string;
+    description: string;
+    readMoreHref?: string;
+    readMoreModal?: ContentDetailModalContent;
+  };
+  provincialConsultations: {
+    title: string;
+    description: string;
+  };
+  youthRepresentatives: {
+    title: string;
+    description: string;
+  };
+  photoImage: string;
+  photoAlt: string;
+};
+
 export type InitiativeDetailContent = {
   heroImage: string;
   heroLogo?: string;
@@ -195,6 +216,7 @@ export type InitiativeDetailContent = {
   socialLinks?: InitiativeSocialLink[];
   maktabHero?: InitiativeMaktabHero;
   atGlanceCards?: InitiativeAtAGlanceCard[];
+  atGlanceNycp?: InitiativeAtAGlanceNycpSection;
   atGlanceDigitalLibrary?: InitiativeAtAGlanceDigitalLibrary;
   bentoMaktabSection?: InitiativeBentoMaktabSection;
   bentoAdditionalSection?: InitiativeBentoAdditionalSection;
@@ -727,6 +749,37 @@ export const INITIATIVE_DETAIL_CONTENT: Record<string, InitiativeDetailContent> 
       introCta: {
         label: "Download the Full Report",
         href: "#",
+      },
+      atGlanceNycp: {
+        organizationsCard: {
+          title: "244 Organizations",
+          image: "/images/initiatives-datils/national-flag.png",
+          imageAlt: "Map of Afghanistan showing provincial boundaries",
+          description: "from 34 provinces of Afghanistan.",
+          readMoreModal: {
+            title: "244 Organizations",
+            image: "/images/initiatives-datils/national-flag.png",
+            imageAlt: "Map of Afghanistan showing provincial boundaries",
+            imageScale: "large",
+            paragraphs: [
+              "The National Youth Consensus for Peace (NYCP), 2020–2021, brought together 244 organizations from all 34 provinces of Afghanistan.",
+              "The movement advocated for meaningful youth participation in the peace process and highlighted the role of young people in building a more inclusive future.",
+              "Through coordinated statements, dialogues, and public engagement, NYCP demonstrated the capacity of Afghan youth to contribute constructively to national conversations on peace.",
+            ],
+          },
+        },
+        provincialConsultations: {
+          title: "70+ Provincial Consultations",
+          description:
+            "Number of Organizations Participated: Kabul 36, Balkh 8, Herat 6, Kandahar 6, Nangarhar 7, Kunar 4, Baghlan 2, Faryab 2, Kapisa 2, Khost 2, and Badakhshan, Badghis, Bamyan, Farah, Jawzjan, Kunduz, Laghman, Logar, Nimruz, Nuristan, Paktia, Panjshir, Parwan, Samangan, Sar-e-Pol, Takhar, Uruzgan, Wardak, Zabul, Ghazni, Ghor, and Helmand 1 organization at each.",
+        },
+        youthRepresentatives: {
+          title: "Youth Representatives",
+          description: "At the High Council for National Reconciliation",
+        },
+        photoImage: "/images/initiatives-datils/national-confance-image.jpg",
+        photoAlt:
+          "NYCP representative speaking at the National Youth Consensus for Peace conference",
       },
     },
   };

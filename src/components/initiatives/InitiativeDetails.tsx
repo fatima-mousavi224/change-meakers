@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 
+import InitiativeAtAGlanceNycp from "@/components/initiatives/InitiativeAtAGlanceNycp";
 import InitiativeAtAGlance from "@/components/initiatives/InitiativeAtAGlance";
 import InitiativeAtAGlanceDigitalLibrary from "@/components/initiatives/InitiativeAtAGlanceDigitalLibrary";
 import InitiativeDetailBentoAdditional from "@/components/initiatives/InitiativeDetailBentoAdditional";
@@ -34,7 +35,9 @@ export default function InitiativeDetails({ id }: InitiativeDetailsProps) {
         paragraphs={initiative.introParagraphs}
         cta={initiative.introCta}
       />
-      {initiative.atGlanceDigitalLibrary ? (
+      {initiative.atGlanceNycp ? (
+        <InitiativeAtAGlanceNycp section={initiative.atGlanceNycp} />
+      ) : initiative.atGlanceDigitalLibrary ? (
         <InitiativeAtAGlanceDigitalLibrary
           section={initiative.atGlanceDigitalLibrary}
         />
