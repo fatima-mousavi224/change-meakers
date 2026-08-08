@@ -30,6 +30,8 @@ export type InitiativeAtAGlanceCard = {
   readMoreModal?: ContentDetailModalContent;
   /** Use "large" for assets with extra padding; "small" for compact illustrations */
   imageScale?: "default" | "large" | "small";
+  /** Optional extra classes for the image, e.g. scale within a fixed box */
+  imageClassName?: string;
   /** Report card background color */
   backgroundColor?: string;
 };
@@ -567,6 +569,50 @@ export const INITIATIVE_DETAIL_CONTENT: Record<string, InitiativeDetailContent> 
         "These include language courses such as English, Italian, and German, delivered with the support of volunteer instructors and international partners.",
         "We also organize in-person sessions in Kabul and Herat, often hosted at the Afghan Girls Tech Academy or in collaboration with local organizations. These sessions cover topics such as personal development, academic writing, and other practical skills.",
         "Information about these programs is shared through our social media platforms and through applications submitted by students interested in joining.",
+      ],
+      atGlanceCards: [
+        {
+          title: "Academic Support",
+          variant: "image",
+          image: "/images/initiatives-datils/additional-bag-image.png",
+          imageAlt:
+            "Document, briefcase, and pen representing academic and career support",
+          description:
+            "Students receive support in academic writing, CV preparation, applications, and study skills.",
+          imageClassName:
+            "scale-[1.78] sm:scale-[1.82] lg:scale-[1.88]",
+          readMoreModal: {
+            title: "Academic Support",
+            image: "/images/initiatives-datils/kabul&herat-flag.png",
+            imageAlt: "Map of Afghanistan highlighting Kabul and Herat provinces",
+            imageScale: "large",
+            paragraphs: [
+              "For many Afghan girls, finding an opportunity is only the first step. Preparing a strong application, writing a CV, understanding requirements, and completing forms can be difficult without guidance.",
+              "Through targeted sessions and individual support, our team helps students prepare CVs, scholarship and program applications, and other required materials. Students are also guided in identifying suitable educational and online opportunities and understanding how to apply.",
+              "Support has included guidance for opportunities such as United World College scholarships and other educational programs. Our aim is practical: to help students submit stronger applications and improve their chances of accessing opportunities that could shape their education and future.",
+            ],
+          },
+        },
+        {
+          title: "Online Classes",
+          variant: "image",
+          image: "/images/initiatives-datils/additional-tv-image.png",
+          imageAlt:
+            "Computer monitor with learning icons representing online classes",
+          description:
+            "Small online classes help Afghan girls continue learning from different locations.",
+          imageClassName:
+            "scale-[1.52] sm:scale-[1.55] lg:scale-[1.58]",
+        },
+        {
+          title: "In-Person Workshops",
+          variant: "text",
+          description: "",
+          paragraphs: [
+            "Our in-person workshops address needs that are difficult to meet through regular online classes alone. Sessions include mental well-being support, helping participants manage stress, isolation, and challenges affecting their daily lives.",
+            "Other workshops focus on entry into the job market, introducing participants to workplace expectations, job searching, applications, interviews, and pathways toward employment and financial independence.",
+          ],
+        },
       ],
     },
     nycp: {

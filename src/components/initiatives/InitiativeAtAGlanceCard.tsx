@@ -96,8 +96,8 @@ export default function InitiativeAtAGlanceCard({
         className={cn(
           "flex h-full flex-col overflow-hidden border-0",
           isHalfMobile
-            ? "min-h-[260px] rounded-[12px] px-3 py-4 sm:px-4 lg:min-h-[380px] lg:rounded-[18px] lg:px-8 lg:py-6"
-            : "col-span-2 min-h-[240px] rounded-[18px] px-5 py-5 lg:col-span-1 lg:min-h-[380px] lg:px-8 lg:py-6",
+            ? "min-h-[230px] rounded-[12px] px-3 py-3 sm:px-4 lg:min-h-[320px] lg:rounded-[18px] lg:px-8 lg:py-5"
+            : "col-span-2 min-h-[210px] rounded-[18px] px-5 py-4 lg:col-span-1 lg:min-h-[320px] lg:px-8 lg:py-5",
           className,
         )}
         style={{ backgroundColor: card.backgroundColor ?? "#BCCACA" }}
@@ -170,19 +170,19 @@ export default function InitiativeAtAGlanceCard({
   }
 
   const bodyTextClassName = cn(
-    "font-plusJakartaSans text-at_glance_body",
+    "text-center font-plusJakartaSans text-[#9E9E9E]",
     isHalfMobile
       ? "text-[11px] leading-[17px] sm:text-[12px] sm:leading-[18px] lg:text-[16px] lg:leading-[28px]"
-      : "text-[15px] leading-[26px] sm:text-[16px] sm:leading-[28px]",
+      : "text-[13px] leading-[21px] sm:text-[14px] sm:leading-[23px] lg:text-[16px] lg:leading-[28px]",
   );
 
   return (
     <article
       className={cn(
-        "flex h-full flex-col overflow-hidden border border-[#E6E6E6] bg-white [&_p]:text-at_glance_body",
+        "flex h-full flex-col overflow-hidden border border-[#E6E6E6] bg-white [&_p]:text-[#9E9E9E]",
         isHalfMobile
-          ? "rounded-[12px] px-3 py-4 sm:px-4 lg:min-h-[380px] lg:rounded-[18px] lg:px-8 lg:py-6"
-          : "col-span-2 min-h-[240px] rounded-[18px] px-5 py-5 lg:col-span-1 lg:min-h-[380px] lg:px-8 lg:py-6",
+          ? "rounded-[12px] px-3 py-2 sm:px-4 lg:min-h-[320px] lg:rounded-[18px] lg:px-8 lg:py-5"
+          : "col-span-2 min-h-0 rounded-[18px] px-3 py-2 sm:px-4 sm:py-2.5 lg:col-span-1 lg:min-h-[320px] lg:px-8 lg:py-5",
         className,
       )}
     >
@@ -191,7 +191,7 @@ export default function InitiativeAtAGlanceCard({
           "shrink-0 text-center font-plusJakartaSans font-bold leading-snug text-[#000000]",
           isHalfMobile
             ? "text-[12px] sm:text-[13px] lg:text-[20px]"
-            : "text-[16px] sm:text-[17px] lg:text-[20px]",
+            : "text-[14px] sm:text-[15px] lg:text-[20px]",
         )}
       >
         {card.title}
@@ -202,24 +202,24 @@ export default function InitiativeAtAGlanceCard({
           className={cn(
             "flex flex-1 flex-col items-center justify-center",
             isHalfMobile
-              ? "mt-3 gap-2.5 lg:mt-5 lg:flex-1 lg:gap-4"
-              : "mt-5 flex-1 gap-4",
+              ? "mt-1.5 gap-1.5 lg:mt-4 lg:flex-1 lg:gap-3"
+              : "mt-3 flex-1 gap-2.5 lg:mt-4 lg:gap-3",
           )}
         >
           <div
             className={cn(
-              "relative w-full",
+              "relative w-full overflow-hidden",
               isSmallImage
                 ? isHalfMobile
-                  ? "h-[72px] sm:h-[80px] lg:h-[150px]"
+                  ? "h-[58px] sm:h-[64px] lg:h-[150px]"
                   : "h-[140px] sm:h-[155px] lg:h-[160px]"
                 : isLargeImage
                   ? isHalfMobile
-                    ? "h-[92px] sm:h-[102px] lg:h-[220px]"
+                    ? "h-[76px] sm:h-[84px] lg:h-[220px]"
                     : "h-[190px] sm:h-[210px] lg:h-[220px]"
                   : isHalfMobile
-                    ? "h-[96px] sm:h-[106px] lg:h-[240px]"
-                    : "h-[210px] sm:h-[230px] lg:h-[240px]",
+                    ? "h-[68px] sm:h-[76px] lg:h-[220px]"
+                    : "h-[190px] sm:h-[210px] lg:h-[220px]",
             )}
           >
             <Image
@@ -228,17 +228,19 @@ export default function InitiativeAtAGlanceCard({
               fill
               className={cn(
                 "object-contain object-center",
-                isSmallImage
-                  ? isHalfMobile
-                    ? "scale-[0.82] sm:scale-[0.88] lg:scale-[0.95]"
-                    : "scale-[0.88] sm:scale-[0.92] lg:scale-[0.95]"
-                  : isLargeImage
+                card.imageClassName
+                  ? card.imageClassName
+                  : isSmallImage
                     ? isHalfMobile
-                      ? "scale-[1.15] sm:scale-[1.2] lg:scale-[1.35]"
-                      : "scale-[1.25] sm:scale-[1.3] lg:scale-[1.35]"
-                    : isHalfMobile
-                      ? "scale-[1.05] sm:scale-[1.08] lg:scale-[1.15]"
-                      : "scale-[1.1] sm:scale-[1.12] lg:scale-[1.15]",
+                      ? "scale-[0.82] sm:scale-[0.88] lg:scale-[0.95]"
+                      : "scale-[0.88] sm:scale-[0.92] lg:scale-[0.95]"
+                    : isLargeImage
+                      ? isHalfMobile
+                        ? "scale-[1.15] sm:scale-[1.2] lg:scale-[1.35]"
+                        : "scale-[1.25] sm:scale-[1.3] lg:scale-[1.35]"
+                      : isHalfMobile
+                        ? "scale-[1.05] sm:scale-[1.08] lg:scale-[1.15]"
+                        : "scale-[1.1] sm:scale-[1.12] lg:scale-[1.15]",
               )}
               sizes="(max-width: 1024px) 50vw, 400px"
             />
@@ -259,12 +261,20 @@ export default function InitiativeAtAGlanceCard({
       ) : (
         <div
           className={cn(
-            "mt-5 flex flex-1 flex-col gap-4",
-            isHalfMobile ? "lg:gap-5" : "gap-5",
+            "flex flex-col items-center text-center",
+            isHalfMobile
+              ? "mt-3 flex-1 gap-2.5 lg:mt-4 lg:gap-4"
+              : "mt-2 gap-2 lg:mt-4 lg:flex-1 lg:gap-4",
           )}
         >
           {bodyParagraphs.map((paragraph, index) => (
-            <p key={index} className={bodyTextClassName}>
+            <p
+              key={index}
+              className={cn(
+                bodyTextClassName,
+                isHalfMobile ? "max-w-none lg:max-w-[340px]" : "max-w-[340px]",
+              )}
+            >
               {paragraph}
             </p>
           ))}
@@ -274,8 +284,8 @@ export default function InitiativeAtAGlanceCard({
       {showReadMore ? (
         <div
           className={cn(
-            "shrink-0 self-start",
-            isHalfMobile ? "mt-3 lg:mt-5" : "mt-5",
+            "shrink-0 self-center",
+            isHalfMobile ? "mt-1.5 lg:mt-4" : "mt-3 lg:mt-4",
           )}
         >
           <ReadMoreTrigger
