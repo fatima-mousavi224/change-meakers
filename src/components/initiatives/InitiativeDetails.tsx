@@ -7,6 +7,7 @@ import InitiativeDetailBentoAdditional from "@/components/initiatives/Initiative
 import InitiativeDetailBento from "@/components/initiatives/InitiativeDetailBento";
 import InitiativeDetailBentoAyc from "@/components/initiatives/InitiativeDetailBentoAyc";
 import InitiativeDetailBentoMaktab from "@/components/initiatives/InitiativeDetailBentoMaktab";
+import InitiativeDetailBentoNycp from "@/components/initiatives/InitiativeDetailBentoNycp";
 import InitiativeDetailHero from "@/components/initiatives/InitiativeDetailHero";
 import InitiativeDetailHeroMaktab from "@/components/initiatives/InitiativeDetailHeroMaktab";
 import InitiativeDetailIntro from "@/components/initiatives/InitiativeDetailIntro";
@@ -44,7 +45,9 @@ export default function InitiativeDetails({ id }: InitiativeDetailsProps) {
       ) : initiative.atGlanceCards?.length ? (
         <InitiativeAtAGlance cards={initiative.atGlanceCards} />
       ) : null}
-      {initiative.bentoMaktabSection ? (
+      {initiative.bentoNycpSection ? (
+        <InitiativeDetailBentoNycp section={initiative.bentoNycpSection} />
+      ) : initiative.bentoMaktabSection ? (
         <InitiativeDetailBentoMaktab section={initiative.bentoMaktabSection} />
       ) : initiative.bentoAdditionalSection ? (
         <InitiativeDetailBentoAdditional

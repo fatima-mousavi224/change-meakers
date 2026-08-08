@@ -179,6 +179,31 @@ export type InitiativeIntroCta = {
   href: string;
 };
 
+export type InitiativeBentoNycpSection = {
+  resolutionCard: {
+    title: string;
+    description: string;
+    readMoreHref?: string;
+    readMoreModal?: ContentDetailModalContent;
+  };
+  photoImage: string;
+  photoAlt: string;
+  policiesInfluenced: {
+    title: string;
+    flags: Array<{ src: string; alt: string; label: string }>;
+  };
+  individualsSurveyed: {
+    count: string;
+    label: string;
+    description: string;
+  };
+  establishedLabel: string;
+  establishedYear: string;
+  xCard: {
+    readMoreHref: string;
+  };
+};
+
 export type InitiativeAtAGlanceNycpSection = {
   organizationsCard: {
     title: string;
@@ -218,6 +243,7 @@ export type InitiativeDetailContent = {
   atGlanceCards?: InitiativeAtAGlanceCard[];
   atGlanceNycp?: InitiativeAtAGlanceNycpSection;
   atGlanceDigitalLibrary?: InitiativeAtAGlanceDigitalLibrary;
+  bentoNycpSection?: InitiativeBentoNycpSection;
   bentoMaktabSection?: InitiativeBentoMaktabSection;
   bentoAdditionalSection?: InitiativeBentoAdditionalSection;
   bentoSection?: InitiativeBentoSection;
@@ -780,6 +806,78 @@ export const INITIATIVE_DETAIL_CONTENT: Record<string, InitiativeDetailContent> 
         photoImage: "/images/initiatives-datils/national-confance-image.jpg",
         photoAlt:
           "NYCP representative speaking at the National Youth Consensus for Peace conference",
+      },
+      bentoNycpSection: {
+        resolutionCard: {
+          title: "Afghanistan's First-Ever National Youth Resolution",
+          description:
+            "Unified 27 provincial resolutions into a single National Youth Resolution.",
+          readMoreHref:
+            "https://drive.google.com/file/d/1DC3XDYa4rA6r2VOWq-e2sDqiFVZHjvZt/view?usp=sharing",
+        },
+        photoImage: "/images/initiatives-datils/national-group-image.jpg",
+        photoAlt:
+          "NYCP youth representatives gathered outdoors for a group photo",
+        policiesInfluenced: {
+          title: "Policies Influenced",
+          flags: [
+            {
+              src: "/images/initiatives-datils/nato-flag.svg",
+              alt: "NATO flag",
+              label: "NATO",
+            },
+            {
+              src: "/images/initiatives-datils/flag-eu.png",
+              alt: "European Union flag",
+              label: "EU",
+            },
+            {
+              src: "/images/initiatives-datils/amerca-flag.png",
+              alt: "United States flag",
+              label: "USA",
+            },
+            {
+              src: "/images/initiatives-datils/landon-flag.png",
+              alt: "United Kingdom flag",
+              label: "UK",
+            },
+            {
+              src: "/images/initiatives-datils/franch-flag.png",
+              alt: "France flag",
+              label: "France",
+            },
+            {
+              src: "/images/initiatives-datils/germany-flag.png",
+              alt: "Germany flag",
+              label: "Germany",
+            },
+            {
+              src: "/images/initiatives-datils/sweadn-flag.png",
+              alt: "Sweden flag",
+              label: "Sweden",
+            },
+            {
+              src: "/images/initiatives-datils/turky-flag.png",
+              alt: "Turkey flag",
+              label: "Turkey",
+            },
+            {
+              src: "/images/initiatives-datils/canada-flag.png",
+              alt: "Canada flag",
+              label: "Canada",
+            },
+          ],
+        },
+        individualsSurveyed: {
+          count: "5000+",
+          label: "Individuals",
+          description: "Surveyed in 34 provinces",
+        },
+        establishedLabel: "Established",
+        establishedYear: "2020",
+        xCard: {
+          readMoreHref: "https://x.com/YouthConsensus_",
+        },
       },
     },
   };

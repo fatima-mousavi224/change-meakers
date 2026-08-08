@@ -86,14 +86,14 @@ export default function InitiativeAtAGlanceNycp({
 
   return (
     <>
-      <SiteContainer as="section" className="pb-11 sm:pb-14 lg:pb-11">
+      <SiteContainer as="section" className="pb-4 md:py-3">
         <SectionHeading title="At a Glance" />
 
         {/*
           Mobile: 2 columns — org (left, tall) | consultations + youth (right stack), then photo full width
           Desktop: 3 columns — org | middle stack | photo
         */}
-        <div className="grid grid-cols-2 items-stretch gap-3 lg:grid-cols-[minmax(0,3fr)_minmax(0,3fr)_minmax(0,5fr)] lg:gap-6">
+        <div className="grid grid-cols-2 items-stretch gap-3 lg:grid-cols-[minmax(0,3fr)_minmax(0,3fr)_minmax(0,5fr)] lg:gap-3">
           {/* 244 Organizations */}
           <article
             className={cn(
@@ -140,7 +140,7 @@ export default function InitiativeAtAGlanceNycp({
           </article>
 
           {/* Middle column — consultations + youth; `contents` on mobile joins parent grid */}
-          <div className="contents lg:col-start-auto lg:flex lg:flex-col lg:gap-4">
+          <div className="contents lg:col-start-auto lg:flex lg:flex-col lg:gap-3">
             <article
               className={cn(
                 CARD_CLASS,
