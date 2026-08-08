@@ -2,6 +2,7 @@ import Image from "next/image";
 
 import SiteContainer from "@/components/common/SiteContainer";
 import type { InitiativeDetailItem } from "@/lib/initiativeDetails";
+import { cn } from "@/utilities/cn";
 import InitiativeDetailSocialLinks from "./InitiativeDetailSocialLinks";
 
 const INITIATIVE_HERO_GRADIENT =
@@ -33,7 +34,12 @@ export default function InitiativeDetailHero({
           {initiative.heroGradient !== false ? (
             <div
               className="pointer-events-none absolute inset-0"
-              style={{ background: INITIATIVE_HERO_GRADIENT }}
+              style={{
+                background:
+                  typeof initiative.heroGradient === "string"
+                    ? initiative.heroGradient
+                    : INITIATIVE_HERO_GRADIENT,
+              }}
               aria-hidden
             />
           ) : null}
@@ -46,7 +52,7 @@ export default function InitiativeDetailHero({
                     src={initiative.heroLogo}
                     alt=""
                     fill
-                    className="object-cover"
+                    className="object-contain object-center p-1"
                     sizes="(max-width: 640px) 84px, (max-width: 1024px) 120px, 140px"
                   />
                 </div>
@@ -65,7 +71,14 @@ export default function InitiativeDetailHero({
         </div>
       </div>
 
-      <SiteContainer className="pt-[62px] text-center sm:pt-[80px] lg:pt-[88px]">
+      <SiteContainer
+        className={cn(
+          "text-center",
+          initiative.heroLogo
+            ? "pt-[62px] sm:pt-[80px] lg:pt-[88px]"
+            : "pt-8 sm:pt-10 lg:pt-12",
+        )}
+      >
         <h1 className="font-plusJakartaSans text-[26px] font-bold leading-[1.25] text-[#252525] sm:text-[32px] lg:text-[40px]">
           {initiative.title}
         </h1>

@@ -149,8 +149,8 @@ export type InitiativeMaktabHero = {
 export type InitiativeDetailContent = {
   heroImage: string;
   heroLogo?: string;
-  /** When false, hero image renders without the blue gradient overlay */
-  heroGradient?: boolean;
+  /** When false, no overlay. When a string, use as custom gradient CSS. */
+  heroGradient?: boolean | string;
   /** CSS object-position, e.g. "center 22%" to crop empty space above the focal area */
   heroImagePosition?: string;
   introParagraphs: string[];
@@ -559,10 +559,14 @@ export const INITIATIVE_DETAIL_CONTENT: Record<string, InitiativeDetailContent> 
     },
     "additional-learning-programs": {
       heroImage: "/images/initiatives-datils/additional-hero-image.jpg",
+      heroImagePosition: "center 82%",
+      heroGradient:
+        "linear-gradient(168.58deg, rgba(4, 17, 29, 0) 10.18%, #134C83 108.31%)",
       introParagraphs: [
-        "Additional Learning Programs include smaller online and in-person classes and workshops designed to support Afghan girls in continuing their education.",
-        "These programs address specific learning needs through focused sessions in subjects such as languages, digital skills, and academic preparation.",
-        "Flexible formats allow participants to join short-term courses that complement longer-term education initiatives across Change Makers of the World.",
+        "In addition to our main initiatives, Change Makers of the World runs smaller online classes and workshops to support Afghan girls in continuing their education.",
+        "These include language courses such as English, Italian, and German, delivered with the support of volunteer instructors and international partners.",
+        "We also organize in-person sessions in Kabul and Herat, often hosted at the Afghan Girls Tech Academy or in collaboration with local organizations. These sessions cover topics such as personal development, academic writing, and other practical skills.",
+        "Information about these programs is shared through our social media platforms and through applications submitted by students interested in joining.",
       ],
     },
     nycp: {

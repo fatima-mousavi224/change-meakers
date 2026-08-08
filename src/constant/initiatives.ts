@@ -54,7 +54,7 @@ export const INITIATIVES: Initiative[] = [
     id: "additional-learning-programs",
     title: "Additional Learning Programs",
     description:
-      "Other smaller online and in-person classes and workshops to support Afghan girls in continuing their education.",
+      "In-Other smaller online and in-person classes and workshops to support Afghan girls in continuing their education.",
     image: "/images/Initiatives/addctional-learning.jpg",
     buttonText: "Learn More",
   },
