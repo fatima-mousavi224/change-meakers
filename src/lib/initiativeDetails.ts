@@ -23,6 +23,7 @@ export function getInitiativeDetail(id: string): InitiativeDetailItem | null {
     heroImage: content.heroImage,
     heroLogo: content.heroLogo ?? initiative.logo,
     heroImagePosition: content.heroImagePosition,
+    heroGradient: content.heroGradient,
   };
 }
 

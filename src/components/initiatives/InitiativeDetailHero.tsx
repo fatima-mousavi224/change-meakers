@@ -6,7 +6,7 @@ import { cn } from "@/utilities/cn";
 import InitiativeDetailSocialLinks from "./InitiativeDetailSocialLinks";
 
 const INITIATIVE_HERO_GRADIENT =
-  "linear-gradient(168.58deg, rgba(4, 17, 29, 0) 10.18%, rgba(19, 76, 131, 0.4) 108.31%)";
+  "linear-gradient(168.58deg, rgba(4, 17, 29, 0) 10.18%, #134C83 108.31%)";
 
 type InitiativeDetailHeroProps = {
   initiative: InitiativeDetailItem;
@@ -80,11 +80,13 @@ export default function InitiativeDetailHero({
         )}
       >
         <h1 className="font-plusJakartaSans text-[26px] font-bold leading-[1.25] text-[#252525] sm:text-[32px] lg:text-[40px]">
-          {initiative.title}
+          {initiative.heroTitle ?? initiative.title}
         </h1>
-        <p className="mx-auto mt-3 max-w-[820px] font-plusJakartaSans text-[15px] leading-relaxed text-[#667085] sm:mt-4 sm:text-[16px] lg:text-[18px]">
-          {initiative.description}
-        </p>
+        {!initiative.hideHeroDescription ? (
+          <p className="mx-auto mt-3 max-w-[820px] font-plusJakartaSans text-[15px] leading-relaxed text-[#667085] sm:mt-4 sm:text-[16px] lg:text-[18px]">
+            {initiative.description}
+          </p>
+        ) : null}
       </SiteContainer>
     </section>
   );

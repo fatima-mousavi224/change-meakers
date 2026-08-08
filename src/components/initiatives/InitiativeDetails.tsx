@@ -30,7 +30,10 @@ export default function InitiativeDetails({ id }: InitiativeDetailsProps) {
       ) : (
         <InitiativeDetailHero initiative={initiative} />
       )}
-      <InitiativeDetailIntro paragraphs={initiative.introParagraphs} />
+      <InitiativeDetailIntro
+        paragraphs={initiative.introParagraphs}
+        cta={initiative.introCta}
+      />
       {initiative.atGlanceDigitalLibrary ? (
         <InitiativeAtAGlanceDigitalLibrary
           section={initiative.atGlanceDigitalLibrary}

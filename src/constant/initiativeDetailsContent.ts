@@ -167,14 +167,31 @@ export type InitiativeMaktabHero = {
   };
 };
 
+export type InitiativeIntroBlock =
+  | string
+  | {
+      text: string;
+      bold?: boolean;
+    };
+
+export type InitiativeIntroCta = {
+  label: string;
+  href: string;
+};
+
 export type InitiativeDetailContent = {
   heroImage: string;
   heroLogo?: string;
+  /** Override the listing card title in the hero heading */
+  heroTitle?: string;
+  /** Hide the gray description line under the hero title */
+  hideHeroDescription?: boolean;
   /** When false, no overlay. When a string, use as custom gradient CSS. */
   heroGradient?: boolean | string;
   /** CSS object-position, e.g. "center 22%" to crop empty space above the focal area */
   heroImagePosition?: string;
-  introParagraphs: string[];
+  introParagraphs: InitiativeIntroBlock[];
+  introCta?: InitiativeIntroCta;
   socialLinks?: InitiativeSocialLink[];
   maktabHero?: InitiativeMaktabHero;
   atGlanceCards?: InitiativeAtAGlanceCard[];
@@ -673,11 +690,44 @@ export const INITIATIVE_DETAIL_CONTENT: Record<string, InitiativeDetailContent> 
     nycp: {
       heroImage: "/images/initiatives-datils/national-hero-image.jpg",
       heroLogo: "/images/initiatives-datils/national-hero-logo.png",
-      introParagraphs: [
-        "The National Youth Consensus for Peace (NYCP), 2020–2021, brought together 244 organizations from all 34 provinces of Afghanistan.",
-        "The movement advocated for meaningful youth participation in the peace process and highlighted the role of young people in building a more inclusive future.",
-        "Through coordinated statements, dialogues, and public engagement, NYCP demonstrated the capacity of Afghan youth to contribute constructively to national conversations on peace.",
+      heroTitle: "National Youth Consensus For Peace",
+      hideHeroDescription: false,
+      heroImagePosition: "center 62%",
+      heroGradient:
+        "linear-gradient(168.58deg, rgba(4, 17, 29, 0) 10.18%, #134C83 108.31%)",
+      socialLinks: [
+        {
+          type: "facebook",
+          href: "https://www.facebook.com/YouthConsensus",
+        },
+        {
+          type: "instagram",
+          href: "https://www.instagram.com/consensusyouth/",
+        },
+        {
+          type: "x",
+          href: "https://x.com/YouthConsensus_",
+        },
       ],
+      introParagraphs: [
+        "In 2020, amidst a pivotal moment in Afghanistan’s history and fragile peace process, Yahya Qanie initiated and co-founded the National Youth Consensus for Peace (NYCP), a first-of-its-kind youth-led coalition uniting over 244 organizations across all 34 provinces. Launched at a time when peace negotiations systematically excluded youth, who made up more than 70% of the Afghan population, NYCP emerged as a national mechanism to represent their voice, agency, and vision, and to advocate for inclusive and sustainable peace.",
+        "NYCP transcended ethnic, sectarian, and geographic divides, pioneering a hybrid model of civic mobilization and policy advocacy. Its aim was not mere visibility, but influence: shaping the structure, substance, and legitimacy of peace efforts, and positioning youth not just as peace advocates, but as critical thinkers in post-conflict governance and reconciliation agendas.",
+        "Under Mr. Qanie’s leadership, NYCP distinguished itself by its scale, independence, and data-driven approach. Merging 27 provincial resolutions, the coalition issued Afghanistan’s first unified National Youth Resolution on International Youth Day 2020 and advanced efforts to establish formal mechanisms for youth inclusion in national policy spaces. It conducted direct policy advocacy and systematic consultations with the High Council for National Reconciliation, the Ministry of Peace, and diplomatic missions from the United Nations, European Union, NATO, the United States, United Kingdom, France, Germany, Canada, and the Nordic countries: Netherlands, Norway, Finland, and Sweden.",
+        "Through targeted campaigns, public statements, and mass consultations, NYCP became a civic force for accountability, inclusion, and generational ownership of peace, challenging tokenism and advocating for youth to be recognized as co-authors of Afghanistan’s future. Its message was clear: no peace is sustainable or legitimate without the participation of the generation that will inherit it.",
+        "Though NYCP suspended its activities after the collapse of the Afghan government in 2021, it left behind a blueprint for youth-led civic mobilization and policy engagement. It demonstrated that when young people are strategically organized, data-informed, and purpose-driven, they can challenge exclusion and create new possibilities. Yahya Qanie’s leadership reaffirmed that peace is not only a matter of high-level diplomacy; it is a generational mandate.",
+        {
+          text: "Read the Full Story of the National Youth Consensus for Peace:",
+          bold: true,
+        },
+        {
+          text: "Explore the complete record of NYCP, including its formation, nationwide consultations, youth participation, advocacy efforts, key achievements, and outcomes.",
+          bold: true,
+        },
+      ],
+      introCta: {
+        label: "Download the Full Report",
+        href: "#",
+      },
     },
   };
 
