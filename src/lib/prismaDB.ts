@@ -7,7 +7,7 @@ declare global {
   var prismaSchemaVersion: number | undefined;
 }
 
-const PRISMA_SCHEMA_VERSION = 2;
+const PRISMA_SCHEMA_VERSION = 3;
 
 function createClient() {
   return new PrismaClient();

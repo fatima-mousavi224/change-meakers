@@ -12,7 +12,6 @@ import {
   MdOutlinePostAdd,
   MdOutlineAdminPanelSettings,
 } from "react-icons/md";
-import { CreditCard } from "lucide-react";
 
 const menuItems = [
   { id: 1, label: "Home", icon: IoHomeOutline, link: "/admin" },
@@ -46,13 +45,6 @@ const menuItems = [
     icon: MdOutlineAdminPanelSettings,
     link: "/admin/add-new-admin",
   },
-  {
-    id: 7,
-    label: "View Donations",
-    icon: CreditCard,
-    link: "/admin/view-donations",
-  },
-  
 ];
 
 export default function MainAdminSidebar() {

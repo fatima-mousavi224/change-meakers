@@ -4,7 +4,6 @@
 "use client";
 
 import {
-  EXECUTIVE_TEAM,
   INITIAL_VISIBLE_COUNT,
   type LeadershipMember,
   type LeadershipSocialLink,
@@ -202,15 +201,15 @@ function LeadershipCard({
   );
 }
 
-export default function TeamCards() {
+export default function TeamCards({ members }: { members: LeadershipMember[] }) {
   const [showAll, setShowAll] = useState(false);
 
   const visibleMembers = showAll
-    ? EXECUTIVE_TEAM
-    : EXECUTIVE_TEAM.slice(0, INITIAL_VISIBLE_COUNT);
+    ? members
+    : members.slice(0, INITIAL_VISIBLE_COUNT);
 
   const canToggle =
-    EXECUTIVE_TEAM.length > INITIAL_VISIBLE_COUNT;
+    members.length > INITIAL_VISIBLE_COUNT;
 
 return (
   <div className="space-y-10">

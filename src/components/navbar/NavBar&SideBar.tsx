@@ -20,8 +20,6 @@ import { useState } from "react";
 import { FaRegListAlt } from "react-icons/fa";
 import { LuUserCog } from "react-icons/lu";
 import { MdOutlineAdminPanelSettings } from "react-icons/md";
-import { TbHeartCheck } from "react-icons/tb";
-import { IoMdClipboard } from "react-icons/io";
 import { Briefcase } from "lucide-react";
 
 const navigation = [
@@ -43,24 +41,9 @@ const navigation = [
     icon: MdOutlineAdminPanelSettings,
   },
   {
-    name: "Donations",
-    href: "/admin/donations",
-    icon: TbHeartCheck,
-  },
-  {
     name: "Account",
     href: "/admin/profile",
     icon: UserRoundPen,
-  },
-  {
-    name: "Projects & Initiatives",
-    href: "/admin/project-and-initiative",
-    icon: IoMdClipboard,
-  },
-  {
-    name: "Project Impacts",
-    href: "/admin/impacts",
-    icon: IoMdClipboard,
   },
 ];
 

@@ -82,12 +82,18 @@ export default function ManageAdminTable({
       await fetch(`/api/delete-account/${userId}`, {
         method: "DELETE",
       })
-        .then(() => {
+        .then(async (res) => {
+          if (!res.ok) {
+            const data = await res.json().catch(() => null);
+            throw new Error(data?.error || "Delete failed");
+          }
           toast.success("User deleted successfully");
           router.refresh();
         })
         .catch((error) => {
-          toast.error(error.message);
+          toast.error(
+            error instanceof Error ? error.message : "Failed to delete user"
+          );
         })
         .finally(() => {
           setIsDeleting(false);

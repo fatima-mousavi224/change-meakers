@@ -4,15 +4,18 @@ import MissionImpact from "@/components/about-us/MissionImpact";
 // import Primary from "@/components/about-us/primary";
 import Team from "@/components/about-us/team";
 import SiteContainer from "@/components/common/SiteContainer";
+import { getExecutiveTeam } from "@/lib/leadership";
 import React from "react";
 
-export default function Page() {
+export default async function Page() {
+  const members = await getExecutiveTeam();
+
   return (
     <SiteContainer className="space-y-12 sm:space-y-16 lg:space-y-20">
       <About />
       <MissionImpact />
       {/* <Primary /> */}
-      <Team />
+      <Team members={members} />
       <AdvisoryBoard />
     </SiteContainer>
   );
