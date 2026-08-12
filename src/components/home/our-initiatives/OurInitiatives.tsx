@@ -1,7 +1,11 @@
 "use client";
 
 import SectionHeading from "@/components/common/SectionHeading";
-import { INITIATIVES, INITIATIVES_PER_PAGE } from "@/constant/initiatives";
+import {
+  INITIATIVES,
+  INITIATIVES_PER_PAGE,
+  type Initiative,
+} from "@/constant/initiatives";
 import { cn } from "@/utilities/cn";
 import { useEffect, useMemo, useRef, useState } from "react";
 import InitiativeCard from "./InitiativeCard";
@@ -32,7 +36,7 @@ export default function OurInitiatives({
 
     return initiativeIds
       .map((id) => INITIATIVES.find((initiative) => initiative.id === id))
-      .filter((initiative) => initiative !== undefined);
+      .filter((initiative): initiative is Initiative => initiative !== undefined);
   }, [initiativeIds]);
 
   useEffect(() => {
