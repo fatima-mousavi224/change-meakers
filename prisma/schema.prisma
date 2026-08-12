@@ -54,7 +54,9 @@ model Session {
 model Post {
   id             String    @id @default(auto()) @map("_id") @db.ObjectId
   title          String
+  excerpt        String?
   description    String
+  contentBlocks  Json?
   author         String
   authorImage    Image?
   categoryId     String?    @db.ObjectId
@@ -380,6 +382,8 @@ model Opportunity {
   category         String
   location         String
   image            String
+  detailImage      String?
+  videoUrl         String?
   deadline         DateTime
   applicationUrl   String?
   resourceProvider String?

@@ -91,7 +91,21 @@ export default function ManageTeamMembersTable({
   );
 
   if (members.length === 0) {
-    return <NullDataMessage>No members found yet!</NullDataMessage>;
+    return (
+      <div className="px-4 sm:px-6 lg:px-8 mb-8">
+        <div className="sm:flex sm:items-center justify-between mb-6">
+          <button
+            type="button"
+            className="block rounded-md bg-primary-50 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-primary-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-50"
+            onClick={() => setShowModal(true)}
+          >
+            Add Member
+          </button>
+        </div>
+        <MemberFormModal open={showModal} setOpen={setShowModal} />
+        <NullDataMessage>No members found yet!</NullDataMessage>
+      </div>
+    );
   }
 
   return (

@@ -21,6 +21,7 @@ import slider3_1 from "public/images/programs/humanitarian-support/slider3_1.jpg
 import slider3_2 from "public/images/programs/humanitarian-support/slider3_2.jpg";
 import slider3_3 from "public/images/programs/humanitarian-support/slider3_3.jpg";
 import { HandCoins, UserPen, UserRoundCog } from "lucide-react";
+import { DONATE_URL } from "@/constant/donate";
 
 export const dashboardActions = [
   {
@@ -28,7 +29,7 @@ export const dashboardActions = [
     description:
       "Make a meaningful impact by contributing to our cause. Your generous donation, no matter the size, helps us create positive change in the world. Join our community of changemakers and be part of something bigger than yourself.",
     icon: UserPen,
-    link: "/donate",
+    link: DONATE_URL,
   },
   {
     title: "Manage Account",
@@ -85,7 +86,7 @@ export const mobileNavigation = [
 ];
 
 export const importantButtons = [
-  { name: " Donate ", href: "/donate", icon: PhoneIcon },
+  { name: " Donate ", href: DONATE_URL, icon: PhoneIcon },
 ];
 
 export const countryData = [

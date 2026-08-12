@@ -13,6 +13,7 @@ export default async function AdminDashboard() {
   const posts = await prisma.post.findMany();
   const members = await prisma.member.findMany();
   const donations = await prisma.paymentInfo.findMany();
+  const opportunities = await prisma.opportunity.findMany();
   const currentUser = await getCurrentUser();
 
   return (
@@ -25,6 +26,7 @@ export default async function AdminDashboard() {
         numPosts={posts.length}
         numMembers={members.length}
         numAdmins={users.filter((user) => user.role === "ADMIN").length}
+        numOpportunities={opportunities.length}
         donations={donations}
         currentUser={currentUser}
       />

@@ -4,12 +4,15 @@ import { Metadata } from "next";
 import prisma from "@/lib/prismaDB";
 
 export const metadata: Metadata = {
-  title: "Manage Posts",
-  description: "Manage all the posts in your blog",
+  title: "Manage Updates",
+  description: "Manage updates shown on the /updates page",
 };
 
 export default async function ManagePostsPage() {
-  const posts = await prisma.post.findMany();
+  const posts = await prisma.post.findMany({
+    include: { Category: true },
+    orderBy: { createdAt: "desc" },
+  });
   const categories = await prisma.category.findMany();
 
   return (

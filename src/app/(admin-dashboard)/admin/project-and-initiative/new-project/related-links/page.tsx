@@ -1,5 +1,7 @@
 "use client";
 
+import { useProjectId } from "@/hooks/useProjectId";
+
 import { useTabs } from "@/components/context/TabsContext";
 import Tabs from "@/components/create-project-tabs/Tabs";
 import DeleteModal from "@/components/delete-modal/deleteModal";
@@ -41,7 +43,7 @@ export default function RelatedLinksSection() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const isEdit = searchParams?.get("edit") === "1";
-  const projectId = localStorage.getItem("projectId");
+  const projectId = useProjectId();
   useEffect(() => {
     const load = async () => {
       if (!isEdit || !projectId) return;

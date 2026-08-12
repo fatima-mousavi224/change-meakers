@@ -1,39 +1,44 @@
 export function getVideoEmbedUrl(url: string): string | null {
-  try {
-    const parsed = new URL(url);
+  const trimmed = url.trim();
+  if (!trimmed) return null;
 
-    if (
-      parsed.hostname.includes("youtube.com") ||
-      parsed.hostname.includes("youtube-nocookie.com")
-    ) {
+  try {
+    const parsed = new URL(trimmed);
+    const host = parsed.hostname.replace(/^www\./, "").toLowerCase();
+
+    if (host === "youtu.be") {
+      const videoId = parsed.pathname.split("/").filter(Boolean)[0];
+      return videoId ? `https://www.youtube.com/embed/${videoId}` : null;
+    }
+
+    if (host.includes("youtube.com") || host.includes("youtube-nocookie.com")) {
       if (parsed.pathname.startsWith("/embed/")) {
         return parsed.toString();
       }
 
-      const videoId = parsed.searchParams.get("v");
-      if (videoId) {
-        return `https://www.youtube.com/embed/${videoId}`;
+      const queryId = parsed.searchParams.get("v");
+      if (queryId) {
+        return `https://www.youtube.com/embed/${queryId}`;
       }
 
-      const shortPathId = parsed.pathname.split("/").filter(Boolean)[0];
-      if (shortPathId === "shorts" && parsed.pathname.split("/")[2]) {
-        return `https://www.youtube.com/embed/${parsed.pathname.split("/")[2]}`;
+      const segments = parsed.pathname.split("/").filter(Boolean);
+      if (segments[0] === "shorts" && segments[1]) {
+        return `https://www.youtube.com/embed/${segments[1]}`;
+      }
+
+      if (segments[0] === "live" && segments[1]) {
+        return `https://www.youtube.com/embed/${segments[1]}`;
+      }
+
+      if (segments[0] === "watch" && parsed.searchParams.get("v")) {
+        return `https://www.youtube.com/embed/${parsed.searchParams.get("v")}`;
       }
     }
 
-    if (parsed.hostname === "youtu.be") {
-      const videoId = parsed.pathname.replace("/", "");
-      if (videoId) {
-        return `https://www.youtube.com/embed/${videoId}`;
-      }
-    }
-
-    if (parsed.hostname.includes("vimeo.com")) {
+    if (host.includes("vimeo.com")) {
       const segments = parsed.pathname.split("/").filter(Boolean);
       const videoId = segments[segments.length - 1];
-      if (videoId) {
-        return `https://player.vimeo.com/video/${videoId}`;
-      }
+      return videoId ? `https://player.vimeo.com/video/${videoId}` : null;
     }
   } catch {
     return null;

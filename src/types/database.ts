@@ -1,3 +1,5 @@
+import type { Prisma } from "@prisma/client";
+
 export type UserRole = "ADMIN" | "USER";
 
 export type User = {
@@ -21,7 +23,9 @@ export type PostImage = {
 export type Post = {
   id: string;
   title: string;
+  excerpt?: string | null;
   description: string;
+  contentBlocks?: Prisma.JsonValue | null;
   author: string;
   authorImage: PostImage | null;
   categoryId: string | null;

@@ -42,7 +42,9 @@ function buildCategoryFilter(category: string) {
 function serializeUpdate(post: {
   id: string;
   title: string;
+  excerpt?: string | null;
   description: string;
+  authorImage?: { image: string } | null;
   postImages: { image: string }[];
   postDate: Date | null;
   createdAt: Date;
@@ -53,9 +55,12 @@ function serializeUpdate(post: {
   return {
     id: post.id,
     title: post.title,
-    excerpt: stripHtml(post.description),
+    excerpt: post.excerpt?.trim() || stripHtml(post.description),
     category: post.Category?.title ?? "Updates",
-    image: post.postImages[0]?.image?.trim() || "/images/update-component-image.jpg",
+    image:
+      post.authorImage?.image?.trim() ||
+      post.postImages[0]?.image?.trim() ||
+      "/images/update-component-image.jpg",
     postDate: postDate.toISOString(),
     createdAt: post.createdAt.toISOString(),
   };

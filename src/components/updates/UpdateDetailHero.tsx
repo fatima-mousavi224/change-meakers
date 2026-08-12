@@ -27,7 +27,7 @@ function DetailField({
   children: React.ReactNode;
 }) {
   return (
-    <p className="font-plusJakartaSans text-[16px] leading-relaxed text-white sm:text-[17px]">
+    <p className="font-plusJakartaSans text-[15px] leading-relaxed text-white sm:text-[16px]">
       <span className="font-bold">{label}: </span>
       {children}
     </p>
@@ -36,53 +36,55 @@ function DetailField({
 
 export default function UpdateDetailHero({ update }: UpdateDetailHeroProps) {
   return (
-    <section className="relative min-h-[480px] overflow-hidden sm:min-h-[520px] lg:min-h-[590px]">
-      <Image
-        src={DETAIL_HERO_BACKGROUND}
-        alt=""
-        fill
-        priority
-        className="object-cover object-center"
-        sizes="100vw"
-        aria-hidden
-      />
+    <section className="relative overflow-hidden">
+      <div className="relative min-h-[480px] sm:min-h-[520px] lg:min-h-[590px]">
+        <Image
+          src={DETAIL_HERO_BACKGROUND}
+          alt=""
+          fill
+          priority
+          className="object-cover object-center"
+          sizes="100vw"
+          aria-hidden
+        />
 
-      <SiteContainer
-        className={`relative py-10 sm:py-12 lg:py-16 ${OPPORTUNITY_DETAIL_SECTION_CLASS}`}
-      >
-        <Link
-          href="/updates"
-          className="inline-flex items-center gap-2 font-plusJakartaSans text-[15px] font-medium text-white transition-opacity hover:opacity-80 sm:text-[16px]"
+        <SiteContainer
+          className={`relative py-10 sm:py-12 lg:py-16 ${OPPORTUNITY_DETAIL_SECTION_CLASS}`}
         >
-          <span aria-hidden>←</span>
-          <span>Back</span>
-        </Link>
+          <Link
+            href="/updates"
+            className="inline-flex items-center gap-2 font-plusJakartaSans text-[15px] font-medium text-white transition-opacity hover:opacity-80 sm:text-[16px]"
+          >
+            <span aria-hidden>←</span>
+            <span>Back</span>
+          </Link>
 
-        <p className="mt-8 font-plusJakartaSans text-[15px] font-medium text-white sm:text-[16px]">
-          {update.category}
-        </p>
+          <p className="mt-8 font-plusJakartaSans text-[15px] font-medium text-white sm:text-[16px]">
+            {update.category}
+          </p>
 
-        <div className="mt-5 border-t border-[#FFFFFF]" />
+          <div className="mt-5 border-t border-white" />
 
-        <time
-          dateTime={update.postDate}
-          className="mt-6 block font-plusJakartaSans font-normal text-[15px] text-[#FFFFFF] sm:text-[20px]"
-        >
-          {formatPostedDate(update.postDate)}
-        </time>
+          <time
+            dateTime={update.postDate}
+            className="mt-6 block font-plusJakartaSans text-[15px] font-normal text-white sm:text-[20px]"
+          >
+            {formatPostedDate(update.postDate)}
+          </time>
 
-        <h1 className="mt-5 max-w-5xl font-plusJakartaSans text-[30px] font-bold leading-[1.2] text-white sm:text-[36px] lg:text-[48px]">
-          {update.title}
-        </h1>
+          <h1 className="mt-5 max-w-5xl font-plusJakartaSans text-[30px] font-bold leading-[1.2] text-white sm:text-[36px] lg:text-[48px]">
+            {update.title}
+          </h1>
 
-        <p className="mt-5 max-w-4xl font-plusJakartaSans text-[16px] leading-relaxed text-white/90 sm:text-[20px]">
-          {update.excerpt}
-        </p>
+          <p className="mt-5 max-w-4xl font-plusJakartaSans text-[16px] leading-relaxed text-white/90 sm:text-[20px]">
+            {update.excerpt}
+          </p>
 
-        <div className="mt-10 flex flex-col gap-3 sm:gap-4">
-          <DetailField label="Author">{update.author}</DetailField>
-        </div>
-      </SiteContainer>
+          <div className="mt-10 flex flex-col gap-3 sm:gap-4 lg:flex-row lg:flex-wrap lg:gap-x-10">
+            <DetailField label="Author">{update.author}</DetailField>
+          </div>
+        </SiteContainer>
+      </div>
     </section>
   );
 }

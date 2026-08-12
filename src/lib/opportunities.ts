@@ -30,6 +30,8 @@ function serializeOpportunity(
     category: string;
     location: string;
     image: string;
+    detailImage: string | null;
+    videoUrl: string | null;
     deadline: Date;
     applicationUrl: string | null;
     resourceProvider: string | null;
@@ -55,6 +57,8 @@ function serializeOpportunity(
     category: opportunity.category,
     location: opportunity.location,
     image: opportunity.image,
+    detailImage: opportunity.detailImage ?? null,
+    videoUrl: opportunity.videoUrl ?? null,
     deadline: opportunity.deadline.toISOString(),
     applicationUrl: opportunity.applicationUrl,
     resourceProvider: opportunity.resourceProvider,
@@ -142,7 +146,7 @@ export async function getOpportunities({
   ]);
 
   return {
-    items: items.map(serializeOpportunity),
+    items: items.map((item) => serializeOpportunity(item)),
     total,
     page,
     totalPages: Math.max(1, Math.ceil(total / limit)),
@@ -152,6 +156,32 @@ export async function getOpportunities({
 export async function getOpportunityById(id: string) {
   const opportunity = await prisma.opportunity.findFirst({
     where: { id, published: true },
+  });
+
+  if (!opportunity) {
+    return null;
+  }
+
+  const contentBlocks = await resolveContentBlocks(
+    id,
+    (opportunity as { contentBlocks?: unknown }).contentBlocks,
+    opportunity.content,
+  );
+
+  return serializeOpportunity(opportunity, contentBlocks);
+}
+
+export async function getAllOpportunitiesForAdmin() {
+  const items = await prisma.opportunity.findMany({
+    orderBy: { createdAt: "desc" },
+  });
+
+  return items.map((item) => serializeOpportunity(item));
+}
+
+export async function getOpportunityByIdForAdmin(id: string) {
+  const opportunity = await prisma.opportunity.findUnique({
+    where: { id },
   });
 
   if (!opportunity) {

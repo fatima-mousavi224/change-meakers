@@ -4,14 +4,14 @@ import { getCurrentUser } from '@/utilities/getCurrentUser';
 
 export async function POST(request: Request) {
   try {
-    // const currentUser = await getCurrentUser();
+    const currentUser = await getCurrentUser();
 
-    // if (!currentUser || currentUser.role !== 'ADMIN') {
-    //   return NextResponse.json(
-    //     { error: 'User is not Admin or User not found!' },
-    //     { status: 404 }
-    //   );
-    // }
+    if (!currentUser || currentUser.role !== "ADMIN") {
+      return NextResponse.json(
+        { error: "User is not Admin or User not found!" },
+        { status: 401 }
+      );
+    }
     const body = await request.json();
     const { title } =
       body;

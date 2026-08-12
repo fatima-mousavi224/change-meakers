@@ -60,14 +60,30 @@ function normalizeVideoBlock(
   };
 }
 
+function ensureBlockArray(value: unknown): unknown[] {
+  if (Array.isArray(value)) {
+    return value;
+  }
+
+  if (isRecord(value)) {
+    const numericKeys = Object.keys(value)
+      .filter((key) => /^\d+$/.test(key))
+      .sort((a, b) => Number(a) - Number(b));
+
+    if (numericKeys.length > 0) {
+      return numericKeys.map((key) => value[key]);
+    }
+  }
+
+  return [];
+}
+
 export function parseOpportunityContentBlocks(
   value: unknown,
 ): OpportunityContentBlock[] {
-  if (!Array.isArray(value)) {
-    return [];
-  }
+  const items = ensureBlockArray(value);
 
-  return value
+  return items
     .map((item) => {
       if (!isRecord(item) || typeof item.type !== "string") {
         return null;
@@ -87,10 +103,48 @@ export function parseOpportunityContentBlocks(
     .filter((block): block is OpportunityContentBlock => block !== null);
 }
 
-export function legacyContentToBlocks(content: string): OpportunityTextBlock[] {
-  return content
+export function legacyContentToBlocks(content: string): OpportunityContentBlock[] {
+  return htmlContentToBlocks(content);
+}
+
+export function htmlContentToBlocks(content: string): OpportunityContentBlock[] {
+  const trimmed = content.trim();
+  if (!trimmed) {
+    return [];
+  }
+
+  if (trimmed.includes("<")) {
+    const normalized = trimmed
+      .replace(/<br\s*\/?>/gi, "\n")
+      .replace(/<\/p>/gi, "\n\n")
+      .replace(/<\/div>/gi, "\n\n")
+      .replace(/<\/li>/gi, "\n\n");
+
+    const stripped = normalized
+      .replace(/<[^>]*>/g, "")
+      .replace(/&nbsp;/g, " ")
+      .replace(/&amp;/g, "&")
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">");
+
+    return stripped
+      .split(/\n\n+/)
+      .map((paragraph) => paragraph.replace(/\s+/g, " ").trim())
+      .filter(Boolean)
+      .map((body) => ({ type: "text" as const, body }));
+  }
+
+  return trimmed
     .split("\n\n")
     .map((paragraph) => paragraph.trim())
     .filter(Boolean)
     .map((body) => ({ type: "text" as const, body }));
+}
+
+export function blocksToPlainContent(blocks: OpportunityContentBlock[]): string {
+  return blocks
+    .filter((block): block is OpportunityTextBlock => block.type === "text")
+    .map((block) => block.body.trim())
+    .filter(Boolean)
+    .join("\n\n");
 }

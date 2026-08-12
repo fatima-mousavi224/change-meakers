@@ -43,6 +43,8 @@ export type OpportunityItem = {
   category: string;
   location: string;
   image: string;
+  detailImage: string | null;
+  videoUrl: string | null;
   deadline: string;
   applicationUrl: string | null;
   resourceProvider: string | null;

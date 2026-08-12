@@ -10,6 +10,7 @@ interface SummaryProps {
   numPosts: number;
   numMembers: number;
   numAdmins: number;
+  numOpportunities: number;
   donations: PaymentInfo[];
   currentUser: User | null;
 }
@@ -19,6 +20,7 @@ export default function Summary({
   numPosts,
   numMembers,
   numAdmins,
+  numOpportunities,
   donations,
   currentUser,
 }: SummaryProps) {
@@ -45,19 +47,24 @@ export default function Summary({
     },
     {
       label: "Team members",
-      value: numAdmins,
+      value: numMembers,
       icon: "/images/Icon.svg",
     },
     {
       label: "Admin users",
-      value: numMembers,
+      value: numAdmins,
       icon: "/images/Icon (1).svg",
+    },
+    {
+      label: "Opportunities",
+      value: numOpportunities,
+      icon: "/images/Icon.svg",
     },
   ];
 
   return (
     <div>
-      <div className="grid xl:grid-cols-4 lg:grid-cols-2 grid-cols-1 gap-5 mb-5">
+      <div className="grid xl:grid-cols-5 lg:grid-cols-3 grid-cols-1 gap-5 mb-5">
         {summaryData.map((item) => (
           <div
             key={item.label}

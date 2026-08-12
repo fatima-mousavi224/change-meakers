@@ -4,7 +4,6 @@ import { withAuth } from "next-auth/middleware";
 const publicPaths = [
   "/",
   "/updates",
-  "/donate",
   "/about",
   "/mission&impact",
   "/current-programs",
@@ -33,7 +32,6 @@ export default withAuth(
 );
 export const config = {
   matcher: [
-    "/donate",
     "/dashboard/:path*",
     "/admin/:path*",
     "/profile/:path*",

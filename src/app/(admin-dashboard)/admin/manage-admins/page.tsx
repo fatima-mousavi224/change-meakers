@@ -23,6 +23,7 @@ export default async function ManageTeamMembersPage() {
       });
 
       revalidatePath("/admin");
+      revalidatePath("/admin/manage-admins");
 
       return { success: true, message: `User role updated to ${newRole}` };
     } catch (error) {

@@ -1,6 +1,7 @@
 "use client";
 
 import { User } from "@prisma/client";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 
@@ -16,6 +17,7 @@ export default function ToggleAdminBtn({
   toggleAdminRole,
 }: ToggleAdminBtnProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   const handleToggle = async () => {
     setIsLoading(true);
@@ -23,6 +25,7 @@ export default function ToggleAdminBtn({
       const result = await toggleAdminRole(user.id);
       if (result.success) {
         toast.success(result.message);
+        router.refresh();
       } else {
         toast.error(result.message);
       }

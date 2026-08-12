@@ -1,5 +1,6 @@
 import Link from "next/link";
 import React from "react";
+import { DONATE_URL } from "@/constant/donate";
 
 export default function DonateCard() {
   return (
@@ -18,7 +19,9 @@ export default function DonateCard() {
             and girls learn.
           </p>
           <Link
-            href="/donate"
+            href={DONATE_URL}
+            target="_blank"
+            rel="noopener noreferrer"
             className="w-full text-center lg:text-md text-sm items-center p-2 font-bold rounded-md bg-primary-50  text-white transition duration-300 ease-in-out hover:bg-primary-200 "
           >
             Donate Now
@@ -43,7 +46,9 @@ function DonateCardForSmallScreen() {
         Your support helps Afghan children, youth, and girls learn.
       </p>
       <Link
-        href="/donate"
+        href={DONATE_URL}
+        target="_blank"
+        rel="noopener noreferrer"
         className="w-max  text-center lg:text-md text-sm items-center p-2 font-bold rounded-md text-primary-50 bg-white  hover:text-white transition duration-300 ease-in-out hover:bg-primary-200 "
       >
         Donate Now

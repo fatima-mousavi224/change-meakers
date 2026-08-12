@@ -102,7 +102,7 @@ export default function AdminEditProfile({ user }: { user: any }) {
 
       if (res.ok) {
         toast.success("Profile updated successfully");
-        route.push("/login");
+        route.refresh();
       } else {
         const errorData = await res.json();
         toast.error(`Error updating profile: ${errorData.errors}`);
@@ -241,11 +241,11 @@ export default function AdminEditProfile({ user }: { user: any }) {
           </label>
           <div className="mt-2 relative">
             <input
-              {...register("password", { required: "Password is required" })}
+              {...register("password")}
               id="password"
               name="password"
               type={isShowPassword ? "text" : "password"}
-              placeholder="**********"
+              placeholder="Leave blank to keep current password"
               className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-50 sm:text-sm/6"
             />
             <div className="absolute right-3 bottom-0.5">

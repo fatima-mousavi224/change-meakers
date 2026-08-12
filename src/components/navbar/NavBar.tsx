@@ -1,4 +1,5 @@
-import { Post, User } from "@prisma/client";
+import type { Post } from "@/types/database";
+import type { User } from "@prisma/client";
 import Navbar from "./NavbarCollection";
 import { Suspense } from "react";
 

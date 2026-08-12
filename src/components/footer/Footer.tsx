@@ -36,6 +36,9 @@ export default function Footer() {
               <Link
                 key={label}
                 href={href}
+                {...(href.startsWith("http")
+                  ? { target: "_blank", rel: "noopener noreferrer" }
+                  : {})}
                 className="font-plusJakartaSans text-[15px] font-medium text-[#717171] transition-colors duration-200 hover:text-primary-50"
               >
                 {label}

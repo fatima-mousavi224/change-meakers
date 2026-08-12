@@ -1,4 +1,6 @@
 "use client";
+
+import { useProjectId } from "@/hooks/useProjectId";
 import { useTabs } from "@/components/context/TabsContext";
 import Tabs from "@/components/create-project-tabs/Tabs";
 import DeleteModal from "@/components/delete-modal/deleteModal";
@@ -33,7 +35,7 @@ function PhotoAlbum() {
       description: string;
     }>
   >([{ image: null, imagePreview: "",photoAlbumLabelName: "", title: "", description: "" }]);
-  const projectId = localStorage.getItem("projectId");
+  const projectId = useProjectId();
   const searchParams = useSearchParams();
   const isEdit = searchParams?.get("edit") === "1";
   console.log("🚀 ~ PhotoAlbum ~ projectId:", projectId)

@@ -23,12 +23,13 @@ export default function OpportunityDetails({
 
       <SiteContainer
         as="main"
-        className={`pb-12 pt-8 lg:pt-10 ${OPPORTUNITY_DETAIL_SECTION_CLASS}`}
+        className={`bg-white pb-12 pt-8 lg:pt-10 ${OPPORTUNITY_DETAIL_SECTION_CLASS}`}
       >
-        <article className="w-full">
+        <article className="mx-auto w-full max-w-6xl lg:max-w-7xl">
           <OpportunityContentBlocks blocks={opportunity.contentBlocks} />
 
-          {opportunity.applicationUrl && !isDeadlineExpired(opportunity.deadline) ? (
+          {opportunity.applicationUrl &&
+          !isDeadlineExpired(opportunity.deadline) ? (
             <a
               href={opportunity.applicationUrl}
               target="_blank"
@@ -42,6 +43,7 @@ export default function OpportunityDetails({
           <OpportunityShareFooter
             title={opportunity.title}
             sharePath={sharePath}
+            shareLabel="Share the opportunity with others"
           />
         </article>
       </SiteContainer>

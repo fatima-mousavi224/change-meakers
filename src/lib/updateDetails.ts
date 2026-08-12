@@ -1,4 +1,8 @@
 import type { OpportunityContentBlock } from "@/constant/opportunityContentBlocks";
+import {
+  htmlContentToBlocks,
+  parseOpportunityContentBlocks,
+} from "@/constant/opportunityContentBlocks";
 import type { UpdateDetailItem } from "@/constant/updatesDetail";
 import prisma from "@/lib/prismaDB";
 
@@ -13,7 +17,7 @@ function stripHtml(value: string) {
 
 function htmlDescriptionToBlocks(
   description: string,
-  postImages: { image: string }[],
+  postImages: { image: string }[]
 ): OpportunityContentBlock[] {
   const blocks: OpportunityContentBlock[] = [];
 
@@ -24,51 +28,79 @@ function htmlDescriptionToBlocks(
     }
   }
 
-  const normalized = description
-    .replace(/<br\s*\/?>/gi, "\n")
-    .replace(/<\/p>/gi, "\n\n")
-    .replace(/<\/div>/gi, "\n\n");
-
-  const stripped = normalized
-    .replace(/<[^>]*>/g, "")
-    .replace(/&nbsp;/g, " ");
-
-  const paragraphs = stripped
-    .split(/\n\n+/)
-    .map((paragraph) => paragraph.replace(/\s+/g, " ").trim())
-    .filter(Boolean);
-
-  for (const body of paragraphs) {
-    blocks.push({ type: "text", body });
-  }
-
+  blocks.push(...htmlContentToBlocks(description));
   return blocks;
 }
 
-function serializeUpdate(post: {
-  id: string;
-  title: string;
-  description: string;
-  author: string;
-  authorImage: { image: string } | null;
-  postImages: { image: string }[];
-  postDate: Date | null;
-  createdAt: Date;
-  Category: { title: string } | null;
-}): UpdateDetailItem {
+async function resolveContentBlocks(
+  id: string,
+  contentBlocks: unknown,
+  description: string,
+  postImages: { image: string }[]
+) {
+  const parsed = parseOpportunityContentBlocks(contentBlocks);
+  if (parsed.length) {
+    return parsed;
+  }
+
+  try {
+    const raw = await prisma.post.findRaw({
+      filter: {
+        _id: { $eq: { $oid: id } },
+      },
+      options: {
+        projection: { contentBlocks: 1 },
+      },
+    });
+
+    if (Array.isArray(raw) && raw[0]) {
+      const fromDb = (raw[0] as { contentBlocks?: unknown }).contentBlocks;
+      const parsedFromDb = parseOpportunityContentBlocks(fromDb);
+      if (parsedFromDb.length) {
+        return parsedFromDb;
+      }
+    }
+  } catch (error) {
+    console.error("Failed to load update content blocks:", error);
+  }
+
+  return htmlDescriptionToBlocks(description, postImages);
+}
+
+function serializeUpdate(
+  post: {
+    id: string;
+    title: string;
+    excerpt?: string | null;
+    description: string;
+    contentBlocks?: unknown;
+    author: string;
+    authorImage: { image: string } | null;
+    postImages: { image: string }[];
+    postDate: Date | null;
+    createdAt: Date;
+    Category: { title: string } | null;
+  },
+  resolvedBlocks?: OpportunityContentBlock[]
+): UpdateDetailItem {
   const postDate = post.postDate ?? post.createdAt;
-  const excerpt = stripHtml(post.description);
+  const parsedBlocks = parseOpportunityContentBlocks(post.contentBlocks);
+  const contentBlocks =
+    resolvedBlocks ??
+    (parsedBlocks.length
+      ? parsedBlocks
+      : htmlDescriptionToBlocks(post.description, post.postImages));
 
   return {
     id: post.id,
     title: post.title,
-    excerpt,
+    excerpt: post.excerpt?.trim() || stripHtml(post.description),
     category: post.Category?.title ?? "Updates",
     author: post.author,
     authorImage: post.authorImage?.image?.trim() || null,
     postDate: postDate.toISOString(),
     createdAt: post.createdAt.toISOString(),
-    contentBlocks: htmlDescriptionToBlocks(post.description, post.postImages),
+    contentBlocks,
   };
 }
 
@@ -82,5 +114,12 @@ export async function getUpdateById(id: string): Promise<UpdateDetailItem | null
     return null;
   }
 
-  return serializeUpdate(post);
+  const contentBlocks = await resolveContentBlocks(
+    id,
+    (post as { contentBlocks?: unknown }).contentBlocks,
+    post.description,
+    post.postImages
+  );
+
+  return serializeUpdate(post, contentBlocks);
 }

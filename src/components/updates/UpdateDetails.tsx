@@ -21,15 +21,15 @@ export default function UpdateDetails({ update }: UpdateDetailsProps) {
 
       <SiteContainer
         as="main"
-        className={`pb-12 pt-8 lg:pt-10 ${OPPORTUNITY_DETAIL_SECTION_CLASS}`}
+        className={`bg-white pb-12 pt-8 lg:pt-10 ${OPPORTUNITY_DETAIL_SECTION_CLASS}`}
       >
-        <article className="w-full">
+        <article className="mx-auto w-full max-w-6xl lg:max-w-7xl">
           <OpportunityContentBlocks blocks={update.contentBlocks} />
 
           <OpportunityShareFooter
             title={update.title}
             sharePath={sharePath}
-            shareLabel="SHARE"
+            shareLabel="Share the update with others"
           />
         </article>
       </SiteContainer>

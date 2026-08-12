@@ -22,10 +22,16 @@ import { LuUserCog } from "react-icons/lu";
 import { MdOutlineAdminPanelSettings } from "react-icons/md";
 import { TbHeartCheck } from "react-icons/tb";
 import { IoMdClipboard } from "react-icons/io";
+import { Briefcase } from "lucide-react";
 
 const navigation = [
   { name: "Home", href: "/admin", icon: Home },
-  { name: "Manage Posts", href: "/admin/manage-posts", icon: FaRegListAlt },
+  { name: "Manage Updates", href: "/admin/manage-posts", icon: FaRegListAlt },
+  {
+    name: "Manage Opportunities",
+    href: "/admin/manage-opportunities",
+    icon: Briefcase,
+  },
   {
     name: "Team Members",
     href: "/admin/manage-team-members",

@@ -7,7 +7,7 @@ import signInWithThirdParty from "@/utilities/signInWithThirdParty";
 import { LockClosedIcon } from "@heroicons/react/24/outline";
 import { User } from "@prisma/client";
 import { ArrowLeft } from "lucide-react";
-import { signIn } from "next-auth/react";
+import { signIn, getSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
@@ -50,7 +50,9 @@ export default function LoginForm({ className, user }: LoginFormProps) {
         toast.error(res.error);
       } else if (res?.ok) {
         toast.success("Login successful");
-        router.push((user?.role === "ADMIN" && "/admin") || "/admin");
+        const session = await getSession();
+        const role = (session?.user as { role?: string } | undefined)?.role;
+        router.push(role === "ADMIN" ? "/admin" : "/dashboard");
       }
     } catch (error: any) {
       toast.error(error.message);
