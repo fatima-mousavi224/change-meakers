@@ -47,12 +47,20 @@ export default function InitiativeDetailHero({
           <SiteContainer className="pointer-events-none absolute inset-x-0 bottom-0 z-10">
             <div className="relative flex items-end justify-between gap-4">
               {initiative.heroLogo ? (
-                <div className="pointer-events-auto relative size-[84px] shrink-0 translate-y-[calc(50%+3px)] overflow-hidden rounded-[15px] border-4 border-white bg-white shadow-[0_4px_24px_rgba(0,0,0,0.12)] sm:size-[120px] sm:rounded-[20px] sm:border-[6px] lg:size-[140px] lg:rounded-[22px]">
+                <div
+                  className={cn(
+                    "pointer-events-auto relative size-[84px] shrink-0 translate-y-[calc(50%+3px)] overflow-hidden rounded-[15px] border-4 border-white bg-white shadow-[0_4px_24px_rgba(0,0,0,0.12)] sm:size-[120px] sm:rounded-[20px] sm:border-[6px] lg:size-[140px] lg:rounded-[22px]",
+                    initiative.heroLogoClassName,
+                  )}
+                >
                   <Image
                     src={initiative.heroLogo}
                     alt=""
                     fill
-                    className="object-contain object-center p-1"
+                    className={cn(
+                      "object-contain object-center p-1",
+                      initiative.heroLogoImageClassName,
+                    )}
                     sizes="(max-width: 640px) 84px, (max-width: 1024px) 120px, 140px"
                   />
                 </div>

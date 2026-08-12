@@ -12,15 +12,28 @@ const MOBILE_BREAKPOINT = 1024;
 type OurInitiativesProps = {
   title?: string;
   className?: string;
+  /** When set, only these initiative ids are shown (order preserved). */
+  initiativeIds?: string[];
 };
 
 export default function OurInitiatives({
   title = "Our Initiatives",
   className,
+  initiativeIds,
 }: OurInitiativesProps) {
   const [currentPage, setCurrentPage] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
   const mobileScrollRef = useRef<HTMLDivElement>(null);
+
+  const initiatives = useMemo(() => {
+    if (!initiativeIds?.length) {
+      return INITIATIVES;
+    }
+
+    return initiativeIds
+      .map((id) => INITIATIVES.find((initiative) => initiative.id === id))
+      .filter((initiative) => initiative !== undefined);
+  }, [initiativeIds]);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia(
@@ -35,25 +48,31 @@ export default function OurInitiatives({
   }, []);
 
   const totalPages = isMobile
-    ? INITIATIVES.length
-    : Math.ceil(INITIATIVES.length / INITIATIVES_PER_PAGE);
+    ? initiatives.length
+    : Math.max(1, Math.ceil(initiatives.length / INITIATIVES_PER_PAGE));
 
   const visibleInitiatives = useMemo(() => {
-    if (isMobile) return INITIATIVES;
+    if (isMobile) return initiatives;
+
+    if (initiatives.length <= INITIATIVES_PER_PAGE) {
+      return initiatives;
+    }
 
     const start = currentPage * INITIATIVES_PER_PAGE;
-    const items = [];
-    for (let i = 0; i < INITIATIVES_PER_PAGE; i++) {
-      items.push(INITIATIVES[(start + i) % INITIATIVES.length]);
-    }
-    return items;
-  }, [currentPage, isMobile]);
+    return initiatives.slice(start, start + INITIATIVES_PER_PAGE);
+  }, [currentPage, initiatives, isMobile]);
+
+  useEffect(() => {
+    setCurrentPage(0);
+  }, [initiativeIds]);
 
   useEffect(() => {
     setCurrentPage((page) => Math.min(page, totalPages - 1));
   }, [totalPages]);
 
   useEffect(() => {
+    if (totalPages <= 1) return;
+
     const interval = setInterval(() => {
       setCurrentPage((page) => (page + 1) % totalPages);
     }, AUTO_PLAY_MS);
@@ -95,7 +114,7 @@ export default function OurInitiatives({
         ))}
       </div>
 
-      {/* Desktop: unchanged 4-column grid */}
+      {/* Desktop: always 4-column grid so card size matches other program tabs */}
       <div className="hidden lg:grid lg:grid-cols-4 lg:gap-5">
         {visibleInitiatives.map((initiative, index) => (
           <InitiativeCard
@@ -105,22 +124,24 @@ export default function OurInitiatives({
         ))}
       </div>
 
-      <div className="mt-8 flex items-center justify-center gap-2.5">
-        {Array.from({ length: totalPages }).map((_, index) => (
-          <button
-            key={index}
-            type="button"
-            aria-label={`Go to initiatives page ${index + 1}`}
-            aria-current={index === currentPage ? "true" : undefined}
-            onClick={() => setCurrentPage(index)}
-            className={`rounded-full transition-all duration-300 ${
-              index === currentPage
-                ? "size-3 bg-primary-50"
-                : "size-2 bg-[#D0D5DD] hover:bg-primary-50/50"
-            }`}
-          />
-        ))}
-      </div>
+      {totalPages > 1 ? (
+        <div className="mt-8 flex items-center justify-center gap-2.5">
+          {Array.from({ length: totalPages }).map((_, index) => (
+            <button
+              key={index}
+              type="button"
+              aria-label={`Go to initiatives page ${index + 1}`}
+              aria-current={index === currentPage ? "true" : undefined}
+              onClick={() => setCurrentPage(index)}
+              className={`rounded-full transition-all duration-300 ${
+                index === currentPage
+                  ? "size-3 bg-primary-50"
+                  : "size-2 bg-[#D0D5DD] hover:bg-primary-50/50"
+              }`}
+            />
+          ))}
+        </div>
+      ) : null}
     </section>
   );
 }

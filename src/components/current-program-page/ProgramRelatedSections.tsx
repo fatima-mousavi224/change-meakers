@@ -2,7 +2,10 @@ import SiteContainer from "@/components/common/SiteContainer";
 import type { UpdatePost } from "@/components/home/latest-updates/LatestUpdateCard";
 import OurInitiatives from "@/components/home/our-initiatives/OurInitiatives";
 import LatestUpdates from "@/components/home/latest-updates/LatestUpdates";
-import type { ProgramCategoryId } from "@/constant/programTabs";
+import {
+  getProgramRelatedInitiativeIds,
+  type ProgramCategoryId,
+} from "@/constant/programTabs";
 
 type ProgramRelatedSectionsProps = {
   posts: UpdatePost[];
@@ -14,11 +17,13 @@ export default function ProgramRelatedSections({
   activeCategoryId,
 }: ProgramRelatedSectionsProps) {
   const isYouthEmpowerment = activeCategoryId === "youth-empowerment";
+  const relatedInitiativeIds = getProgramRelatedInitiativeIds(activeCategoryId);
 
   return (
     <SiteContainer className="pb-4">
       <OurInitiatives
         title="Related Initiatives"
+        initiativeIds={relatedInitiativeIds}
         className="py-0 pb-6 pt-12 lg:pb-8 lg:pt-16"
       />
       <LatestUpdates

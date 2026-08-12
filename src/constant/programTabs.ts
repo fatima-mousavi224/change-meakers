@@ -100,6 +100,24 @@ export const PROGRAM_CATEGORIES: ProgramCategory[] = [
   },
 ];
 
+/** Related initiative cards shown on each program tab (home page shows all). */
+export const PROGRAM_RELATED_INITIATIVE_IDS: Partial<
+  Record<ProgramCategoryId, readonly string[]>
+> = {
+  advocacy: [
+    "afghan-youth-coalition",
+    "additional-learning-programs",
+    "nycp",
+  ],
+};
+
+export function getProgramRelatedInitiativeIds(
+  categoryId: ProgramCategoryId,
+): string[] | undefined {
+  const ids = PROGRAM_RELATED_INITIATIVE_IDS[categoryId];
+  return ids ? [...ids] : undefined;
+}
+
 export const PROGRAM_CATEGORY_IDS = PROGRAM_CATEGORIES.map(
   (category) => category.id,
 );

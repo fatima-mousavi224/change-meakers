@@ -12,13 +12,13 @@ export default function SectionHeading({ title, className }: SectionHeadingProps
         {title}
       </h2>
       <div className="mt-2 flex min-w-0 flex-1 items-center">
-        <div className="h-px flex-1 bg-[#9E9E9E]" />
+        <div className="h-0 flex-1 self-center border-t border-[#9E9E9E]" />
 
-        <span className="mx-5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-[1.5px] border-[#9E9E9E] bg-white">
-          <span className="h-3 w-3 rounded-full bg-[#9E9E9E]" />
+        <span className="mx-5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-[#9E9E9E] bg-white">
+          <span className="h-2 w-2 rounded-full bg-[#9E9E9E]" />
         </span>
 
-        <div className="h-px w-6 bg-[#9E9E9E] md:w-24" />
+        <div className="h-0 w-6 self-center border-t border-[#9E9E9E] md:w-24" />
       </div>
     </div>
   );

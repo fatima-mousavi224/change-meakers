@@ -236,6 +236,10 @@ export type InitiativeDetailContent = {
   heroGradient?: boolean | string;
   /** CSS object-position, e.g. "center 22%" to crop empty space above the focal area */
   heroImagePosition?: string;
+  /** Optional classes for the hero logo frame (outer white box) */
+  heroLogoClassName?: string;
+  /** Optional classes for the hero logo image */
+  heroLogoImageClassName?: string;
   introParagraphs: InitiativeIntroBlock[];
   introCta?: InitiativeIntroCta;
   socialLinks?: InitiativeSocialLink[];
@@ -255,6 +259,9 @@ export const INITIATIVE_DETAIL_CONTENT: Record<string, InitiativeDetailContent> 
     "afghan-girls-tech-academy": {
       heroImage: "/images/initiatives-datils/afghnGrilsAcdmy-hero-image.jpg",
       heroLogo: "/images/initiatives-datils/afghnGrilsAcdmy-logo-hero.png",
+      heroLogoClassName:
+        "rounded-[10px] border-[3px] sm:rounded-[12px] lg:rounded-[14px]",
+      heroLogoImageClassName: "rounded-[8px] p-0.5 sm:rounded-[10px]",
       heroImagePosition: "center 32%",
       socialLinks: [
         {
