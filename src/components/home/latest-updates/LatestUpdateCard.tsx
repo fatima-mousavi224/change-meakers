@@ -4,7 +4,7 @@ import type { Post } from "@/types/database";
 import { ArrowRightIcon, CalendarIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export type UpdatePost = Post & {
   Category?: {
@@ -28,7 +28,9 @@ function formatPostDate(date: Date | null | undefined) {
 }
 
 function resolvePostImage(post: UpdatePost) {
-  const image = post.postImages?.[0]?.image?.trim();
+  const image =
+    post.authorImage?.image?.trim() ||
+    post.postImages?.[0]?.image?.trim();
   if (!image) return FALLBACK_UPDATE_IMAGE;
   return image;
 }
@@ -36,7 +38,12 @@ function resolvePostImage(post: UpdatePost) {
 export default function LatestUpdateCard({ post }: LatestUpdateCardProps) {
   const [imageSrc, setImageSrc] = useState(() => resolvePostImage(post));
   const categoryTitle = post.Category?.title ?? "Updates";
-  const isRemoteImage = imageSrc.startsWith("http");
+  const isRemoteImage =
+    imageSrc.startsWith("http") || imageSrc.startsWith("/uploads/");
+
+  useEffect(() => {
+    setImageSrc(resolvePostImage(post));
+  }, [post]);
 
   return (
     <article className="flex h-full flex-col overflow-hidden rounded-[16px] border border-[#E4E7EC] bg-white shadow-sm">

@@ -21,8 +21,14 @@ export async function POST(request: Request) {
     return NextResponse.json({ url }, { status: 201 });
   } catch (err) {
     console.error("Upload failed:", err);
-    const message =
+    let message =
       err instanceof Error ? err.message : "Failed to upload image";
+
+    if (message.includes("Cannot use public access on a private store")) {
+      message =
+        "Your Vercel Blob store is private, but this site needs a public store for member and content images. In Vercel → Storage, create a new Blob store with Public access, connect it to this project, redeploy, then try again.";
+    }
+
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }

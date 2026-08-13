@@ -61,11 +61,13 @@ function ImageUploadField({
   label,
   hint,
   preview,
+  inputKey,
   onFileSelect,
 }: {
   label: string;
   hint?: string;
   preview: string | null;
+  inputKey: number;
   onFileSelect: (file: File) => void;
 }) {
   return (
@@ -92,8 +94,9 @@ function ImageUploadField({
           <PhotoIcon className="size-5" />
           Upload photo
           <input
+            key={inputKey}
             type="file"
-            accept="image/*"
+            accept="image/jpeg,image/png,image/webp,image/gif"
             className="hidden"
             onChange={(e) => {
               const file = e.target.files?.[0];
@@ -127,6 +130,7 @@ export default function MemberFormModal({
   const [isDataPopulated, setIsDataPopulated] = useState(Boolean(memberId));
   const [socials, setSocials] = useState<LeadershipSocialLink[]>([]);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [fileInputKey, setFileInputKey] = useState(0);
 
   const photoRef = useRef<ImageState>(emptyImageState());
   const loadedKeyRef = useRef<string | null>(null);
@@ -150,6 +154,8 @@ export default function MemberFormModal({
       loadedKeyRef.current = null;
       return;
     }
+
+    setFileInputKey((current) => current + 1);
 
     const loadKey = memberId ?? "new";
     if (loadedKeyRef.current === loadKey) return;
@@ -224,6 +230,11 @@ export default function MemberFormModal({
       setLoading(true);
       try {
         return await uploadCardImage(photoRef.current.file);
+      } catch (error) {
+        const message =
+          error instanceof Error ? error.message : "Failed to upload image";
+        toast.error(message);
+        throw error;
       } finally {
         setLoading(false);
       }
@@ -390,6 +401,7 @@ export default function MemberFormModal({
                   label="Photo"
                   hint="Shown on the About page team cards"
                   preview={photoPreview}
+                  inputKey={fileInputKey}
                   onFileSelect={(file) =>
                     setPhotoState({
                       file,

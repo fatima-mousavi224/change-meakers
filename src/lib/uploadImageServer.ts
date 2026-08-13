@@ -7,6 +7,7 @@ import sharp from "sharp";
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
 const ALLOWED_TYPES = new Set([
   "image/jpeg",
+  "image/jpg",
   "image/png",
   "image/webp",
   "image/gif",
@@ -16,28 +17,64 @@ function sanitizeFolder(folder: string) {
   return folder.replace(/[^a-zA-Z0-9-_]/g, "") || "uploads";
 }
 
+function inferMimeType(file: File) {
+  if (file.type && file.type !== "application/octet-stream") {
+    return file.type;
+  }
+
+  const extension = file.name.split(".").pop()?.toLowerCase();
+
+  switch (extension) {
+    case "jpg":
+    case "jpeg":
+      return "image/jpeg";
+    case "png":
+      return "image/png";
+    case "webp":
+      return "image/webp";
+    case "gif":
+      return "image/gif";
+    default:
+      return file.type || "";
+  }
+}
+
 async function optimizeImage(file: File) {
   if (file.size > MAX_FILE_SIZE) {
     throw new Error("File exceeds 10MB limit");
   }
 
-  if (!ALLOWED_TYPES.has(file.type)) {
+  const mimeType = inferMimeType(file);
+
+  if (!ALLOWED_TYPES.has(mimeType)) {
     throw new Error("Invalid file type. Use JPG, PNG, WEBP, or GIF.");
   }
 
   const buffer = Buffer.from(await file.arrayBuffer());
-  const optimized = await sharp(buffer)
-    .rotate()
-    .resize({
-      width: 1920,
-      height: 1920,
-      fit: "inside",
-      withoutEnlargement: true,
-    })
-    .webp({ quality: 82 })
-    .toBuffer();
 
-  return optimized;
+  try {
+    const optimized = await sharp(buffer)
+      .rotate()
+      .resize({
+        width: 1920,
+        height: 1920,
+        fit: "inside",
+        withoutEnlargement: true,
+      })
+      .webp({ quality: 82 })
+      .toBuffer();
+
+    return optimized;
+  } catch (error) {
+    console.error("Image optimization failed:", error);
+    throw new Error(
+      "Could not process this image. Try saving it as JPG or PNG and upload again."
+    );
+  }
+}
+
+function getBlobAccess(): "public" | "private" {
+  return process.env.BLOB_ACCESS === "private" ? "private" : "public";
 }
 
 async function saveToBlob(
@@ -46,9 +83,9 @@ async function saveToBlob(
   fileName: string
 ): Promise<string> {
   const blob = await put(`${safeFolder}/${fileName}`, optimized, {
-    access: "public",
+    access: getBlobAccess(),
     contentType: "image/webp",
-    addRandomSuffix: false,
+    addRandomSuffix: true,
   });
 
   return blob.url;
