@@ -3,12 +3,14 @@
 import Image, { StaticImageData } from "next/image";
 import Link from "next/link";
 import React, { TouchEvent, useEffect, useState } from "react";
+import { motion, useReducedMotion } from "framer-motion";
+import { fadeUpItem, staggerContainer } from "@/lib/motionPresets";
 import { RighArrow } from "../../icons/Icons";
 import image1 from "../../../../public/images/home-page/hero-section/slide1.png";
 import image2 from "../../../../public/images/home-page/hero-section/slide2.png";
 import image3 from "../../../../public/images/home-page/hero-section/slide3.png";
 import image4 from "../../../../public/images/home-page/hero-section/slide4.jpg";
-import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface Slide {
   image: StaticImageData;
@@ -27,6 +29,7 @@ const HeroSlider: React.FC = () => {
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
   const [isMobile, setIsMobile] = useState(false);
+  const prefersReducedMotion = useReducedMotion();
 
   useEffect(() => {
     const checkMobile = () => {
@@ -114,25 +117,37 @@ const HeroSlider: React.FC = () => {
 
           {/* Text Overlay & Button */}
           <div className="absolute inset-0 z-20 flex flex-col items-start justify-end p-5 font-plusJakartaSans sm:p-10 md:p-14">
-            <div className="max-w-3xl mb-2">
-              <h1 className="text-[26px] sm:text-[36px] md:text-[46px] font-bold text-white leading-[122%] mb-2 md:mb-6">
+            <motion.div
+              className="mb-2 max-w-3xl"
+              variants={prefersReducedMotion ? undefined : staggerContainer}
+              initial={prefersReducedMotion ? false : "hidden"}
+              animate={prefersReducedMotion ? false : "visible"}
+            >
+              <motion.h1
+                variants={prefersReducedMotion ? undefined : fadeUpItem}
+                className="mb-2 text-[26px] font-bold leading-[122%] text-white sm:text-[36px] md:mb-6 md:text-[46px]"
+              >
                 A better Afghanistan begins with educated girls and empowered
                 youth.
-              </h1>
-              <p className="text-[15px] md:text-[18px] font-normal text-white/90 leading-[120%] mb-5">
-                This is why Change Makers of the World exists.
-              </p>
-              {/* Button with 12px border radius & link to /about */}
-              <Link
-                href="/about"
-                className="group inline-flex items-center justify-center gap-2 bg-white text-[#252525] font-medium text-sm md:text-base py-2.5 px-5 rounded-[12px] shadow hover:bg-gray-100 transition-colors duration-200"
+              </motion.h1>
+              <motion.p
+                variants={prefersReducedMotion ? undefined : fadeUpItem}
+                className="mb-5 text-[15px] font-normal leading-[120%] text-white/90 md:text-[18px]"
               >
-                <span>Who We Are</span>
-                <span className="inline-flex items-center justify-center transition-transform duration-300 ease-out group-hover:translate-x-1.5">
-                  <RighArrow className="w-3 h-3 text-[#252525]" />
-                </span>
-              </Link>{" "}
-            </div>
+                This is why Change Makers of the World exists.
+              </motion.p>
+              <motion.div variants={prefersReducedMotion ? undefined : fadeUpItem}>
+                <Link
+                  href="/about"
+                  className="group inline-flex items-center justify-center gap-2 rounded-[12px] bg-white px-5 py-2.5 text-sm font-medium text-[#252525] shadow transition-colors duration-200 hover:bg-gray-100 md:text-base"
+                >
+                  <span>Who We Are</span>
+                  <span className="inline-flex items-center justify-center transition-transform duration-300 ease-out group-hover:translate-x-1.5">
+                    <RighArrow className="h-3 w-3 text-[#252525]" />
+                  </span>
+                </Link>
+              </motion.div>
+            </motion.div>
           </div>
 
           <div className="absolute bottom-6 right-8 md:bottom-8 md:right-10 z-30 flex space-x-2 items-center">

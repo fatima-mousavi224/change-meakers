@@ -1,4 +1,5 @@
 import Banner from '@/components/common/Banner';
+import ScrollReveal from '@/components/common/ScrollReveal';
 import SiteContainer from '@/components/common/SiteContainer';
 
 import { Metadata } from 'next';
@@ -19,12 +20,14 @@ const MissionAndImpact = () => {
   return (
     <section className=''>
       <SiteContainer className="mt-4">
-        <Banner>
-          <span>Mission & Impact</span>
-        </Banner>
-        {/* <OurMission /> */}
-        {/* <OurVision /> */}
-        <NewMissionDesign />
+        <ScrollReveal>
+          <Banner>
+            <span>Mission & Impact</span>
+          </Banner>
+        </ScrollReveal>
+        <ScrollReveal delay={0.08}>
+          <NewMissionDesign />
+        </ScrollReveal>
       </SiteContainer>
       {/* <Participants /> */}
     </section>

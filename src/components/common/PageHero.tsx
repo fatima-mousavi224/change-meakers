@@ -1,5 +1,6 @@
 import Image from "next/image";
 
+import HeroTextReveal from "@/components/common/HeroTextReveal";
 import { SITE_CONTAINER_CLASS } from "@/constant/siteContainer";
 import { cn } from "@/utilities/cn";
 
@@ -46,16 +47,13 @@ export default function PageHero({
           style={{ background: PAGE_HERO_GRADIENT }}
         />
 
-        <div className="absolute inset-0 z-20 flex flex-col items-center justify-center px-6 py-8 text-center sm:px-10 lg:px-16">
-          <h1 className="font-plusJakartaSans text-[28px] font-bold leading-tight text-white sm:text-[36px] lg:text-[44px]">
-            {title}
-          </h1>
-
-          {description ? (
-            <p className="mt-3 max-w-[920px] font-plusJakartaSans text-[13px] font-normal leading-[22px] text-white sm:mt-4 sm:text-[15px] sm:leading-[24px] lg:text-[16px] lg:leading-[26px]">
-              {description}
-            </p>
-          ) : null}
+        <div className="absolute inset-0 z-20 flex flex-col items-center justify-center px-6 py-8 sm:px-10 lg:px-16">
+          <HeroTextReveal
+            title={title}
+            description={description}
+            titleClassName="font-plusJakartaSans text-[28px] font-bold leading-tight text-white sm:text-[36px] lg:text-[44px]"
+            descriptionClassName="mt-3 max-w-[920px] font-plusJakartaSans text-[13px] font-normal leading-[22px] text-white sm:mt-4 sm:text-[15px] sm:leading-[24px] lg:text-[16px] lg:leading-[26px]"
+          />
         </div>
       </div>
     </section>

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 
 import SiteContainer from "@/components/common/SiteContainer";
+import StaggerReveal, { StaggerItem } from "@/components/common/StaggerReveal";
 import OpportunityPagination from "@/components/opportunities/OpportunityPagination";
 import {
   UPDATES_PER_PAGE,
@@ -90,25 +91,27 @@ export default function UpdateListing() {
           onReset={handleReset}
         />
 
-        <div className="mt-6 space-y-6">
-          {loading ? (
-            <p className="py-10 text-center font-plusJakartaSans text-[15px] text-[#667085]">
-              Loading updates...
-            </p>
-          ) : data.items.length ? (
-            data.items.map((update) => (
-              <UpdateListingCard
-                key={update.id}
-                update={update}
-                layout="vertical"
-              />
-            ))
-          ) : (
-            <p className="py-10 text-center font-plusJakartaSans text-[15px] text-[#667085]">
-              No updates match your filters.
-            </p>
-          )}
-        </div>
+        {loading ? (
+          <p className="py-10 text-center font-plusJakartaSans text-[15px] text-[#667085]">
+            Loading updates...
+          </p>
+        ) : data.items.length ? (
+          <StaggerReveal
+            key={data.items.map((update) => update.id).join("-")}
+            onMount
+            className="mt-6 space-y-6"
+          >
+            {data.items.map((update) => (
+              <StaggerItem key={update.id}>
+                <UpdateListingCard update={update} layout="vertical" />
+              </StaggerItem>
+            ))}
+          </StaggerReveal>
+        ) : (
+          <p className="py-10 text-center font-plusJakartaSans text-[15px] text-[#667085]">
+            No updates match your filters.
+          </p>
+        )}
       </div>
 
       <div className="hidden gap-8 lg:flex lg:items-start">
@@ -119,21 +122,27 @@ export default function UpdateListing() {
         />
 
         <div className="min-w-0 flex-1">
-          <div className="space-y-6">
-            {loading ? (
-              <p className="py-16 text-center font-plusJakartaSans text-[15px] text-[#667085]">
-                Loading updates...
-              </p>
-            ) : data.items.length ? (
-              data.items.map((update) => (
-                <UpdateListingCard key={update.id} update={update} />
-              ))
-            ) : (
-              <p className="py-16 text-center font-plusJakartaSans text-[15px] text-[#667085]">
-                No updates match your filters.
-              </p>
-            )}
-          </div>
+          {loading ? (
+            <p className="py-16 text-center font-plusJakartaSans text-[15px] text-[#667085]">
+              Loading updates...
+            </p>
+          ) : data.items.length ? (
+            <StaggerReveal
+              key={data.items.map((update) => update.id).join("-")}
+              onMount
+              className="space-y-6"
+            >
+              {data.items.map((update) => (
+                <StaggerItem key={update.id}>
+                  <UpdateListingCard update={update} />
+                </StaggerItem>
+              ))}
+            </StaggerReveal>
+          ) : (
+            <p className="py-16 text-center font-plusJakartaSans text-[15px] text-[#667085]">
+              No updates match your filters.
+            </p>
+          )}
         </div>
       </div>
 

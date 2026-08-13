@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 
 import SiteContainer from "@/components/common/SiteContainer";
+import StaggerReveal, { StaggerItem } from "@/components/common/StaggerReveal";
 import {
   OPPORTUNITIES_PER_PAGE,
   type OpportunityListResponse,
@@ -91,25 +92,30 @@ export default function OpportunityListing() {
           onReset={handleReset}
         />
 
-        <div className="mt-6 space-y-6">
-          {loading ? (
-            <p className="py-10 text-center font-plusJakartaSans text-[15px] text-[#667085]">
-              Loading opportunities...
-            </p>
-          ) : data.items.length ? (
-            data.items.map((opportunity) => (
-              <OpportunityCard
-                key={opportunity.id}
-                opportunity={opportunity}
-                layout="vertical"
-              />
-            ))
-          ) : (
-            <p className="py-10 text-center font-plusJakartaSans text-[15px] text-[#667085]">
-              No opportunities match your filters.
-            </p>
-          )}
-        </div>
+        {loading ? (
+          <p className="py-10 text-center font-plusJakartaSans text-[15px] text-[#667085]">
+            Loading opportunities...
+          </p>
+        ) : data.items.length ? (
+          <StaggerReveal
+            key={data.items.map((item) => item.id).join("-")}
+            onMount
+            className="mt-6 space-y-6"
+          >
+            {data.items.map((opportunity) => (
+              <StaggerItem key={opportunity.id}>
+                <OpportunityCard
+                  opportunity={opportunity}
+                  layout="vertical"
+                />
+              </StaggerItem>
+            ))}
+          </StaggerReveal>
+        ) : (
+          <p className="py-10 text-center font-plusJakartaSans text-[15px] text-[#667085]">
+            No opportunities match your filters.
+          </p>
+        )}
       </div>
 
       <div className="hidden gap-8 lg:flex lg:items-start">
@@ -120,21 +126,27 @@ export default function OpportunityListing() {
         />
 
         <div className="min-w-0 flex-1">
-          <div className="space-y-6">
-            {loading ? (
-              <p className="py-16 text-center font-plusJakartaSans text-[15px] text-[#667085]">
-                Loading opportunities...
-              </p>
-            ) : data.items.length ? (
-              data.items.map((opportunity) => (
-                <OpportunityCard key={opportunity.id} opportunity={opportunity} />
-              ))
-            ) : (
-              <p className="py-16 text-center font-plusJakartaSans text-[15px] text-[#667085]">
-                No opportunities match your filters.
-              </p>
-            )}
-          </div>
+          {loading ? (
+            <p className="py-16 text-center font-plusJakartaSans text-[15px] text-[#667085]">
+              Loading opportunities...
+            </p>
+          ) : data.items.length ? (
+            <StaggerReveal
+              key={data.items.map((item) => item.id).join("-")}
+              onMount
+              className="space-y-6"
+            >
+              {data.items.map((opportunity) => (
+                <StaggerItem key={opportunity.id}>
+                  <OpportunityCard opportunity={opportunity} />
+                </StaggerItem>
+              ))}
+            </StaggerReveal>
+          ) : (
+            <p className="py-16 text-center font-plusJakartaSans text-[15px] text-[#667085]">
+              No opportunities match your filters.
+            </p>
+          )}
         </div>
       </div>
 

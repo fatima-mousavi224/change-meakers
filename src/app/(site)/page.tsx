@@ -1,4 +1,5 @@
 import SiteContainer from "@/components/common/SiteContainer";
+import ScrollReveal from "@/components/common/ScrollReveal";
 import HeroSlider from "@/components/home/hero-section/HeroSlider";
 import WhatWeDo from "@/components/home/what-we-do/WhatWeDo";
 import OurInitiatives from "@/components/home/our-initiatives/OurInitiatives";
@@ -15,11 +16,21 @@ export default async function HomePage() {
     <main>
       <SiteContainer>
         <HeroSlider />
-        <WhatWeDo />
-        <OurInitiatives />
-        <GetInvolved />
-        <LatestUpdates posts={posts} />
-        <OurPartners />
+        <ScrollReveal>
+          <WhatWeDo />
+        </ScrollReveal>
+        <ScrollReveal delay={0.05}>
+          <OurInitiatives />
+        </ScrollReveal>
+        <ScrollReveal delay={0.05}>
+          <GetInvolved />
+        </ScrollReveal>
+        <ScrollReveal delay={0.05}>
+          <LatestUpdates posts={posts} />
+        </ScrollReveal>
+        <ScrollReveal delay={0.05}>
+          <OurPartners />
+        </ScrollReveal>
       </SiteContainer>
     </main>
   );

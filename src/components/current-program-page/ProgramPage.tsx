@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 
+import ScrollReveal from "@/components/common/ScrollReveal";
 import { SITE_CONTAINER_CLASS } from "@/constant/siteContainer";
 import {
   getProgramCategory,
@@ -25,7 +26,9 @@ export default function ProgramPage({ activeCategoryId }: ProgramPageProps) {
       />
 
       <section className={SITE_CONTAINER_CLASS}>
-        <ProgramPageSection activeCategoryId={activeCategoryId} />
+        <ScrollReveal>
+          <ProgramPageSection activeCategoryId={activeCategoryId} />
+        </ScrollReveal>
       </section>
     </Suspense>
   );
