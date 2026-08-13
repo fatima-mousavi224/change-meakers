@@ -23,7 +23,7 @@ export default function AnimatedDonateButton({
       rel="noopener noreferrer"
       onClick={onClick}
       className={cn(
-        "group relative inline-flex items-center justify-center gap-2 overflow-hidden bg-primary-50 font-semibold text-white transition-all duration-200 ease-out hover:scale-[1.03] hover:bg-primary-200 active:scale-[0.97]",
+        "group relative inline-flex items-center justify-center gap-2 overflow-hidden bg-primary-50 font-semibold text-white transition-colors duration-200 ease-out hover:bg-primary-200",
         fullWidth
           ? "flex w-full rounded-lg px-6 py-3.5 text-[14px]"
           : "rounded-[12px] px-6 py-2.5 text-[14px]",

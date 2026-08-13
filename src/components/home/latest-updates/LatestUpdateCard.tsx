@@ -42,7 +42,7 @@ export default function LatestUpdateCard({ post }: LatestUpdateCardProps) {
     <article className="flex h-full flex-col overflow-hidden rounded-[16px] border border-[#E4E7EC] bg-white shadow-sm">
       <Link
         href={`/updates/${post.id}`}
-        className="relative block h-[180px] w-full sm:h-[200px] lg:h-[220px]"
+        className="relative block h-[210px] w-full sm:h-[230px] lg:h-[250px]"
       >
         <Image
           src={imageSrc}
