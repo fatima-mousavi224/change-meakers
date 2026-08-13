@@ -1,42 +1,37 @@
-import { NextResponse } from "next/server";
-import { getToken } from "next-auth/jwt";
 import { withAuth } from "next-auth/middleware";
-const publicPaths = [
-  "/",
-  "/updates",
-  "/about",
-  "/mission&impact",
-  "/current-programs",
-  "/apply",
-  "/contact",
-  "/sign-up",
-];
+import { NextResponse } from "next/server";
+
+import { authSecret, getTokenRole } from "@/lib/authConfig";
 
 export default withAuth(
-  async function middleware(req) {
-    const { nextUrl } = req;
-    const pathname = nextUrl.pathname;
-    const token = await getToken({ req, secret });
-
-    const isPublicPath = publicPaths.some((path) => pathname.startsWith(path));
-
-    if (!token && !isPublicPath) {
-      return NextResponse.redirect(new URL("/login", req.url));
-    }
+  function middleware() {
+    return NextResponse.next();
   },
   {
-    callbacks: {
-      authorized: ({ token }) => !!token,
+    secret: authSecret,
+    pages: {
+      signIn: "/login",
     },
-  }
-);
-export const config = {
-  matcher: [
-    "/dashboard/:path*",
-    "/admin/:path*",
-    "/profile/:path*",
-    "/api/auth/callback/:path*",
-  ],
-};
+    callbacks: {
+      authorized: ({ token, req }) => {
+        if (!token) {
+          return false;
+        }
 
-const secret = process.env.NEXTAUTH_SECRET;
+        if (req.nextUrl.pathname.startsWith("/admin")) {
+          return (
+            getTokenRole(
+              token as { role?: string; user?: { role?: string } },
+            ) === "ADMIN"
+          );
+        }
+
+        return true;
+      },
+    },
+  },
+);
+
+export const config = {
+  matcher: ["/dashboard/:path*", "/admin/:path*", "/profile/:path*"],
+};

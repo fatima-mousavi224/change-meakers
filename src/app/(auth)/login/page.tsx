@@ -8,12 +8,18 @@ export const metadata: Metadata = {
   description: "Login in to your account",
 };
 
-export default async function LoginPage() {
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams?: { callbackUrl?: string };
+}) {
   const currentUser = await getCurrentUser();
-  if (currentUser && currentUser.role === "ADMIN") redirect("/admin");
-  if (currentUser && currentUser.role === "USER") redirect("/dashboard");
+  const callbackUrl = searchParams?.callbackUrl;
+  const adminDestination =
+    callbackUrl && callbackUrl.startsWith("/admin") ? callbackUrl : "/admin";
 
-  console.log("currentUser", currentUser);
+  if (currentUser && currentUser.role === "ADMIN") redirect(adminDestination);
+  if (currentUser && currentUser.role === "USER") redirect("/dashboard");
 
   return (
     <div>

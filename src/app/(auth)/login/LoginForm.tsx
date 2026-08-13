@@ -9,7 +9,6 @@ import { User } from "@prisma/client";
 import { ArrowLeft } from "lucide-react";
 import { signIn, getSession } from "next-auth/react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
@@ -29,7 +28,6 @@ export default function LoginForm({ className, user }: LoginFormProps) {
   } = useForm();
   const [isLoading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const router = useRouter();
 
   const toggleShowPassword = () => {
     setShowPassword(!showPassword);
@@ -52,7 +50,7 @@ export default function LoginForm({ className, user }: LoginFormProps) {
         toast.success("Login successful");
         const session = await getSession();
         const role = (session?.user as { role?: string } | undefined)?.role;
-        router.push(role === "ADMIN" ? "/admin" : "/dashboard");
+        window.location.href = role === "ADMIN" ? "/admin" : "/dashboard";
       }
     } catch (error: any) {
       toast.error(error.message);

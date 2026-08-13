@@ -4,6 +4,7 @@ import { AuthOptions } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import TwitterProvider from "next-auth/providers/twitter";
+import { useSecureAuthCookies } from "@/lib/authConfig";
 import prisma from "../../../../lib/prismaDB";
 
 export const authOptions: AuthOptions = {
@@ -57,6 +58,7 @@ export const authOptions: AuthOptions = {
   debug: process.env.NODE_ENV === "development",
   session: { strategy: "jwt" },
   secret: process.env.NEXTAUTH_SECRET,
+  useSecureCookies: useSecureAuthCookies,
   callbacks: {
     async jwt({ token, user, account }) {
       if (
@@ -65,6 +67,7 @@ export const authOptions: AuthOptions = {
         (account?.provider === "Twitter" && user)
       ) {
         token.user = user;
+        token.role = (user as { role?: string }).role;
         token.rememberMe = account?.rememberMe;
       }
 
