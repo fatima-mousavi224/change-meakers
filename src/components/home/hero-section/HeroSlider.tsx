@@ -74,11 +74,10 @@ const HeroSlider: React.FC = () => {
   };
 
   return (
-    <div className="w-full px-4 sm:px-8 my-8">
-      {/* Outer wrapper giving space so arrows can hang off the image sides */}
-      <div className="relative max-w-[1370px] mx-auto">
+    <div className="relative w-full py-4 sm:py-8">
+      <div className="relative w-full">
         {/* Main Card Container */}
-        <div className="relative w-full rounded-[24px] overflow-hidden shadow-md z-10">
+        <div className="relative z-10 w-full overflow-hidden rounded-[24px] shadow-md">
           {/* Subtle Dark Bottom Gradient (Image remains clear) */}
           <div
             className="absolute inset-0 z-10 rounded-[24px] pointer-events-none"
@@ -90,7 +89,7 @@ const HeroSlider: React.FC = () => {
 
           {/* Slider Images */}
           <div
-            className="relative w-full sm:h-[88vh] h-[65vh] overflow-hidden"
+            className="relative h-[440px] w-full overflow-hidden sm:h-[88vh]"
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
@@ -114,7 +113,7 @@ const HeroSlider: React.FC = () => {
           </div>
 
           {/* Text Overlay & Button */}
-          <div className="absolute inset-0 z-20 flex flex-col justify-end items-start p-6 sm:p-10 md:p-14 font-plusJakartaSans">
+          <div className="absolute inset-0 z-20 flex flex-col items-start justify-end p-5 font-plusJakartaSans sm:p-10 md:p-14">
             <div className="max-w-3xl mb-2">
               <h1 className="text-[26px] sm:text-[36px] md:text-[46px] font-bold text-white leading-[122%] mb-2 md:mb-6">
                 A better Afghanistan begins with educated girls and empowered
@@ -156,17 +155,17 @@ const HeroSlider: React.FC = () => {
             setActiveIndex((activeIndex - 1 + slides.length) % slides.length)
           }
           aria-label="Previous Slide"
-          className="absolute -left-4 sm:-left-6 top-1/2 -translate-y-1/2 z-30 backdrop-blur-md bg-white/60 border border-white/40  hover:bg-white w-10 h-10 md:w-14 md:h-14 rounded-[12px] items-center justify-center shadow-lg transition-all duration-200 sm:flex hidden"
+          className="absolute -left-5 top-1/2 z-30 hidden size-10 -translate-y-1/2 items-center justify-center rounded-[12px] border border-white/40 bg-white/60 shadow-lg backdrop-blur-md transition-all duration-200 hover:bg-white sm:-left-6 sm:flex md:-left-8 md:size-14"
         >
-          <ChevronLeft className="text-[#134C83] h-8 w-8" />
+          <ChevronLeft className="h-8 w-8 text-[#134C83]" />
         </button>
 
         <button
           onClick={() => setActiveIndex((activeIndex + 1) % slides.length)}
           aria-label="Next Slide"
-          className="absolute -right-4 sm:-right-6 top-1/2 -translate-y-1/2 z-30 backdrop-blur-md bg-white/60 border border-white/40  hover:bg-white w-10 h-10 md:w-14 md:h-14 rounded-[12px] items-center justify-center shadow-lg transition-all duration-200 sm:flex hidden"
+          className="absolute -right-5 top-1/2 z-30 hidden size-10 -translate-y-1/2 items-center justify-center rounded-[12px] border border-white/40 bg-white/60 shadow-lg backdrop-blur-md transition-all duration-200 hover:bg-white sm:-right-6 sm:flex md:-right-8 md:size-14"
         >
-          <ChevronRight className="text-[#134C83] h-8 w-8" />
+          <ChevronRight className="h-8 w-8 text-[#134C83]" />
         </button>
       </div>
     </div>

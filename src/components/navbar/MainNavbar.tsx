@@ -71,7 +71,7 @@ export default function MainNavBar({
         <div className="border-b border-gray-200">
           <div className="flex h-[72px] items-center gap-4 lg:gap-6">
             <div className="flex min-w-0 flex-1 items-center gap-4 lg:gap-6">
-              <Link href="/" className="flex shrink-0 items-center gap-3">
+              <Link href="/" className="flex min-w-0 shrink items-center gap-2 sm:gap-3">
                 <div className="size-12 shrink-0 overflow-hidden rounded-full sm:size-14">
                   <Image
                     src={logo}
@@ -81,7 +81,7 @@ export default function MainNavBar({
                     className="h-full w-full object-cover"
                   />
                 </div>
-                <p className="hidden text-nowrap text-sm font-semibold text-primary-50 sm:block">
+                <p className="truncate font-plusJakartaSans text-[13px] font-semibold leading-tight text-primary-50 sm:text-sm sm:leading-normal">
                   Change Makers of the World
                 </p>
               </Link>
@@ -176,7 +176,7 @@ export default function MainNavBar({
               ))}
             </div>
 
-            <div className="flex shrink-0 items-center gap-3">
+            <div className="flex shrink-0 items-center gap-1.5">
               {socialLinks.map(({ href, label, src }) => (
                 <SocialIconButton
                   key={label}

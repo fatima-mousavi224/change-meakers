@@ -24,7 +24,7 @@ export default function NavMenuLink({
         onClick={onClick}
         className={cn(
           NAV_LINK_TYPOGRAPHY,
-          "block rounded-xl px-4 py-3.5 transition-colors duration-200 ease-in",
+          "block rounded-xl px-4 py-3.5 text-left transition-colors duration-200 ease-in",
           active
             ? "bg-light_gray font-semibold text-primary-50"
             : "text-black_color hover:bg-gray-50"
@@ -41,7 +41,7 @@ export default function NavMenuLink({
       onClick={onClick}
       className={cn(
         NAV_LINK_TYPOGRAPHY,
-        "inline-flex items-center justify-center border-b-2 px-3 py-2.5 transition-colors duration-200",
+        "inline-flex items-center justify-center border-b-2 px-3 py-2.5 text-center transition-colors duration-200",
         active
           ? "border-primary-50 text-primary-50"
           : "border-transparent text-black_color hover:text-primary-50"

@@ -17,7 +17,7 @@ export default function Footer() {
     <footer className="mt-10 bg-[#F5F5F5]">
       {/* Mobile layout */}
       <div className="lg:hidden">
-        <SiteContainer className="px-6 py-10">
+        <SiteContainer className="py-10">
           <Link href="/" className="flex flex-col items-center">
             <Image
               src={logo}
@@ -49,13 +49,13 @@ export default function Footer() {
 
         <div className="w-full border-b border-[#DDDDDD]" aria-hidden="true" />
 
-        <SiteContainer className="px-6 py-8">
+        <SiteContainer className="py-8">
           <FooterSocialLinks className="justify-center gap-3" />
         </SiteContainer>
 
         <div className="w-full border-b border-[#DDDDDD]" aria-hidden="true" />
 
-        <SiteContainer className="flex flex-col items-center gap-4 px-6 py-8">
+        <SiteContainer className="flex flex-col items-center gap-4 py-8">
           <Link
             href="/privacy-policy"
             className="font-plusJakartaSans text-[14px] font-medium text-[#717171] transition-colors duration-200 hover:text-primary-50"

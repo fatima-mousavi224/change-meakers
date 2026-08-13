@@ -3,7 +3,7 @@ import ContactForm from "./ContactForm";
 
 export default function ContactUs() {
   return (
-    <SiteContainer as="main" className="py-6 max-md:px-3 sm:py-12 lg:py-16">
+    <SiteContainer as="main" className="py-6 sm:py-12 lg:py-16">
       <ContactForm />
     </SiteContainer>
   );

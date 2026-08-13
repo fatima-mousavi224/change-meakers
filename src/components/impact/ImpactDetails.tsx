@@ -28,7 +28,7 @@ export default function ImpactDetails({
       })
     : null;
   return (
-    <section className="py-12 max-w-4xl mx-auto px-4">
+    <section className="py-12 mx-auto max-w-4xl w-full">
       <h1 className="text-2xl md:text-4xl font-semibold">{title}</h1>
 
       <div className="flex items-center my-3 gap-3">

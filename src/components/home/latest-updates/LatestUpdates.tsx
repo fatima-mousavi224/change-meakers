@@ -80,17 +80,17 @@ export default function LatestUpdates({
   }
 
   return (
-    <section className={cn("px-4 py-8 lg:px-[16px] lg:py-12", className)}>
+    <section className={cn("py-8 lg:py-12", className)}>
       <SectionHeading title={title} />
 
       {/* Mobile: one row, 1 full card + half of next visible */}
       <div className="md:hidden w-full overflow-hidden">
-        <div className="flex flex-nowrap gap-4 overflow-x-auto snap-x snap-mandatory px-4 -mx-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+        <div className="flex flex-nowrap gap-4 overflow-x-auto snap-x snap-mandatory [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
           {displayPosts.map((post) => (
             <div
               key={post.id}
               data-update-slide
-              className="w-[calc((100vw-2rem-1rem)/1.5)] max-w-[340px] shrink-0 snap-start"
+              className="w-[calc((100%-1rem)/1.5)] max-w-[340px] shrink-0 snap-start"
             >
               <LatestUpdateCard post={post} />
             </div>

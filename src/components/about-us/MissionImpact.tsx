@@ -1,5 +1,4 @@
 import { ABOUT_IMPACT, ABOUT_MISSION } from "@/constant/aboutMissionImpact";
-import { cn } from "@/utilities/cn";
 import Image from "next/image";
 
 type MissionImpactCardProps = {
@@ -48,7 +47,7 @@ function MissionImpactCard({
 
 export default function MissionImpact() {
   return (
-    <section className={cn("lg:px-[16px] px-4")}>
+    <section>
       <div className="flex flex-col gap-5 lg:gap-6">
         <MissionImpactCard
           title={ABOUT_MISSION.title}

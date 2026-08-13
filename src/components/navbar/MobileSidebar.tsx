@@ -80,7 +80,7 @@ export default function MobileSidebar({
                     <AnimatedDonateButton fullWidth onClick={closeSidebar} />
                   </div>
 
-                  <div className="mt-6 flex items-center justify-center gap-3">
+                  <div className="mt-6 flex items-center justify-center gap-1.5">
                     {socialLinks.map(({ href, label, src }) => (
                       <SocialIconButton
                         key={label}

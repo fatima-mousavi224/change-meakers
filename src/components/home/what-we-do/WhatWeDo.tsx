@@ -13,7 +13,7 @@ const paragraphs = [
 
 export default function WhatWeDo() {
   return (
-    <section className="py-8 lg:py-16 lg:px-[16px] px-4">
+    <section className="py-8 lg:py-16">
       <div className="grid grid-cols-1 items-center gap-6 lg:grid-cols-[1.2fr_1fr] lg:gap-8">
         <div>
           <h2 className="font-plusJakartaSans text-[28px] font-bold leading-tight text-[#252525] sm:text-[32px] lg:text-[28px]">
@@ -38,7 +38,7 @@ export default function WhatWeDo() {
           </Link>
         </div>
 
-        <div className="relative border border-[#9E9E9E] aspect-[4/3] w-full overflow-hidden rounded-[20px] lg:aspect-auto lg:h-[460px]">
+        <div className="relative border border-[#E4E7EC] aspect-[4/3] w-full overflow-hidden rounded-[20px] lg:aspect-auto lg:h-[460px]">
           <Image
             src={whatWeDoImage}
             alt="Students and young people supported by Change Makers of the World"

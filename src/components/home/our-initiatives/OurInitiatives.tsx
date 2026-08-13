@@ -128,7 +128,7 @@ export default function OurInitiatives({
   const resumeCarousel = () => setIsPaused(false);
 
   return (
-    <section className={cn("px-4 py-8 lg:px-[16px] lg:py-6", className)}>
+    <section className={cn("py-8 lg:py-6", className)}>
       <SectionHeading title={title} />
 
       <div
@@ -139,19 +139,21 @@ export default function OurInitiatives({
         onTouchCancel={resumeCarousel}
       >
         {/* Mobile: one row, 1 full card + half of next visible */}
-        <div
-          ref={mobileScrollRef}
-          className="lg:hidden -mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
-        >
-          {initiatives.map((initiative) => (
-            <div
-              key={initiative.id}
-              data-initiative-slide
-              className="w-[calc((100%-1rem)/1.3)] shrink-0 snap-start"
-            >
-              <InitiativeCard initiative={initiative} />
-            </div>
-          ))}
+        <div className="lg:hidden w-full overflow-hidden">
+          <div
+            ref={mobileScrollRef}
+            className="flex snap-x snap-mandatory gap-4 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+          >
+            {initiatives.map((initiative) => (
+              <div
+                key={initiative.id}
+                data-initiative-slide
+                className="w-[calc((100%-1rem)/1.3)] shrink-0 snap-start"
+              >
+                <InitiativeCard initiative={initiative} />
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Desktop: sliding track keeps cards mounted — no layout jump between pages */}

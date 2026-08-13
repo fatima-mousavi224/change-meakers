@@ -19,9 +19,7 @@ export default function EducationAccess() {
           btnName="In-Depth Insight"
           title="Educational Programs and Resources"
         />
-        <div className="px-4 max-w-screen-xl mx-auto ">
-          <Card cardData={cardData} />
-        </div>
+        <Card cardData={cardData} />
       </div>
     </div>
   );

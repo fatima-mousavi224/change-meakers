@@ -213,7 +213,7 @@ export default function TeamCards({ members }: { members: LeadershipMember[] }) 
 
 return (
   <div className="space-y-10">
-    <div className="mx-auto flex w-full max-w-[1100px] flex-wrap justify-center gap-5 px-4 sm:gap-6 sm:px-0 lg:gap-8">
+    <div className="mx-auto flex w-full max-w-[1100px] flex-wrap justify-center gap-5 sm:gap-6 lg:gap-8">
       {visibleMembers.map((member) => (
         <LeadershipCard
           key={member.id}

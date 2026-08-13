@@ -4,7 +4,7 @@ import GetInvolvedCard from "./GetInvolvedCard";
 
 export default function GetInvolved() {
   return (
-    <section className="py-8 lg:py-12 lg:px-[16px] px-4">
+    <section className="py-8 lg:py-12">
       <SectionHeading title="Get Involved" />
 
       <div className="grid grid-cols-1 gap-5 md:grid-cols-3">

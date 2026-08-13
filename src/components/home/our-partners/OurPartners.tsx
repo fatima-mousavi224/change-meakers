@@ -5,7 +5,7 @@ import Image from "next/image";
 
 export default function OurPartners() {
   return (
-    <section className="px-4 py-8 lg:px-[16px] lg:py-12">
+    <section className="py-8 lg:py-12">
       <SectionHeading title="Our Partners" />
 
       <div className="flex flex-wrap items-center gap-x-10 gap-y-8 sm:gap-x-14 lg:gap-x-20">

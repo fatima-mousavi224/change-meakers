@@ -115,7 +115,7 @@ export default function AdvisoryBoardCards() {
       </div>
 
       {/* Mobile */}
-      <div className="px-4 lg:hidden">
+      <div className="lg:hidden">
         <div
           className="relative mx-auto max-w-[320px] overflow-hidden sm:max-w-[330px]"
           onTouchStart={handleTouchStart}
