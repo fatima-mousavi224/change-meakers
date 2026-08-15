@@ -4,6 +4,12 @@ export type Initiative = {
   description: string;
   image: string;
   logo?: string;
+  /** Optional classes for logo image sizing inside the circular badge */
+  logoClassName?: string;
+  /** Optional classes for the circular logo badge container */
+  logoContainerClassName?: string;
+  /** Optional object-position for cropping detailed logos crisply */
+  logoObjectPosition?: string;
   buttonText: "Learn More" | "Donate Now";
   /** Optional external donate/action URL for the detail page CTA */
   donateUrl?: string;
@@ -28,6 +34,7 @@ export const INITIATIVES: Initiative[] = [
       "A structured platform documenting the situation of Afghan youth",
     image: "/images/Initiatives/afghn-youth-ayc.png",
     logo: "/images/Initiatives/afghn-youth-ayc-logo.png",
+    logoClassName: "object-contain p-2 scale-[0.92]",
     buttonText: "Learn More",
   },
   {
@@ -48,6 +55,7 @@ export const INITIATIVES: Initiative[] = [
       "A program expanding access to school education for Afghan students through recorded lessons and remote support.",
     image: "/images/Initiatives/maktab-dar-kana.jpg",
     logo: "/images/Initiatives/maktab-dar-kana-logo.png",
+    logoClassName: "object-contain p-0 scale-[1.58]",
     buttonText: "Learn More",
   },
   {
@@ -76,6 +84,15 @@ export const INITIATIVES_PER_PAGE = 4;
 
 export function getInitiativeDetailPath(id: string) {
   return `${INITIATIVE_DETAIL_BASE}/${id}`;
+}
+
+export function isInitiativeDetailPath(pathname: string) {
+  if (!pathname.startsWith(`${INITIATIVE_DETAIL_BASE}/`)) {
+    return false;
+  }
+
+  const id = pathname.slice(`${INITIATIVE_DETAIL_BASE}/`.length).split("/")[0];
+  return Boolean(getInitiativeById(id));
 }
 
 export function getInitiativeById(id: string) {

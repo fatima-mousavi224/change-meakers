@@ -57,7 +57,7 @@ export function mapMemberToLeadership(member: DbMember): LeadershipMember {
 
   const role = member.role?.trim() || member.position?.trim() || undefined;
 
-  return {
+  return mergeLeadershipDefaults({
     id: member.slug,
     name: member.name,
     role,
@@ -65,6 +65,19 @@ export function mapMemberToLeadership(member: DbMember): LeadershipMember {
     image,
     imageObjectPosition: member.imageObjectPosition?.trim() || undefined,
     socials: parseSocials(member.socials),
+  });
+}
+
+function mergeLeadershipDefaults(member: LeadershipMember): LeadershipMember {
+  const fallback = EXECUTIVE_TEAM.find((item) => item.id === member.id);
+
+  if (!fallback?.imageObjectPosition) {
+    return member;
+  }
+
+  return {
+    ...member,
+    imageObjectPosition: fallback.imageObjectPosition,
   };
 }
 

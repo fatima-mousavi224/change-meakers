@@ -23,7 +23,10 @@ function AdvisoryBoardCard({
           src={member.image}
           alt={member.name}
           fill
-          className="object-cover object-center"
+          className="object-cover"
+          style={{
+            objectPosition: member.imageObjectPosition ?? "50% 50%",
+          }}
           sizes="(max-width: 640px) 320px, (max-width: 1024px) 330px, 340px"
         />
       </div>

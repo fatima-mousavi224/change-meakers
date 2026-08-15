@@ -137,6 +137,12 @@ export type InitiativeBentoSection = {
   previousWork?: {
     title: string;
     icon: string;
+    iconAlt?: string;
+    logoText?: {
+      dari: string;
+      pashto: string;
+      english: string;
+    };
     description: string;
     readMoreModal?: ContentDetailModalContent;
   };
@@ -296,6 +302,7 @@ export const INITIATIVE_DETAIL_CONTENT: Record<string, InitiativeDetailContent> 
           imageAlt: "Map of Afghanistan highlighting Kabul and Herat provinces",
           description: "Two active learning spaces inside Afghanistan.",
           imageScale: "large",
+          imageClassName: "scale-[1.12] sm:scale-[1.16] lg:scale-[1.34]",
           readMoreModal: {
             title: "Kabul & Herat",
             image: "/images/initiatives-datils/kabul&herat-flag.png",
@@ -319,7 +326,7 @@ export const INITIATIVE_DETAIL_CONTENT: Record<string, InitiativeDetailContent> 
           title: "My Herat.com",
           variant: "text",
           description:
-            "Herat students are contributing to MyHerat.com, a local digital platform being developed to share city information, useful services, and opportunities for residents and visitors. The project gives students practical experience in digital work while helping them apply their skills to something connected to their own city. Students take part in developing and managing content for the platform, gaining experience beyond classroom learning. The project also gives them an opportunity to build practical skills that can support their future education and employment.",
+            "Herat students are contributing to MyHerat.com, a local digital platform being developed to share city information, useful services, and opportunities for residents and visitors. The project gives students practical experience in digital work while helping them apply their skills to something connected to their own city. Students take part in developing and managing content for the platform, gaining experience beyond classroom learning.",
           readMoreHref: "https://www.myherat.com",
         },
       ],
@@ -388,6 +395,10 @@ export const INITIATIVE_DETAIL_CONTENT: Record<string, InitiativeDetailContent> 
     "afghan-youth-coalition": {
       heroImage: "/images/initiatives-datils/ayc-hero-image.png",
       heroLogo: "/images/initiatives-datils/ayc-hero-logo.png",
+      heroLogoClassName:
+        "rounded-[10px] border-[3px] sm:rounded-[12px] lg:rounded-[14px]",
+      heroLogoImageClassName:
+        "rounded-[8px] p-0 object-cover sm:rounded-[10px]",
       heroGradient: false,
       heroImagePosition: "center center",
       socialLinks: [
@@ -480,7 +491,13 @@ export const INITIATIVE_DETAIL_CONTENT: Record<string, InitiativeDetailContent> 
         },
         previousWork: {
           title: "Built on Previous Youth Work",
-          icon: "/images/initiatives-datils/complate-ayc-logo.png",
+          icon: "/images/initiatives-datils/national-hero-logo.png",
+          iconAlt: "National Youth Consensus for Peace logo",
+          logoText: {
+            dari: "اجماع ملی جوانان برای صلح",
+            pashto: "د سولې لپاره د ځوانانو ملي اجماع",
+            english: "National Youth Consensus for Peace",
+          },
           description:
             "AYC builds on earlier youth coordination efforts, including the National Youth Consensus for Peace, which brought together youth organizations from across Afghanistan.",
           readMoreModal: {
@@ -745,6 +762,10 @@ export const INITIATIVE_DETAIL_CONTENT: Record<string, InitiativeDetailContent> 
     nycp: {
       heroImage: "/images/initiatives-datils/national-hero-image.jpg",
       heroLogo: "/images/initiatives-datils/national-hero-logo.png",
+      heroLogoClassName:
+        "rounded-[10px] border-[3px] sm:rounded-[12px] lg:rounded-[14px]",
+      heroLogoImageClassName:
+        "rounded-[8px] p-0 object-cover sm:rounded-[10px]",
       heroTitle: "National Youth Consensus For Peace",
       hideHeroDescription: false,
       heroImagePosition: "center 62%",

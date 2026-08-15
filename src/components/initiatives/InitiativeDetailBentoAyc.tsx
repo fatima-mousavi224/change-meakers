@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useState } from "react";
 
 import ContentDetailModal from "@/components/common/ContentDetailModal";
+import ScrollReveal from "@/components/common/ScrollReveal";
 import SiteContainer from "@/components/common/SiteContainer";
 import type { InitiativeBentoSection } from "@/constant/initiativeDetailsContent";
 import type { ContentDetailModalContent } from "@/types/contentDetailModal";
@@ -94,6 +95,7 @@ export default function InitiativeDetailBentoAyc({
           Desktop (Figma): col 1 = photo | col 2 = logo card | col 3 = stats + established/globe
           Mobile: 1 photo → 2 logo card → 3 stats → 4 established/globe
         */}
+        <ScrollReveal>
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-12 lg:grid-rows-2 lg:items-stretch lg:gap-3">
           {/* 1 — Computer photo */}
           <div className="relative order-1 col-span-2 min-h-[280px] overflow-hidden rounded-[18px] sm:min-h-[320px] lg:order-none lg:col-span-4 lg:col-start-1 lg:row-span-2 lg:row-start-1 lg:min-h-0">
@@ -110,26 +112,51 @@ export default function InitiativeDetailBentoAyc({
           <article
             className={cn(
               BENTO_CARD_CLASS,
-              "order-2 col-span-2 px-0 pb-4 pt-0 lg:order-none lg:col-span-4 lg:col-start-5 lg:row-span-2 lg:row-start-1 lg:pb-5",
+              "order-2 col-span-2 px-3 pb-4 pt-4 sm:px-4 lg:order-none lg:col-span-4 lg:col-start-5 lg:row-span-2 lg:row-start-1 lg:px-5 lg:pb-5 lg:pt-5",
             )}
           >
-            <div className="px-3 pt-4 lg:px-4 lg:pt-5">
-              <Image
-                src={previousWork.icon}
-                alt=""
-                width={376}
-                height={164}
-                className="mb-0 h-auto w-full"
-                sizes="(max-width: 1024px) 100vw, 33vw"
-              />
+            <h3 className="text-center font-plusJakartaSans text-[16px] font-bold leading-snug text-[#000000] lg:text-[20px]">
+              {previousWork.title}
+            </h3>
 
-              <p className="mx-auto -mt-1 max-w-[380px] text-center font-plusJakartaSans text-[12px] leading-[20px] text-[#9E9E9E] lg:mt-4 lg:text-[16px] lg:leading-[26px]">
-                {previousWork.description}
-              </p>
+            <div className="mx-auto mt-3 flex max-w-[320px] flex-col items-center lg:mt-4">
+              <div className="relative h-[64px] w-[64px] shrink-0 sm:h-[72px] sm:w-[72px] lg:h-[80px] lg:w-[80px]">
+                <Image
+                  src={previousWork.icon}
+                  alt={previousWork.iconAlt ?? previousWork.title}
+                  fill
+                  className="object-contain object-center"
+                  sizes="80px"
+                />
+              </div>
+
+              {previousWork.logoText ? (
+                <div className="mt-3 w-full text-center lg:mt-4">
+                  <p
+                    dir="rtl"
+                    className="font-plusJakartaSans text-[11px] font-semibold leading-snug text-[#575757] sm:text-[12px] lg:text-[14px]"
+                  >
+                    {previousWork.logoText.dari}
+                  </p>
+                  <p
+                    dir="rtl"
+                    className="mt-1 font-plusJakartaSans text-[11px] font-semibold leading-snug text-[#575757] sm:text-[12px] lg:text-[14px]"
+                  >
+                    {previousWork.logoText.pashto}
+                  </p>
+                  <p className="mt-2 font-plusJakartaSans text-[13px] font-bold leading-snug text-[#575757] sm:text-[14px] lg:text-[16px]">
+                    {previousWork.logoText.english}
+                  </p>
+                </div>
+              ) : null}
             </div>
 
+            <p className="mx-auto mt-3 max-w-[380px] text-center font-plusJakartaSans text-[12px] leading-[20px] text-[#9E9E9E] lg:mt-4 lg:text-[16px] lg:leading-[26px]">
+              {previousWork.description}
+            </p>
+
             {previousWork.readMoreModal ? (
-              <div className="mt-3 px-4 lg:mt-4 lg:px-5">
+              <div className="mt-3 flex w-full justify-center lg:mt-4">
                 <BentoReadMore
                   onClick={() => openModal(previousWork.readMoreModal!)}
                 />
@@ -141,44 +168,44 @@ export default function InitiativeDetailBentoAyc({
           <article
             className={cn(
               BENTO_CARD_CLASS,
-              "order-3 col-span-2 rounded-[12px] px-4 py-3 lg:order-none lg:col-span-4 lg:col-start-9 lg:row-start-1 lg:rounded-[18px] lg:px-5 lg:py-4",
+              "order-3 col-span-2 rounded-[12px] px-4 py-3.5 lg:order-none lg:col-span-4 lg:col-start-9 lg:row-start-1 lg:h-full lg:rounded-[18px] lg:px-5 lg:py-5",
             )}
           >
-            <p className="font-plusJakartaSans text-[16px] font-bold text-[#000000] lg:text-[24px]">
+            <p className="font-plusJakartaSans text-[16px] font-bold leading-snug text-[#000000] lg:text-[24px]">
               {youthStats.title}
             </p>
 
-            <div className="mt-3 flex flex-col items-start gap-2 lg:mt-4 lg:gap-2.5">
-              <div className="flex items-center gap-4 lg:gap-5">
-                <div className="flex items-center gap-[3px]">
+            <div className="mt-3 flex flex-col gap-2.5 lg:mt-4 lg:gap-3">
+              <div className="flex items-center gap-10 sm:gap-12 lg:gap-20">
+                <div className="flex shrink-0 items-center gap-[3px] lg:gap-1">
                   {Array.from({ length: youthStats.femaleIconCount }).map(
                     (_, index) => (
                       <FaPersonDress
                         key={index}
-                        className="size-3.5 text-[#BDBDBD] lg:size-6"
+                        className="size-[18px] text-[#BDBDBD] sm:size-5 lg:size-7"
                         aria-hidden
                       />
                     ),
                   )}
                 </div>
-                <span className="font-plusJakartaSans text-[12px] font-semibold text-[#575757] lg:text-[16px]">
+                <span className="shrink-0 font-plusJakartaSans text-[12px] font-semibold text-[#575757] lg:text-[16px]">
                   {youthStats.femaleLabel}
                 </span>
               </div>
 
-              <div className="flex items-center gap-4 lg:gap-5">
-                <div className="flex items-center gap-[3px]">
+              <div className="flex items-center gap-10 sm:gap-12 lg:gap-20">
+                <div className="flex shrink-0 items-center gap-[3px] lg:gap-1">
                   {Array.from({ length: youthStats.maleIconCount }).map(
                     (_, index) => (
                       <FaPerson
                         key={index}
-                        className="size-3.5 text-[#BDBDBD] lg:size-6"
+                        className="size-[18px] text-[#BDBDBD] sm:size-5 lg:size-7"
                         aria-hidden
                       />
                     ),
                   )}
                 </div>
-                <span className="font-plusJakartaSans text-[12px] font-semibold text-[#575757] lg:text-[16px]">
+                <span className="shrink-0 font-plusJakartaSans text-[12px] font-semibold text-[#575757] lg:text-[16px]">
                   {youthStats.maleLabel}
                 </span>
               </div>
@@ -209,11 +236,11 @@ export default function InitiativeDetailBentoAyc({
               <BentoReadMore
                 href={section.globeCard.readMoreHref}
                 light
-                className="text-[12px] sm:text-[13px]"
               />
             </article>
           </div>
         </div>
+        </ScrollReveal>
       </SiteContainer>
 
       <ContentDetailModal

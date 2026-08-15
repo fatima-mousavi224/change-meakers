@@ -183,7 +183,10 @@ export default function UpdateFilters({
     >
       <SortPillList
         value={filters.sort}
-        onChange={(value) => update({ sort: value })}
+        onChange={(value) => {
+          update({ sort: value });
+          closePanels();
+        }}
       />
     </ExpandableFilterField>
   );
@@ -198,7 +201,10 @@ export default function UpdateFilters({
       <PillList
         options={UPDATE_CATEGORIES}
         value={filters.category}
-        onChange={(value) => update({ category: value as UpdateCategory })}
+        onChange={(value) => {
+          update({ category: value as UpdateCategory });
+          closePanels();
+        }}
       />
     </ExpandableFilterField>
   );

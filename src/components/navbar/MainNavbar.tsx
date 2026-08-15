@@ -177,12 +177,12 @@ export default function MainNavBar({
             </div>
 
             <div className="flex shrink-0 items-center gap-1.5">
-              {socialLinks.map(({ href, label, src }) => (
+              {socialLinks.map(({ href, label, Icon }) => (
                 <SocialIconButton
                   key={label}
                   href={href}
                   label={label}
-                  src={src}
+                  Icon={Icon}
                 />
               ))}
               {user !== null && (

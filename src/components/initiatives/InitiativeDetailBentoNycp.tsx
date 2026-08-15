@@ -3,6 +3,7 @@ import { FaXTwitter } from "react-icons/fa6";
 import Image from "next/image";
 import Link from "next/link";
 
+import ScrollReveal from "@/components/common/ScrollReveal";
 import SiteContainer from "@/components/common/SiteContainer";
 import type { InitiativeBentoNycpSection } from "@/constant/initiativeDetailsContent";
 import { cn } from "@/utilities/cn";
@@ -92,6 +93,7 @@ export default function InitiativeDetailBentoNycp({
           Mobile: resolution | photo → policies (full) → individuals | established | X
           Desktop: resolution | photo | policies + stats
         */}
+        <ScrollReveal>
         <div className="grid grid-cols-[2fr_3fr] items-stretch gap-3 lg:grid-cols-12 lg:grid-rows-2 lg:gap-3">
           {/* Afghanistan's First-Ever National Youth Resolution */}
           <article
@@ -100,16 +102,20 @@ export default function InitiativeDetailBentoNycp({
               "col-start-1 row-start-1 min-h-[188px] rounded-[12px] px-2.5 py-3 sm:min-h-[200px] sm:px-3 sm:py-3.5 lg:col-start-auto lg:row-start-auto lg:col-span-3 lg:row-span-2 lg:min-h-0 lg:rounded-[18px] lg:px-6 lg:py-6",
             )}
           >
-            <h3 className="text-center font-plusJakartaSans text-[11px] font-bold leading-snug text-[#000000] sm:text-[13px] lg:text-[18px]">
-              {resolutionCard.title}
-            </h3>
+            <div className="flex min-h-0 flex-1 flex-col items-center justify-center">
+              <div className="flex w-full flex-col items-center gap-1 sm:gap-1.5 lg:gap-2">
+                <h3 className="text-center font-plusJakartaSans text-[11px] font-bold leading-snug text-[#000000] sm:text-[13px] lg:text-[18px]">
+                  {resolutionCard.title}
+                </h3>
 
-            <p className="mx-auto mt-2 max-w-none flex-1 text-center font-plusJakartaSans text-[10px] leading-[15px] text-[#9E9E9E] sm:mt-2.5 sm:text-[11px] sm:leading-[16px] lg:mt-4 lg:max-w-[320px] lg:text-[15px] lg:leading-[26px]">
-              {resolutionCard.description}
-            </p>
+                <p className="mx-auto max-w-none text-center font-plusJakartaSans text-[10px] leading-[15px] text-[#9E9E9E] sm:text-[11px] sm:leading-[16px] lg:max-w-[320px] lg:text-[15px] lg:leading-[26px]">
+                  {resolutionCard.description}
+                </p>
+              </div>
+            </div>
 
             {showResolutionLearnMore ? (
-              <div className="mt-auto shrink-0 pt-2 sm:pt-3 lg:pt-0">
+              <div className="mt-auto flex w-full shrink-0 justify-center pt-2 sm:pt-3 lg:pt-3">
                 <LearnMoreTrigger
                   href={resolutionCard.readMoreHref}
                   className="text-[11px] sm:text-[12px] lg:text-[15px]"
@@ -206,12 +212,13 @@ export default function InitiativeDetailBentoNycp({
                 <LearnMoreTrigger
                   href={xCard.readMoreHref}
                   light
-                  className="text-[10px] sm:text-[11px] lg:text-[13px]"
+                  className="self-center text-[10px] sm:text-[11px] lg:text-[13px]"
                 />
               </article>
             </div>
           </div>
         </div>
+        </ScrollReveal>
       </SiteContainer>
     </>
   );

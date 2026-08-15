@@ -14,16 +14,25 @@ import { ArrowRightIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { FaFacebookF, FaGlobe } from "react-icons/fa6";
+import {
+  FaFacebookF,
+  FaGlobe,
+  FaInstagram,
+  FaLinkedinIn,
+  FaXTwitter,
+} from "react-icons/fa6";
 import { motion } from "framer-motion";
+import type { IconType } from "react-icons";
 
 const FOOTER_HEIGHT = 92;
 const HOVER_TOP_GAP = 29;
 
-const SOCIAL_ICON_SRC: Partial<Record<LeadershipSocialType, string>> = {
-  linkedin: "/icons/linkdin.png",
-  instagram: "/icons/instagram.png",
-  x: "/icons/twiter.png",
+const SOCIAL_ICONS: Record<LeadershipSocialType, IconType> = {
+  website: FaGlobe,
+  linkedin: FaLinkedinIn,
+  instagram: FaInstagram,
+  x: FaXTwitter,
+  facebook: FaFacebookF,
 };
 
 const SOCIAL_LABELS: Record<LeadershipSocialType, string> = {
@@ -40,7 +49,7 @@ function LeadershipSocialIcon({
   social: LeadershipSocialLink;
 }) {
   const label = SOCIAL_LABELS[social.type];
-  const iconSrc = SOCIAL_ICON_SRC[social.type];
+  const Icon = SOCIAL_ICONS[social.type];
 
   return (
     <motion.div
@@ -67,20 +76,7 @@ function LeadershipSocialIcon({
         className="flex size-10 items-center justify-center rounded-[10px] bg-[#134C8333] text-[#134C83] transition-all duration-300 hover:bg-[#C5DFF5] hover:shadow-[0_8px_20px_rgba(19,76,131,0.18)]"
         onClick={(event) => event.stopPropagation()}
       >
-        {social.type === "website" ? (
-          <FaGlobe className="size-5" />
-        ) : social.type === "facebook" ? (
-          <FaFacebookF className="size-5" />
-        ) : iconSrc ? (
-          <Image
-            src={iconSrc}
-            alt=""
-            width={16}
-            height={16}
-            className="size-6 object-contain"
-            aria-hidden
-          />
-        ) : null}
+        <Icon className="size-5" aria-hidden />
       </Link>
     </motion.div>
   );

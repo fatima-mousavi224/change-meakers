@@ -1,5 +1,6 @@
 "use client";
 
+import { cn } from "@/utilities/cn";
 import {
   getInitiativeDetailPath,
   INITIATIVE_GRADIENT,
@@ -39,13 +40,27 @@ export default function InitiativeCard({ initiative }: InitiativeCardProps) {
       </div>
       <div className="absolute inset-0 z-20 p-5 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
         {initiative.logo && (
-          <div className="relative size-12 overflow-hidden rounded-full bg-white/95">
+          <div
+            className={cn(
+              "relative size-12 overflow-hidden rounded-full bg-white/95",
+              initiative.logoContainerClassName,
+            )}
+          >
             <Image
               src={initiative.logo}
               alt=""
               fill
-              className="object-contain p-1"
-              sizes="44px"
+              quality={100}
+              className={cn(
+                "object-contain p-1.5",
+                initiative.logoClassName,
+              )}
+              style={
+                initiative.logoObjectPosition
+                  ? { objectPosition: initiative.logoObjectPosition }
+                  : undefined
+              }
+              sizes="160px"
             />
           </div>
         )}

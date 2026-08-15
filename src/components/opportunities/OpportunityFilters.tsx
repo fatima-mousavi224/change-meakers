@@ -371,11 +371,11 @@ export default function OpportunityFilters({
     >
 
       <SortPillList
-
         value={filters.sort}
-
-        onChange={(value) => update({ sort: value })}
-
+        onChange={(value) => {
+          update({ sort: value });
+          closePanels();
+        }}
       />
 
     </ExpandableFilterField>
@@ -399,17 +399,12 @@ export default function OpportunityFilters({
     >
 
       <PillList
-
         options={OPPORTUNITY_CATEGORIES}
-
         value={filters.category}
-
-        onChange={(value) =>
-
-          update({ category: value as OpportunityCategory })
-
-        }
-
+        onChange={(value) => {
+          update({ category: value as OpportunityCategory });
+          closePanels();
+        }}
       />
 
     </ExpandableFilterField>
@@ -433,17 +428,12 @@ export default function OpportunityFilters({
     >
 
       <PillList
-
         options={OPPORTUNITY_LOCATIONS.filter((item) => item !== "All Locations")}
-
         value={filters.location}
-
-        onChange={(value) =>
-
-          update({ location: value as OpportunityLocation })
-
-        }
-
+        onChange={(value) => {
+          update({ location: value as OpportunityLocation });
+          closePanels();
+        }}
       />
 
     </ExpandableFilterField>

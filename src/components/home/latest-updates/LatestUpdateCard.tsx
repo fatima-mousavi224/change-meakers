@@ -40,22 +40,23 @@ export default function LatestUpdateCard({ post }: LatestUpdateCardProps) {
   const categoryTitle = post.Category?.title ?? "Updates";
   const isRemoteImage =
     imageSrc.startsWith("http") || imageSrc.startsWith("/uploads/");
+  const detailHref = `/updates/${post.id}`;
 
   useEffect(() => {
     setImageSrc(resolvePostImage(post));
   }, [post]);
 
   return (
-    <article className="flex h-full flex-col overflow-hidden rounded-[16px] border border-[#E4E7EC] bg-white shadow-sm">
+    <article className="group flex h-full flex-col overflow-hidden rounded-[16px] border border-[#E4E7EC] bg-white transition-all duration-200 hover:shadow-[0_4px_18px_rgba(0,0,0,0.06)]">
       <Link
-        href={`/updates/${post.id}`}
-        className="relative block h-[210px] w-full sm:h-[230px] lg:h-[250px]"
+        href={detailHref}
+        className="relative block h-[210px] w-full overflow-hidden sm:h-[230px] lg:h-[250px]"
       >
         <Image
           src={imageSrc}
           alt={post.title}
           fill
-          className="object-cover"
+          className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
           sizes="(max-width: 1024px) 75vw, 33vw"
           unoptimized={isRemoteImage}
           onError={() => setImageSrc(FALLBACK_UPDATE_IMAGE)}
@@ -79,22 +80,24 @@ export default function LatestUpdateCard({ post }: LatestUpdateCardProps) {
           </span>
         </div>
 
-        <Link href={`/updates/${post.id}`} className="mt-4 block flex-1">
+        <Link href={detailHref} className="mt-4 block flex-1">
           <h3 className="font-plusJakartaSans text-[16px] font-bold leading-snug text-[#252525] line-clamp-3 sm:text-[18px]">
             {post.title}
           </h3>
         </Link>
 
-        <Link
-          href={`/updates/${post.id}`}
-          className="group mt-4 inline-flex w-fit items-center gap-1.5 font-plusJakartaSans text-[13px] font-medium text-primary-50 sm:text-[14px]"
-        >
-          <span>Read More</span>
-          <ArrowRightIcon
-            className="size-4 stroke-[2] transition-transform duration-200 group-hover:translate-x-1"
-            aria-hidden
-          />
-        </Link>
+        <div className="mt-4 flex justify-center">
+          <Link
+            href={detailHref}
+            className="inline-flex w-fit items-center gap-1.5 font-plusJakartaSans text-[13px] font-medium text-primary-50 sm:text-[14px]"
+          >
+            <span>Read More</span>
+            <ArrowRightIcon
+              className="size-4 stroke-[2] transition-transform duration-200 group-hover:translate-x-1"
+              aria-hidden
+            />
+          </Link>
+        </div>
       </div>
     </article>
   );

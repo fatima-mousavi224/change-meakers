@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useState } from "react";
 
 import ContentDetailModal from "@/components/common/ContentDetailModal";
+import ScrollReveal from "@/components/common/ScrollReveal";
 import SiteContainer from "@/components/common/SiteContainer";
 import type { InitiativeBentoSection } from "@/constant/initiativeDetailsContent";
 import type { ContentDetailModalContent } from "@/types/contentDetailModal";
@@ -88,6 +89,7 @@ export default function InitiativeDetailBento({
   return (
     <>
       <SiteContainer as="section" className="pb-12 sm:pb-16 lg:pb-3">
+        <ScrollReveal>
         <div
           className={cn(
             "grid grid-cols-2 gap-3",
@@ -124,23 +126,23 @@ export default function InitiativeDetailBento({
           <article
             className={cn(
               BENTO_CARD_CLASS,
-              "order-3 min-h-[118px] justify-center rounded-[12px] px-4 py-4 lg:order-none lg:col-span-4 lg:col-start-3 lg:row-start-1 lg:rounded-[18px] lg:px-5 lg:py-3",
+              "order-3 min-h-[118px] rounded-[12px] px-4 py-3.5 lg:order-none lg:col-span-4 lg:col-start-3 lg:row-start-1 lg:rounded-[18px] lg:px-5 lg:py-5",
             )}
           >
-            <p className="font-plusJakartaSans text-[15px] font-bold text-[#000000] lg:text-[24px]">
+            <p className="font-plusJakartaSans text-[16px] font-bold leading-snug text-[#000000] lg:text-[24px]">
               {section.studentsTitle}
             </p>
-            <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 lg:mt-1.5">
-              <div className="flex items-center gap-[3px]">
+            <div className="mt-3 flex items-center gap-3 sm:gap-8 lg:mt-4 lg:gap-12">
+              <div className="flex shrink-0 items-center gap-[2px] sm:gap-[3px] lg:gap-1">
                 {Array.from({ length: 7 }).map((_, index) => (
                   <FaPersonDress
                     key={index}
-                    className="size-3.5 text-[#BDBDBD] lg:size-6"
+                    className="size-3.5 text-[#BDBDBD] sm:size-5 lg:size-7"
                     aria-hidden
                   />
                 ))}
               </div>
-              <span className="font-plusJakartaSans text-[12px] text-[#575757] lg:text-[16px] font-semibold">
+              <span className="shrink-0 font-plusJakartaSans text-[12px] font-semibold text-[#575757] lg:text-[16px]">
                 {section.studentsSubtitle}
               </span>
             </div>
@@ -155,7 +157,6 @@ export default function InitiativeDetailBento({
             <BentoReadMore
               href={section.globeCard.readMoreHref}
               light
-              className="text-[12px] sm:text-[13px]"
             />
           </article>
 
@@ -182,7 +183,7 @@ export default function InitiativeDetailBento({
               {section.sixMonthCycles!.description}
             </p>
             {section.sixMonthCycles!.readMoreModal ? (
-              <div className="mt-auto pt-2 lg:pt-3">
+              <div className="mt-auto flex w-full justify-center pt-2 lg:pt-3">
                 <BentoReadMore
                   onClick={() =>
                     openModal(section.sixMonthCycles!.readMoreModal!)
@@ -206,7 +207,7 @@ export default function InitiativeDetailBento({
               {section.studentOutcomes!.description}
             </p>
             {section.studentOutcomes!.readMoreModal ? (
-              <div className="mt-4 lg:mt-3">
+              <div className="mt-4 flex w-full justify-center lg:mt-3">
                 <BentoReadMore
                   onClick={() =>
                     openModal(section.studentOutcomes!.readMoreModal!)
@@ -216,6 +217,7 @@ export default function InitiativeDetailBento({
             ) : null}
           </article>
         </div>
+        </ScrollReveal>
       </SiteContainer>
 
       <ContentDetailModal

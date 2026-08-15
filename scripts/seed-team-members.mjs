@@ -8,7 +8,7 @@ const EXECUTIVE_TEAM = [
     name: "Mohammad Jawid Amani",
     bio: "Mohammad Jawid Amani is the Founder and Executive Director of Change Makers of the World. He is responsible for the organization's strategic direction, program development, and external engagement related to education and youth-focused initiatives. His work has focused on education access and youth participation in Afghanistan, including coordination of community-based activities and engagement with national and international platforms.",
     image: "/images/about/jawid-amani.jpg",
-    imageObjectPosition: "50% 22%",
+    imageObjectPosition: "50% 38%",
     socials: [
       { type: "website", href: "https://www.jawidamani.com" },
       { type: "linkedin", href: "https://www.linkedin.com/in/jawidamani" },

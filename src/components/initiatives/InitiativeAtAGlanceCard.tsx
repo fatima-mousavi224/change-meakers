@@ -96,26 +96,26 @@ export default function InitiativeAtAGlanceCard({
         className={cn(
           "flex h-full flex-col overflow-hidden border-0",
           isHalfMobile
-            ? "min-h-[230px] rounded-[12px] px-3 py-3 sm:px-4 lg:min-h-[320px] lg:rounded-[18px] lg:px-8 lg:py-5"
-            : "col-span-2 min-h-[210px] rounded-[18px] px-5 py-4 lg:col-span-1 lg:min-h-[320px] lg:px-8 lg:py-5",
+            ? "min-h-[260px] rounded-[12px] px-4 py-6 sm:min-h-[280px] sm:px-5 sm:py-7 lg:min-h-[320px] lg:rounded-[18px] lg:px-8 lg:py-8"
+            : "col-span-2 min-h-[260px] rounded-[18px] px-5 py-6 sm:min-h-[280px] lg:col-span-1 lg:min-h-[320px] lg:px-8 lg:py-8",
           className,
         )}
         style={{ backgroundColor: card.backgroundColor ?? "#BCCACA" }}
       >
         <div
           className={cn(
-            "flex min-h-0 flex-1 pt-3 sm:pt-4 lg:pt-6",
+            "flex min-h-0 flex-1 items-center",
             isHalfMobile
-              ? "flex-col gap-3 lg:flex-row lg:items-start lg:justify-start lg:gap-8"
-              : "flex-row items-start justify-start gap-3 lg:gap-4",
+              ? "flex-col gap-4 pt-2 sm:pt-3 lg:flex-row lg:items-center lg:justify-between lg:gap-6 lg:pt-4"
+              : "flex-row items-center justify-between gap-4 pt-2 lg:gap-6 lg:pt-4",
           )}
         >
           <p
             className={cn(
-              "min-w-0 shrink self-start text-left font-serif italic leading-[1.35] text-[#252525] md:mt-11 mt-6",
+              "min-w-0 shrink text-left font-serif italic leading-[1.35] text-[#252525]",
               isHalfMobile
-                ? "text-[12px] sm:text-[13px] lg:max-w-[52%] lg:pt-4 lg:text-[30px]"
-                : "max-w-[52%] text-[21px] sm:text-[24px] lg:pt-4 lg:text-[30px]",
+                ? "text-[12px] sm:text-[13px] lg:max-w-[48%] lg:text-[28px]"
+                : "max-w-[48%] text-[21px] sm:text-[24px] lg:text-[28px]",
             )}
           >
             {card.title}
@@ -124,18 +124,16 @@ export default function InitiativeAtAGlanceCard({
           {card.image ? (
             <div
               className={cn(
-                "flex shrink-0 items-start justify-end self-start",
-                isHalfMobile
-                  ? "mx-auto lg:mx-0 lg:-mr-1 lg:pt-4"
-                  : "lg:-mr-1 lg:pt-4",
+                "flex shrink-0 items-center justify-end",
+                isHalfMobile ? "mx-auto lg:mx-0 lg:-mr-1" : "lg:-mr-1",
               )}
             >
               <div
                 className={cn(
                   "relative origin-[72%_78%] -rotate-[10deg] sm:-rotate-[12deg] lg:-rotate-[14deg]",
                   isHalfMobile
-                    ? "h-[118px] w-[82px] sm:h-[128px] sm:w-[90px] lg:h-[278px] lg:w-[190px]"
-                    : "h-[200px] w-[140px] sm:h-[230px] sm:w-[162px] lg:h-[278px] lg:w-[190px]",
+                    ? "h-[118px] w-[82px] sm:h-[128px] sm:w-[90px] lg:h-[300px] lg:w-[205px]"
+                    : "h-[200px] w-[140px] sm:h-[230px] sm:w-[162px] lg:h-[300px] lg:w-[205px]",
                 )}
               >
                 <Image
@@ -143,7 +141,7 @@ export default function InitiativeAtAGlanceCard({
                   alt={card.imageAlt ?? card.title}
                   fill
                   className="object-contain object-center drop-shadow-[0_12px_28px_rgba(0,0,0,0.2)]"
-                  sizes="(max-width: 1024px) 90px, 185px"
+                  sizes="(max-width: 1024px) 90px, 205px"
                 />
               </div>
             </div>
@@ -151,12 +149,7 @@ export default function InitiativeAtAGlanceCard({
         </div>
 
         {showReadMore ? (
-          <div
-            className={cn(
-              "shrink-0 self-start text-left",
-              isHalfMobile ? "mt-3 lg:mt-auto lg:pt-5" : "mt-auto pt-5",
-            )}
-          >
+          <div className="mt-auto flex w-full shrink-0 justify-center pt-4 lg:pt-5">
             <ReadMoreTrigger
               href={card.readMoreHref}
               onClick={card.readMoreModal ? onOpenModal : undefined}
@@ -172,130 +165,157 @@ export default function InitiativeAtAGlanceCard({
   const bodyTextClassName = cn(
     "text-center font-plusJakartaSans text-[#9E9E9E]",
     isHalfMobile
-      ? "text-[11px] leading-[17px] sm:text-[12px] sm:leading-[18px] lg:text-[16px] lg:leading-[28px]"
-      : "text-[13px] leading-[21px] sm:text-[14px] sm:leading-[23px] lg:text-[16px] lg:leading-[28px]",
+      ? "text-[11px] leading-[17px] sm:text-[12px] sm:leading-[18px] lg:text-[15px] lg:leading-[24px]"
+      : "text-[13px] leading-[21px] sm:text-[14px] sm:leading-[23px] lg:text-[15px] lg:leading-[24px]",
   );
+
+  const isImageCard = card.variant === "image" && Boolean(card.image);
+
+  const isDefaultImage = !isSmallImage && !isLargeImage;
+
+  const cardPaddingClassName = cn(
+    "h-full min-h-[260px] py-6 sm:min-h-[280px] sm:py-7 lg:min-h-[320px] lg:py-8",
+    isImageCard && isDefaultImage
+      ? "px-4 sm:px-5 lg:px-6"
+      : isImageCard
+        ? "px-2 sm:px-2.5 lg:px-3"
+        : "px-4 sm:px-5 lg:px-6",
+    isHalfMobile
+      ? "rounded-[12px] lg:rounded-[18px]"
+      : "col-span-2 min-h-0 rounded-[18px] lg:col-span-1",
+  );
+
+  const titleClassName = cn(
+    "shrink-0 text-center font-plusJakartaSans font-bold leading-snug text-[#000000]",
+    isHalfMobile
+      ? "text-[12px] sm:text-[13px] lg:text-[20px]"
+      : "text-[14px] sm:text-[15px] lg:text-[20px]",
+  );
+
+  const imageContainerClassName = cn(
+    "relative mx-auto w-full shrink-0",
+    isSmallImage ? "overflow-visible" : "overflow-hidden",
+    isImageCard ? "max-w-[290px] lg:max-w-[310px]" : "max-w-[280px]",
+    isSmallImage
+      ? isHalfMobile
+        ? "h-[72px] sm:h-[80px] lg:h-[152px]"
+        : "h-[108px] sm:h-[118px] lg:h-[152px]"
+      : isLargeImage
+        ? isHalfMobile
+          ? "h-[78px] sm:h-[88px] lg:h-[190px]"
+          : "h-[132px] sm:h-[148px] lg:h-[190px]"
+        : isHalfMobile
+          ? "h-[68px] sm:h-[76px] lg:h-[158px]"
+          : "h-[112px] sm:h-[124px] lg:h-[158px]",
+  );
+
+  const imageScaleClassName = card.imageClassName
+    ? card.imageClassName
+    : isSmallImage
+      ? ""
+      : isLargeImage
+        ? "scale-[1.08] sm:scale-[1.12] lg:scale-[1.24]"
+        : "scale-[1] sm:scale-[1.02] lg:scale-[1.08]";
+
+  const imageTopSpacingClassName = isSmallImage
+    ? "mt-5 sm:mt-6 lg:mt-8"
+    : "mt-1 sm:mt-1.5 lg:mt-2";
+
+  const imageBottomSpacingClassName = isSmallImage
+    ? "mt-6 sm:mt-8 lg:mt-10"
+    : isDefaultImage
+      ? "mt-1 sm:mt-1.5 lg:mt-1.5"
+      : "mt-1.5 sm:mt-2 lg:mt-2.5";
 
   return (
     <article
       className={cn(
         "flex h-full flex-col overflow-hidden border border-[#E6E6E6] bg-white [&_p]:text-[#9E9E9E]",
-        isHalfMobile
-          ? "rounded-[12px] px-3 py-2 sm:px-4 lg:min-h-[320px] lg:rounded-[18px] lg:px-8 lg:py-5"
-          : "col-span-2 min-h-0 rounded-[18px] px-3 py-2 sm:px-4 sm:py-2.5 lg:col-span-1 lg:min-h-[320px] lg:px-8 lg:py-5",
+        "gap-0",
+        cardPaddingClassName,
         className,
       )}
     >
-      <h3
-        className={cn(
-          "shrink-0 text-center font-plusJakartaSans font-bold leading-snug text-[#000000]",
-          isHalfMobile
-            ? "text-[12px] sm:text-[13px] lg:text-[20px]"
-            : "text-[14px] sm:text-[15px] lg:text-[20px]",
-        )}
-      >
-        {card.title}
-      </h3>
+      {isImageCard ? (
+        <>
+          <div className="flex min-h-0 flex-1 flex-col items-center justify-center">
+            <div className="flex w-full flex-col items-center">
+              <h3 className={titleClassName}>{card.title}</h3>
 
-      {card.variant === "image" && card.image ? (
-        <div
-          className={cn(
-            "flex flex-1 flex-col items-center justify-center",
-            isHalfMobile
-              ? "mt-1.5 gap-1.5 lg:mt-4 lg:flex-1 lg:gap-3"
-              : "mt-3 flex-1 gap-2.5 lg:mt-4 lg:gap-3",
-          )}
-        >
-          <div
-            className={cn(
-              "relative w-full overflow-hidden",
-              isSmallImage
-                ? isHalfMobile
-                  ? "h-[58px] sm:h-[64px] lg:h-[150px]"
-                  : "h-[140px] sm:h-[155px] lg:h-[160px]"
-                : isLargeImage
-                  ? isHalfMobile
-                    ? "h-[76px] sm:h-[84px] lg:h-[220px]"
-                    : "h-[190px] sm:h-[210px] lg:h-[220px]"
-                  : isHalfMobile
-                    ? "h-[68px] sm:h-[76px] lg:h-[220px]"
-                    : "h-[190px] sm:h-[210px] lg:h-[220px]",
-            )}
-          >
-            <Image
-              src={card.image}
-              alt={card.imageAlt ?? card.title}
-              fill
-              className={cn(
-                "object-contain object-center",
-                card.imageClassName
-                  ? card.imageClassName
-                  : isSmallImage
-                    ? isHalfMobile
-                      ? "scale-[0.82] sm:scale-[0.88] lg:scale-[0.95]"
-                      : "scale-[0.88] sm:scale-[0.92] lg:scale-[0.95]"
-                    : isLargeImage
-                      ? isHalfMobile
-                        ? "scale-[1.15] sm:scale-[1.2] lg:scale-[1.35]"
-                        : "scale-[1.25] sm:scale-[1.3] lg:scale-[1.35]"
-                      : isHalfMobile
-                        ? "scale-[1.05] sm:scale-[1.08] lg:scale-[1.15]"
-                        : "scale-[1.1] sm:scale-[1.12] lg:scale-[1.15]",
-              )}
-              sizes="(max-width: 1024px) 50vw, 400px"
-            />
+              <div
+                className={cn(
+                  imageContainerClassName,
+                  imageTopSpacingClassName,
+                )}
+              >
+                <Image
+                  src={card.image!}
+                  alt={card.imageAlt ?? card.title}
+                  fill
+                  className={cn(
+                    "object-contain object-center",
+                    imageScaleClassName,
+                  )}
+                  sizes="(max-width: 1024px) 50vw, 400px"
+                />
+              </div>
+
+              <p
+                className={cn(
+                  "mx-auto w-full max-w-none shrink-0 text-center",
+                  isDefaultImage ? "px-1 sm:px-2" : "px-0.5",
+                  imageBottomSpacingClassName,
+                  bodyTextClassName,
+                )}
+              >
+                {card.description}
+              </p>
+            </div>
           </div>
 
-          <p
-            className={cn(
-              "text-center",
-              bodyTextClassName,
-              isHalfMobile
-                ? "max-w-none lg:max-w-[340px]"
-                : "max-w-[340px]",
-            )}
-          >
-            {card.description}
-          </p>
-        </div>
+          {showReadMore ? (
+            <div className="mt-auto flex w-full shrink-0 justify-center pt-2 lg:pt-3">
+              <ReadMoreTrigger
+                href={card.readMoreHref}
+                onClick={card.readMoreModal ? onOpenModal : undefined}
+                label={card.readMoreLabel}
+                className={isHalfMobile ? "text-[12px] lg:text-[15px]" : undefined}
+              />
+            </div>
+          ) : null}
+        </>
       ) : (
-        <div
-          className={cn(
-            "flex flex-col items-center text-center",
-            isHalfMobile
-              ? "mt-3 flex-1 gap-2.5 lg:mt-4 lg:gap-4"
-              : "mt-2 gap-2 lg:mt-4 lg:flex-1 lg:gap-4",
-          )}
-        >
-          {bodyParagraphs.map((paragraph, index) => (
-            <p
-              key={index}
-              className={cn(
-                bodyTextClassName,
-                isHalfMobile ? "max-w-none lg:max-w-[340px]" : "max-w-[340px]",
-              )}
-            >
-              {paragraph}
-            </p>
-          ))}
-        </div>
-      )}
+        <>
+          <div className="flex min-h-0 flex-1 flex-col items-center justify-center">
+            <div className="flex w-full flex-col items-center gap-1 sm:gap-1.5 lg:gap-2">
+              <h3 className={titleClassName}>{card.title}</h3>
 
-      {showReadMore ? (
-        <div
-          className={cn(
-            "shrink-0 self-center",
-            isHalfMobile ? "mt-1.5 lg:mt-4" : "mt-3 lg:mt-4",
-          )}
-        >
-          <ReadMoreTrigger
-            href={card.readMoreHref}
-            onClick={card.readMoreModal ? onOpenModal : undefined}
-            label={card.readMoreLabel}
-            className={isHalfMobile ? "text-[12px] lg:text-[15px]" : undefined}
-          />
-        </div>
-      ) : null}
+              {bodyParagraphs.map((paragraph, index) => (
+                <p
+                  key={index}
+                  className={cn(
+                    "mx-auto w-full max-w-none shrink-0 px-0.5 text-center",
+                    bodyTextClassName,
+                  )}
+                >
+                  {paragraph}
+                </p>
+              ))}
+            </div>
+          </div>
+
+          {showReadMore ? (
+            <div className="mt-auto flex w-full shrink-0 justify-center pt-2 lg:pt-3">
+              <ReadMoreTrigger
+                href={card.readMoreHref}
+                onClick={card.readMoreModal ? onOpenModal : undefined}
+                label={card.readMoreLabel}
+                className={isHalfMobile ? "text-[12px] lg:text-[15px]" : undefined}
+              />
+            </div>
+          ) : null}
+        </>
+      )}
     </article>
   );
 }

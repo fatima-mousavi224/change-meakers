@@ -8,7 +8,7 @@ const UPDATES_PAGE_DESCRIPTION =
 
 export default function UpdatesPageHero() {
   return (
-    <section className="bg-[#FAFAFA]">
+    <section>
       <SiteContainer className="py-16 sm:py-20 lg:py-24">
         <HeroTextReveal
           title="Updates"

@@ -5,8 +5,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { FaTelegramPlane } from "react-icons/fa";
 
+import ScrollReveal from "@/components/common/ScrollReveal";
 import SectionHeading from "@/components/common/SectionHeading";
 import SiteContainer from "@/components/common/SiteContainer";
+import StaggerReveal, { StaggerItem } from "@/components/common/StaggerReveal";
 import type { InitiativeAtAGlanceDigitalLibrary as AtAGlanceDigitalLibrary } from "@/constant/initiativeDetailsContent";
 import { cn } from "@/utilities/cn";
 
@@ -24,16 +26,13 @@ export default function InitiativeAtAGlanceDigitalLibrary({
 
   return (
     <SiteContainer as="section" className="pb-12 sm:pb-16 lg:pb-12">
-      <SectionHeading title="At a Glance" />
+      <ScrollReveal>
+        <SectionHeading title="At a Glance" />
+      </ScrollReveal>
 
-      <div className="grid grid-cols-2 items-start gap-3 lg:grid-cols-10 lg:items-stretch lg:gap-6">
-        {/* Telegram-Based Library */}
-        <article
-          className={cn(
-            CARD_CLASS,
-            "col-span-1 px-3 py-4 sm:px-4 lg:col-span-3 lg:px-8 lg:py-6",
-          )}
-        >
+      <StaggerReveal className="grid grid-cols-2 items-stretch gap-3 lg:grid-cols-10 lg:gap-3">
+        <StaggerItem className="h-full lg:col-span-3">
+          <article className={cn(CARD_CLASS, "px-3 py-4 sm:px-4 lg:px-8 lg:py-6")}>
           <div className="relative mx-auto h-[118px] w-full sm:h-[140px] lg:h-[220px]">
             <Image
               src={telegramLibrary.image}
@@ -51,15 +50,11 @@ export default function InitiativeAtAGlanceDigitalLibrary({
           <p className="mt-2.5 flex-1 text-center font-plusJakartaSans text-[11px] leading-[17px] text-[#575757] sm:text-[12px] sm:leading-[18px] lg:mt-4 lg:text-[16px] lg:leading-[28px]">
             {telegramLibrary.description}
           </p>
-        </article>
+          </article>
+        </StaggerItem>
 
-        {/* 7,000+ Resources Shared */}
-        <article
-          className={cn(
-            CARD_CLASS,
-            "col-span-1 px-3 py-3 sm:px-4 lg:col-span-3 lg:px-8 lg:py-6",
-          )}
-        >
+        <StaggerItem className="h-full lg:col-span-3">
+          <article className={cn(CARD_CLASS, "px-3 py-3 sm:px-4 lg:px-8 lg:py-6")}>
           <div className="flex h-full flex-col gap-1 lg:gap-1.5">
             <h3 className="shrink-0 text-center font-plusJakartaSans text-[12px] font-bold leading-tight text-[#000000] sm:text-[13px] lg:text-[20px]">
               {resourcesShared.title}
@@ -84,10 +79,11 @@ export default function InitiativeAtAGlanceDigitalLibrary({
               ))}
             </div>
           </div>
-        </article>
+          </article>
+        </StaggerItem>
 
-        {/* Sidebar bento */}
-        <div className="col-span-2 flex min-h-[300px] flex-col gap-3 lg:col-span-4 lg:min-h-[380px] lg:gap-4">
+        <StaggerItem className="col-span-2 h-full lg:col-span-4">
+          <div className="flex min-h-[300px] flex-col gap-3 lg:min-h-[380px] lg:gap-4">
           <div className="relative min-h-[175px] flex-[1.65] overflow-hidden rounded-[12px] sm:min-h-[200px] lg:min-h-0 lg:rounded-[18px]">
             <Image
               src={sidebar.photoImage}
@@ -108,18 +104,20 @@ export default function InitiativeAtAGlanceDigitalLibrary({
                 />
               </div>
 
-              <Link
-                href={sidebar.telegramHref}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group inline-flex items-center gap-1.5 self-start font-plusJakartaSans text-[12px] font-medium text-white sm:text-[13px] lg:text-[15px]"
-              >
-                <span>Read More</span>
-                <ArrowRightIcon
-                  className="size-4 stroke-[2] transition-transform duration-200 group-hover:translate-x-1"
-                  aria-hidden
-                />
-              </Link>
+              <div className="flex w-full justify-center">
+                <Link
+                  href={sidebar.telegramHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group inline-flex items-center gap-1.5 font-plusJakartaSans text-[12px] font-medium text-white sm:text-[13px] lg:text-[15px]"
+                >
+                  <span>Read More</span>
+                  <ArrowRightIcon
+                    className="size-4 stroke-[2] transition-transform duration-200 group-hover:translate-x-1"
+                    aria-hidden
+                  />
+                </Link>
+              </div>
             </article>
 
             {/* Users stat card */}
@@ -137,8 +135,9 @@ export default function InitiativeAtAGlanceDigitalLibrary({
               </p>
             </article>
           </div>
-        </div>
-      </div>
+          </div>
+        </StaggerItem>
+      </StaggerReveal>
     </SiteContainer>
   );
 }

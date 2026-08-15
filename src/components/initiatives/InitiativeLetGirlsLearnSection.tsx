@@ -118,22 +118,24 @@ export default function InitiativeLetGirlsLearnSection({
             {section.description}
           </p>
 
-          <Link
-            href={section.ctaHref}
-            target={section.ctaHref.startsWith("http") ? "_blank" : undefined}
-            rel={
-              section.ctaHref.startsWith("http")
-                ? "noopener noreferrer"
-                : undefined
-            }
-            className="group mt-4 inline-flex items-center gap-1.5 self-start font-plusJakartaSans text-[14px] font-medium text-[#106190] lg:mt-6"
-          >
-            <span>{section.ctaLabel}</span>
-            <ArrowRightIcon
-              className="size-4 stroke-[2] transition-transform duration-200 group-hover:translate-x-1"
-              aria-hidden
-            />
-          </Link>
+          <div className="mt-4 flex w-full justify-center lg:mt-6">
+            <Link
+              href={section.ctaHref}
+              target={section.ctaHref.startsWith("http") ? "_blank" : undefined}
+              rel={
+                section.ctaHref.startsWith("http")
+                  ? "noopener noreferrer"
+                  : undefined
+              }
+              className="group inline-flex items-center gap-1.5 font-plusJakartaSans text-[14px] font-medium text-[#106190]"
+            >
+              <span>{section.ctaLabel}</span>
+              <ArrowRightIcon
+                className="size-4 stroke-[2] transition-transform duration-200 group-hover:translate-x-1"
+                aria-hidden
+              />
+            </Link>
+          </div>
         </article>
       </div>
     </SiteContainer>

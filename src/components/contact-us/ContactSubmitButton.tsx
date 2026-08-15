@@ -5,11 +5,13 @@ import { cn } from "@/utilities/cn";
 type ContactSubmitButtonProps = {
   loading: boolean;
   className?: string;
+  label?: string;
 };
 
 export default function ContactSubmitButton({
   loading,
   className,
+  label = "Submit",
 }: ContactSubmitButtonProps) {
   return (
     <button
@@ -33,7 +35,7 @@ export default function ContactSubmitButton({
             Submitting...
           </>
         ) : (
-          "Submit"
+          label
         )}
       </span>
     </button>

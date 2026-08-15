@@ -1,6 +1,8 @@
+import { isInitiativeDetailPath } from "@/constant/initiatives";
+
 export function isNavLinkActive(pathname: string, href: string) {
   if (href === "/") {
-    return pathname === "/";
+    return pathname === "/" || isInitiativeDetailPath(pathname);
   }
 
   if (href === "/apply") {
@@ -12,7 +14,10 @@ export function isNavLinkActive(pathname: string, href: string) {
   }
 
   if (href === "/updates") {
-    return pathname === "/updates" || pathname.startsWith("/updates/");
+    return (
+      pathname === "/updates" ||
+      (pathname.startsWith("/updates/") && !isInitiativeDetailPath(pathname))
+    );
   }
 
   return pathname === href || pathname.startsWith(`${href}/`);

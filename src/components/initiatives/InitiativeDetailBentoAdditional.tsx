@@ -4,6 +4,7 @@ import { ArrowRightIcon, GlobeAltIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import Link from "next/link";
 
+import ScrollReveal from "@/components/common/ScrollReveal";
 import SiteContainer from "@/components/common/SiteContainer";
 import type { InitiativeBentoAdditionalSection } from "@/constant/initiativeDetailsContent";
 import { cn } from "@/utilities/cn";
@@ -57,6 +58,7 @@ export default function InitiativeDetailBentoAdditional({
         Mobile: photo → Language Learning (full) → Practical Skills | Read More
         Desktop: photo left | Practical Skills top-right | Language + Globe bottom-right
       */}
+      <ScrollReveal>
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-12 lg:grid-rows-[auto_auto] lg:items-stretch lg:gap-3">
         {/* Photo */}
         <div className="relative order-1 col-span-2 min-h-[250px] overflow-hidden rounded-[18px] sm:min-h-[290px] lg:order-none lg:col-span-6 lg:col-start-1 lg:row-span-2 lg:row-start-1 lg:min-h-0 lg:h-full">
@@ -137,10 +139,10 @@ export default function InitiativeDetailBentoAdditional({
           <BentoReadMore
             href={globeCard.readMoreHref}
             light
-            className="text-[11px] sm:text-[12px] lg:text-[13px]"
           />
         </article>
       </div>
+      </ScrollReveal>
     </SiteContainer>
   );
 }

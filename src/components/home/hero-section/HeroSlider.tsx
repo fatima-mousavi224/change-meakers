@@ -15,6 +15,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 interface Slide {
   image: StaticImageData;
   mobileImage?: StaticImageData;
+  objectPosition?: string;
 }
 
 const slides: Slide[] = [
@@ -77,13 +78,13 @@ const HeroSlider: React.FC = () => {
   };
 
   return (
-    <div className="relative w-full py-4 sm:py-8">
+    <div className="relative w-full py-4">
       <div className="relative w-full">
         {/* Main Card Container */}
         <div className="relative z-10 w-full overflow-hidden rounded-[24px] shadow-md">
-          {/* Subtle Dark Bottom Gradient (Image remains clear) */}
+          {/* Figma: subtle bottom gradient only — image stays clear above */}
           <div
-            className="absolute inset-0 z-10 rounded-[24px] pointer-events-none"
+            className="pointer-events-none absolute inset-0 z-10 rounded-[24px]"
             style={{
               background:
                 "linear-gradient(188.75deg, rgba(4, 17, 29, 0) 20%, rgba(19, 76, 131, 0.75) 100%)",
@@ -92,7 +93,7 @@ const HeroSlider: React.FC = () => {
 
           {/* Slider Images */}
           <div
-            className="relative h-[440px] w-full overflow-hidden sm:h-[88vh]"
+            className="relative min-h-[280px] w-full overflow-hidden h-[calc(100dvh-var(--site-header-height)-var(--hero-section-padding-y))]"
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
@@ -108,31 +109,32 @@ const HeroSlider: React.FC = () => {
                 alt={`Slide ${index + 1}`}
                 fill
                 priority={index === 0}
-                className={`absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-500 ease-in-out ${
-                  index === activeIndex ? "opacity-100 z-0" : "opacity-0"
+                style={{ objectPosition: slide.objectPosition ?? "center center" }}
+                className={`absolute left-0 top-0 h-full w-full object-cover transition-opacity duration-500 ease-in-out ${
+                  index === activeIndex ? "z-0 opacity-100" : "opacity-0"
                 }`}
               />
             ))}
           </div>
 
-          {/* Text Overlay & Button */}
-          <div className="absolute inset-0 z-20 flex flex-col items-start justify-end p-5 font-plusJakartaSans sm:p-10 md:p-14">
+          {/* Text — bottom-left corner only, narrow column like Figma */}
+          <div className="absolute bottom-0 left-0 z-20 w-full max-w-[calc(100%-2rem)] p-5 font-plusJakartaSans sm:max-w-[460px] sm:p-8 md:max-w-[500px] lg:p-10">
             <motion.div
-              className="mb-2 max-w-3xl"
+              className="mb-0"
               variants={prefersReducedMotion ? undefined : staggerContainer}
               initial={prefersReducedMotion ? false : "hidden"}
               animate={prefersReducedMotion ? false : "visible"}
             >
               <motion.h1
                 variants={prefersReducedMotion ? undefined : fadeUpItem}
-                className="mb-2 text-[26px] font-bold leading-[122%] text-white sm:text-[36px] md:mb-6 md:text-[46px]"
+                className="mb-2 text-[26px] font-bold leading-[120%] text-white sm:text-[30px] md:mb-3 md:text-[36px] lg:text-[38px]"
               >
                 A better Afghanistan begins with educated girls and empowered
                 youth.
               </motion.h1>
               <motion.p
                 variants={prefersReducedMotion ? undefined : fadeUpItem}
-                className="mb-5 text-[15px] font-normal leading-[120%] text-white/90 md:text-[18px]"
+                className="mb-4 text-[14px] font-normal leading-[130%] text-white/90 md:mb-5 md:text-[16px] lg:text-[18px]"
               >
                 This is why Change Makers of the World exists.
               </motion.p>

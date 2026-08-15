@@ -11,13 +11,13 @@ import logo from "../../../public/images/logo.jpg";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
-  const copyrightText = `Copyright © ${FOOTER_COPYRIGHT_START_YEAR}—${currentYear} Change Makers of the World`;
+  const copyrightText = `Copyright © ${FOOTER_COPYRIGHT_START_YEAR}-${currentYear} Change Makers of the World`;
 
   return (
     <footer className="mt-10 bg-[#F5F5F5]">
       {/* Mobile layout */}
       <div className="lg:hidden">
-        <SiteContainer className="py-10">
+        <SiteContainer className="border-b border-[#DDDDDD] py-10">
           <Link href="/" className="flex flex-col items-center">
             <Image
               src={logo}
@@ -47,13 +47,9 @@ export default function Footer() {
           </nav>
         </SiteContainer>
 
-        <div className="w-full border-b border-[#DDDDDD]" aria-hidden="true" />
-
-        <SiteContainer className="py-8">
+        <SiteContainer className="border-b border-[#DDDDDD] py-8">
           <FooterSocialLinks className="justify-center gap-3" />
         </SiteContainer>
-
-        <div className="w-full border-b border-[#DDDDDD]" aria-hidden="true" />
 
         <SiteContainer className="flex flex-col items-center gap-4 py-8">
           <Link
@@ -70,7 +66,7 @@ export default function Footer() {
 
       {/* Desktop layout */}
       <div className="hidden lg:block">
-        <SiteContainer className="py-8 lg:py-10">
+        <SiteContainer className="border-b border-[#DDDDDD] py-8 lg:py-10">
           <div className="flex flex-row items-center justify-between">
             <Link href="/" className="flex items-center gap-4">
               <Image
@@ -98,8 +94,6 @@ export default function Footer() {
             </nav>
           </div>
         </SiteContainer>
-
-        <div className="w-full border-b border-[#DDDDDD]" aria-hidden="true" />
 
         <SiteContainer className="py-8 lg:py-10">
           <div className="flex flex-row items-center justify-between">

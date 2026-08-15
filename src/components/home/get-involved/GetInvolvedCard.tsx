@@ -29,16 +29,18 @@ export default function GetInvolvedCard({ item }: GetInvolvedCardProps) {
         {item.description}
       </p>
 
-      <Link
-        href={item.href}
-        className="group/btn mt-6 inline-flex w-fit items-center gap-2 rounded-xl border border-[#D0D5DD] px-5 py-2.5 font-plusJakartaSans text-[13px] font-medium text-black_color transition-colors duration-200 hover:border-primary-50 hover:bg-primary-50 hover:text-white sm:text-[14px]"
-      >
-        <span>Learn More</span>
-        <ArrowRightIcon
-          className="size-4 shrink-0 stroke-[2] text-[#252525] transition-all duration-200 group-hover/btn:translate-x-1 group-hover/btn:text-white"
-          aria-hidden
-        />
-      </Link>
+      <div className="mt-6 flex justify-center">
+        <Link
+          href={item.href}
+          className="group/btn inline-flex w-fit items-center gap-2 rounded-xl border border-[#D0D5DD] px-5 py-2.5 font-plusJakartaSans text-[13px] font-medium text-black_color transition-colors duration-200 hover:border-primary-50 hover:bg-primary-50 hover:text-white sm:text-[14px]"
+        >
+          <span>Learn More</span>
+          <ArrowRightIcon
+            className="size-4 shrink-0 stroke-[2] text-[#252525] transition-all duration-200 group-hover/btn:translate-x-1 group-hover/btn:text-white"
+            aria-hidden
+          />
+        </Link>
+      </div>
     </article>
   );
 }

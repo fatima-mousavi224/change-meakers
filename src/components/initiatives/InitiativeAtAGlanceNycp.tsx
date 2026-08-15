@@ -6,8 +6,10 @@ import Link from "next/link";
 import { useState } from "react";
 
 import ContentDetailModal from "@/components/common/ContentDetailModal";
+import ScrollReveal from "@/components/common/ScrollReveal";
 import SectionHeading from "@/components/common/SectionHeading";
 import SiteContainer from "@/components/common/SiteContainer";
+import StaggerReveal, { StaggerItem } from "@/components/common/StaggerReveal";
 import type { InitiativeAtAGlanceNycpSection } from "@/constant/initiativeDetailsContent";
 import type { ContentDetailModalContent } from "@/types/contentDetailModal";
 import { cn } from "@/utilities/cn";
@@ -87,64 +89,62 @@ export default function InitiativeAtAGlanceNycp({
   return (
     <>
       <SiteContainer as="section" className="pb-4 md:py-3">
-        <SectionHeading title="At a Glance" />
+        <ScrollReveal>
+          <SectionHeading title="At a Glance" />
+        </ScrollReveal>
 
-        {/*
-          Mobile: 2 columns — org (left, tall) | consultations + youth (right stack), then photo full width
-          Desktop: 3 columns — org | middle stack | photo
-        */}
-        <div className="grid grid-cols-2 items-stretch gap-3 lg:grid-cols-[minmax(0,3fr)_minmax(0,3fr)_minmax(0,5fr)] lg:gap-3">
-          {/* 244 Organizations */}
-          <article
-            className={cn(
-              CARD_CLASS,
-              "col-start-1 row-span-2 row-start-1 flex flex-col px-3 py-3.5 sm:px-4 sm:py-4 lg:col-start-auto lg:row-span-1 lg:row-start-auto lg:h-full lg:min-h-0 lg:px-6 lg:py-6",
-            )}
-          >
-            <h3 className="shrink-0 text-center font-plusJakartaSans text-[12px] font-bold leading-snug text-[#000000] sm:text-[13px] lg:text-[20px]">
-              {organizationsCard.title}
-            </h3>
-
-            <div className="flex min-h-0 flex-1 items-center justify-center py-1 sm:py-2 lg:flex-none lg:items-stretch lg:py-0">
-              <div className="relative mx-auto h-[112px] w-full max-w-none shrink-0 overflow-hidden sm:h-[124px] lg:mt-7 lg:h-[174px] lg:max-w-[295px]">
-                <Image
-                  src={organizationsCard.image}
-                  alt={organizationsCard.imageAlt}
-                  fill
-                  className="object-contain object-center scale-[1.88] sm:scale-[1.94] lg:scale-[1.96]"
-                  sizes="(max-width: 1024px) 50vw, 300px"
-                />
-              </div>
-            </div>
-
-            <p className="mx-auto mt-2 max-w-none shrink-0 text-center font-plusJakartaSans text-[10px] leading-[15px] text-[#9E9E9E] sm:mt-3 sm:text-[11px] sm:leading-[16px] lg:mt-6 lg:max-w-[280px] lg:text-[16px] lg:leading-[28px]">
-              {organizationsCard.description}
-            </p>
-
-            {showLearnMore ? (
-              <div className="mt-auto shrink-0 pt-3 sm:pt-4 lg:pt-5">
-                <LearnMoreTrigger
-                  href={organizationsCard.readMoreHref}
-                  onClick={
-                    organizationsCard.readMoreModal
-                      ? () => {
-                          window.scrollTo({ top: 0, behavior: "auto" });
-                          setModalContent(organizationsCard.readMoreModal!);
-                        }
-                      : undefined
-                  }
-                  className="text-[11px] sm:text-[12px] lg:text-[15px]"
-                />
-              </div>
-            ) : null}
-          </article>
-
-          {/* Middle column — consultations + youth; `contents` on mobile joins parent grid */}
-          <div className="contents lg:col-start-auto lg:flex lg:flex-col lg:gap-3">
+        <StaggerReveal className="grid grid-cols-2 items-stretch gap-3 lg:grid-cols-3 lg:grid-rows-2 lg:gap-3">
+          <StaggerItem className="col-start-1 row-span-2 row-start-1 h-full lg:col-start-1 lg:row-span-2 lg:row-start-1">
             <article
               className={cn(
                 CARD_CLASS,
-                "col-start-2 row-start-1 flex flex-col px-3 py-3.5 sm:px-4 sm:py-4 lg:col-start-auto lg:row-start-auto lg:flex-1 lg:px-6 lg:py-5",
+                "flex h-full min-h-0 flex-col px-3 py-3.5 sm:px-4 sm:py-4 lg:px-6 lg:py-6",
+              )}
+            >
+              <h3 className="shrink-0 text-center font-plusJakartaSans text-[12px] font-bold leading-snug text-[#000000] sm:text-[13px] lg:text-[20px]">
+                {organizationsCard.title}
+              </h3>
+
+              <div className="flex min-h-0 flex-1 items-center justify-center py-1 sm:py-2 lg:py-2">
+                <div className="relative mx-auto h-[112px] w-full max-w-none shrink-0 overflow-hidden sm:h-[124px] lg:h-[174px] lg:max-w-[295px]">
+                  <Image
+                    src={organizationsCard.image}
+                    alt={organizationsCard.imageAlt}
+                    fill
+                    className="object-contain object-center scale-[1.88] sm:scale-[1.94] lg:scale-[1.96]"
+                    sizes="(max-width: 1024px) 50vw, 300px"
+                  />
+                </div>
+              </div>
+
+              <div className="mt-auto flex shrink-0 flex-col items-center gap-2 sm:gap-2.5 lg:gap-3">
+                <p className="mx-auto max-w-none text-center font-plusJakartaSans text-[10px] leading-[15px] text-[#9E9E9E] sm:text-[11px] sm:leading-[16px] lg:max-w-[280px] lg:text-[16px] lg:leading-[28px]">
+                  {organizationsCard.description}
+                </p>
+
+                {showLearnMore ? (
+                  <LearnMoreTrigger
+                    href={organizationsCard.readMoreHref}
+                    onClick={
+                      organizationsCard.readMoreModal
+                        ? () => {
+                            window.scrollTo({ top: 0, behavior: "auto" });
+                            setModalContent(organizationsCard.readMoreModal!);
+                          }
+                        : undefined
+                    }
+                    className="text-[11px] sm:text-[12px] lg:text-[15px]"
+                  />
+                ) : null}
+              </div>
+            </article>
+          </StaggerItem>
+
+          <StaggerItem className="col-start-2 row-start-1 h-full lg:col-start-2 lg:row-start-1">
+            <article
+              className={cn(
+                CARD_CLASS,
+                "flex h-full flex-col px-3 py-3.5 sm:px-4 sm:py-4 lg:px-6 lg:py-5",
               )}
             >
               <h3 className="text-center font-plusJakartaSans text-[12px] font-bold leading-snug text-[#000000] sm:text-[13px] lg:text-[18px]">
@@ -155,34 +155,37 @@ export default function InitiativeAtAGlanceNycp({
                 {provincialConsultations.description}
               </p>
             </article>
+          </StaggerItem>
 
+          <StaggerItem className="col-start-2 row-start-2 h-full lg:col-start-2 lg:row-start-2">
             <article
               className={cn(
                 CARD_CLASS,
-                "col-start-2 row-start-2 flex flex-col items-center justify-center px-3 py-3.5 sm:px-4 sm:py-4 lg:col-start-auto lg:row-start-auto lg:px-6 lg:py-6",
+                "flex h-full flex-col items-center justify-center px-3 py-3.5 sm:px-4 sm:py-4 lg:px-6 lg:py-6",
               )}
             >
               <h3 className="text-center font-plusJakartaSans text-[12px] font-bold leading-snug text-[#000000] sm:text-[13px] lg:text-[18px]">
                 {youthRepresentatives.title}
               </h3>
 
-              <p className="mx-auto mt-2.5 max-w-none text-center font-plusJakartaSans text-[10px] leading-[15px] text-[#9E9E9E] sm:mt-3 sm:text-[11px] sm:leading-[16px] lg:mt-3 lg:max-w-[320px] lg:text-[16px] lg:leading-[28px]">
+              <p className="mx-auto mt-2 max-w-none text-center font-plusJakartaSans text-[9px] leading-[14px] text-[#9E9E9E] sm:mt-2.5 sm:text-[10px] sm:leading-[15px] lg:mt-2.5 lg:max-w-[320px] lg:text-[14px] lg:leading-[24px]">
                 {youthRepresentatives.description}
               </p>
             </article>
-          </div>
+          </StaggerItem>
 
-          {/* Conference photo */}
-          <div className="relative col-span-2 col-start-1 row-start-3 min-h-[240px] overflow-hidden rounded-[12px] sm:min-h-[270px] lg:col-span-1 lg:col-start-auto lg:row-span-1 lg:row-start-auto lg:min-h-0 lg:h-full lg:rounded-[18px]">
-            <Image
-              src={section.photoImage}
-              alt={section.photoAlt}
-              fill
-              className="object-cover object-center"
-              sizes="(max-width: 1024px) 100vw, 45vw"
-            />
-          </div>
-        </div>
+          <StaggerItem className="relative col-span-2 col-start-1 row-start-3 min-h-[240px] sm:min-h-[270px] lg:col-span-1 lg:col-start-3 lg:row-span-2 lg:row-start-1 lg:min-h-0 lg:h-full">
+            <div className="relative h-full min-h-[240px] overflow-hidden rounded-[12px] sm:min-h-[270px] lg:min-h-0 lg:rounded-[18px]">
+              <Image
+                src={section.photoImage}
+                alt={section.photoAlt}
+                fill
+                className="object-cover object-center"
+                sizes="(max-width: 1024px) 100vw, 45vw"
+              />
+            </div>
+          </StaggerItem>
+        </StaggerReveal>
       </SiteContainer>
 
       <ContentDetailModal

@@ -81,12 +81,12 @@ export default function MobileSidebar({
                   </div>
 
                   <div className="mt-6 flex items-center justify-center gap-1.5">
-                    {socialLinks.map(({ href, label, src }) => (
+                    {socialLinks.map(({ href, label, Icon }) => (
                       <SocialIconButton
                         key={label}
                         href={href}
                         label={label}
-                        src={src}
+                        Icon={Icon}
                       />
                     ))}
                   </div>

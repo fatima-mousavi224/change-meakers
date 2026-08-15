@@ -12,6 +12,7 @@ import InitiativeDetailHero from "@/components/initiatives/InitiativeDetailHero"
 import InitiativeDetailHeroMaktab from "@/components/initiatives/InitiativeDetailHeroMaktab";
 import InitiativeDetailIntro from "@/components/initiatives/InitiativeDetailIntro";
 import InitiativeLetGirlsLearnSection from "@/components/initiatives/InitiativeLetGirlsLearnSection";
+import ScrollReveal from "@/components/common/ScrollReveal";
 import { getInitiativeDetail } from "@/lib/initiativeDetails";
 
 type InitiativeDetailsProps = {
@@ -32,10 +33,12 @@ export default function InitiativeDetails({ id }: InitiativeDetailsProps) {
       ) : (
         <InitiativeDetailHero initiative={initiative} />
       )}
-      <InitiativeDetailIntro
-        paragraphs={initiative.introParagraphs}
-        cta={initiative.introCta}
-      />
+      <ScrollReveal>
+        <InitiativeDetailIntro
+          paragraphs={initiative.introParagraphs}
+          cta={initiative.introCta}
+        />
+      </ScrollReveal>
       {initiative.atGlanceNycp ? (
         <InitiativeAtAGlanceNycp section={initiative.atGlanceNycp} />
       ) : initiative.atGlanceDigitalLibrary ? (
@@ -61,9 +64,11 @@ export default function InitiativeDetails({ id }: InitiativeDetailsProps) {
         )
       ) : null}
       {initiative.letGirlsLearnSection ? (
-        <InitiativeLetGirlsLearnSection
-          section={initiative.letGirlsLearnSection}
-        />
+        <ScrollReveal delay={0.05}>
+          <InitiativeLetGirlsLearnSection
+            section={initiative.letGirlsLearnSection}
+          />
+        </ScrollReveal>
       ) : null}
     </main>
   );

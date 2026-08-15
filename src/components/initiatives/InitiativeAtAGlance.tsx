@@ -3,8 +3,10 @@
 import { useState } from "react";
 
 import ContentDetailModal from "@/components/common/ContentDetailModal";
+import ScrollReveal from "@/components/common/ScrollReveal";
 import SectionHeading from "@/components/common/SectionHeading";
 import SiteContainer from "@/components/common/SiteContainer";
+import StaggerReveal, { StaggerItem } from "@/components/common/StaggerReveal";
 import type { InitiativeAtAGlanceCard as AtAGlanceCard } from "@/constant/initiativeDetailsContent";
 import type { ContentDetailModalContent } from "@/types/contentDetailModal";
 import { cn } from "@/utilities/cn";
@@ -26,38 +28,43 @@ export default function InitiativeAtAGlance({ cards }: InitiativeAtAGlanceProps)
 
   return (
     <>
-      <SiteContainer as="section" className="pb-4 md:py-3">
-        <SectionHeading title="At a Glance" />
+      <SiteContainer as="section" className="pb-3">
+        <ScrollReveal>
+          <SectionHeading title="At a Glance" />
+        </ScrollReveal>
 
-        <div
+        <StaggerReveal
           className={cn(
-            "grid grid-cols-2 items-start gap-3 lg:items-start",
-            hasWideMiddleCard
-              ? "lg:grid-cols-12 lg:gap-6"
-              : "lg:grid-cols-3 lg:gap-8",
+            "grid grid-cols-2 items-stretch gap-3 lg:grid-cols-3 lg:gap-3",
+            hasWideMiddleCard && "lg:grid-cols-12",
           )}
         >
           {cards.map((card, index) => (
-            <InitiativeAtAGlanceCard
+            <StaggerItem
               key={card.title}
-              card={card}
-              mobileVariant={index === 2 ? "full" : "half"}
               className={cn(
+                "h-full",
+                index === 2 && "col-span-2 lg:col-span-1",
                 hasWideMiddleCard && index === 0 && "lg:col-span-4",
                 hasWideMiddleCard && index === 1 && "lg:col-span-5",
                 hasWideMiddleCard && index === 2 && "lg:col-span-3",
               )}
-              onOpenModal={
-                card.readMoreModal
-                  ? () => {
-                      window.scrollTo({ top: 0, behavior: "auto" });
-                      setModalContent(card.readMoreModal!);
-                    }
-                  : undefined
-              }
-            />
+            >
+              <InitiativeAtAGlanceCard
+                card={card}
+                mobileVariant={index === 2 ? "full" : "half"}
+                onOpenModal={
+                  card.readMoreModal
+                    ? () => {
+                        window.scrollTo({ top: 0, behavior: "auto" });
+                        setModalContent(card.readMoreModal!);
+                      }
+                    : undefined
+                }
+              />
+            </StaggerItem>
           ))}
-        </div>
+        </StaggerReveal>
       </SiteContainer>
 
       <ContentDetailModal

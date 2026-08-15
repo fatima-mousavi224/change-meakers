@@ -16,7 +16,6 @@ export default function ProgramRelatedSections({
   posts,
   activeCategoryId,
 }: ProgramRelatedSectionsProps) {
-  const isYouthEmpowerment = activeCategoryId === "youth-empowerment";
   const relatedInitiativeIds = getProgramRelatedInitiativeIds(activeCategoryId);
 
   return (
@@ -31,7 +30,7 @@ export default function ProgramRelatedSections({
         posts={posts}
         viewAllText="View More"
         collapseText="Show Less"
-        viewAllMode={isYouthEmpowerment ? "expand" : "link"}
+        viewAllMode="expand"
         className="py-0 pb-0 pt-6 lg:pt-8"
         viewAllClassName="mt-6"
       />

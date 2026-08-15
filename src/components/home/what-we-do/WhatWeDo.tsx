@@ -27,7 +27,7 @@ export default function WhatWeDo() {
           </div>
 
           <Link
-            href="/current-programs"
+            href="/about"
             className="group mt-6 inline-flex items-center gap-2 rounded-xl border border-[#D0D5DD] md:px-6 md:py-3 px-5 py-2.5 font-plusJakartaSans text-[13px] font-medium text-black_color transition-colors duration-200 hover:border-primary-50 hover:bg-primary-50 hover:text-white sm:text-[16px]"
           >
             <span>Read More</span>

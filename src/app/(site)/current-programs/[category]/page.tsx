@@ -44,7 +44,7 @@ export default async function ProgramCategoryPage({
     notFound();
   }
 
-  const posts = await getLatestPosts(3);
+  const posts = await getLatestPosts(12);
 
   return (
     <ProgramCategoryView

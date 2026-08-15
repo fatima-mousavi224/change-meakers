@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useState } from "react";
 
 import ContentDetailModal from "@/components/common/ContentDetailModal";
+import ScrollReveal from "@/components/common/ScrollReveal";
 import SiteContainer from "@/components/common/SiteContainer";
 import type { InitiativeBentoMaktabSection } from "@/constant/initiativeDetailsContent";
 import type { ContentDetailModalContent } from "@/types/contentDetailModal";
@@ -91,6 +92,7 @@ export default function InitiativeDetailBentoMaktab({
   return (
     <>
       <SiteContainer as="section" className="pb-12 sm:pb-16 lg:pb-12">
+        <ScrollReveal>
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-12 lg:grid-rows-[auto_auto] lg:items-stretch lg:gap-3">
           {/* Photo — right column, full height */}
           <div className="relative order-1 col-span-2 min-h-[300px] overflow-hidden rounded-[18px] sm:min-h-[336px] lg:order-none lg:col-span-6 lg:col-start-7 lg:row-span-2 lg:row-start-1 lg:min-h-0 lg:h-full">
@@ -184,11 +186,12 @@ export default function InitiativeDetailBentoMaktab({
               <BentoReadMore
                 href={youtubeCard.readMoreHref}
                 light
-                className="shrink-0 text-[12px] sm:text-[13px]"
+                className="shrink-0"
               />
             </article>
           </div>
         </div>
+        </ScrollReveal>
       </SiteContainer>
 
       <ContentDetailModal

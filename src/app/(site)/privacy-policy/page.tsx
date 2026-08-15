@@ -3,7 +3,8 @@ import SiteContainer from '@/components/common/SiteContainer';
 
 export default function PrivacyPolicy() {
   return (
-    <SiteContainer className="min-h-screen bg-gray-50 py-12">
+    <div className="-mb-10">
+      <SiteContainer className="py-12">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-4xl font-bold text-gray-800 mb-6 text-center">
           Privacy Policy - Change Makers
@@ -80,6 +81,7 @@ export default function PrivacyPolicy() {
      
         </div>
       </div>
-    </SiteContainer>
+      </SiteContainer>
+    </div>
   );
 }
