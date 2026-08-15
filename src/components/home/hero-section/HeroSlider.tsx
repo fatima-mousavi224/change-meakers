@@ -4,7 +4,11 @@ import Image, { StaticImageData } from "next/image";
 import Link from "next/link";
 import React, { TouchEvent, useEffect, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import { fadeUpItem, staggerContainer } from "@/lib/motionPresets";
+import {
+  fadeUpItem,
+  motionEase,
+  staggerContainer,
+} from "@/lib/motionPresets";
 import { RighArrow } from "../../icons/Icons";
 import image1 from "../../../../public/images/home-page/hero-section/slide1.png";
 import image2 from "../../../../public/images/home-page/hero-section/slide2.png";
@@ -19,10 +23,10 @@ interface Slide {
 }
 
 const slides: Slide[] = [
-  { image: image1 },
-  { image: image2 },
-  { image: image3 },
-  { image: image4 },
+  { image: image1, objectPosition: "50% 52%" },
+  { image: image2, objectPosition: "50% 46%" },
+  { image: image3, objectPosition: "50% 48%" },
+  { image: image4, objectPosition: "50% 50%" },
 ];
 
 const HeroSlider: React.FC = () => {
@@ -78,13 +82,13 @@ const HeroSlider: React.FC = () => {
   };
 
   return (
-    <div className="relative w-full py-4">
+    <div className="relative w-full py-4 sm:py-8">
       <div className="relative w-full">
         {/* Main Card Container */}
         <div className="relative z-10 w-full overflow-hidden rounded-[24px] shadow-md">
-          {/* Figma: subtle bottom gradient only — image stays clear above */}
+          {/* Subtle Dark Bottom Gradient (Image remains clear) */}
           <div
-            className="pointer-events-none absolute inset-0 z-10 rounded-[24px]"
+            className="absolute inset-0 z-10 rounded-[24px] pointer-events-none"
             style={{
               background:
                 "linear-gradient(188.75deg, rgba(4, 17, 29, 0) 20%, rgba(19, 76, 131, 0.75) 100%)",
@@ -93,48 +97,71 @@ const HeroSlider: React.FC = () => {
 
           {/* Slider Images */}
           <div
-            className="relative min-h-[280px] w-full overflow-hidden h-[calc(100dvh-var(--site-header-height)-var(--hero-section-padding-y))]"
+            className="relative h-[420px] w-full overflow-hidden sm:h-[min(76vh,760px)] sm:min-h-[480px]"
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
           >
-            {slides.map((slide, index) => (
-              <Image
-                key={index}
-                src={
-                  isMobile && slide.mobileImage
-                    ? slide.mobileImage
-                    : slide.image
-                }
-                alt={`Slide ${index + 1}`}
-                fill
-                priority={index === 0}
-                style={{ objectPosition: slide.objectPosition ?? "center center" }}
-                className={`absolute left-0 top-0 h-full w-full object-cover transition-opacity duration-500 ease-in-out ${
-                  index === activeIndex ? "z-0 opacity-100" : "opacity-0"
-                }`}
-              />
-            ))}
+            {slides.map((slide, index) => {
+              const isActive = index === activeIndex;
+
+              return (
+                <motion.div
+                  key={index}
+                  className="absolute inset-0"
+                  initial={false}
+                  animate={
+                    isActive
+                      ? {
+                          opacity: 1,
+                          y: prefersReducedMotion ? "0%" : ["-2.5%", "0%"],
+                        }
+                      : { opacity: 0 }
+                  }
+                  transition={{
+                    opacity: { duration: 0.55, ease: motionEase },
+                    y: { duration: 0.85, ease: motionEase },
+                  }}
+                  style={{ zIndex: isActive ? 1 : 0 }}
+                >
+                  <Image
+                    src={
+                      isMobile && slide.mobileImage
+                        ? slide.mobileImage
+                        : slide.image
+                    }
+                    alt={`Slide ${index + 1}`}
+                    fill
+                    priority={index === 0}
+                    style={{
+                      objectPosition: slide.objectPosition ?? "50% top",
+                    }}
+                    className="object-cover"
+                    sizes="(max-width: 1440px) 100vw, 1440px"
+                  />
+                </motion.div>
+              );
+            })}
           </div>
 
-          {/* Text — bottom-left corner only, narrow column like Figma */}
-          <div className="absolute bottom-0 left-0 z-20 w-full max-w-[calc(100%-2rem)] p-5 font-plusJakartaSans sm:max-w-[460px] sm:p-8 md:max-w-[500px] lg:p-10">
+          {/* Text Overlay & Button */}
+          <div className="absolute inset-0 z-20 flex flex-col items-start justify-end px-5 pb-3 pt-6 font-plusJakartaSans sm:px-10 sm:pb-4 sm:pt-10 md:px-14 md:pb-5 md:pt-12">
             <motion.div
-              className="mb-0"
+              className="max-w-4xl md:max-w-5xl"
               variants={prefersReducedMotion ? undefined : staggerContainer}
               initial={prefersReducedMotion ? false : "hidden"}
               animate={prefersReducedMotion ? false : "visible"}
             >
               <motion.h1
                 variants={prefersReducedMotion ? undefined : fadeUpItem}
-                className="mb-2 text-[26px] font-bold leading-[120%] text-white sm:text-[30px] md:mb-3 md:text-[36px] lg:text-[38px]"
+                className="mb-2 text-balance text-[26px] font-bold leading-[118%] text-white sm:text-[36px] md:mb-3 md:text-[46px]"
               >
                 A better Afghanistan begins with educated girls and empowered
                 youth.
               </motion.h1>
               <motion.p
                 variants={prefersReducedMotion ? undefined : fadeUpItem}
-                className="mb-4 text-[14px] font-normal leading-[130%] text-white/90 md:mb-5 md:text-[16px] lg:text-[18px]"
+                className="mb-3 text-[15px] font-normal leading-[120%] text-white/90 md:mb-4 md:text-[18px]"
               >
                 This is why Change Makers of the World exists.
               </motion.p>
@@ -190,4 +217,3 @@ const HeroSlider: React.FC = () => {
 };
 
 export default HeroSlider;
-
