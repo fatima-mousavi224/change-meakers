@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 
 import { UPDATES_PER_PAGE } from "@/constant/updatesListing";
+
+export const dynamic = "force-dynamic";
 import type { UpdateSort } from "@/constant/updatesListing";
 import { getUpdates } from "@/lib/updatesListing";
 

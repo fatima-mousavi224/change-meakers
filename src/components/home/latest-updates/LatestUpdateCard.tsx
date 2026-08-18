@@ -4,9 +4,10 @@ import type { Post } from "@/types/database";
 import { ArrowRightIcon, CalendarIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 
 import { useUpdateDetailHref } from "@/hooks/useUpdateDetailHref";
+import { buildUpdateDetailHref } from "@/utilities/updateDetailHref";
 
 export type UpdatePost = Post & {
   Category?: {
@@ -37,15 +38,14 @@ function resolvePostImage(post: UpdatePost) {
   return image;
 }
 
-export default function LatestUpdateCard({ post }: LatestUpdateCardProps) {
+function LatestUpdateCardContent({
+  post,
+  detailHref,
+}: LatestUpdateCardProps & { detailHref: string }) {
   const [imageSrc, setImageSrc] = useState(() => resolvePostImage(post));
   const categoryTitle = post.Category?.title ?? "Updates";
   const isRemoteImage =
     imageSrc.startsWith("http") || imageSrc.startsWith("/uploads/");
-  const detailHref = useUpdateDetailHref({
-    id: post.id,
-    shortId: post.shortId,
-  });
 
   useEffect(() => {
     setImageSrc(resolvePostImage(post));
@@ -105,5 +105,29 @@ export default function LatestUpdateCard({ post }: LatestUpdateCardProps) {
         </div>
       </div>
     </article>
+  );
+}
+
+function LatestUpdateCardWithHref({ post }: LatestUpdateCardProps) {
+  const detailHref = useUpdateDetailHref({
+    id: post.id,
+    shortId: post.shortId,
+  });
+
+  return <LatestUpdateCardContent post={post} detailHref={detailHref} />;
+}
+
+export default function LatestUpdateCard({ post }: LatestUpdateCardProps) {
+  const fallbackHref = buildUpdateDetailHref({
+    id: post.id,
+    shortId: post.shortId,
+  });
+
+  return (
+    <Suspense
+      fallback={<LatestUpdateCardContent post={post} detailHref={fallbackHref} />}
+    >
+      <LatestUpdateCardWithHref post={post} />
+    </Suspense>
   );
 }
