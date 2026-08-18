@@ -168,15 +168,15 @@ export default function InitiativeDetailBentoAyc({
           <article
             className={cn(
               BENTO_CARD_CLASS,
-              "order-3 col-span-2 rounded-[12px] px-4 py-3.5 lg:order-none lg:col-span-4 lg:col-start-9 lg:row-start-1 lg:h-full lg:rounded-[18px] lg:px-5 lg:py-5",
+              "order-3 col-span-2 rounded-[12px] px-4 py-3.5 lg:order-none lg:col-span-4 lg:col-start-9 lg:row-start-1 lg:h-full lg:rounded-[18px] lg:px-5 lg:pb-3 lg:pt-4",
             )}
           >
             <p className="font-plusJakartaSans text-[16px] font-bold leading-snug text-[#000000] lg:text-[24px]">
               {youthStats.title}
             </p>
 
-            <div className="mt-3 flex flex-col gap-2.5 lg:mt-4 lg:gap-3">
-              <div className="flex items-center gap-10 sm:gap-12 lg:gap-20">
+            <div className="mt-3 flex flex-col gap-2.5 lg:mt-7 lg:gap-5">
+              <div className="flex w-full items-center justify-between gap-10 sm:gap-12">
                 <div className="flex shrink-0 items-center gap-[3px] lg:gap-1">
                   {Array.from({ length: youthStats.femaleIconCount }).map(
                     (_, index) => (
@@ -188,12 +188,12 @@ export default function InitiativeDetailBentoAyc({
                     ),
                   )}
                 </div>
-                <span className="shrink-0 font-plusJakartaSans text-[12px] font-semibold text-[#575757] lg:text-[16px]">
+                <span className="shrink-0 font-plusJakartaSans text-[12px] font-semibold text-[#575757] mr-4 lg:mr-8 lg:text-[16px]">
                   {youthStats.femaleLabel}
                 </span>
               </div>
 
-              <div className="flex items-center gap-10 sm:gap-12 lg:gap-20">
+              <div className="flex w-full items-center justify-between gap-10 sm:gap-12">
                 <div className="flex shrink-0 items-center gap-[3px] lg:gap-1">
                   {Array.from({ length: youthStats.maleIconCount }).map(
                     (_, index) => (
@@ -205,7 +205,7 @@ export default function InitiativeDetailBentoAyc({
                     ),
                   )}
                 </div>
-                <span className="shrink-0 font-plusJakartaSans text-[12px] font-semibold text-[#575757] lg:text-[16px]">
+                <span className="shrink-0 font-plusJakartaSans text-[12px] font-semibold text-[#575757] mr-4 lg:mr-8 lg:text-[16px]">
                   {youthStats.maleLabel}
                 </span>
               </div>

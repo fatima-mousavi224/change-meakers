@@ -2,8 +2,9 @@ import { notFound } from "next/navigation";
 
 import SiteContainer from "@/components/common/SiteContainer";
 import type { OpportunityItem } from "@/constant/opportunities";
+import { getOpportunityHref } from "@/constant/opportunities";
 import { OPPORTUNITY_DETAIL_SECTION_CLASS } from "@/constant/opportunityDetailLayout";
-import { getOpportunityById } from "@/lib/opportunities";
+import { getOpportunityByParam } from "@/lib/opportunities";
 import OpportunityContentBlocks from "./OpportunityContentBlocks";
 import OpportunityDetailHero from "./OpportunityDetailHero";
 import OpportunityShareFooter from "./OpportunityShareFooter";
@@ -15,7 +16,7 @@ type OpportunityDetailsProps = {
 export default function OpportunityDetails({
   opportunity,
 }: OpportunityDetailsProps) {
-  const sharePath = `/apply/${opportunity.id}`;
+  const sharePath = getOpportunityHref(opportunity);
 
   return (
     <>
@@ -55,8 +56,8 @@ function isDeadlineExpired(deadline: string) {
   return new Date(deadline).getTime() < Date.now();
 }
 
-export async function loadOpportunityDetails(id: string) {
-  const opportunity = await getOpportunityById(id);
+export async function loadOpportunityDetails(param: string) {
+  const opportunity = await getOpportunityByParam(param);
 
   if (!opportunity) {
     notFound();

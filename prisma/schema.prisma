@@ -53,6 +53,8 @@ model Session {
 
 model Post {
   id             String    @id @default(auto()) @map("_id") @db.ObjectId
+  shortId        String?   @unique
+  slug           String?   @unique
   title          String
   excerpt        String?
   description    String
@@ -383,6 +385,8 @@ model Impact {
 
 model Opportunity {
   id               String    @id @default(auto()) @map("_id") @db.ObjectId
+  shortId          String?   @unique
+  slug             String?   @unique
   title            String
   excerpt          String
   content          String

@@ -1,12 +1,11 @@
-import Image from "next/image";
 import Link from "next/link";
 
+import DetailCardHeroBackground from "@/components/common/DetailCardHeroBackground";
 import SiteContainer from "@/components/common/SiteContainer";
 import type { OpportunityItem } from "@/constant/opportunities";
+import { OPPORTUNITIES_BASE_PATH } from "@/constant/opportunities";
 import { OPPORTUNITY_DETAIL_SECTION_CLASS } from "@/constant/opportunityDetailLayout";
 import { cn } from "@/utilities/cn";
-
-const DETAIL_HERO_BACKGROUND = "/images/detailscard-background-image.png";
 
 type OpportunityDetailHeroProps = {
   opportunity: OpportunityItem;
@@ -61,21 +60,13 @@ export default function OpportunityDetailHero({
   return (
     <section className="relative overflow-hidden">
       <div className="relative min-h-[480px] sm:min-h-[520px] lg:min-h-[590px]">
-        <Image
-          src={DETAIL_HERO_BACKGROUND}
-          alt=""
-          fill
-          priority
-          className="object-cover object-center"
-          sizes="100vw"
-          aria-hidden
-        />
+        <DetailCardHeroBackground />
 
         <SiteContainer
           className={`relative py-10 sm:py-12 lg:py-16 ${OPPORTUNITY_DETAIL_SECTION_CLASS}`}
         >
           <Link
-            href="/apply"
+            href={OPPORTUNITIES_BASE_PATH}
             className="inline-flex items-center gap-2 font-plusJakartaSans text-[15px] font-medium text-white transition-opacity hover:opacity-80 sm:text-[16px]"
           >
             <span aria-hidden>←</span>

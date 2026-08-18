@@ -29,7 +29,7 @@ export default function GetInvolvedCard({ item }: GetInvolvedCardProps) {
         {item.description}
       </p>
 
-      <div className="mt-6 flex justify-center">
+      <div className="mt-6 flex justify-start">
         <Link
           href={item.href}
           className="group/btn inline-flex w-fit items-center gap-2 rounded-xl border border-[#D0D5DD] px-5 py-2.5 font-plusJakartaSans text-[13px] font-medium text-black_color transition-colors duration-200 hover:border-primary-50 hover:bg-primary-50 hover:text-white sm:text-[14px]"

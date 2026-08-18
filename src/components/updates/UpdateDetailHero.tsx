@@ -1,14 +1,11 @@
-import Image from "next/image";
-import Link from "next/link";
-
+import DetailCardHeroBackground from "@/components/common/DetailCardHeroBackground";
 import SiteContainer from "@/components/common/SiteContainer";
+import UpdateDetailBackButton from "@/components/updates/UpdateDetailBackButton";
 import type { UpdateDetailItem } from "@/constant/updatesDetail";
 import { OPPORTUNITY_DETAIL_SECTION_CLASS } from "@/constant/opportunityDetailLayout";
 
-const DETAIL_HERO_BACKGROUND = "/images/detailscard-background-image.png";
-
-type UpdateDetailHeroProps = {
-  update: UpdateDetailItem;
+type UpdateDetailHeroProps = {  update: UpdateDetailItem;
+  returnTo?: string | null;
 };
 
 function formatPostedDate(value: string) {
@@ -34,30 +31,18 @@ function DetailField({
   );
 }
 
-export default function UpdateDetailHero({ update }: UpdateDetailHeroProps) {
+export default function UpdateDetailHero({
+  update,
+  returnTo,
+}: UpdateDetailHeroProps) {
   return (
     <section className="relative overflow-hidden">
       <div className="relative min-h-[480px] sm:min-h-[520px] lg:min-h-[590px]">
-        <Image
-          src={DETAIL_HERO_BACKGROUND}
-          alt=""
-          fill
-          priority
-          className="object-cover object-center"
-          sizes="100vw"
-          aria-hidden
-        />
-
+        <DetailCardHeroBackground />
         <SiteContainer
           className={`relative py-10 sm:py-12 lg:py-16 ${OPPORTUNITY_DETAIL_SECTION_CLASS}`}
         >
-          <Link
-            href="/updates"
-            className="inline-flex items-center gap-2 font-plusJakartaSans text-[15px] font-medium text-white transition-opacity hover:opacity-80 sm:text-[16px]"
-          >
-            <span aria-hidden>←</span>
-            <span>Back</span>
-          </Link>
+          <UpdateDetailBackButton returnTo={returnTo} />
 
           <p className="mt-8 font-plusJakartaSans text-[15px] font-medium text-white sm:text-[16px]">
             {update.category}

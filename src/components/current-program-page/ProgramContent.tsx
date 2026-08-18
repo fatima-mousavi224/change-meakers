@@ -38,16 +38,7 @@ export default function ProgramContent({ categoryId }: ProgramContentProps) {
 
   return (
     <div className="mt-4 sm:mt-5 lg:mt-0 lg:min-w-0 lg:flex-1">
-      <div className="lg:hidden">
-        <ProgramTextCard>
-          <div className="flex flex-col gap-10">
-            <ProgramContentSection {...purpose} />
-            <ProgramContentSection {...activities} />
-          </div>
-        </ProgramTextCard>
-      </div>
-
-      <div className="hidden flex-col gap-10 lg:flex">
+      <div className="flex flex-col gap-4 sm:gap-6 lg:gap-10">
         <ProgramTextCard>
           <ProgramContentSection {...purpose} />
         </ProgramTextCard>

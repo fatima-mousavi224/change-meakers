@@ -94,12 +94,12 @@ export default function InitiativeDetailBentoNycp({
           Desktop: resolution | photo | policies + stats
         */}
         <ScrollReveal>
-        <div className="grid grid-cols-[2fr_3fr] items-stretch gap-3 lg:grid-cols-12 lg:grid-rows-2 lg:gap-3">
+        <div className="grid grid-cols-[1.75fr_3.25fr] items-stretch gap-3 lg:grid-cols-12 lg:grid-rows-2 lg:gap-3">
           {/* Afghanistan's First-Ever National Youth Resolution */}
           <article
             className={cn(
               BENTO_CARD_CLASS,
-              "col-start-1 row-start-1 min-h-[188px] rounded-[12px] px-2.5 py-3 sm:min-h-[200px] sm:px-3 sm:py-3.5 lg:col-start-auto lg:row-start-auto lg:col-span-3 lg:row-span-2 lg:min-h-0 lg:rounded-[18px] lg:px-6 lg:py-6",
+              "col-start-1 row-start-1 min-h-[188px] rounded-[12px] px-2.5 py-3 sm:min-h-[200px] sm:px-3 sm:py-3.5 lg:col-start-auto lg:row-start-auto lg:col-span-2 lg:row-span-2 lg:min-h-0 lg:rounded-[18px] lg:px-5 lg:pb-6 lg:pt-8",
             )}
           >
             <div className="flex min-h-0 flex-1 flex-col items-center justify-center">
@@ -115,7 +115,7 @@ export default function InitiativeDetailBentoNycp({
             </div>
 
             {showResolutionLearnMore ? (
-              <div className="mt-auto flex w-full shrink-0 justify-center pt-2 sm:pt-3 lg:pt-3">
+              <div className="mt-auto flex w-full shrink-0 justify-start pt-2 sm:pt-3 lg:pt-3">
                 <LearnMoreTrigger
                   href={resolutionCard.readMoreHref}
                   className="text-[11px] sm:text-[12px] lg:text-[15px]"
@@ -125,13 +125,13 @@ export default function InitiativeDetailBentoNycp({
           </article>
 
           {/* Group photo */}
-          <div className="relative col-start-2 row-start-1 min-h-[188px] overflow-hidden rounded-[12px] sm:min-h-[200px] lg:col-start-auto lg:row-start-auto lg:col-span-4 lg:row-span-2 lg:min-h-0 lg:h-full lg:rounded-[18px]">
+          <div className="relative col-start-2 row-start-1 min-h-[188px] overflow-hidden rounded-[12px] sm:min-h-[200px] lg:col-start-auto lg:row-start-auto lg:col-span-5 lg:row-span-2 lg:min-h-0 lg:h-full lg:rounded-[18px]">
             <Image
               src={section.photoImage}
               alt={section.photoAlt}
               fill
               className="object-cover object-center"
-              sizes="(max-width: 1024px) 58vw, 33vw"
+              sizes="(max-width: 1024px) 62vw, 42vw"
             />
           </div>
 
@@ -140,7 +140,7 @@ export default function InitiativeDetailBentoNycp({
             <article
               className={cn(
                 BENTO_CARD_CLASS,
-                "col-span-2 row-start-2 rounded-[12px] px-3 py-3.5 sm:px-4 sm:py-4 lg:col-span-full lg:row-start-auto lg:rounded-[18px] lg:px-5 lg:py-4",
+                "col-span-2 row-start-2 rounded-[12px] px-3 py-3.5 sm:px-4 sm:py-4 lg:col-span-full lg:row-start-auto lg:rounded-[18px] lg:px-5 lg:py-5",
               )}
             >
               <h3 className="text-center font-plusJakartaSans text-[13px] font-bold text-[#000000] sm:text-[15px] lg:text-[18px]">
@@ -191,7 +191,7 @@ export default function InitiativeDetailBentoNycp({
               <article
                 className={cn(
                   BENTO_CARD_CLASS,
-                  "min-h-[118px] items-center justify-center rounded-[12px] px-1.5 py-2.5 sm:min-h-[128px] sm:px-2 sm:py-3 lg:min-h-0 lg:h-full lg:rounded-[18px] lg:px-4 lg:py-4",
+                  "min-h-[132px] items-center justify-center rounded-[12px] px-2 py-3 sm:min-h-[140px] sm:px-3 sm:py-4 lg:h-full lg:rounded-[18px] lg:px-4 lg:py-4",
                 )}
               >
                 <p className="text-center font-plusJakartaSans text-[10px] font-semibold text-[#575757] sm:text-[11px] lg:text-[14px]">

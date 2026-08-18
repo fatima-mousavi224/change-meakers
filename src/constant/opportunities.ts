@@ -36,6 +36,8 @@ export type { OpportunityContentBlock };
 
 export type OpportunityItem = {
   id: string;
+  shortId: string | null;
+  slug: string | null;
   title: string;
   excerpt: string;
   content: string;
@@ -61,3 +63,23 @@ export type OpportunityListResponse = {
   page: number;
   totalPages: number;
 };
+
+export const OPPORTUNITIES_BASE_PATH = "/opportunities";
+
+/** @deprecated Use OPPORTUNITIES_BASE_PATH */
+export const APPLY_BASE_PATH = OPPORTUNITIES_BASE_PATH;
+
+import { resolvePublicPathSegment } from "@/utilities/slugify";
+
+export type OpportunityLink = Pick<OpportunityItem, "id" | "shortId">;
+
+export function getOpportunityHref(
+  opportunity: OpportunityLink | string,
+) {
+  const segment =
+    typeof opportunity === "string"
+      ? opportunity
+      : resolvePublicPathSegment(opportunity.shortId, opportunity.id);
+
+  return `${OPPORTUNITIES_BASE_PATH}/${encodeURIComponent(segment)}`;
+}

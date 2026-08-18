@@ -1,4 +1,5 @@
 import type { UpdateListItem } from "@/constant/updatesListing";
+import { buildUpdateDetailHref } from "@/utilities/updateDetailHref";
 import { cn } from "@/utilities/cn";
 import { CalendarIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
@@ -55,7 +56,7 @@ export default function UpdateListingCard({
   if (layout === "vertical") {
     return (
       <Link
-        href={`/updates/${update.id}`}
+        href={buildUpdateDetailHref(update)}
         className="group block w-full overflow-hidden rounded-[16px] border border-[#EDEDED] bg-[#F9F9F9] transition-all duration-200 hover:shadow-[0_4px_18px_rgba(0,0,0,0.06)]"
       >
         <div className="relative aspect-[16/10] w-full overflow-hidden rounded-t-[16px]">
@@ -87,7 +88,7 @@ export default function UpdateListingCard({
 
   return (
     <Link
-      href={`/updates/${update.id}`}
+      href={buildUpdateDetailHref(update)}
       className="group flex w-full min-h-[300px] overflow-hidden rounded-[16px] border border-[#EDEDED] bg-[#F9F9F9] p-[13px] transition-all duration-200 hover:shadow-[0_4px_18px_rgba(0,0,0,0.06)]"
     >
       <div className="relative min-h-[272px] w-[43%] shrink-0 overflow-hidden rounded-[10px]">

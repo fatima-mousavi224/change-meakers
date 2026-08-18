@@ -86,6 +86,40 @@ export default function InitiativeAtAGlanceNycp({
     organizationsCard.readMoreHref || organizationsCard.readMoreModal,
   );
 
+  const provincialConsultationsCard = (
+    <article
+      className={cn(
+        CARD_CLASS,
+        "flex h-full min-h-0 flex-col px-2.5 pb-2.5 pt-3 sm:px-4 sm:pb-3 sm:pt-4 lg:px-5 lg:pb-5 lg:pt-10",
+      )}
+    >
+      <h3 className="shrink-0 text-center font-plusJakartaSans text-[10px] font-bold leading-[13px] text-[#000000] max-lg:whitespace-nowrap sm:text-[12px] sm:leading-snug lg:whitespace-normal lg:text-[18px]">
+        {provincialConsultations.title}
+      </h3>
+
+      <p className="mt-1.5 text-center font-plusJakartaSans text-[8px] leading-[11px] text-[#9E9E9E] sm:mt-2 sm:text-[9px] sm:leading-[12px] lg:text-[15px] lg:leading-[26px]">
+        {provincialConsultations.description}
+      </p>
+    </article>
+  );
+
+  const youthRepresentativesCard = (
+    <article
+      className={cn(
+        CARD_CLASS,
+        "flex flex-col items-center justify-center px-2 py-2.5 sm:px-4 sm:py-3 lg:shrink-0 lg:px-5 lg:pb-4 lg:pt-7",
+      )}
+    >
+      <h3 className="text-center font-plusJakartaSans text-[10px] font-bold leading-[13px] text-[#000000] sm:text-[12px] sm:leading-snug lg:text-[18px]">
+        {youthRepresentatives.title}
+      </h3>
+
+      <p className="mx-auto mt-1.5 max-w-none text-center font-plusJakartaSans text-[8px] leading-[11px] text-[#9E9E9E] sm:mt-2 sm:text-[9px] sm:leading-[12px] lg:mt-2.5 lg:max-w-[320px] lg:text-[14px] lg:leading-[24px]">
+        {youthRepresentatives.description}
+      </p>
+    </article>
+  );
+
   return (
     <>
       <SiteContainer as="section" className="pb-4 md:py-3">
@@ -93,26 +127,26 @@ export default function InitiativeAtAGlanceNycp({
           <SectionHeading title="At a Glance" />
         </ScrollReveal>
 
-        <StaggerReveal className="grid grid-cols-2 items-stretch gap-3 lg:grid-cols-3 lg:grid-rows-2 lg:gap-3">
-          <StaggerItem className="col-start-1 row-span-2 row-start-1 h-full lg:col-start-1 lg:row-span-2 lg:row-start-1">
+        <StaggerReveal className="grid grid-cols-[1.08fr_1fr] items-stretch gap-2 lg:grid-cols-12 lg:gap-3">
+          <StaggerItem className="col-start-1 row-span-2 row-start-1 h-full lg:col-span-3 lg:col-start-1 lg:row-span-1">
             <article
               className={cn(
                 CARD_CLASS,
-                "flex h-full min-h-0 flex-col px-3 py-3.5 sm:px-4 sm:py-4 lg:px-6 lg:py-6",
+                "flex h-full min-h-0 flex-col px-2.5 pb-2.5 pt-3 sm:px-4 sm:pb-3 sm:pt-4 lg:px-5 lg:pb-5 lg:pt-10",
               )}
             >
-              <h3 className="shrink-0 text-center font-plusJakartaSans text-[12px] font-bold leading-snug text-[#000000] sm:text-[13px] lg:text-[20px]">
+              <h3 className="shrink-0 text-center font-plusJakartaSans text-[11px] font-bold leading-snug text-[#000000] sm:text-[12px] lg:text-[20px]">
                 {organizationsCard.title}
               </h3>
 
-              <div className="flex min-h-0 flex-1 items-center justify-center py-1 sm:py-2 lg:py-2">
-                <div className="relative mx-auto h-[112px] w-full max-w-none shrink-0 overflow-hidden sm:h-[124px] lg:h-[174px] lg:max-w-[295px]">
+              <div className="flex min-h-0 flex-1 flex-col items-center justify-center py-1 sm:py-2 lg:py-2">
+                <div className="relative mx-auto h-[108px] w-full max-w-none shrink-0 overflow-hidden sm:h-[118px] lg:h-[174px] lg:max-w-[295px]">
                   <Image
                     src={organizationsCard.image}
                     alt={organizationsCard.imageAlt}
                     fill
-                    className="object-contain object-center scale-[1.88] sm:scale-[1.94] lg:scale-[1.96]"
-                    sizes="(max-width: 1024px) 50vw, 300px"
+                    className="object-contain object-center scale-[1.72] sm:scale-[1.78] lg:scale-[1.96]"
+                    sizes="(max-width: 1024px) 52vw, 300px"
                   />
                 </div>
               </div>
@@ -123,65 +157,43 @@ export default function InitiativeAtAGlanceNycp({
                 </p>
 
                 {showLearnMore ? (
-                  <LearnMoreTrigger
-                    href={organizationsCard.readMoreHref}
-                    onClick={
-                      organizationsCard.readMoreModal
-                        ? () => {
-                            window.scrollTo({ top: 0, behavior: "auto" });
-                            setModalContent(organizationsCard.readMoreModal!);
-                          }
-                        : undefined
-                    }
-                    className="text-[11px] sm:text-[12px] lg:text-[15px]"
-                  />
+                  <div className="flex w-full justify-start lg:justify-center">
+                    <LearnMoreTrigger
+                      href={organizationsCard.readMoreHref}
+                      onClick={
+                        organizationsCard.readMoreModal
+                          ? () => {
+                              window.scrollTo({ top: 0, behavior: "auto" });
+                              setModalContent(organizationsCard.readMoreModal!);
+                            }
+                          : undefined
+                      }
+                      className="text-[11px] sm:text-[12px] lg:text-[15px]"
+                    />
+                  </div>
                 ) : null}
               </div>
             </article>
           </StaggerItem>
 
-          <StaggerItem className="col-start-2 row-start-1 h-full lg:col-start-2 lg:row-start-1">
-            <article
-              className={cn(
-                CARD_CLASS,
-                "flex h-full flex-col px-3 py-3.5 sm:px-4 sm:py-4 lg:px-6 lg:py-5",
-              )}
-            >
-              <h3 className="text-center font-plusJakartaSans text-[12px] font-bold leading-snug text-[#000000] sm:text-[13px] lg:text-[18px]">
-                {provincialConsultations.title}
-              </h3>
-
-              <p className="mt-2.5 text-center font-plusJakartaSans text-[9px] leading-[14px] text-[#9E9E9E] sm:mt-3 sm:text-[10px] sm:leading-[15px] lg:text-[14px] lg:leading-[24px]">
-                {provincialConsultations.description}
-              </p>
-            </article>
+          <StaggerItem className="col-start-2 row-span-2 row-start-1 flex h-full min-h-0 flex-col gap-2 lg:hidden">
+            <div className="min-h-0 flex-[1.4]">{provincialConsultationsCard}</div>
+            <div className="shrink-0">{youthRepresentativesCard}</div>
           </StaggerItem>
 
-          <StaggerItem className="col-start-2 row-start-2 h-full lg:col-start-2 lg:row-start-2">
-            <article
-              className={cn(
-                CARD_CLASS,
-                "flex h-full flex-col items-center justify-center px-3 py-3.5 sm:px-4 sm:py-4 lg:px-6 lg:py-6",
-              )}
-            >
-              <h3 className="text-center font-plusJakartaSans text-[12px] font-bold leading-snug text-[#000000] sm:text-[13px] lg:text-[18px]">
-                {youthRepresentatives.title}
-              </h3>
-
-              <p className="mx-auto mt-2 max-w-none text-center font-plusJakartaSans text-[9px] leading-[14px] text-[#9E9E9E] sm:mt-2.5 sm:text-[10px] sm:leading-[15px] lg:mt-2.5 lg:max-w-[320px] lg:text-[14px] lg:leading-[24px]">
-                {youthRepresentatives.description}
-              </p>
-            </article>
+          <StaggerItem className="max-lg:hidden grid h-full min-h-0 grid-rows-[1fr_auto] gap-3 lg:col-span-4 lg:col-start-4">
+            <div className="min-h-0">{provincialConsultationsCard}</div>
+            <div>{youthRepresentativesCard}</div>
           </StaggerItem>
 
-          <StaggerItem className="relative col-span-2 col-start-1 row-start-3 min-h-[240px] sm:min-h-[270px] lg:col-span-1 lg:col-start-3 lg:row-span-2 lg:row-start-1 lg:min-h-0 lg:h-full">
+          <StaggerItem className="relative col-span-2 col-start-1 row-start-3 min-h-[240px] sm:min-h-[270px] lg:col-span-5 lg:col-start-8 lg:row-span-1 lg:min-h-0 lg:h-full">
             <div className="relative h-full min-h-[240px] overflow-hidden rounded-[12px] sm:min-h-[270px] lg:min-h-0 lg:rounded-[18px]">
               <Image
                 src={section.photoImage}
                 alt={section.photoAlt}
                 fill
                 className="object-cover object-center"
-                sizes="(max-width: 1024px) 100vw, 45vw"
+                sizes="(max-width: 1024px) 100vw, 42vw"
               />
             </div>
           </StaggerItem>

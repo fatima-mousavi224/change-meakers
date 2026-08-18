@@ -4,6 +4,7 @@ import {
   getOpportunityById,
   getOpportunityByIdForAdmin,
 } from "@/lib/opportunities";
+import { assignPublicCode } from "@/lib/contentSlug";
 import {
   opportunityUpdateSchema,
   resolveOpportunityContent,
@@ -72,6 +73,18 @@ export async function PATCH(request: Request, { params }: RouteContext) {
 
     const data = parsed.data;
     const updateData: Record<string, unknown> = { ...data };
+
+    const existingOpportunity = await prisma.opportunity.findUnique({
+      where: { id: params.id },
+      select: { shortId: true, postedDate: true, createdAt: true },
+    });
+
+    if (existingOpportunity && !existingOpportunity.shortId) {
+      updateData.shortId = await assignPublicCode(
+        "opportunity",
+        existingOpportunity.postedDate ?? existingOpportunity.createdAt,
+      );
+    }
 
     if (data.deadline) {
       updateData.deadline = new Date(data.deadline);

@@ -168,11 +168,11 @@ const HeroSlider: React.FC = () => {
               <motion.div variants={prefersReducedMotion ? undefined : fadeUpItem}>
                 <Link
                   href="/about"
-                  className="group inline-flex items-center justify-center gap-2 rounded-[12px] bg-white px-5 py-2.5 text-sm font-medium text-[#252525] shadow transition-colors duration-200 hover:bg-gray-100 md:text-base"
+                  className="group inline-flex items-center justify-center gap-1 rounded-[8px] bg-white px-3 py-1.5 text-[12px] font-medium text-[#252525] shadow-sm transition-colors duration-200 hover:bg-gray-100 sm:gap-2 sm:rounded-[12px] sm:px-5 sm:py-2.5 sm:text-sm sm:shadow md:text-base"
                 >
                   <span>Who We Are</span>
                   <span className="inline-flex items-center justify-center transition-transform duration-300 ease-out group-hover:translate-x-1.5">
-                    <RighArrow className="h-3 w-3 text-[#252525]" />
+                    <RighArrow className="h-2 w-2 text-[#252525] sm:h-3 sm:w-3" />
                   </span>
                 </Link>
               </motion.div>

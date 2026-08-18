@@ -4,7 +4,7 @@ import PostFormModal from "@/app/(admin-dashboard)/admin/_components/PostFormMod
 import NullDataMessage from "@/components/null-data/NullDataMessage";
 import { truncateText } from "@/utilities/truncateText";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-import { Category, Post } from "@prisma/client";
+import { Post } from "@prisma/client";
 import { Pencil, Trash2 } from "lucide-react";
 import moment from "moment";
 import Image from "next/image";
@@ -12,13 +12,15 @@ import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 
+import type { UpdateFormCategory } from "@/lib/updateCategories";
+
 type PostWithCategory = Post & {
-  Category: Category | null;
+  Category: { id: string; title: string } | null;
 };
 
 interface ManagePostTableProps {
   posts: PostWithCategory[];
-  categories: Category[];
+  categories: UpdateFormCategory[];
 }
 
 export default function ManagePostTable({

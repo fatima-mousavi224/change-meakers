@@ -22,6 +22,8 @@ export type PostImage = {
 
 export type Post = {
   id: string;
+  shortId?: string | null;
+  slug?: string | null;
   title: string;
   excerpt?: string | null;
   description: string;

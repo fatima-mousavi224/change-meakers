@@ -16,13 +16,48 @@ const nextConfig = {
   async redirects() {
     return [
       {
+        source: "/programs",
+        destination: "/current-programs",
+        permanent: true,
+      },
+      {
+        source: "/programs/:path*",
+        destination: "/current-programs",
+        permanent: true,
+      },
+      {
         source: "/girls-education",
-        destination: "/current-programs/girls-education",
+        destination: "/current-programs?tab=girls-education",
         permanent: true,
       },
       {
         source: "/advocacy",
-        destination: "/current-programs/advocacy",
+        destination: "/current-programs?tab=advocacy",
+        permanent: true,
+      },
+      {
+        source: "/current-programs/girls-education",
+        destination: "/current-programs?tab=girls-education",
+        permanent: true,
+      },
+      {
+        source: "/current-programs/advocacy",
+        destination: "/current-programs?tab=advocacy",
+        permanent: true,
+      },
+      {
+        source: "/current-programs/youth-empowerment",
+        destination: "/current-programs",
+        permanent: true,
+      },
+      {
+        source: "/apply",
+        destination: "/opportunities",
+        permanent: true,
+      },
+      {
+        source: "/apply/:id",
+        destination: "/opportunities/:id",
         permanent: true,
       },
     ];

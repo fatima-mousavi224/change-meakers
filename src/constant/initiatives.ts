@@ -44,9 +44,7 @@ export const INITIATIVES: Initiative[] = [
       "An online platform for Afghan youth to receive free educational materials",
     image: "/images/Initiatives/digtal-libray.png",
     logo: "/images/Initiatives/digtal-libray-logo.png",
-    buttonText: "Donate Now",
-    donateUrl:
-      "https://www.gofundme.com/f/HelpAfghanGirlsLearn/donate?attribution_id=undefined&utm_campaign=unknown&utm_medium=customer&utm_source=website_widget",
+    buttonText: "Learn More",
   },
   {
     id: "maktab-dar-khana",

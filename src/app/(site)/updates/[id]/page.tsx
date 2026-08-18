@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import { redirect } from "next/navigation";
 
 import InitiativeDetails from "@/components/initiatives/InitiativeDetails";
 import UpdateDetails, {
@@ -7,11 +8,18 @@ import UpdateDetails, {
 import { siteConfig } from "@/constant/config";
 import { INITIATIVES } from "@/constant/initiatives";
 import { getInitiativeDetail } from "@/lib/initiativeDetails";
-import { getUpdateById } from "@/lib/updateDetails";
+import { getUpdateByParam } from "@/lib/updateDetails";
+import {
+  buildUpdateDetailHref,
+  getUpdateDetailPath,
+} from "@/utilities/updateDetailHref";
 
 type UpdateDetailPageProps = {
   params: {
     id: string;
+  };
+  searchParams?: {
+    from?: string;
   };
 };
 
@@ -33,7 +41,7 @@ export async function generateMetadata({
     };
   }
 
-  const post = await getUpdateById(params.id);
+  const post = await getUpdateByParam(params.id);
 
   if (!post) {
     return { title: "Not Found" };
@@ -64,6 +72,7 @@ export async function generateMetadata({
 
 export default async function UpdateDetailPage({
   params,
+  searchParams,
 }: UpdateDetailPageProps) {
   const initiative = getInitiativeDetail(params.id);
 
@@ -72,6 +81,11 @@ export default async function UpdateDetailPage({
   }
 
   const update = await loadUpdateDetails(params.id);
+  const returnTo = searchParams?.from ?? null;
 
-  return <UpdateDetails update={update} />;
+  if (params.id !== getUpdateDetailPath(update).replace("/updates/", "")) {
+    redirect(buildUpdateDetailHref(update, returnTo));
+  }
+
+  return <UpdateDetails update={update} returnTo={returnTo} />;
 }

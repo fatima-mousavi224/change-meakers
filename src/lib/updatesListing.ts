@@ -23,7 +23,7 @@ function stripHtml(value: string) {
     .trim();
 }
 
-function buildCategoryFilter(category: string) {
+export function buildCategoryFilter(category: string) {
   if (category === "All Updates") {
     return {};
   }
@@ -41,6 +41,8 @@ function buildCategoryFilter(category: string) {
 
 function serializeUpdate(post: {
   id: string;
+  shortId?: string | null;
+  slug?: string | null;
   title: string;
   excerpt?: string | null;
   description: string;
@@ -54,6 +56,8 @@ function serializeUpdate(post: {
 
   return {
     id: post.id,
+    shortId: post.shortId ?? null,
+    slug: post.slug ?? null,
     title: post.title,
     excerpt: post.excerpt?.trim() || stripHtml(post.description),
     category: post.Category?.title ?? "Updates",

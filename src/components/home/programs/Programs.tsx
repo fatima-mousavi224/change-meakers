@@ -25,7 +25,9 @@ import {
   Quotation,
 } from "@prisma/client";
 import { CiCalendar } from "react-icons/ci";
-import { FaLink, FaLinkedinIn } from "react-icons/fa6";
+import BrandSocialIcon from "@/components/common/BrandSocialIcon";
+import { SOCIAL_ICON_SRC } from "@/constant/socialLinks";
+import { FaLink } from "react-icons/fa6";
 import { TfiReload } from "react-icons/tfi";
 import { cn } from "utilities/cn";
 import leftQute from "../../../../public/images/home-page/leftQuete.png";
@@ -706,7 +708,13 @@ const Programs = ({
                                   className="size-8 mx-auto bg-blue-600 text-white rounded"
                                 />
                               ) : (
-                                <FaLinkedinIn className="size-8 mx-auto bg-blue-600 text-white rounded" />
+                                <span className="mx-auto inline-flex size-10 items-center justify-center rounded-[12px] border border-gray-100/50 bg-[#F2F4F7]">
+                                  <BrandSocialIcon
+                                    src={SOCIAL_ICON_SRC.linkedin}
+                                    size={28}
+                                    className="size-7"
+                                  />
+                                </span>
                               )}
                             </Link>
                           )}
@@ -829,7 +837,13 @@ const Programs = ({
                                   className="size-8 mx-auto bg-blue-600 text-white rounded"
                                 />
                               ) : (
-                                <FaLinkedinIn className="size-8 mx-auto bg-blue-600 text-white rounded" />
+                                <span className="mx-auto inline-flex size-10 items-center justify-center rounded-[12px] border border-gray-100/50 bg-[#F2F4F7]">
+                                  <BrandSocialIcon
+                                    src={SOCIAL_ICON_SRC.linkedin}
+                                    size={28}
+                                    className="size-7"
+                                  />
+                                </span>
                               )}
                             </Link>
                           )}

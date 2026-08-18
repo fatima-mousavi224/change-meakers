@@ -2,6 +2,8 @@ import type { OpportunityContentBlock } from "@/constant/opportunityContentBlock
 
 export type UpdateDetailItem = {
   id: string;
+  shortId: string | null;
+  slug: string | null;
   title: string;
   excerpt: string;
   category: string;

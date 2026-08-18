@@ -59,11 +59,7 @@ export const navigation = [
     href: "/current-programs",
     icon: "/images/navbar/2.svg",
   },
-  {
-    name: "Opportunities",
-    href: "/apply",
-    icon: "/images/navbar/3.svg",
-  },
+  { name: "Opportunities", href: "/opportunities", icon: "/images/navbar/3.svg" },
   {
     name: "Updates",
     href: "/updates",
@@ -80,7 +76,7 @@ export const mobileNavigation = [
   { name: "Home", href: "/" },
   { name: "About", href: "/about" },
   { name: "Programs", href: "/current-programs" },
-  { name: "Opportunities", href: "/apply" },
+  { name: "Opportunities", href: "/opportunities" },
   { name: "Updates", href: "/updates" },
   { name: "Contact", href: "/contact" },
 ];

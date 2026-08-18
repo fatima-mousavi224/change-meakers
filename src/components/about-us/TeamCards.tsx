@@ -9,30 +9,29 @@ import {
   type LeadershipSocialLink,
   type LeadershipSocialType,
 } from "@/constant/aboutLeadership";
+import BrandSocialIcon from "@/components/common/BrandSocialIcon";
+import { SOCIAL_ICON_SRC } from "@/constant/socialLinks";
 import { cn } from "@/utilities/cn";
 import { ArrowRightIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import {
-  FaFacebookF,
-  FaGlobe,
-  FaInstagram,
-  FaLinkedinIn,
-  FaXTwitter,
-} from "react-icons/fa6";
+import { FaFacebookF, FaGlobe } from "react-icons/fa6";
 import { motion } from "framer-motion";
 import type { IconType } from "react-icons";
 
 const FOOTER_HEIGHT = 92;
 const HOVER_TOP_GAP = 29;
 
-const SOCIAL_ICONS: Record<LeadershipSocialType, IconType> = {
+const SOCIAL_FALLBACK_ICONS: Partial<Record<LeadershipSocialType, IconType>> = {
   website: FaGlobe,
-  linkedin: FaLinkedinIn,
-  instagram: FaInstagram,
-  x: FaXTwitter,
   facebook: FaFacebookF,
+};
+
+const SOCIAL_ICON_SRC_MAP: Partial<Record<LeadershipSocialType, string>> = {
+  linkedin: SOCIAL_ICON_SRC.linkedin,
+  instagram: SOCIAL_ICON_SRC.instagram,
+  x: SOCIAL_ICON_SRC.x,
 };
 
 const SOCIAL_LABELS: Record<LeadershipSocialType, string> = {
@@ -49,7 +48,8 @@ function LeadershipSocialIcon({
   social: LeadershipSocialLink;
 }) {
   const label = SOCIAL_LABELS[social.type];
-  const Icon = SOCIAL_ICONS[social.type];
+  const iconSrc = SOCIAL_ICON_SRC_MAP[social.type];
+  const Icon = SOCIAL_FALLBACK_ICONS[social.type];
 
   return (
     <motion.div
@@ -73,10 +73,14 @@ function LeadershipSocialIcon({
         target="_blank"
         rel="noopener noreferrer"
         aria-label={label}
-        className="flex size-10 items-center justify-center rounded-[10px] bg-[#134C8333] text-[#134C83] transition-all duration-300 hover:bg-[#C5DFF5] hover:shadow-[0_8px_20px_rgba(19,76,131,0.18)]"
+        className="flex size-10 items-center justify-center rounded-[12px] border border-gray-100/50 bg-[#F2F4F7] text-[#134C83] transition-[transform,background-color] duration-200 ease-out hover:scale-110 hover:bg-[#E4E7EC] active:scale-95"
         onClick={(event) => event.stopPropagation()}
       >
-        <Icon className="size-5" aria-hidden />
+        {iconSrc ? (
+          <BrandSocialIcon src={iconSrc} size={28} className="size-7" />
+        ) : Icon ? (
+          <Icon className="size-5" aria-hidden />
+        ) : null}
       </Link>
     </motion.div>
   );

@@ -11,6 +11,8 @@ import { GoArrowUpRight } from "react-icons/go";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+
+import { buildUpdateDetailHref } from "@/utilities/updateDetailHref";
 import NoDataMessage from "@/components/common/NoDataMessage";
 import SiteContainer from "@/components/common/SiteContainer";
 
@@ -95,7 +97,10 @@ const LatestNews = ({ posts }: NewsStoriesProps) => {
               className="bg-white rounded-3xl shadow-sm shadow-gray-500 overflow-hidden"
             >
               <Link
-                href={`/updates/${item.id}`}
+                href={buildUpdateDetailHref(
+                  { id: item.id, shortId: item.shortId },
+                  "/",
+                )}
                 key={index}
                 className="no-underline cursor-pointer"
               >

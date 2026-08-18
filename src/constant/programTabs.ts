@@ -21,11 +21,31 @@ export type ProgramCategory = {
   activities: ProgramSection;
 };
 
+export const PROGRAMS_BASE_PATH = "/current-programs";
+
+export function getProgramCategoryHref(id: ProgramCategoryId): string {
+  if (id === "youth-empowerment") {
+    return PROGRAMS_BASE_PATH;
+  }
+
+  return `${PROGRAMS_BASE_PATH}?tab=${id}`;
+}
+
+export function resolveProgramCategoryId(
+  tab: string | undefined,
+): ProgramCategoryId {
+  if (tab && isProgramCategoryId(tab)) {
+    return tab;
+  }
+
+  return "youth-empowerment";
+}
+
 export const PROGRAM_CATEGORIES: ProgramCategory[] = [
   {
     id: "youth-empowerment",
     label: "Youth Empowerment",
-    href: "/current-programs",
+    href: getProgramCategoryHref("youth-empowerment"),
     icon: Users,
     heroImage: "/images/program-hero-image.jpg",
     heroImagePosition: "center_28%",
@@ -50,7 +70,7 @@ export const PROGRAM_CATEGORIES: ProgramCategory[] = [
   {
     id: "girls-education",
     label: "Girls' Education",
-    href: "/current-programs/girls-education",
+    href: getProgramCategoryHref("girls-education"),
     icon: GraduationCap,
     heroImage: "/images/girls-education-hero-image.jpg",
     heroImagePosition: "center center",
@@ -76,7 +96,7 @@ export const PROGRAM_CATEGORIES: ProgramCategory[] = [
   {
     id: "advocacy",
     label: "Advocacy",
-    href: "/current-programs/advocacy",
+    href: getProgramCategoryHref("advocacy"),
     icon: Megaphone,
     heroImage: "/images/advocacy-hero-image.jpg",
     heroImagePosition: "center center",
@@ -116,6 +136,19 @@ export function getProgramRelatedInitiativeIds(
 ): string[] | undefined {
   const ids = PROGRAM_RELATED_INITIATIVE_IDS[categoryId];
   return ids ? [...ids] : undefined;
+}
+
+/** Update listing category used to filter Related Updates on each program tab. */
+export const PROGRAM_TO_UPDATE_CATEGORY: Record<ProgramCategoryId, string> = {
+  "youth-empowerment": "Youth Empowerment",
+  "girls-education": "Girls' Education",
+  advocacy: "Advocacy",
+};
+
+export function getProgramUpdateCategory(
+  categoryId: ProgramCategoryId,
+): string {
+  return PROGRAM_TO_UPDATE_CATEGORY[categoryId];
 }
 
 export const PROGRAM_CATEGORY_IDS = PROGRAM_CATEGORIES.map(

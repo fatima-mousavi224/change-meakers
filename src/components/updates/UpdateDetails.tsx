@@ -5,19 +5,21 @@ import OpportunityContentBlocks from "@/components/opportunities/OpportunityCont
 import OpportunityShareFooter from "@/components/opportunities/OpportunityShareFooter";
 import type { UpdateDetailItem } from "@/constant/updatesDetail";
 import { OPPORTUNITY_DETAIL_SECTION_CLASS } from "@/constant/opportunityDetailLayout";
-import { getUpdateById } from "@/lib/updateDetails";
+import { getUpdateByParam } from "@/lib/updateDetails";
+import { getUpdateDetailPath } from "@/utilities/updateDetailHref";
 import UpdateDetailHero from "./UpdateDetailHero";
 
 type UpdateDetailsProps = {
   update: UpdateDetailItem;
+  returnTo?: string | null;
 };
 
-export default function UpdateDetails({ update }: UpdateDetailsProps) {
-  const sharePath = `/updates/${update.id}`;
+export default function UpdateDetails({ update, returnTo }: UpdateDetailsProps) {
+  const sharePath = getUpdateDetailPath(update);
 
   return (
     <>
-      <UpdateDetailHero update={update} />
+      <UpdateDetailHero update={update} returnTo={returnTo} />
 
       <SiteContainer
         as="main"
@@ -37,8 +39,8 @@ export default function UpdateDetails({ update }: UpdateDetailsProps) {
   );
 }
 
-export async function loadUpdateDetails(id: string) {
-  const update = await getUpdateById(id);
+export async function loadUpdateDetails(param: string) {
+  const update = await getUpdateByParam(param);
 
   if (!update) {
     notFound();

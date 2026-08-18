@@ -4,6 +4,7 @@ import OurInitiatives from "@/components/home/our-initiatives/OurInitiatives";
 import LatestUpdates from "@/components/home/latest-updates/LatestUpdates";
 import {
   getProgramRelatedInitiativeIds,
+  getProgramUpdateCategory,
   type ProgramCategoryId,
 } from "@/constant/programTabs";
 
@@ -28,6 +29,7 @@ export default function ProgramRelatedSections({
       <LatestUpdates
         title="Related Updates"
         posts={posts}
+        expandCategory={getProgramUpdateCategory(activeCategoryId)}
         viewAllText="View More"
         collapseText="Show Less"
         viewAllMode="expand"

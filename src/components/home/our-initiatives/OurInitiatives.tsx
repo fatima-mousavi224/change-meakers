@@ -12,6 +12,7 @@ import InitiativeCard from "./InitiativeCard";
 
 const AUTO_PLAY_MS = 3000;
 const MOBILE_BREAKPOINT = 1024;
+const MOBILE_GAP_PX = 16;
 const DESKTOP_GAP_PX = 20;
 /** Each desktop page advances by 2 cards so the next view overlaps the last 2. */
 const DESKTOP_PAGE_STEP = 2;
@@ -40,6 +41,7 @@ export default function OurInitiatives({
   const [desktopCardWidthPx, setDesktopCardWidthPx] = useState(0);
   const mobileScrollRef = useRef<HTMLDivElement>(null);
   const desktopViewportRef = useRef<HTMLDivElement>(null);
+  const isSyncingScrollRef = useRef(false);
 
   const initiatives = useMemo(() => {
     if (!initiativeIds?.length) {
@@ -115,13 +117,46 @@ export default function OurInitiatives({
     if (!isMobile || !mobileScrollRef.current) return;
 
     const container = mobileScrollRef.current;
+
+    const handleScroll = () => {
+      if (isSyncingScrollRef.current) return;
+
+      const card = container.querySelector<HTMLElement>("[data-initiative-slide]");
+      if (!card) return;
+
+      const slideStride = card.offsetWidth + MOBILE_GAP_PX;
+      const nextPage = Math.round(container.scrollLeft / slideStride);
+      const clampedPage = Math.max(0, Math.min(nextPage, totalPages - 1));
+
+      setCurrentPage((page) => (page === clampedPage ? page : clampedPage));
+    };
+
+    container.addEventListener("scroll", handleScroll, { passive: true });
+
+    return () => container.removeEventListener("scroll", handleScroll);
+  }, [isMobile, totalPages]);
+
+  useEffect(() => {
+    if (!isMobile || !mobileScrollRef.current) return;
+
+    const container = mobileScrollRef.current;
     const card = container.querySelector<HTMLElement>("[data-initiative-slide]");
     if (!card) return;
 
+    const targetLeft = currentPage * (card.offsetWidth + MOBILE_GAP_PX);
+    if (Math.abs(container.scrollLeft - targetLeft) <= 2) return;
+
+    isSyncingScrollRef.current = true;
     container.scrollTo({
-      left: currentPage * (card.offsetWidth + DESKTOP_GAP_PX),
+      left: targetLeft,
       behavior: "smooth",
     });
+
+    const timeout = window.setTimeout(() => {
+      isSyncingScrollRef.current = false;
+    }, 400);
+
+    return () => window.clearTimeout(timeout);
   }, [currentPage, isMobile]);
 
   const pauseCarousel = () => setIsPaused(true);
@@ -193,19 +228,25 @@ export default function OurInitiatives({
       </div>
 
       {totalPages > 1 ? (
-        <div className="mt-8 flex h-3 items-center justify-center gap-2.5">
+        <div
+          className="mt-8 flex items-center justify-center gap-2"
+          role="tablist"
+          aria-label="Initiatives carousel pages"
+        >
           {Array.from({ length: totalPages }).map((_, index) => (
             <button
               key={index}
               type="button"
+              role="tab"
               aria-label={`Go to initiatives page ${index + 1}`}
-              aria-current={index === currentPage ? "true" : undefined}
+              aria-selected={index === currentPage}
               onClick={() => setCurrentPage(index)}
-              className={`size-3 rounded-full transition-colors duration-300 ${
+              className={cn(
+                "h-2 rounded-full transition-all duration-300 ease-out",
                 index === currentPage
-                  ? "bg-primary-50"
-                  : "bg-[#D0D5DD] hover:bg-primary-50/50"
-              }`}
+                  ? "w-7 bg-primary-50"
+                  : "w-2 bg-[#D0D5DD] hover:bg-primary-50/45",
+              )}
             />
           ))}
         </div>

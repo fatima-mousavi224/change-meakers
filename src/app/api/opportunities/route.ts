@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { OPPORTUNITIES_PER_PAGE } from "@/constant/opportunities";
+import { assignPublicCode } from "@/lib/contentSlug";
 import { getOpportunities } from "@/lib/opportunities";
 import {
   opportunityWriteSchema,
@@ -61,10 +62,13 @@ export async function POST(request: Request) {
 
     const data = parsed.data;
     const { content, contentBlocks } = resolveOpportunityContent(data);
+    const postedDate = data.postedDate ? new Date(data.postedDate) : new Date();
+    const shortId = await assignPublicCode("opportunity", postedDate);
 
     const opportunity = await prisma.opportunity.create({
       data: {
         title: data.title,
+        shortId,
         excerpt: data.excerpt,
         content,
         contentBlocks,

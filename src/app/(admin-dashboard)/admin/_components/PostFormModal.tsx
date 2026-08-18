@@ -8,13 +8,14 @@ import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react";
 import { PhotoIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { uploadCardImage } from "lib/uploadCardImage";
-import { Category } from "@prisma/client";
 import { X } from "lucide-react";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
+
+import type { UpdateFormCategory } from "@/lib/updateCategories";
 
 import OpportunityContentBlocksEditor, {
   contentBlocksToEditable,
@@ -44,7 +45,7 @@ function resolveStoredImageUrl(preview: string | null, url: string | null) {
 interface PostFormModalProps {
   open: boolean;
   setOpen: (open: boolean) => void;
-  categories: Category[];
+  categories: UpdateFormCategory[];
 }
 
 function ImageUploadField({
@@ -121,9 +122,14 @@ export default function PostFormModal({
     createDefaultEditableBlocks()
   );
   const [cardImagePreview, setCardImagePreview] = useState<string | null>(null);
+  const [categoryOptions, setCategoryOptions] = useState(categories);
 
   const cardImageRef = useRef<ImageState>(emptyImageState());
   const loadedKeyRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    setCategoryOptions(categories);
+  }, [categories]);
 
   const setCardImageState = (next: ImageState) => {
     cardImageRef.current = next;
@@ -159,12 +165,13 @@ export default function PostFormModal({
           title: "",
           excerpt: "",
           author: "",
-          categoryId: categories[0]?.id ?? "",
+          categoryId: categoryOptions[0]?.id ?? "",
           postDate: "",
           showInHome: false,
         });
         resetImages();
         setContentBlocks(createDefaultEditableBlocks());
+        setCategoryOptions(categories);
         return;
       }
 
@@ -172,6 +179,18 @@ export default function PostFormModal({
         setIsDataPopulated(true);
         const res = await axios.get(`/api/post/${postId}`);
         const data = res.data;
+
+        if (
+          data.Category &&
+          !categories.some((category) => category.id === data.categoryId)
+        ) {
+          setCategoryOptions([
+            ...categories,
+            { id: data.Category.id, title: data.Category.title },
+          ]);
+        } else {
+          setCategoryOptions(categories);
+        }
 
         reset({
           title: data.title || "",
@@ -187,7 +206,7 @@ export default function PostFormModal({
         });
 
         setCardImageState({
-          file: null,
+              file: null,
           url: data.authorImage?.image || null,
           preview: data.authorImage?.image || null,
         });
@@ -262,7 +281,7 @@ export default function PostFormModal({
 
         let src = block.src.trim();
         if (!src && block.file) {
-          setLoading(true);
+        setLoading(true);
           src = await uploadCardImage(block.file);
           setLoading(false);
         }
@@ -323,12 +342,12 @@ export default function PostFormModal({
         showInHome: Boolean(formData.showInHome),
         authorImage: { image: finalCardImage },
         contentBlocks: resolvedContentBlocks,
-      };
+    };
 
-      if (postId) {
+    if (postId) {
         await axios.patch(`/api/post/${postId}`, payload);
         toast.success("Update saved successfully");
-      } else {
+    } else {
         await axios.post("/api/post", payload);
         toast.success("Update created successfully");
       }
@@ -379,7 +398,7 @@ export default function PostFormModal({
                   <label className="block text-sm font-medium text-gray-700">
                     Title
                   </label>
-                  <input
+                      <input
                     {...register("title", { required: "Title is required" })}
                     className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2"
                   />
@@ -399,7 +418,7 @@ export default function PostFormModal({
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
+                <div>
                     <label className="block text-sm font-medium text-gray-700">
                       Category
                     </label>
@@ -407,22 +426,22 @@ export default function PostFormModal({
                       {...register("categoryId", { required: true })}
                       className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2"
                     >
-                      {categories.map((category) => (
+                      {categoryOptions.map((category) => (
                         <option key={category.id} value={category.id}>
                           {category.title}
                         </option>
                       ))}
                     </select>
-                  </div>
-                  <div>
+                </div>
+                <div>
                     <label className="block text-sm font-medium text-gray-700">
-                      Post Date
-                    </label>
-                    <input
-                      type="date"
+                    Post Date
+                  </label>
+                      <input
+                        type="date"
                       {...register("postDate", { required: true })}
                       className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2"
-                    />
+                      />
                   </div>
                 </div>
 
@@ -430,7 +449,7 @@ export default function PostFormModal({
                   <label className="block text-sm font-medium text-gray-700">
                     Author
                   </label>
-                  <input
+                            <input
                     {...register("author", { required: "Author is required" })}
                     className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2"
                   />
@@ -442,7 +461,7 @@ export default function PostFormModal({
                   preview={cardImagePreview}
                   onFileSelect={(file) =>
                     setCardImageState({
-                      file,
+                                      file,
                       url: null,
                       preview: URL.createObjectURL(file),
                     })
@@ -460,11 +479,11 @@ export default function PostFormModal({
                 <label className="flex items-center gap-2 text-sm text-gray-700">
                   <input type="checkbox" {...register("showInHome")} />
                   Show on home page
-                </label>
+                          </label>
 
                 <div className="flex justify-end gap-3 pt-4">
-                  <button
-                    type="button"
+                                <button
+                                  type="button"
                     onClick={handleClose}
                     className="rounded-md border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700"
                   >
@@ -477,8 +496,8 @@ export default function PostFormModal({
                   >
                     {isSubmitting ? "Saving..." : "Save Update"}
                   </button>
-                </div>
-              </form>
+              </div>
+            </form>
             )}
           </DialogPanel>
         </div>

@@ -3,8 +3,10 @@ import { NextResponse } from "next/server";
 
 
 import { postWriteSchema, resolvePostContent } from "@/lib/postValidation";
-
+import { assignPublicCode } from "@/lib/contentSlug";
 import prisma from "@/lib/prismaDB";
+
+import { buildCategoryFilter } from "@/lib/updatesListing";
 
 import { requireAdmin } from "@/utilities/requireAdmin";
 
@@ -46,6 +48,9 @@ export async function POST(request: Request) {
 
     const { description, contentBlocks } = resolvePostContent(data);
 
+    const postDate = formatDateToISOString(data.postDate) ?? new Date();
+    const shortId = await assignPublicCode("post", postDate);
+
 
 
     const post = await prisma.post.create({
@@ -53,6 +58,8 @@ export async function POST(request: Request) {
       data: {
 
         title: data.title,
+
+        shortId,
 
         excerpt: data.excerpt,
 
@@ -103,12 +110,14 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
 
     const categoryId = searchParams.get("categoryId");
-
-
+    const categoryTitle = searchParams.get("categoryTitle");
 
     const where =
-
-      categoryId && categoryId.trim() !== "" ? { categoryId } : undefined;
+      categoryTitle && categoryTitle.trim() !== ""
+        ? buildCategoryFilter(categoryTitle)
+        : categoryId && categoryId.trim() !== ""
+          ? { categoryId }
+          : undefined;
 
 
 

@@ -1,7 +1,7 @@
 export const UPDATE_CATEGORIES = [
   "All Updates",
   "Youth Empowerment",
-  "Girls Education",
+  "Girls' Education",
   "Advocacy",
   "Organization News",
   "Stories",
@@ -20,6 +20,8 @@ export const UPDATES_PER_PAGE = 4;
 
 export type UpdateListItem = {
   id: string;
+  shortId: string | null;
+  slug: string | null;
   title: string;
   excerpt: string;
   category: string;
@@ -36,5 +38,11 @@ export type UpdateListResponse = {
 };
 
 export const CATEGORY_TITLE_ALIASES: Record<string, string[]> = {
-  "Girls Education": ["Girls Education", "Girls' Education"],
+  "Girls' Education": ["Girls' Education", "Girls Education"],
 };
+
+/** Categories admins can assign to an update (matches public filter list, minus "All Updates"). */
+export const UPDATE_ASSIGNABLE_CATEGORIES = UPDATE_CATEGORIES.filter(
+  (category): category is Exclude<UpdateCategory, "All Updates"> =>
+    category !== "All Updates",
+);

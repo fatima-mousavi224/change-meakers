@@ -7,6 +7,8 @@ import moment from "moment";
 import NoDataMessage from "@/components/common/NoDataMessage";
 import Link from "next/link";
 
+import { buildUpdateDetailHref } from "@/utilities/updateDetailHref";
+
 interface NewStoriesImageProps {
   filteredPosts: Post[];
 }
@@ -25,7 +27,12 @@ export default function NewStoriesImage({
         {/* Big image */}
         {filteredPosts[0] && (
           <div className="lg:w-[60%] w-full h-[528px] rounded-[20px] overflow-hidden relative">
-            <Link href={`/updates/${filteredPosts[0]?.id}`}>
+            <Link
+              href={buildUpdateDetailHref(
+                { id: filteredPosts[0].id, shortId: filteredPosts[0].shortId },
+                "/",
+              )}
+            >
               <Image
                 src={filteredPosts[0]?.postImages[0]?.image || ""}
                 alt="Big story"
@@ -66,7 +73,12 @@ export default function NewStoriesImage({
           {/* Top smaller image */}
           {filteredPosts[1] && (
             <div className="w-full h-[272px] rounded-[20px] overflow-hidden relative">
-              <Link href={`/updates/${filteredPosts[1]?.id}`}>
+              <Link
+                href={buildUpdateDetailHref(
+                  { id: filteredPosts[1].id, shortId: filteredPosts[1].shortId },
+                  "/",
+                )}
+              >
                 <Image
                   src={filteredPosts[1]?.postImages[0]?.image || ""}
                   alt="Small story"
@@ -109,7 +121,12 @@ export default function NewStoriesImage({
                 key={index}
                 className="w-[calc(50%-0.5rem)] h-[236px] rounded-[20px] overflow-hidden relative"
               >
-                <Link href={`/updates/${post?.id}`}>
+                <Link
+                  href={buildUpdateDetailHref(
+                    { id: post.id, shortId: post.shortId },
+                    "/",
+                  )}
+                >
                   <Image
                     src={post?.postImages[0]?.image || ""}
                     alt={`Small story ${index + 2}`}

@@ -6,6 +6,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
+import { useUpdateDetailHref } from "@/hooks/useUpdateDetailHref";
+
 export type UpdatePost = Post & {
   Category?: {
     title: string;
@@ -40,7 +42,10 @@ export default function LatestUpdateCard({ post }: LatestUpdateCardProps) {
   const categoryTitle = post.Category?.title ?? "Updates";
   const isRemoteImage =
     imageSrc.startsWith("http") || imageSrc.startsWith("/uploads/");
-  const detailHref = `/updates/${post.id}`;
+  const detailHref = useUpdateDetailHref({
+    id: post.id,
+    shortId: post.shortId,
+  });
 
   useEffect(() => {
     setImageSrc(resolvePostImage(post));
@@ -86,7 +91,7 @@ export default function LatestUpdateCard({ post }: LatestUpdateCardProps) {
           </h3>
         </Link>
 
-        <div className="mt-4 flex justify-center">
+        <div className="mt-4 flex justify-start">
           <Link
             href={detailHref}
             className="inline-flex w-fit items-center gap-1.5 font-plusJakartaSans text-[13px] font-medium text-primary-50 sm:text-[14px]"

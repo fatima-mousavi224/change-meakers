@@ -4,6 +4,12 @@ import {
   parseOpportunityContentBlocks,
 } from "@/constant/opportunityContentBlocks";
 import type { UpdateDetailItem } from "@/constant/updatesDetail";
+import {
+  ensurePostShortId,
+  isNumericShortId,
+  isObjectId,
+  isPublicCode,
+} from "@/lib/contentSlug";
 import prisma from "@/lib/prismaDB";
 
 function stripHtml(value: string) {
@@ -70,6 +76,8 @@ async function resolveContentBlocks(
 function serializeUpdate(
   post: {
     id: string;
+    shortId?: string | null;
+    slug?: string | null;
     title: string;
     excerpt?: string | null;
     description: string;
@@ -93,6 +101,8 @@ function serializeUpdate(
 
   return {
     id: post.id,
+    shortId: post.shortId ?? null,
+    slug: post.slug ?? null,
     title: post.title,
     excerpt: post.excerpt?.trim() || stripHtml(post.description),
     category: post.Category?.title ?? "Updates",
@@ -114,12 +124,56 @@ export async function getUpdateById(id: string): Promise<UpdateDetailItem | null
     return null;
   }
 
+  const shortId = await ensurePostShortId(post);
+
   const contentBlocks = await resolveContentBlocks(
-    id,
+    post.id,
     (post as { contentBlocks?: unknown }).contentBlocks,
     post.description,
-    post.postImages
+    post.postImages,
   );
 
-  return serializeUpdate(post, contentBlocks);
+  return serializeUpdate({ ...post, shortId }, contentBlocks);
+}
+
+async function findPostByParam(param: string) {
+  if (isObjectId(param)) {
+    return prisma.post.findUnique({
+      where: { id: param },
+      include: { Category: true },
+    });
+  }
+
+  if (isNumericShortId(param) || isPublicCode(param)) {
+    return prisma.post.findFirst({
+      where: { shortId: param },
+      include: { Category: true },
+    });
+  }
+
+  return prisma.post.findUnique({
+    where: { slug: param },
+    include: { Category: true },
+  });
+}
+
+export async function getUpdateByParam(
+  param: string,
+): Promise<UpdateDetailItem | null> {
+  const post = await findPostByParam(param);
+
+  if (!post) {
+    return null;
+  }
+
+  const shortId = await ensurePostShortId(post);
+
+  const contentBlocks = await resolveContentBlocks(
+    post.id,
+    (post as { contentBlocks?: unknown }).contentBlocks,
+    post.description,
+    post.postImages,
+  );
+
+  return serializeUpdate({ ...post, shortId }, contentBlocks);
 }

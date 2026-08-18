@@ -1,7 +1,7 @@
 import Image from "next/image";
-import Link from "next/link";
+import SocialIconButton from "@/components/common/SocialIconButton";
+import { FOOTER_SOCIAL_LINKS } from "@/constant/socialLinks";
 import logo from "../../../public/images/logo.jpg";
-import { socialLinks } from "./socialLinks";
 
 export default function UnderDevelopment() {
   return (
@@ -46,17 +46,15 @@ export default function UnderDevelopment() {
             Follow Us
           </p>
           <div className="flex flex-wrap items-center justify-center gap-3">
-            {socialLinks.map(({ href, icon: Icon, label }) => (
-              <Link
+            {FOOTER_SOCIAL_LINKS.map(({ href, label, src, Icon }) => (
+              <SocialIconButton
                 key={href}
                 href={href}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={label}
-                className="group flex h-12 w-12 items-center justify-center rounded-xl bg-white shadow-md ring-1 ring-dark_gray/30 transition-all duration-200 hover:-translate-y-1 hover:scale-110 hover:bg-primary-50 hover:shadow-lg hover:ring-primary-50"
-              >
-                <Icon className="size-6 transition-all duration-200 [&_path]:!fill-primary-50 group-hover:[&_path]:!fill-white" />
-              </Link>
+                label={label}
+                src={src}
+                Icon={Icon}
+                className="size-12 shadow-md ring-1 ring-dark_gray/30 hover:shadow-lg"
+              />
             ))}
           </div>
         </div>

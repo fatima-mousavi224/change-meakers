@@ -5,11 +5,10 @@ export function isNavLinkActive(pathname: string, href: string) {
     return pathname === "/" || isInitiativeDetailPath(pathname);
   }
 
-  if (href === "/apply") {
+  if (href === "/opportunities") {
     return (
-      pathname === "/apply" ||
-      pathname === "/join" ||
-      pathname.startsWith("/apply/")
+      pathname === "/opportunities" ||
+      pathname.startsWith("/opportunities/")
     );
   }
 

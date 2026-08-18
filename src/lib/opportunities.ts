@@ -10,6 +10,12 @@ import {
   type OpportunityContentBlock,
 } from "@/constant/opportunityContentBlocks";
 import prisma from "@/lib/prismaDB";
+import {
+  ensureOpportunityShortId,
+  isNumericShortId,
+  isObjectId,
+  isPublicCode,
+} from "@/lib/contentSlug";
 
 type GetOpportunitiesParams = {
   page?: number;
@@ -23,6 +29,8 @@ type GetOpportunitiesParams = {
 function serializeOpportunity(
   opportunity: {
     id: string;
+    shortId?: string | null;
+    slug?: string | null;
     title: string;
     excerpt: string;
     content: string;
@@ -50,6 +58,8 @@ function serializeOpportunity(
 
   return {
     id: opportunity.id,
+    shortId: opportunity.shortId ?? null,
+    slug: opportunity.slug ?? null,
     title: opportunity.title,
     excerpt: opportunity.excerpt,
     content: opportunity.content,
@@ -162,13 +172,53 @@ export async function getOpportunityById(id: string) {
     return null;
   }
 
+  const shortId = await ensureOpportunityShortId(opportunity);
+
   const contentBlocks = await resolveContentBlocks(
-    id,
+    opportunity.id,
     (opportunity as { contentBlocks?: unknown }).contentBlocks,
     opportunity.content,
   );
 
-  return serializeOpportunity(opportunity, contentBlocks);
+  return serializeOpportunity({ ...opportunity, shortId }, contentBlocks);
+}
+
+async function findOpportunityByParam(param: string, publishedOnly: boolean) {
+  const publishedFilter = publishedOnly ? { published: true as const } : {};
+
+  if (isObjectId(param)) {
+    return prisma.opportunity.findFirst({
+      where: { id: param, ...publishedFilter },
+    });
+  }
+
+  if (isNumericShortId(param) || isPublicCode(param)) {
+    return prisma.opportunity.findFirst({
+      where: { shortId: param, ...publishedFilter },
+    });
+  }
+
+  return prisma.opportunity.findFirst({
+    where: { slug: param, ...publishedFilter },
+  });
+}
+
+export async function getOpportunityByParam(param: string) {
+  const opportunity = await findOpportunityByParam(param, true);
+
+  if (!opportunity) {
+    return null;
+  }
+
+  const shortId = await ensureOpportunityShortId(opportunity);
+
+  const contentBlocks = await resolveContentBlocks(
+    opportunity.id,
+    (opportunity as { contentBlocks?: unknown }).contentBlocks,
+    opportunity.content,
+  );
+
+  return serializeOpportunity({ ...opportunity, shortId }, contentBlocks);
 }
 
 export async function getAllOpportunitiesForAdmin() {
@@ -188,11 +238,13 @@ export async function getOpportunityByIdForAdmin(id: string) {
     return null;
   }
 
+  const shortId = opportunity.shortId ?? null;
+
   const contentBlocks = await resolveContentBlocks(
-    id,
+    opportunity.id,
     (opportunity as { contentBlocks?: unknown }).contentBlocks,
     opportunity.content,
   );
 
-  return serializeOpportunity(opportunity, contentBlocks);
+  return serializeOpportunity({ ...opportunity, shortId }, contentBlocks);
 }

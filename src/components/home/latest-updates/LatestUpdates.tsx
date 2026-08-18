@@ -19,6 +19,8 @@ type LatestUpdatesProps = {
   viewAllClassName?: string;
   initialVisibleCount?: number;
   viewAllMode?: "link" | "expand";
+  /** When set, expand mode loads posts for this update category only. */
+  expandCategory?: string;
 };
 
 export default function LatestUpdates({
@@ -30,20 +32,30 @@ export default function LatestUpdates({
   viewAllClassName,
   initialVisibleCount = 3,
   viewAllMode = "link",
+  expandCategory,
 }: LatestUpdatesProps) {
   const [showAll, setShowAll] = useState(false);
   const [allPosts, setAllPosts] = useState(posts);
 
   useEffect(() => {
     setAllPosts(posts);
+    setShowAll(false);
   }, [posts]);
 
   useEffect(() => {
     if (viewAllMode !== "expand") return;
 
     let cancelled = false;
+    const params = new URLSearchParams();
 
-    fetch("/api/post")
+    if (expandCategory) {
+      params.set("categoryTitle", expandCategory);
+    }
+
+    const query = params.toString();
+    const url = query ? `/api/post?${query}` : "/api/post";
+
+    fetch(url)
       .then((response) => response.json())
       .then((data: UpdatePost[]) => {
         if (cancelled || !Array.isArray(data)) return;
@@ -61,7 +73,7 @@ export default function LatestUpdates({
     return () => {
       cancelled = true;
     };
-  }, [viewAllMode]);
+  }, [viewAllMode, expandCategory]);
 
   const linkModeLimit = 3;
   const sourcePosts = viewAllMode === "expand" ? allPosts : posts;
@@ -90,7 +102,7 @@ export default function LatestUpdates({
             <div
               key={post.id}
               data-update-slide
-              className="w-[calc((100%-1rem)/1.5)] max-w-[340px] shrink-0 snap-start"
+              className="w-[calc((100%-1rem)/1.22)] max-w-[380px] shrink-0 snap-start"
             >
               <LatestUpdateCard post={post} />
             </div>

@@ -1,10 +1,8 @@
 "use client";
 
-import {
-  FaFacebookF,
-  FaLinkedinIn,
-  FaXTwitter,
-} from "react-icons/fa6";
+import SocialIconButton from "@/components/common/SocialIconButton";
+import { SOCIAL_ICON_SRC } from "@/constant/socialLinks";
+import { FaFacebookF } from "react-icons/fa6";
 
 type OpportunityShareFooterProps = {
   title: string;
@@ -27,12 +25,12 @@ function buildShareLinks(title: string, sharePath: string) {
     {
       label: "Share on X",
       href: `https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(title)}`,
-      Icon: FaXTwitter,
+      src: SOCIAL_ICON_SRC.x,
     },
     {
       label: "Share on LinkedIn",
       href: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`,
-      Icon: FaLinkedinIn,
+      src: SOCIAL_ICON_SRC.linkedin,
     },
   ];
 }
@@ -52,23 +50,19 @@ export default function OpportunityShareFooter({
         </p>
 
         <div className="flex items-center gap-2">
-          {shareLinks.map(({ label, href, Icon }, index) => (
-            <a
+          {shareLinks.map(({ label, href, src, Icon }, index) => (
+            <div
               key={label}
-              href={href}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={label}
-              className="group inline-flex animate-footer-social-in transition-transform duration-300 ease-out hover:-translate-y-1.5 active:translate-y-0"
+              className="inline-flex animate-footer-social-in transition-transform duration-300 ease-out hover:-translate-y-1.5 active:translate-y-0"
               style={{ animationDelay: `${index * 80}ms` }}
             >
-              <span className="flex size-9 items-center justify-center rounded-full bg-primary-50 text-white shadow-sm transition-all duration-300 ease-out group-hover:scale-110 group-hover:bg-[#252525] group-hover:shadow-md group-active:scale-95">
-                <Icon
-                  className="size-[15px] transition-transform duration-300 ease-out group-hover:scale-110 group-hover:-rotate-6"
-                  aria-hidden
-                />
-              </span>
-            </a>
+              <SocialIconButton
+                href={href}
+                label={label}
+                src={src}
+                Icon={Icon}
+              />
+            </div>
           ))}
         </div>
       </div>

@@ -39,7 +39,7 @@ function ProjectCard({ project }: ProjectCardProps) {
         <h2 className="text-lg text-gray-200 mb-4">{project.projectTitle}</h2>
         <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2">
           <Link
-            href={`/programs/${project.navigationLabel}`}
+            href="/current-programs"
             className="bg-transparent border border-gray-200  text-gray-300 text-xs font-medium px-4 py-2 rounded-md hover:bg-gray-200 hover:text-black transition"
           >
             View Program

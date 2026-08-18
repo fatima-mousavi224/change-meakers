@@ -1,5 +1,6 @@
 
 import type { OpportunityItem } from "@/constant/opportunities";
+import { getOpportunityHref } from "@/constant/opportunities";
 import { cn } from "@/utilities/cn";
 import { CalendarIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
@@ -97,7 +98,7 @@ export default function OpportunityCard({
   if (layout === "vertical") {
     return (
       <Link
-        href={`/apply/${opportunity.id}`}
+        href={getOpportunityHref(opportunity)}
         className="
           group
           block
@@ -150,7 +151,7 @@ export default function OpportunityCard({
 
   return (
     <Link
-      href={`/apply/${opportunity.id}`}
+      href={getOpportunityHref(opportunity)}
       className="
         group
         flex

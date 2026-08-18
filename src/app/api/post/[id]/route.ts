@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 
 
 import { postUpdateSchema, resolvePostContent } from "@/lib/postValidation";
-
+import { assignPublicCode } from "@/lib/contentSlug";
 import prisma from "@/lib/prismaDB";
 
 import { requireAdmin } from "@/utilities/requireAdmin";
@@ -109,6 +109,18 @@ export async function PATCH(request: Request, { params }: RouteContext) {
 
 
     if (data.title !== undefined) updateData.title = data.title;
+
+    const existingPost = await prisma.post.findUnique({
+      where: { id: params.id },
+      select: { shortId: true, postDate: true, createdAt: true },
+    });
+
+    if (existingPost && !existingPost.shortId) {
+      updateData.shortId = await assignPublicCode(
+        "post",
+        existingPost.postDate ?? existingPost.createdAt,
+      );
+    }
 
     if (data.excerpt !== undefined) updateData.excerpt = data.excerpt;
 

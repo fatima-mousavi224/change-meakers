@@ -1,6 +1,7 @@
 import React from "react";
 import ManagePostTable from "./ManagePostTable";
 import { Metadata } from "next";
+import { getUpdateFormCategories } from "@/lib/updateCategories";
 import prisma from "@/lib/prismaDB";
 
 export const metadata: Metadata = {
@@ -13,7 +14,7 @@ export default async function ManagePostsPage() {
     include: { Category: true },
     orderBy: { createdAt: "desc" },
   });
-  const categories = await prisma.category.findMany();
+  const categories = await getUpdateFormCategories();
 
   return (
     <div className=" ">
