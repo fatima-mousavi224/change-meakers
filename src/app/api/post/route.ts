@@ -48,7 +48,7 @@ export async function POST(request: Request) {
 
     const { description, contentBlocks } = resolvePostContent(data);
 
-    const postDate = formatDateToISOString(data.postDate) ?? new Date();
+    const postDate = data.postDate ? new Date(data.postDate) : new Date();
     const shortId = await assignPublicCode("post", postDate);
 
 
