@@ -45,5 +45,8 @@ export async function DELETE(
   
   const category = await prisma.category.delete({ where: { id: params.id } });
 
-  return NextResponse.json(category, { status: 204 });
+  return NextResponse.json(
+    { message: "Category deleted successfully", category },
+    { status: 200 }
+  );
 }

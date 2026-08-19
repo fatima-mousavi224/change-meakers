@@ -1,5 +1,7 @@
 "use client";
 
+import { useProjectId } from "@/hooks/useProjectId";
+
 import Tabs from "@/components/create-project-tabs/Tabs";
 import dynamic from "next/dynamic";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -32,8 +34,7 @@ export default function AboutProgramForm() {
     formState: { errors, isSubmitting },
     setValue,
   } = useForm<FormData>();
-
-  const projectId = localStorage.getItem("projectId");
+  const projectId = useProjectId();
   const searchParams = useSearchParams();
   const isEdit = searchParams?.get("edit") === "1";
   const router = useRouter();

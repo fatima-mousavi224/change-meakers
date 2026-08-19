@@ -7,7 +7,7 @@ export const siteConfig = {
     "Change Makers of the World",
     "Change Makers",
     "Afghanistan",
-    "Girls Education",
+    "Girls' Education",
     "Afghan Children",
     "Human Rights",
     "Afghan Youth",

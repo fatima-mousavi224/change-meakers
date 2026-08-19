@@ -53,8 +53,12 @@ model Session {
 
 model Post {
   id             String    @id @default(auto()) @map("_id") @db.ObjectId
+  shortId        String?   @unique
+  slug           String?   @unique
   title          String
+  excerpt        String?
   description    String
+  contentBlocks  Json?
   author         String
   authorImage    Image?
   categoryId     String?    @db.ObjectId
@@ -89,13 +93,21 @@ model Donate {
 }
 
 model Member {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  name        String
-  position    String
-  description String
-  avatar      Image[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id                  String   @id @default(auto()) @map("_id") @db.ObjectId
+  slug                String   @unique
+  name                String
+  role                String?
+  bio                 String
+  image               String
+  imageObjectPosition String?
+  socials             Json?
+  sortOrder           Int      @default(0)
+  published           Boolean  @default(true)
+  position            String?
+  description         String?
+  avatar              Image[]
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
 }
 
 model PaymentInfo {
@@ -369,6 +381,29 @@ model Impact {
   projectName           String?
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
+}
+
+model Opportunity {
+  id               String    @id @default(auto()) @map("_id") @db.ObjectId
+  shortId          String?   @unique
+  slug             String?   @unique
+  title            String
+  excerpt          String
+  content          String
+  contentBlocks    Json?
+  category         String
+  location         String
+  image            String
+  detailImage      String?
+  videoUrl         String?
+  deadline         DateTime
+  applicationUrl   String?
+  resourceProvider String?
+  mainSource       String?
+  postedDate       DateTime?
+  published        Boolean   @default(true)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 }
 
 

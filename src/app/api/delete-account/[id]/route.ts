@@ -13,7 +13,10 @@ export async function DELETE(
     }
     const user = await prisma.user.delete({ where: { id: params.id } });
 
-    return NextResponse.json(user, { status: 204 });
+    return NextResponse.json(
+      { message: "User deleted successfully", user },
+      { status: 200 }
+    );
   } catch (error) {
     console.error("Error deleting user:", error);
     return NextResponse.json(

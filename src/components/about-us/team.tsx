@@ -1,15 +1,18 @@
-import React from "react";
-import Header from "../current-program-page/Header";
+import type { LeadershipMember } from "@/constant/aboutLeadership";
+
 import TeamCards from "./TeamCards";
 
-export default function Team() {
+type TeamProps = {
+  members: LeadershipMember[];
+};
+
+export default function Team({ members }: TeamProps) {
   return (
-    <div className="space-y-10 pb-10">
-      <Header
-        btnName="Board of Directors"
-        title='Leadership'
-      />
-      <TeamCards />
-    </div>
+    <section className="pb-10">
+      <h2 className="mb-10 text-center font-plusJakartaSans text-[26px] font-bold text-[#252525] sm:text-[30px] lg:text-[32px]">
+        Our Executive Team
+      </h2>
+      <TeamCards members={members} />
+    </section>
   );
 }

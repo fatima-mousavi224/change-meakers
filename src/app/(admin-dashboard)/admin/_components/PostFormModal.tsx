@@ -1,45 +1,103 @@
 "use client";
 
-import Skeleton from "react-loading-skeleton";
-import "react-loading-skeleton/dist/skeleton.css";
 import LinearWithValueLabel from "@/components/common/LinearProgressWithLabel";
-import firebaseApp from "@/lib/firebase";
+import type { OpportunityContentBlock } from "@/constant/opportunityContentBlocks";
+import { htmlContentToBlocks } from "@/constant/opportunityContentBlocks";
 import { formatDate } from "@/utilities/formatDatetoMMYYDDD";
 import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react";
 import { PhotoIcon } from "@heroicons/react/24/outline";
-import { Category } from "@prisma/client";
 import axios from "axios";
-import {
-  getDownloadURL,
-  getStorage,
-  ref,
-  uploadBytesResumable,
-} from "firebase/storage";
+import { uploadCardImage } from "lib/uploadCardImage";
 import { X } from "lucide-react";
-import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import {
-  Controller,
-  FieldValues,
-  SubmitHandler,
-  useForm,
-} from "react-hook-form";
+import { useEffect, useRef, useState } from "react";
+import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import "react-quill/dist/quill.snow.css";
 
-const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
+import type { UpdateFormCategory } from "@/lib/updateCategories";
+
+import OpportunityContentBlocksEditor, {
+  contentBlocksToEditable,
+  createDefaultEditableBlocks,
+  type EditableContentBlock,
+} from "../manage-opportunities/OpportunityContentBlocksEditor";
+
+type ImageState = {
+  file: File | null;
+  url: string | null;
+  preview: string | null;
+};
+
+const emptyImageState = (): ImageState => ({
+  file: null,
+  url: null,
+  preview: null,
+});
+
+function resolveStoredImageUrl(preview: string | null, url: string | null) {
+  if (url) return url;
+  if (preview && (/^https?:\/\//.test(preview) || preview.startsWith("/")))
+    return preview;
+  return null;
+}
 
 interface PostFormModalProps {
   open: boolean;
   setOpen: (open: boolean) => void;
-  categories: Category[];
+  categories: UpdateFormCategory[];
 }
 
-type UploadImageType = {
-  image: string;
-};
+function ImageUploadField({
+  label,
+  hint,
+  preview,
+  onFileSelect,
+}: {
+  label: string;
+  hint?: string;
+  preview: string | null;
+  onFileSelect: (file: File) => void;
+}) {
+  return (
+    <div>
+      <label className="block text-sm font-medium text-gray-700">{label}</label>
+      {hint ? (
+        <p className="mt-1 text-xs text-gray-500">{hint}</p>
+      ) : null}
+      <div className="mt-2 flex items-center gap-4">
+        {preview ? (
+          <Image
+            src={preview}
+            alt="Preview"
+            width={80}
+            height={80}
+            className="size-20 rounded-md object-cover"
+            unoptimized={
+              preview.startsWith("blob:") ||
+              preview.startsWith("http") ||
+              preview.startsWith("/uploads/") ||
+              preview.startsWith("/")
+            }
+          />
+        ) : null}
+        <label className="flex cursor-pointer items-center gap-2 rounded-md border border-dashed border-gray-300 px-4 py-3 text-sm text-gray-600">
+          <PhotoIcon className="size-5" />
+          Upload image
+          <input
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) onFileSelect(file);
+            }}
+          />
+        </label>
+      </div>
+    </div>
+  );
+}
 
 export default function PostFormModal({
   open,
@@ -50,670 +108,397 @@ export default function PostFormModal({
     handleSubmit,
     register,
     reset,
-    control,
-    formState: { errors, isSubmitting },
+    formState: { isSubmitting },
   } = useForm();
 
   const router = useRouter();
-
-  // states
-
-  const [isLoading, setLoading] = useState(false);
-  const [data, setData] = useState<any>();
-  const hasData = Boolean(data && data.length > 0);
-  const [progress, setProgress] = useState(0);
-  const [postImagesIsLoading, setpostImagesLoading] = useState(false);
-  const [postImagesProgress, setPostImagesProgress] = useState(0);
-  const [coverImagePreview, setCoverImagePreview] = useState<string | null>(
-    hasData && data[0]?.authorImage ? data[0].authorImage.image : null
-  );
-  const [imagesPreview, setImagesPreview] = useState<
-    Array<{ url: string; file: File | null }>
-  >(
-    hasData && data[0]?.postImages
-      ? data[0].postImages.map((img: any) => ({ url: img.image, file: null }))
-      : []
-  );
-
   const params = useSearchParams();
   const postId = params.get("postId");
 
+  const [progress, setProgress] = useState(0);
+  const [isLoading, setLoading] = useState(false);
   const [isDataPopulated, setIsDataPopulated] = useState(Boolean(postId));
+  const [contentBlocks, setContentBlocks] = useState<EditableContentBlock[]>(
+    createDefaultEditableBlocks()
+  );
+  const [cardImagePreview, setCardImagePreview] = useState<string | null>(null);
+  const [categoryOptions, setCategoryOptions] = useState(categories);
+
+  const cardImageRef = useRef<ImageState>(emptyImageState());
+  const loadedKeyRef = useRef<string | null>(null);
 
   useEffect(() => {
-    async function getPost() {
+    setCategoryOptions(categories);
+  }, [categories]);
+
+  const setCardImageState = (next: ImageState) => {
+    cardImageRef.current = next;
+    setCardImagePreview(next.preview);
+  };
+
+  const resetImages = () => {
+    setCardImageState(emptyImageState());
+  };
+
+  const uploadBlockImage = async (file: File) => {
+    setLoading(true);
+    try {
+      return await uploadCardImage(file);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!open) {
+      loadedKeyRef.current = null;
+      return;
+    }
+
+    const loadKey = postId ?? "new";
+    if (loadedKeyRef.current === loadKey) return;
+    loadedKeyRef.current = loadKey;
+
+    async function loadPost() {
+      if (!postId) {
+        reset({
+          title: "",
+          excerpt: "",
+          author: "",
+          categoryId: categoryOptions[0]?.id ?? "",
+          postDate: "",
+          showInHome: false,
+        });
+        resetImages();
+        setContentBlocks(createDefaultEditableBlocks());
+        setCategoryOptions(categories);
+        return;
+      }
+
       try {
         setIsDataPopulated(true);
         const res = await axios.get(`/api/post/${postId}`);
         const data = res.data;
-        setData(data);
 
-        if (data[0]?.authorImage) {
-          setCoverImagePreview(data[0].authorImage.image);
-        }
-        if (data[0]?.postImages) {
-          setImagesPreview(
-            data[0].postImages.map((img: any) => ({
-              url: img.image,
-              file: null,
-            }))
-          );
+        if (
+          data.Category &&
+          !categories.some((category) => category.id === data.categoryId)
+        ) {
+          setCategoryOptions([
+            ...categories,
+            { id: data.Category.id, title: data.Category.title },
+          ]);
+        } else {
+          setCategoryOptions(categories);
         }
 
         reset({
-          title: data[0]?.title || "",
-          author: data[0]?.author || "",
-          description: data[0]?.description || "",
-          authorImage: null,
-          postImages: null,
-          postDate: formatDate(data[0]?.postDate) || null,
-          categoryId: data[0]?.categoryId || null,
-          showInHome: Boolean(data[0]?.showInHome) || false,
+          title: data.title || "",
+          excerpt:
+            data.excerpt ||
+            (data.description
+              ? data.description.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim().slice(0, 280)
+              : ""),
+          author: data.author || "",
+          categoryId: data.categoryId || categories[0]?.id || "",
+          postDate: data.postDate ? formatDate(new Date(data.postDate)) : "",
+          showInHome: Boolean(data.showInHome),
         });
+
+        setCardImageState({
+              file: null,
+          url: data.authorImage?.image || null,
+          preview: data.authorImage?.image || null,
+        });
+
+        let editableBlocks = contentBlocksToEditable(data.contentBlocks ?? []);
+        if (!editableBlocks.length && data.description) {
+          editableBlocks = contentBlocksToEditable(
+            htmlContentToBlocks(data.description)
+          );
+        }
+        if (!editableBlocks.length && data.postImages?.length) {
+          editableBlocks = contentBlocksToEditable(
+            data.postImages.map((img: { image: string }) => ({
+              type: "image" as const,
+              src: img.image,
+            }))
+          );
+        }
+        setContentBlocks(
+          editableBlocks.length
+            ? editableBlocks
+            : createDefaultEditableBlocks()
+        );
       } catch (error) {
-        console.log("Error while fetching post", error);
+        console.error("Failed to load update", error);
+        toast.error("Failed to load update");
       } finally {
         setIsDataPopulated(false);
       }
     }
-    if (postId) {
-      getPost();
-    } else {
-      reset({
-        title: "",
-        author: "",
-        description: "",
-        authorImage: null,
-        postImages: null,
-        postDate: null,
-        categoryId: null,
-        showInHome: false,
-      });
-    }
-  }, [postId, reset]);
 
-  useEffect(() => {
-    return () => {
-      // Cleanup function to revoke object URLs created via URL.createObjectURL
-      if (coverImagePreview && coverImagePreview.startsWith("blob:")) {
-        URL.revokeObjectURL(coverImagePreview);
-      }
-      imagesPreview.forEach(({ url }) => {
-        if (url.startsWith("blob:")) {
-          URL.revokeObjectURL(url);
-        }
-      });
-    };
-  }, [coverImagePreview, imagesPreview]);
+    loadPost();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, postId, categories]);
 
-  const onSubmit: SubmitHandler<FieldValues> = async (formData) => {
-    let postCoverImage =
-      hasData && data?.[0]?.authorImage?.image
-        ? data[0].authorImage.image
-        : coverImagePreview;
-
-    let postImages: UploadImageType[] = hasData ? (data?.[0]?.postImages || []) : [];
-
-    async function handlePostCoverImageUpload() {
-      const authorFile = formData.authorImage?.[0];
-      if (authorFile instanceof File) {
+  const resolveImageForSubmit = async (
+    imageState: ImageState,
+    label: string
+  ) => {
+    if (imageState.file) {
+      try {
         setLoading(true);
-        try {
-          const fileName = new Date().getTime() + "-" + authorFile.name;
-          const storage = getStorage(firebaseApp);
-          const storageRef = ref(storage, `authorImage/${fileName}`);
-          const uploadTask = uploadBytesResumable(storageRef, authorFile);
-          await new Promise<void>((resolve, reject) => {
-            uploadTask.on(
-              "state_changed",
-              (snapshot) => {
-                const progress =
-                  (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                setProgress(progress);
-                console.log("Upload is " + progress + "% done");
-              },
-              (error) => {
-                console.log("Error uploading image", error);
-                setLoading(false);
-                reject(error);
-              },
-              () => {
-                getDownloadURL(uploadTask.snapshot.ref)
-                  .then((downloadURL) => {
-                    // Assuming you have a state to hold the uploaded image URLs
-                    postCoverImage = downloadURL;
-                    console.log("File available at", downloadURL);
-                    resolve();
-                  })
-                  .catch((err) => {
-                    console.log("Error getting the downloadURL");
-                    reject(err);
-                  });
-              }
-            );
-          });
-        } catch (error) {
-          console.log("Error in uploading image", error);
-          toast.error("Error in uploading image");
-          setLoading(false);
-        }
+        return await uploadCardImage(imageState.file);
+      } catch (error: any) {
+        throw new Error(error?.message || `Failed to upload ${label}`);
+      } finally {
+        setLoading(false);
       }
     }
 
-    async function handlePostImagesUpload(postFiles: File[]) {
-      if (postFiles && postFiles.length > 0) {
-        setpostImagesLoading(true);
-        try {
-          const newPostImages: UploadImageType[] = [];
-          for (const item of postFiles) {
-            if (!(item instanceof File)) continue;
-            const fileName = new Date().getTime() + "-" + item.name;
-            const storage = getStorage(firebaseApp);
-            const storageRef = ref(storage, `postImages/${fileName}`);
-            const uploadTask = uploadBytesResumable(storageRef, item);
-            await new Promise<void>((resolve, reject) => {
-              uploadTask.on(
-                "state_changed",
-                (snapshot) => {
-                  const progress =
-                    (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                  setPostImagesProgress(progress);
-                  console.log("Upload is " + progress + "% done");
-                },
-                (error) => {
-                  console.log("Error uploading image", error);
-                  reject(error);
-                },
-                () => {
-                  getDownloadURL(uploadTask.snapshot.ref)
-                    .then((downloadURL) => {
-                      newPostImages.push({ image: downloadURL });
-                      console.log("File available at", downloadURL);
-                      resolve();
-                    })
-                    .catch((err) => {
-                      console.log("Error getting the downloadURL");
-                      reject(err);
-                    });
-                }
-              );
-            });
-          }
-          postImages = newPostImages;
-        } catch (error) {
-          console.log("Error in uploading image", error);
-          toast.error("Error in uploading image");
-        } finally {
-          setpostImagesLoading(false);
-        }
-      }
-    }
-
-    if (postId) {
-      toast.success("updating post, please wait...");
-    } else {
-      toast.success("creating post, please wait...");
-    }
-
-    await handlePostCoverImageUpload();
-
-    // Normalize selected files from form data. Avoid treating non-File values as files.
-    const selectedPostFiles: File[] =
-      formData.postImages instanceof FileList
-        ? Array.from(formData.postImages)
-        : Array.isArray(formData.postImages)
-        ? (formData.postImages as any[]).filter((f) => f instanceof File)
-        : [];
-
-    await handlePostImagesUpload(selectedPostFiles);
-
-    // If no new images were uploaded, keep original Firebase URLs and respect removals
-    const hasNewPostImages = selectedPostFiles.length > 0;
-    if (!hasNewPostImages) {
-      const originalUrlSet = new Set(
-        (hasData ? (data?.[0]?.postImages || []) : []).map((p: UploadImageType) => p.image)
-      );
-      postImages = imagesPreview
-        .map((preview) => preview.url)
-        .filter((url) => originalUrlSet.has(url))
-        .map((url) => ({ image: url }));
-    }
-
-    const postData = {
-      ...formData,
-      authorImage: {
-        image: postCoverImage || (hasData ? data?.[0]?.authorImage?.image : null),
-      },
-      postImages: [...postImages],
-      showInHome: Boolean(formData?.showInHome) || false,
-    };
-
-    if (postId) {
-      await axios
-        .patch(`/api/post/${postId}`, postData)
-        .then(() => {
-          router.refresh();
-          setOpen(false);
-          toast.success("Post updated successfully");
-          reset();
-        })
-        .catch((err) => {
-          console.error("Update error:", err);
-          toast.error("Error while updating post to db!");
-        });
-    } else {
-      await axios
-        .post(`/api/post`, postData)
-        .then(() => {
-          router.refresh();
-          setOpen(false);
-          setImagesPreview([]);
-          setCoverImagePreview(null);
-          toast.success("Post created successfully");
-          reset();
-        })
-        .catch((err) => {
-          toast.error("Error while saving post to db!", err);
-        });
-    }
+    return resolveStoredImageUrl(imageState.preview, imageState.url);
   };
 
-  const handleImageRemove = (index: number) => {
-    setImagesPreview((prev) => prev.filter((_, i) => i !== index));
+  const resolveContentBlocksForSubmit = async (
+    blocks: EditableContentBlock[]
+  ): Promise<OpportunityContentBlock[]> => {
+    const resolved: OpportunityContentBlock[] = [];
 
-    // Reset the file input
-    const fileInput = document.getElementById("postImages") as HTMLInputElement;
-    if (fileInput) {
-      fileInput.value = "";
+    for (let index = 0; index < blocks.length; index += 1) {
+      const block = blocks[index];
+
+      if (block.type === "text") {
+        const body = block.body.trim();
+        if (body) resolved.push({ type: "text", body });
+        continue;
+      }
+
+      if (block.type === "image") {
+        if (block.isUploading) {
+          throw new Error("Please wait for all images to finish uploading");
+        }
+
+        let src = block.src.trim();
+        if (!src && block.file) {
+        setLoading(true);
+          src = await uploadCardImage(block.file);
+          setLoading(false);
+        }
+        if (!src) {
+          src = resolveStoredImageUrl(block.preview, block.src) || "";
+        }
+        if (!src) {
+          throw new Error(`Image block ${index + 1} is missing an uploaded image`);
+        }
+
+        resolved.push({
+          type: "image",
+          src,
+          caption: block.caption.trim() || undefined,
+        });
+        continue;
+      }
+
+      const url = block.url.trim();
+      if (url) {
+        resolved.push({
+          type: "video",
+          url,
+          caption: block.caption.trim() || undefined,
+        });
+      }
+    }
+
+    return resolved;
+  };
+
+  const onSubmit: SubmitHandler<FieldValues> = async (formData) => {
+    try {
+      const finalCardImage = await resolveImageForSubmit(
+        cardImageRef.current,
+        "card image"
+      );
+
+      if (!finalCardImage) {
+        toast.error("Please upload a card image for the listing page");
+        return;
+      }
+
+      const resolvedContentBlocks =
+        await resolveContentBlocksForSubmit(contentBlocks);
+
+      if (!resolvedContentBlocks.length) {
+        toast.error("Add at least one text, image, or video block");
+        return;
+      }
+
+      const payload = {
+        title: formData.title,
+        excerpt: formData.excerpt,
+        author: formData.author,
+        categoryId: formData.categoryId,
+        postDate: formData.postDate,
+        showInHome: Boolean(formData.showInHome),
+        authorImage: { image: finalCardImage },
+        contentBlocks: resolvedContentBlocks,
+    };
+
+    if (postId) {
+        await axios.patch(`/api/post/${postId}`, payload);
+        toast.success("Update saved successfully");
+    } else {
+        await axios.post("/api/post", payload);
+        toast.success("Update created successfully");
+      }
+
+      setOpen(false);
+      router.replace("/admin/manage-posts");
+      router.refresh();
+    } catch (error: any) {
+      toast.error(
+        error?.message ||
+          error?.response?.data?.error ||
+          "Failed to save update"
+      );
+    } finally {
+      setLoading(false);
+      setProgress(0);
     }
   };
 
   const handleClose = () => {
     setOpen(false);
-    setImagesPreview([]);
-    setCoverImagePreview(null);
-    reset({
-      title: "",
-      author: "",
-      description: "",
-      authorImage: null,
-      postImages: null,
-      postDate: null,
-      categoryId: null,
-    });
     router.replace("/admin/manage-posts");
   };
 
   return (
     <Dialog open={open} onClose={handleClose} className="relative z-50">
-      <DialogBackdrop
-        transition
-        className="fixed inset-0 bg-gray-500/75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in"
-      />
-
-      <div className="fixed inset-0 z-10  w-screen overflow-y-auto">
-        <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-          <DialogPanel
-            transition
-            className="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in sm:my-8 sm:w-full sm:max-w-lg sm:p-6 data-[closed]:sm:translate-y-0 data-[closed]:sm:scale-95"
-          >
-            <h2 className="text-center text-primary-50 text-2xl font-bold">
-              Create Post
-            </h2>
-            <form
-              className="mx-auto mt-8 max-w-xl"
-              onSubmit={handleSubmit(onSubmit)}
-              method="POST"
+      <DialogBackdrop className="fixed inset-0 bg-gray-500/75" />
+      <div className="fixed inset-0 z-50 overflow-y-auto">
+        <div className="flex min-h-full items-center justify-center p-4">
+          <DialogPanel className="relative w-full max-w-3xl rounded-2xl bg-white p-6 shadow-xl max-h-[90vh] overflow-y-auto">
+            <button
+              type="button"
+              onClick={handleClose}
+              className="absolute right-4 top-4 text-gray-400 hover:text-gray-600"
             >
-              <div className="grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2">
+              <X className="size-5" />
+            </button>
+
+            <h2 className="text-xl font-bold text-gray-900 mb-6">
+              {postId ? "Edit Update" : "Add Update"}
+            </h2>
+
+            {isDataPopulated ? (
+              <div className="py-10 text-center text-gray-500">Loading...</div>
+            ) : (
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                 <div>
-                  <label
-                    htmlFor="title"
-                    className="block text-sm/6 font-semibold text-gray-900"
-                  >
+                  <label className="block text-sm font-medium text-gray-700">
                     Title
                   </label>
-                  <div className="mt-2.5">
-                    {isDataPopulated ? (
-                      <Skeleton height={40} width="100%" borderRadius={5} />
-                    ) : (
                       <input
-                        {...register("title", {
-                          required: "Title is required",
-                        })}
-                        id="title"
-                        name="title"
-                        type="text"
-                        className="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-1 focus:-outline-offset-1 focus:outline-primary-50 border-dark_gray border"
-                      />
-                    )}
-                  </div>
-                  {errors.title && (
-                    <p className="text-red-500 mt-1 text-sm">
-                      {errors.title.message as string}
-                    </p>
-                  )}
+                    {...register("title", { required: "Title is required" })}
+                    className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2"
+                  />
                 </div>
+
                 <div>
-                  <label
-                    htmlFor="showInHome"
-                    className="block text-sm/6 font-medium text-gray-900"
-                  >
-                    Show in home page
+                  <label className="block text-sm font-medium text-gray-700">
+                    Excerpt
                   </label>
-                  <div className="mt-2.5 flex items-center gap-3">
-                    <input
-                      {...register("showInHome")}
-                      id="showInHome"
-                      name="showInHome"
-                      type="checkbox"
-                      className="h-4 w-4 rounded border-gray-300 text-primary-50 focus:ring-primary-50"
-                    />
-                    <span className="text-sm text-gray-600">
-                      Toggle to display this post on the home page
-                    </span>
-                  </div>
+                  <textarea
+                    {...register("excerpt", {
+                      required: "Excerpt is required",
+                    })}
+                    rows={3}
+                    className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label className="block text-sm font-medium text-gray-700">
+                      Category
+                    </label>
+                    <select
+                      {...register("categoryId", { required: true })}
+                      className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2"
+                    >
+                      {categoryOptions.map((category) => (
+                        <option key={category.id} value={category.id}>
+                          {category.title}
+                        </option>
+                      ))}
+                    </select>
                 </div>
                 <div>
-                  <label
-                    htmlFor="author"
-                    className="block text-sm/6 font-semibold text-gray-900"
-                  >
-                    Author
-                  </label>
-                  <div className="mt-2.5">
-                    {isDataPopulated ? (
-                      <Skeleton height={40} width="100%" borderRadius={5} />
-                    ) : (
-                      <input
-                        {...register("author", {
-                          required: "Author is required",
-                        })}
-                        id="author"
-                        name="author"
-                        type="text"
-                        className="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-1 focus:-outline-offset-1 focus:outline-primary-50 border-dark_gray border"
-                      />
-                    )}
-                  </div>
-                  {errors.author && (
-                    <p className="text-red-500 mt-1 text-sm">
-                      {errors.author.message as string}
-                    </p>
-                  )}
-                </div>
-                <div>
-                  <label
-                    htmlFor="postDate"
-                    className="block text-sm/6 font-semibold text-gray-900"
-                  >
+                    <label className="block text-sm font-medium text-gray-700">
                     Post Date
                   </label>
-                  <div className="mt-2.5">
-                    {isDataPopulated ? (
-                      <Skeleton height={40} width="100%" borderRadius={5} />
-                    ) : (
                       <input
-                        {...register("postDate", {
-                          required: "Post date is required",
-                        })}
-                        defaultValue={formatDate(
-                          data?.length > 0 ? new Date(data[0]?.postDate) : ""
-                        )}
-                        id="postDate"
-                        name="postDate"
                         type="date"
-                        className="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-1 focus:-outline-offset-1 focus:outline-primary-50 border-dark_gray border"
+                      {...register("postDate", { required: true })}
+                      className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2"
                       />
-                    )}
                   </div>
-                  {errors.postDate && (
-                    <p className="text-red-500 mt-1 text-sm">
-                      {errors.postDate.message as string}
-                    </p>
-                  )}
                 </div>
 
                 <div>
-                  <label
-                    htmlFor="categoryId"
-                    className="block text-sm/6 font-medium text-gray-900"
-                  >
-                    Category
+                  <label className="block text-sm font-medium text-gray-700">
+                    Author
                   </label>
-                  <div className="mt-2.5">
-                    {isDataPopulated ? (
-                      <Skeleton height={40} width="100%" borderRadius={5} />
-                    ) : (
-                      <select
-                        {...register("categoryId", {
-                          required: "Category is required",
-                        })}
-                        id="categoryId"
-                        name="categoryId"
-                        defaultValue={hasData ? data[0].categoryId : ""}
-                        className="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-1 focus:-outline-offset-1 focus:outline-primary-50 border-dark_gray border"
-                      >
-                        {categories?.map((category) => (
-                          <option key={category.id} value={category.id}>
-                            {category.title}
-                          </option>
-                        ))}
-                      </select>
-                    )}
-                  </div>
-                  {errors.categoryId && (
-                    <p className="text-red-500 mt-1 text-sm">
-                      {errors.categoryId.message as string}
-                    </p>
-                  )}
+                            <input
+                    {...register("author", { required: "Author is required" })}
+                    className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2"
+                  />
                 </div>
 
-                <div className="sm:col-span-2">
-                  <p className="block text-sm/6 font-semibold text-gray-900">
-                    Author Image
-                  </p>
-                  {isDataPopulated ? (
-                    <Skeleton height={100} width="100%" borderRadius={5} />
-                  ) : (
-                    <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10 ">
-                      <div className="text-center">
-                        <PhotoIcon
-                          aria-hidden="true"
-                          className="mx-auto size-12 text-dark_gray"
-                        />
-                        <div className="mt-4 flex text-sm/6 text-gray-600">
-                          <label
-                            htmlFor="authorImage"
-                            className="relative cursor-pointer rounded-md bg-white font-semibold text-primary-50 focus-within:outline-none focus-within:ring-2 focus-within:ring-primary-100 focus-within:ring-offset-2 hover:text-primary-50"
-                          >
-                            <span className="text-center block">
-                              Click to select a file
-                            </span>
-                            <input
-                              {...register("authorImage", {
-                                required: !postId
-                                  ? "Author image is required"
-                                  : false,
-                              })}
-                              id="authorImage"
-                              name="authorImage"
-                              type="file"
-                              className="sr-only"
-                              multiple={false}
-                              accept=".jpg,.jpeg,.png, gif"
-                              onChange={(e) => {
-                                const file = e.target.files?.[0];
-                                if (file) {
-                                  setCoverImagePreview(
-                                    URL.createObjectURL(file)
-                                  );
-                                }
-                              }}
-                            />
-                          </label>
-                        </div>
-                        {coverImagePreview && (
-                          <Image
-                            src={coverImagePreview}
-                            alt="author image preview"
-                            className="mt-2 max-w-full h-auto"
-                            width={96}
-                            height={96}
-                          />
-                        )}
-                        {isSubmitting && (
-                          <LinearWithValueLabel
-                            isLoading={postImagesIsLoading}
-                            progress={postImagesProgress}
-                          />
-                        )}
-                        <p className="text-xs/5 text-gray-600">
-                          PNG, JPG, GIF up to 10MB
-                        </p>
-                      </div>
-                    </div>
-                  )}
-
-                  {errors.authorImage && (
-                    <p className="text-red-500 mt-1 text-sm">
-                      {errors.authorImage.message as string}
-                    </p>
-                  )}
-                </div>
-                <div className="sm:col-span-2">
-                  <p className="block text-sm/6 font-semibold text-gray-900">
-                    Post Images
-                  </p>
-                  {isDataPopulated ? (
-                    <Skeleton height={100} width="100%" borderRadius={5} />
-                  ) : (
-                    <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10 ">
-                      <div className="text-center">
-                        <PhotoIcon
-                          aria-hidden="true"
-                          className="mx-auto size-12 text-dark_gray"
-                        />
-                        <div className="mt-4 flex text-sm/6 text-gray-600">
-                          <label
-                            htmlFor="postImages"
-                            className="relative cursor-pointer rounded-md bg-white font-semibold text-primary-50 focus-within:outline-none focus-within:ring-2 focus-within:ring-primary-100 focus-within:ring-offset-2 hover:text-primary-50 "
-                          >
-                            <span className="text-center block">
-                              Click to select a file
-                            </span>
-                            <input
-                              {...register("postImages", {
-                                required: !postId
-                                  ? "Post images are required"
-                                  : false,
-                              })}
-                              id="postImages"
-                              name="postImages"
-                              type="file"
-                              className="sr-only"
-                              accept=".jpg,.jpeg,.png, gif"
-                              multiple
-                              onChange={(e) => {
-                                const files = e.target.files;
-                                if (files) {
-                                  const newPreviews = Array.from(files).map(
-                                    (file) => ({
-                                      url: URL.createObjectURL(file),
+                <ImageUploadField
+                  label="Card Image"
+                  hint="Shown on the /updates listing cards"
+                  preview={cardImagePreview}
+                  onFileSelect={(file) =>
+                    setCardImageState({
                                       file,
-                                    })
-                                  );
-                                  setImagesPreview(newPreviews);
-                                }
-                              }}
-                            />
+                      url: null,
+                      preview: URL.createObjectURL(file),
+                    })
+                  }
+                />
+
+                <LinearWithValueLabel isLoading={isLoading} progress={progress} />
+
+                <OpportunityContentBlocksEditor
+                  blocks={contentBlocks}
+                  onChange={setContentBlocks}
+                  onUploadImage={uploadBlockImage}
+                />
+
+                <label className="flex items-center gap-2 text-sm text-gray-700">
+                  <input type="checkbox" {...register("showInHome")} />
+                  Show on home page
                           </label>
-                        </div>
-                        {imagesPreview.length > 0 && (
-                          <div className="mt-2 flex flex-wrap gap-2">
-                            {imagesPreview.map((preview, index) => (
-                              <div key={index} className="relative">
-                                <Image
-                                  src={preview.url}
-                                  alt={`Preview ${index + 1}`}
-                                  className="w-24 h-24 object-cover"
-                                  width={96}
-                                  height={96}
-                                />
+
+                <div className="flex justify-end gap-3 pt-4">
                                 <button
                                   type="button"
-                                  onClick={() => handleImageRemove(index)}
-                                  className="absolute top-0 right-0 bg-red-500 text-white p-1 rounded-full"
-                                >
-                                  <X size={16} />
-                                </button>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                        {isSubmitting && (
-                          <LinearWithValueLabel
-                            isLoading={isLoading}
-                            progress={progress}
-                          />
-                        )}
-                        <p className="text-xs/5 text-gray-600">
-                          PNG, JPG, GIF up to 10MB
-                        </p>
-                      </div>
-                    </div>
-                  )}
-                  {errors.postImages && (
-                    <p className="text-red-500 mt-1 text-sm">
-                      {errors.postImages.message as string}
-                    </p>
-                  )}
-                </div>
-
-                <div className="sm:col-span-2">
-                  <label
-                    htmlFor="description"
-                    className="block text-sm/6 font-semibold text-gray-900"
+                    onClick={handleClose}
+                    className="rounded-md border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700"
                   >
-                    Description
-                  </label>
-                  <div className="mt-2.5">
-                    {isDataPopulated ? (
-                      <Skeleton height={200} width="100%" borderRadius={5} />
-                    ) : (
-                      <Controller
-                        name="description"
-                        control={control}
-                        defaultValue=""
-                        render={({ field }) => (
-                          <ReactQuill
-                            theme="snow"
-                            value={field.value}
-                            onChange={field.onChange}
-                            className="quill-editor"
-                          />
-                        )}
-                      />
-                    )}
-
-                    {errors.description && (
-                      <p className="text-red-500 mt-1 text-sm">
-                        {errors?.description.message as string}
-                      </p>
-                    )}
-                  </div>
-                </div>
-                <div className="md:mt-10 mt-20">
+                    Cancel
+                  </button>
                   <button
                     type="submit"
-                    className="block w-full rounded-md bg-primary-50 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-primary-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-50 col-span-2 disabled:cursor-not-allowed disabled:bg-dark_gray"
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || isLoading}
+                    className="rounded-md bg-primary-50 px-4 py-2 text-sm font-semibold text-white hover:bg-primary-100 disabled:opacity-50"
                   >
-                    {isSubmitting ? "Submitting..." : "Submit"}
+                    {isSubmitting ? "Saving..." : "Save Update"}
                   </button>
-                </div>
               </div>
             </form>
+            )}
           </DialogPanel>
         </div>
       </div>

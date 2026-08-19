@@ -2,9 +2,11 @@ import Image from "next/image";
 import { truncateText } from "../../utilities/truncateText";
 import { Post } from "@prisma/client";
 import Link from "next/link";
+import { getUpdateDetailPath } from "@/utilities/updateDetailHref";
 
 export default function UpdateCard({
   id,
+  shortId,
   author,
   title,
   authorImage,
@@ -22,7 +24,7 @@ export default function UpdateCard({
   });
   return (
     <Link
-      href={`/updates/${id}`}
+      href={getUpdateDetailPath({ id, shortId })}
       key={id}
       className="border border-gray-200 hover:bg-gray-100 rounded-lg p-4 cursor-pointer duration-100"
     >

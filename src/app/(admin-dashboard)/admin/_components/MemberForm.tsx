@@ -165,7 +165,7 @@ export default function MemberForm({ member }: MemberFormProps) {
           <input
             {...register('position', { required: 'This field is required' })}
             type="text"
-            defaultValue={member?.position}
+            defaultValue={member?.position ?? ""}
             id="position"
             className={cn(
               'border-2 border-slate-400 outline-none  focus:border-slate-500 px-2 py-2 rounded',

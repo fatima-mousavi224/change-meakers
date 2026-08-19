@@ -1,110 +1,86 @@
-// import { ArrowRight } from "@/icons/Icons";
+import {
+  ABOUT_INTRO_IMAGES,
+  ABOUT_INTRO_PARAGRAPHS,
+} from "@/constant/aboutIntro";
 import Image from "next/image";
-// import Link from "next/link";
-import React from "react";
+
+type CollageImageProps = {
+  src: string;
+  alt: string;
+  className?: string;
+  priority?: boolean;
+};
+
+function CollageImage({
+  src,
+  alt,
+  className,
+  priority = false,
+}: CollageImageProps) {
+  return (
+    <div
+      className={`relative overflow-hidden rounded-[20px] ${className ?? ""}`}
+    >
+      <Image
+        src={src}
+        alt={alt}
+        fill
+        className="object-cover"
+        sizes="(max-width: 1024px) 50vw, 25vw"
+        priority={priority}
+        loading={priority ? undefined : "lazy"}
+      />
+    </div>
+  );
+}
 
 export default function About() {
+  const { certificate, meeting, workshop, presentation } = ABOUT_INTRO_IMAGES;
+
   return (
-    <div className="mt-4">
-      <div className="flex lg:flex-row flex-col-reverse gap-4 ">
-        {/* Left Section */}
-        <div className="flex flex-col justify-between  shadow-1xl  lg:w-[60%]">
-          <div className="bg-light_gray rounded-lg p-5">
-            <h2 className="sm:text-2xl text-base font-semibold text-gray-800 mb-4">
-              Who We Are
-            </h2>
-            <p className="text-sm xl:text-base mb-2 text-justify text-paragraph_color xl:leading-8 leading-5">
+    <section className="py-8 lg:pt-8">
+      <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:gap-12">
+        <div className="order-2 lg:order-1 md:pt-10">
+          <h1 className="font-plusJakartaSans text-[26px] font-bold leading-tight text-[#252525] sm:text-[30px] lg:text-[32px]">
+            About Change Makers of the World
+          </h1>
 
-              Change Makers of the World is a youth-led organization focused on girls’ education and human rights, with its work centered on Afghanistan. The organization was established to support access to education and promote responsible engagement on rights-related issues.
-              <br />
-            </p>
+          <div className="mt-5 space-y-4 font-plusJakartaSans text-[15px] leading-[23px] text-[#717171] sm:text-[16px] sm:leading-[24px] lg:text-[17px] lg:leading-[28px]">
+            {ABOUT_INTRO_PARAGRAPHS.map((paragraph) => (
+              <p key={paragraph}>{paragraph}</p>
+            ))}
           </div>
-
-          <div className="bg-light_gray rounded-lg p-5 mt-3">
-            <h2 className="sm:text-2xl text-base font-semibold text-gray-800 mb-4">
-                Our Focus Areas
-            </h2>
-              <div className="space-y-6">
-                <div className="flex items-start gap-3">
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary-50 text-center font-bold text-white leading-8">1</div>
-                  <div>
-                    <h3 className="font-semibold">Girls’ Education</h3>
-                    <p className="text-sm xl:text-base text-justify text-paragraph_color xl:leading-7 leading-5">
-                      Change Makers of the World supports access to education for Afghan girls through learning activities, provision of educational materials, and locally implemented education initiatives. This work focuses on maintaining learning opportunities for girls in contexts where formal schooling is restricted or unavailable.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-3">
-                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary-50  text-center font-bold text-white leading-8">2</div>
-                  <div>
-                    <h3 className="font-semibold">Human Rights</h3>
-                    <p className="text-sm xl:text-base text-justify text-paragraph_color xl:leading-7 leading-5">
-                      The organization works on human rights by documenting issues affecting women, girls, and youth and contributing to public and institutional discussions. This includes engagement with civil society platforms and participation in dialogue at national and international levels.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-3">
-                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary-50 text-center font-bold  leading-8 text-white">3</div>
-                  <div>
-                    <h3 className="font-semibold">Youth Leadership and Participation</h3>
-                    <p className="text-sm xl:text-base text-justify text-paragraph_color xl:leading-7 leading-5">
-                      Change Makers of the World engages young people in structured activities related to education and social issues, including consultations, learning initiatives, and community involvement. This work focuses on practical participation and skill development, rather than symbolic or representational roles.
-                    </p>
-                  </div>
-                </div>
-              </div>
-          </div>
-          {/* <div className="flex justify-between">
-            <Link
-              href="/mission&impact"
-              className="inline-block text-primary_color text-sm xl:text-base underline"
-            >
-              Learn more about our mission and impact by clicking here.
-            </Link>
-            <Link href="/mission&impact">
-              <ArrowRight className="bg-black rounded-full hover:bg-opacity-80 " />
-            </Link>
-          </div> */}
         </div>
 
-        {/* Right Section */}
-        <div className="grid grid-cols-2 lg:grid-cols-2 gap-4 lg:w-[40%] ">
-          <div>
-            <Image
-              src="/images/about/amani-hero.png"
-              alt="Student 1"
-              width={1200}
-              height={1200}
-              className="rounded-lg object-cover h-[240px] lg:h-[450px] w-full mb-4"
+        <div className="order-1 grid grid-cols-2 gap-3 sm:gap-4 lg:order-2 lg:gap-5">
+          <div className="flex flex-col gap-3 sm:gap-4 lg:gap-5">
+            <CollageImage
+              src={certificate.src}
+              alt={certificate.alt}
+              className="h-[240px] sm:h-[285px] lg:h-[340px]"
+              priority
             />
-            <Image
-              src="/images/about/girls.jpg"
-              alt="Students walking"
-              width={1200}
-              height={1200}
-              className="rounded-lg object-cover h-[150px] lg:h-[250px] w-full"
+            <CollageImage
+              src={meeting.src}
+              alt={meeting.alt}
+              className="h-[165px] sm:h-[195px] lg:h-[220px]"
             />
           </div>
-          <div>
-            <Image
-              src="/images/about/teams.jpg"
-              alt="Classroom"
-              width={1200}
-              height={1200}
-              className="rounded-lg object-cover h-[150px] lg:h-[250px] w-full mb-4"
+
+          <div className="flex flex-col gap-3 sm:gap-4 lg:gap-5">
+            <CollageImage
+              src={workshop.src}
+              alt={workshop.alt}
+              className="h-[165px] sm:h-[195px] lg:h-[220px]"
             />
-            <Image
-              src="/images/about/project.jpg"
-              alt="Smiling student"
-              width={1200}
-              height={1200}
-              className="rounded-lg object-cover h-[240px] lg:h-[450px] w-full"
+            <CollageImage
+              src={presentation.src}
+              alt={presentation.alt}
+              className="h-[240px] sm:h-[285px] lg:h-[340px]"
             />
           </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 }

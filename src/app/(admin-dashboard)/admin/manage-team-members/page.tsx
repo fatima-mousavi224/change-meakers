@@ -1,9 +1,13 @@
-import React from 'react';
-import ManageTeamMembersTable from './ManageTeamMembersTable';
-import prisma from '@/lib/prismaDB';
+import React from "react";
+
+import { getAdminMembers } from "@/lib/adminMembers";
+
+import ManageTeamMembersTable from "./ManageTeamMembersTable";
+
+export const revalidate = 0;
 
 export default async function ManageTeamMembersPage() {
-  const members = await prisma.member.findMany();
+  const members = await getAdminMembers();
 
   return (
     <div>

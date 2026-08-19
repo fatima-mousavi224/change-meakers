@@ -1,16 +1,15 @@
 "use client";
-import Chart from "@/app/(admin-dashboard)/admin/_components/Chart";
+
 import ProfileCard from "@/app/(admin-dashboard)/admin/_components/ProfileCard";
-import { PaymentInfo, User } from "@prisma/client";
+import { User } from "@prisma/client";
 import Image from "next/image";
-import { useState } from "react";
 
 interface SummaryProps {
   numUsers: number;
   numPosts: number;
   numMembers: number;
   numAdmins: number;
-  donations: PaymentInfo[];
+  numOpportunities: number;
   currentUser: User | null;
 }
 
@@ -19,17 +18,9 @@ export default function Summary({
   numPosts,
   numMembers,
   numAdmins,
-  donations,
+  numOpportunities,
   currentUser,
 }: SummaryProps) {
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-
-  const totalDonations = donations
-    .filter(
-      (donation) => new Date(donation.createdAt).getFullYear() === selectedYear
-    )
-    .reduce((total, donation) => total + donation.amount, 0);
-
   const summaryData = [
     {
       label: "Posts",
@@ -45,19 +36,24 @@ export default function Summary({
     },
     {
       label: "Team members",
-      value: numAdmins,
+      value: numMembers,
       icon: "/images/Icon.svg",
     },
     {
       label: "Admin users",
-      value: numMembers,
+      value: numAdmins,
       icon: "/images/Icon (1).svg",
+    },
+    {
+      label: "Opportunities",
+      value: numOpportunities,
+      icon: "/images/Icon.svg",
     },
   ];
 
   return (
     <div>
-      <div className="grid xl:grid-cols-4 lg:grid-cols-2 grid-cols-1 gap-5 mb-5">
+      <div className="grid xl:grid-cols-5 lg:grid-cols-3 grid-cols-1 gap-5 mb-5">
         {summaryData.map((item) => (
           <div
             key={item.label}
@@ -92,40 +88,8 @@ export default function Summary({
           </div>
         ))}
       </div>
-      <div className="grid w-full grid-cols-3 gap-5 mb-20">
-        <div className="col-span-3 lg:col-span-2 h-[300px] bg-white rounded-[20px] p-4 overflow-hidden">
-          <div className="flex justify-between items-center mb-2">
-            <div className="flex flex-col gap-1">
-              <span className="text-sm text-[#A3AED0]">Total Donations</span>{" "}
-              <span className="text-[#252525] font-extrabold text-3xl">
-                {totalDonations}$
-              </span>
-            </div>
-            <div className="flex gap-2 items-center">
-              <select
-                className="border-none outline-none focus:outline-none focus:border-none focus:ring-0 text-[#A3AED0] hover:cursor-pointer"
-                value={selectedYear}
-                onChange={(e) => setSelectedYear(Number(e.target.value))}
-              >
-                <option value="2025">2025</option>
-                <option value="2024">2024</option>
-                <option value="2023">2023</option>
-                <option value="2022">2022</option>
-                <option value="2021">2021</option>
-              </select>
-              <Image
-                src={"/images/Vector (6).svg"}
-                alt="Graph"
-                width={30}
-                height={30}
-              />
-            </div>
-          </div>
-          <Chart donations={donations} selectedYear={selectedYear} />
-        </div>
-        <div className="col-span-3 lg:col-span-1 lg:h-[300px]">
-          <ProfileCard currentUser={currentUser} />
-        </div>
+      <div className="mb-20 lg:max-w-md">
+        <ProfileCard currentUser={currentUser} />
       </div>
     </div>
   );

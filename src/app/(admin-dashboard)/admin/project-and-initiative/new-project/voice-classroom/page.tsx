@@ -1,5 +1,7 @@
 "use client";
 
+import { useProjectId } from "@/hooks/useProjectId";
+
 import Tabs from "@/components/create-project-tabs/Tabs";
 import { useEffect, useRef, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
@@ -66,7 +68,7 @@ export default function VoicesFromClassroomForm() {
   };
   const router = useRouter();
   const searchParams = useSearchParams();
-  const projectId = localStorage.getItem("projectId");
+  const projectId = useProjectId();
   const isEdit = searchParams?.get("edit") === "1";
   useEffect(() => {
     const load = async () => {

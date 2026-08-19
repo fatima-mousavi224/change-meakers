@@ -1,71 +1,153 @@
 import { NextResponse } from "next/server";
+
+
+
+import { postWriteSchema, resolvePostContent } from "@/lib/postValidation";
+import { assignPublicCode } from "@/lib/contentSlug";
 import prisma from "@/lib/prismaDB";
-import { getCurrentUser } from "@/utilities/getCurrentUser";
+
+import { buildCategoryFilter } from "@/lib/updatesListing";
+
+import { requireAdmin } from "@/utilities/requireAdmin";
+
 import { formatDateToISOString } from "@/utilities/formatDateToISOString";
 
+
+
 export async function POST(request: Request) {
+
+  const { error } = await requireAdmin();
+
+  if (error) return error;
+
+
+
   try {
-    const currentUser = await getCurrentUser();
 
-    if (!currentUser || currentUser.role !== "ADMIN") {
-      return NextResponse.json(
-        { error: "User is not Admin or User not found!" },
-        { status: 404 }
-      );
-    }
     const body = await request.json();
-    const { title, description, postImages, postDate, categoryId, showInHome } = body;
 
-    if (!title || !description || !postImages) {
+    const parsed = postWriteSchema.safeParse(body);
+
+
+
+    if (!parsed.success) {
+
       return NextResponse.json(
-        { error: "Missing required fields!" },
+
+        { error: "Validation failed", details: parsed.error.errors },
+
         { status: 400 }
+
       );
+
     }
-    const formattedPostDate = formatDateToISOString(postDate);
+
+
+
+    const data = parsed.data;
+
+    const { description, contentBlocks } = resolvePostContent(data);
+
+    const postDate = data.postDate ? new Date(data.postDate) : new Date();
+    const shortId = await assignPublicCode("post", postDate);
+
+
+
     const post = await prisma.post.create({
+
       data: {
-        ...body,
-        postDate: formattedPostDate,
-        categoryId: categoryId,
-        showInHome: Boolean(showInHome) || false,
+
+        title: data.title,
+
+        shortId,
+
+        excerpt: data.excerpt,
+
+        description,
+
+        contentBlocks,
+
+        author: data.author,
+
+        authorImage: data.authorImage,
+
+        categoryId: data.categoryId,
+
+        postDate: formatDateToISOString(data.postDate),
+
+        showInHome: Boolean(data.showInHome),
+
+        postImages: [],
+
       },
+
     });
+
+
+
     return NextResponse.json(post, { status: 201 });
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+
+  } catch (err) {
+
+    console.error("Failed to create post:", err);
+
+    const message =
+
+      err instanceof Error ? err.message : "Failed to create update";
+
+    return NextResponse.json({ error: message }, { status: 500 });
+
   }
+
 }
+
+
 
 export async function GET(request: Request) {
+
   try {
-    // Parse the query string from the URL
+
     const { searchParams } = new URL(request.url);
+
     const categoryId = searchParams.get("categoryId");
+    const categoryTitle = searchParams.get("categoryTitle");
 
-    // Check if categoryId is valid and not null or empty
-    if (categoryId && categoryId.trim() !== "") {
-      const posts = await prisma.post.findMany({
-        where: {
-          categoryId, // categoryId is a string and not null
-        },
-        include: {
-          Category: true,
-        },
-      });
+    const where =
+      categoryTitle && categoryTitle.trim() !== ""
+        ? buildCategoryFilter(categoryTitle)
+        : categoryId && categoryId.trim() !== ""
+          ? { categoryId }
+          : undefined;
 
-      return NextResponse.json(posts, { status: 200 });
-    }
+
 
     const posts = await prisma.post.findMany({
-      include: {
-        Category: true,
-      },
+
+      where,
+
+      include: { Category: true },
+
+      orderBy: { createdAt: "desc" },
+
     });
 
+
+
     return NextResponse.json(posts, { status: 200 });
-  } catch (error: any) {
-    console.error(error.message);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+
+  } catch (err) {
+
+    console.error("Failed to fetch posts:", err);
+
+    return NextResponse.json(
+
+      { error: "Failed to fetch updates" },
+
+      { status: 500 }
+
+    );
+
   }
+
 }
+

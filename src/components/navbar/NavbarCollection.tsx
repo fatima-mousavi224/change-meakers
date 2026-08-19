@@ -3,7 +3,8 @@ import { Suspense, useState } from "react";
 import MobileSidebar from "./MobileSidebar";
 import MainNavbar from "./MainNavbar";
 import { importantButtons, navigation } from "@/lib/data";
-import { Post, User } from "@prisma/client";
+import type { Post } from "@/types/database";
+import type { User } from "@prisma/client";
 
 interface NavbarProps {
   user: User | null;

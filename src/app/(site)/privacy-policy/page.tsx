@@ -1,9 +1,11 @@
 import React from 'react';
+import SiteContainer from '@/components/common/SiteContainer';
 
 export default function PrivacyPolicy() {
   return (
-    <div className="max-w-screen-2xl px-4 mx-auto min-h-screen bg-gray-50 py-12">
-      <div className="max-w-4xl mx-auto px-6 sm:px-10 lg:px-20">
+    <div className="-mb-10">
+      <SiteContainer className="py-12">
+      <div className="max-w-4xl mx-auto">
         <h1 className="text-4xl font-bold text-gray-800 mb-6 text-center">
           Privacy Policy - Change Makers
         </h1>
@@ -79,6 +81,7 @@ export default function PrivacyPolicy() {
      
         </div>
       </div>
+      </SiteContainer>
     </div>
   );
 }

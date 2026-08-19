@@ -1,5 +1,7 @@
 "use client";
 
+import { useProjectId } from "@/hooks/useProjectId";
+
 import { useTabs } from "@/components/context/TabsContext";
 import Tabs from "@/components/create-project-tabs/Tabs";
 import DeleteModal from "@/components/delete-modal/deleteModal";
@@ -31,7 +33,7 @@ export default function FinalCallToActionAndNavigation() {
   });
 
   const router = useRouter();
-  const projectId = localStorage.getItem("projectId");
+  const projectId = useProjectId();
   const searchParams = useSearchParams();
   const isEdit = searchParams?.get("edit") === "1";
 

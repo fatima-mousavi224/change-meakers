@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import prisma from "@/lib/prismaDB";
+import { requireAdmin } from "@/utilities/requireAdmin";
 
 // Define schemas for standard and highlighted impacts
 const ImpactSchema = z.object({
@@ -17,6 +18,9 @@ const ImpactSchema = z.object({
 
 
 export async function POST(request: NextRequest) {
+  const { error } = await requireAdmin();
+  if (error) return error;
+
   try {
     const body = await request.json();
     console.log("Received impact data:", JSON.stringify(body, null, 2));

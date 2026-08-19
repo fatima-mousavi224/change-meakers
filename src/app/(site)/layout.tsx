@@ -3,7 +3,12 @@ import * as React from "react";
 
 import "@/styles/globals.css";
 import { Plus_Jakarta_Sans } from "next/font/google";
-// import prisma from "@/lib/prismaDB";
+import Footer from "@/components/footer/Footer";
+import SearchModal from "@/components/search/SearchModal";
+import { getNavbarPosts } from "@/lib/getNavbarPosts";
+import { getCurrentUser } from "@/utilities/getCurrentUser";
+import NavBar from "../../components/navbar/NavBar";
+import { Toaster } from "react-hot-toast";
 
 import { siteConfig } from "@/constant/config";
 
@@ -11,11 +16,6 @@ const plusJakartaSans = Plus_Jakarta_Sans({
   weight: ["300", "400", "500", "600", "700"],
   subsets: ["latin"],
 });
-// import { getCurrentUser } from "@/utilities/getCurrentUser";
-// import NavBar from "../../components/navbar/NavBar";
-// import Footer from "@/components/footer/Footer";
-import { Toaster } from "react-hot-toast";
-// import SearchModal from "@/components/search/SearchModal";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
@@ -55,13 +55,15 @@ export const metadata: Metadata = {
   ],
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  // const user = await getCurrentUser();
-  // const posts = await prisma.post.findMany();
+  const [user, posts] = await Promise.all([
+    getCurrentUser(),
+    getNavbarPosts(),
+  ]);
 
   return (
     <html>
@@ -74,15 +76,14 @@ export default function RootLayout({
             },
           }}
         />
-        {/* Front-facing chrome (commented out during development) */}
-        {/* <React.Suspense fallback="loading...">
+        <React.Suspense fallback="loading...">
           <NavBar user={user} posts={posts} />
         </React.Suspense>
         <React.Suspense fallback="loading...">
           <SearchModal posts={posts} />
-        </React.Suspense> */}
+        </React.Suspense>
         {children}
-        {/* <Footer /> */}
+        <Footer />
       </body>
     </html>
   );

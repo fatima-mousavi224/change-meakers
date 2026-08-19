@@ -1,5 +1,7 @@
 "use client";
 
+import { useProjectId } from "@/hooks/useProjectId";
+
 import { useForm } from "react-hook-form";
 import Tabs from "@/components/create-project-tabs/Tabs";
 import { cn } from "@/lib/utils";
@@ -47,7 +49,7 @@ export default function Offer() {
   });
 
   const offerIcons = watch("offerIcons"); // watch for offerIcons array
-  const projectId = localStorage.getItem("projectId");
+  const projectId = useProjectId();
   const searchParams = useSearchParams();
   const isEdit = searchParams?.get("edit") === "1";
   const router = useRouter();

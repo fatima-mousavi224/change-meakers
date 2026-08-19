@@ -1,4 +1,5 @@
 "use client";
+import SiteContainer from "@/components/common/SiteContainer";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import CheckOutForm from "./CheckOutForm";
@@ -16,7 +17,8 @@ export default function Donate() {
   };
 
   return (
-    <div className="max-w-3xl sm:mx-auto my-10 md:my-20 px-4 md:px-8 bg-light_gray p-8 mx-2 ">
+    <SiteContainer className="my-10 md:my-20">
+      <div className="mx-auto max-w-3xl bg-light_gray p-8">
       <Suspense fallback={"loading..."}>
         <Elements
           stripe={stripePromise}
@@ -32,6 +34,7 @@ export default function Donate() {
           />
         </Elements>
       </Suspense>
-    </div>
+      </div>
+    </SiteContainer>
   );
 }

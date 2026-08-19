@@ -1,48 +1,37 @@
-// import Subscribe from "@/components/contact-us/Subscribe";
-// import Contribute from "@/components/home/contribute/Contribute";
-// import HeroSlider from "@/components/home/hero-section/HeroSlider";
-// import HomeVedio from "@/components/home/homeVedio";
-// import { InfiniteBanner } from "@/components/home/infinite-banner/InfiniteBanner";
-// import LatestNews from "@/components/home/news-stories/LatestNews";
-// import NewsStories from "@/components/home/news-stories/news-stories";
-// import Ourchanges from "@/components/home/our-changes/OurChanges";
-// import ProjectInitiatives from "@/components/home/project-Initiative/ProjectInitiatives";
-// import WhoWeAre from "@/components/home/who-we-are/WhoWeAre";
-// import "@/lib/env";
-// import prisma from "@/lib/prismaDB";
-import UnderDevelopment from "@/components/under-development/UnderDevelopment";
+import SiteContainer from "@/components/common/SiteContainer";
+import ScrollReveal from "@/components/common/ScrollReveal";
+import HeroSlider from "@/components/home/hero-section/HeroSlider";
+import WhatWeDo from "@/components/home/what-we-do/WhatWeDo";
+import OurInitiatives from "@/components/home/our-initiatives/OurInitiatives";
+import GetInvolved from "@/components/home/get-involved/GetInvolved";
+import LatestUpdates from "@/components/home/latest-updates/LatestUpdates";
+import OurPartners from "@/components/home/our-partners/OurPartners";
+import { getLatestPosts } from "@/lib/getLatestPosts";
+import "@/lib/env";
 
-export default function HomePage() {
-  // const posts = await prisma.post.findMany({
-  //   take: 10,
-  //   where: {
-  //     showInHome: true,
-  //   },
-  //   orderBy: {
-  //     postDate: "desc",
-  //   },
-  // });
+export default async function HomePage() {
+  const posts = await getLatestPosts(3);
 
   return (
     <main>
-      <UnderDevelopment />
-
-      {/* --- Original home page (commented out) --- */}
-      {/* <div className="max-w-screen-2xl px-4 mx-auto">
+      <SiteContainer>
         <HeroSlider />
-        <InfiniteBanner direction="left" />
-        <WhoWeAre />
-        <Ourchanges />
-      </div>
-      <ProjectInitiatives />
-      <div className="max-w-screen-2xl px-4 mx-auto">
-        <HomeVedio />
-      </div>
-      <LatestNews posts={posts} />
-      <div className="max-w-screen-2xl px-4 mx-auto">
-        <Contribute />
-        <Subscribe />
-      </div> */}
+        <ScrollReveal>
+          <WhatWeDo />
+        </ScrollReveal>
+        <ScrollReveal delay={0.05}>
+          <OurInitiatives />
+        </ScrollReveal>
+        <ScrollReveal delay={0.05}>
+          <GetInvolved />
+        </ScrollReveal>
+        <ScrollReveal delay={0.05}>
+          <LatestUpdates posts={posts} />
+        </ScrollReveal>
+        <ScrollReveal delay={0.05}>
+          <OurPartners />
+        </ScrollReveal>
+      </SiteContainer>
     </main>
   );
 }

@@ -1,5 +1,7 @@
 "use client";
 
+import { useProjectId } from "@/hooks/useProjectId";
+
 import Tabs from "@/components/create-project-tabs/Tabs";
 import { useState, useRef } from "react";
 import { useForm } from "react-hook-form";
@@ -37,7 +39,7 @@ export default function VisionGoalForm() {
   );
   const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
   const router = useRouter();
-  const projectId = localStorage.getItem("projectId");
+  const projectId = useProjectId();
   const searchParams = useSearchParams();
   const isEdit = searchParams?.get("edit") === "1";
 

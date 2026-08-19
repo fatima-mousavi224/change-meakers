@@ -1,5 +1,6 @@
 import prisma from "@/lib/prismaDB";
 import { NextRequest, NextResponse } from "next/server";
+import { requireAdmin } from "@/utilities/requireAdmin";
 
 export async function GET(
   req: NextRequest,
@@ -62,6 +63,9 @@ export async function PATCH(
   req: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  const { error } = await requireAdmin();
+  if (error) return error;
+
   try {
     const body = await req.json();
     const {
@@ -257,6 +261,9 @@ export async function DELETE(
   req: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  const { error } = await requireAdmin();
+  if (error) return error;
+
   try {
     await prisma.project.delete({
       where: { id: params.id },

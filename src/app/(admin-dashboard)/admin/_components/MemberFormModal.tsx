@@ -1,42 +1,113 @@
 "use client";
 
-import LinearWithValueLabel from "../../../../components/common/LinearProgressWithLabel";
-import firebaseApp from "../../../../lib/firebase";
+import LinearWithValueLabel from "@/components/common/LinearProgressWithLabel";
+import type {
+  LeadershipSocialLink,
+  LeadershipSocialType,
+} from "@/constant/aboutLeadership";
 import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react";
 import { PhotoIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
-import {
-  getDownloadURL,
-  getStorage,
-  ref,
-  uploadBytesResumable,
-} from "firebase/storage";
-import { X } from "lucide-react";
-import dynamic from "next/dynamic";
+import { uploadCardImage } from "lib/uploadCardImage";
+import { Plus, Trash2, X } from "lucide-react";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import {
-  Controller,
-  FieldValues,
-  SubmitHandler,
-  useForm,
-} from "react-hook-form";
+import { useEffect, useRef, useState } from "react";
+import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import Skeleton from "react-loading-skeleton";
-import "react-loading-skeleton/dist/skeleton.css";
-import "react-quill/dist/quill.snow.css";
-
-const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 
 interface MemberFormModalProps {
   open: boolean;
   setOpen: (open: boolean) => void;
 }
 
-type UploadImageType = {
-  image: string;
+type ImageState = {
+  file: File | null;
+  url: string | null;
+  preview: string | null;
 };
+
+const SOCIAL_TYPES: LeadershipSocialType[] = [
+  "website",
+  "linkedin",
+  "instagram",
+  "x",
+  "facebook",
+];
+
+const emptyImageState = (): ImageState => ({
+  file: null,
+  url: null,
+  preview: null,
+});
+
+function slugify(value: string) {
+  return value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+function resolveStoredImageUrl(preview: string | null, url: string | null) {
+  if (url) return url;
+  if (preview && (/^https?:\/\//.test(preview) || preview.startsWith("/"))) {
+    return preview;
+  }
+  return null;
+}
+
+function ImageUploadField({
+  label,
+  hint,
+  preview,
+  inputKey,
+  onFileSelect,
+}: {
+  label: string;
+  hint?: string;
+  preview: string | null;
+  inputKey: number;
+  onFileSelect: (file: File) => void;
+}) {
+  return (
+    <div>
+      <label className="block text-sm font-medium text-gray-700">{label}</label>
+      {hint ? <p className="mt-1 text-xs text-gray-500">{hint}</p> : null}
+      <div className="mt-2 flex items-center gap-4">
+        {preview ? (
+          <Image
+            src={preview}
+            alt="Preview"
+            width={80}
+            height={80}
+            className="size-20 rounded-md object-cover"
+            unoptimized={
+              preview.startsWith("blob:") ||
+              preview.startsWith("http") ||
+              preview.startsWith("/uploads/") ||
+              preview.startsWith("/")
+            }
+          />
+        ) : null}
+        <label className="flex cursor-pointer items-center gap-2 rounded-md border border-dashed border-gray-300 px-4 py-3 text-sm text-gray-600">
+          <PhotoIcon className="size-5" />
+          Upload photo
+          <input
+            key={inputKey}
+            type="file"
+            accept="image/jpeg,image/png,image/webp,image/gif"
+            className="hidden"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) onFileSelect(file);
+            }}
+          />
+        </label>
+      </div>
+    </div>
+  );
+}
 
 export default function MemberFormModal({
   open,
@@ -46,403 +117,394 @@ export default function MemberFormModal({
     handleSubmit,
     register,
     reset,
-    control,
-    formState: { errors, isSubmitting },
+    setValue,
+    watch,
+    formState: { isSubmitting },
   } = useForm();
 
   const router = useRouter();
-
-  // states
-
-  const [data, setData] = useState<any>();
-  const hasData = Boolean(data);
-  const [memberImageIsLoading, setMemberImageLoading] = useState(false);
-  const [memberImageProgress, setMemberImageProgress] = useState(0);
-  const [memberImagePreview, setMemberImagePreview] = useState<
-    Array<{ url: string; file: File | null }>
-  >(
-    hasData && data?.avatar
-      ? data.avatar.map((img: any) => ({ url: img.image, file: null }))
-      : []
-  );
-
   const params = useSearchParams();
   const memberId = params.get("memberId");
 
+  const [isLoading, setLoading] = useState(false);
   const [isDataPopulated, setIsDataPopulated] = useState(Boolean(memberId));
+  const [socials, setSocials] = useState<LeadershipSocialLink[]>([]);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [fileInputKey, setFileInputKey] = useState(0);
+
+  const photoRef = useRef<ImageState>(emptyImageState());
+  const loadedKeyRef = useRef<string | null>(null);
+  const slugTouchedRef = useRef(false);
+
+  const watchedName = watch("name");
+
+  const setPhotoState = (next: ImageState) => {
+    photoRef.current = next;
+    setPhotoPreview(next.preview);
+  };
 
   useEffect(() => {
-    async function getMember() {
+    if (!slugTouchedRef.current && watchedName && !memberId) {
+      setValue("slug", slugify(watchedName));
+    }
+  }, [memberId, setValue, watchedName]);
+
+  useEffect(() => {
+    if (!open) {
+      loadedKeyRef.current = null;
+      return;
+    }
+
+    setFileInputKey((current) => current + 1);
+
+    const loadKey = memberId ?? "new";
+    if (loadedKeyRef.current === loadKey) return;
+    loadedKeyRef.current = loadKey;
+
+    async function loadMember() {
+      slugTouchedRef.current = false;
+
+      if (!memberId) {
+        reset({
+          name: "",
+          slug: "",
+          role: "",
+          bio: "",
+          imageObjectPosition: "",
+          sortOrder: 0,
+          published: true,
+        });
+        setPhotoState(emptyImageState());
+        setSocials([]);
+        return;
+      }
+
       try {
         setIsDataPopulated(true);
-        const res = await axios.get(`/api/member/${memberId}`);
-        const data = res.data;
-        setData(data);
-
-        if (data) {
-          setMemberImagePreview(
-            data.avatar.map((img: any) => ({ url: img.image, file: null }))
-          );
-        }
-        reset({
-          name: data?.name || "",
-          position: data?.position || "",
-          description: data?.description || "",
-          avatar: data?.avatar || [],
+        const res = await axios.get(`/api/member/${memberId}`, {
+          timeout: 15000,
         });
+        const data = res.data;
+
+        reset({
+          name: data.name || "",
+          slug: data.slug || "",
+          role: data.role || data.position || "",
+          bio:
+            data.bio ||
+            String(data.description || "")
+              .replace(/<br\s*\/?>/gi, " ")
+              .replace(/<[^>]*>/g, " ")
+              .replace(/&nbsp;/g, " ")
+              .replace(/\s+/g, " ")
+              .trim(),
+          imageObjectPosition: data.imageObjectPosition || "",
+          sortOrder: data.sortOrder ?? 0,
+          published: Boolean(data.published ?? true),
+        });
+
+        const imageUrl =
+          data.image?.trim() || data.avatar?.[0]?.image?.trim() || null;
+
+        setPhotoState({
+          file: null,
+          url: imageUrl,
+          preview: imageUrl,
+        });
+
+        setSocials(Array.isArray(data.socials) ? data.socials : []);
+        slugTouchedRef.current = true;
       } catch (error) {
-        console.log("Error while fetching member", error);
+        console.error("Failed to load member", error);
+        toast.error("Failed to load team member");
       } finally {
         setIsDataPopulated(false);
       }
     }
-    if (memberId) {
-      getMember();
-    } else {
-      reset({
-        title: "",
-        position: "",
-        description: "",
-        avatar: [],
-      });
-    }
-  }, [memberId, reset]);
 
-  useEffect(() => {
-    return () => {
-      memberImagePreview.forEach(({ url }) => URL.revokeObjectURL(url));
-    };
-  }, [memberImagePreview]);
+    loadMember();
+  }, [memberId, open, reset]);
 
-  const onSubmit: SubmitHandler<FieldValues> = async (data) => {
-    let postImages: UploadImageType[] = hasData ? data?.avatar : [];
-
-    if (data.avatar instanceof FileList && data.avatar.length > 0) {
-      setMemberImageLoading(true);
+  const resolveImageForSubmit = async () => {
+    if (photoRef.current.file) {
+      setLoading(true);
       try {
-        const newPostImages: UploadImageType[] = [];
-        const filesArray = Array.from(data.avatar);
-        for (const item of filesArray) {
-          const fileName = new Date().getTime() + "-" + item.name;
-          const storage = getStorage(firebaseApp);
-          const storageRef = ref(storage, `avatar/${fileName}`);
-          const uploadTask = uploadBytesResumable(storageRef, item);
-          await new Promise<void>((resolve, reject) => {
-            uploadTask.on(
-              "state_changed",
-              (snapshot) => {
-                const progress =
-                  (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                setMemberImageProgress(progress);
-                console.log("Upload is " + progress + "% done");
-              },
-              (error) => {
-                console.log("Error uploading image", error);
-                reject(error);
-              },
-              () => {
-                getDownloadURL(uploadTask.snapshot.ref)
-                  .then((downloadURL) => {
-                    newPostImages.push({ image: downloadURL });
-                    console.log("File available at", downloadURL);
-                    resolve();
-                  })
-                  .catch((err) => {
-                    console.log("Error getting the downloadURL");
-                    reject(err);
-                  });
-              }
-            );
-          });
-        }
-        postImages = newPostImages;
+        return await uploadCardImage(photoRef.current.file);
       } catch (error) {
-        console.log("Error in uploading image", error);
-        toast.error("Error in uploading image");
+        const message =
+          error instanceof Error ? error.message : "Failed to upload image";
+        toast.error(message);
+        throw error;
       } finally {
-        setMemberImageLoading(false);
+        setLoading(false);
       }
-    } else if (memberId) {
-      postImages = data?.avatar || [];
     }
 
-    if (memberId) {
-      toast.success("updating member, please wait...");
-    } else {
-      toast.success("creating member, please wait...");
-    }
-
-    const memberData = {
-      ...data,
-      avatar: postImages,
-    };
-
-    if (memberId) {
-      await axios
-        .patch(`/api/member/${memberId}`, memberData)
-        .then(() => {
-          router.refresh();
-          setOpen(false);
-          toast.success("Member updated successfully");
-          reset();
-        })
-        .catch((err) => {
-          console.error("Update error:", err);
-          toast.error("Error while updating member to db!");
-        });
-    } else {
-      await axios
-        .post(`/api/member`, memberData)
-        .then(() => {
-          router.refresh();
-          setOpen(false);
-          setMemberImagePreview([]);
-          toast.success("Member created successfully");
-          reset();
-        })
-        .catch((err) => {
-          toast.error("Error while saving member to db!", err);
-        });
-    }
+    return resolveStoredImageUrl(
+      photoRef.current.preview,
+      photoRef.current.url
+    );
   };
 
-  const handleImageRemove = (index: number) => {
-    setMemberImagePreview((prev) => prev.filter((_, i) => i !== index));
+  const onSubmit: SubmitHandler<FieldValues> = async (formData) => {
+    try {
+      const image = await resolveImageForSubmit();
 
-    // Reset the file input
-    const fileInput = document.getElementById("postImages") as HTMLInputElement;
-    if (fileInput) {
-      fileInput.value = "";
+      if (!image) {
+        toast.error("Please upload a member photo");
+        return;
+      }
+
+      const payload = {
+        slug: String(formData.slug).trim(),
+        name: String(formData.name).trim(),
+        role: String(formData.role || "").trim() || null,
+        bio: String(formData.bio).trim(),
+        image,
+        imageObjectPosition:
+          String(formData.imageObjectPosition || "").trim() || null,
+        socials: socials.filter((item) => item.href.trim()),
+        sortOrder: Number(formData.sortOrder) || 0,
+        published: Boolean(formData.published),
+      };
+
+      if (memberId) {
+        await axios.patch(`/api/member/${memberId}`, payload);
+        toast.success("Team member updated successfully");
+      } else {
+        await axios.post("/api/member", payload);
+        toast.success("Team member created successfully");
+      }
+
+      setOpen(false);
+      router.replace("/admin/manage-team-members");
+      router.refresh();
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.error ||
+          error?.message ||
+          "Failed to save team member"
+      );
     }
   };
 
   const handleClose = () => {
     setOpen(false);
-    setMemberImagePreview([]);
-    // setCoverImagePreview(null);
-    reset({
-      name: "",
-      position: "",
-      description: "",
-      avatar: null,
-    });
     router.replace("/admin/manage-team-members");
+  };
+
+  const addSocial = () => {
+    setSocials((current) => [...current, { type: "linkedin", href: "" }]);
+  };
+
+  const updateSocial = (
+    index: number,
+    field: keyof LeadershipSocialLink,
+    value: string
+  ) => {
+    setSocials((current) =>
+      current.map((item, itemIndex) =>
+        itemIndex === index ? { ...item, [field]: value } : item
+      )
+    );
+  };
+
+  const removeSocial = (index: number) => {
+    setSocials((current) => current.filter((_, itemIndex) => itemIndex !== index));
   };
 
   return (
     <Dialog open={open} onClose={handleClose} className="relative z-50">
-      <DialogBackdrop
-        transition
-        className="fixed inset-0 bg-gray-500/75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in"
-      />
-
-      <div className="fixed inset-0 z-10  w-screen overflow-y-auto">
-        <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-          <DialogPanel
-            transition
-            className="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in sm:my-8 sm:w-full sm:max-w-lg sm:p-6 data-[closed]:sm:translate-y-0 data-[closed]:sm:scale-95"
-          >
-            <h2 className="text-center text-primary-50 text-2xl font-bold">
-              Add Team Member
-            </h2>
-            <form
-              className="mx-auto mt-8 max-w-xl"
-              onSubmit={handleSubmit(onSubmit)}
-              method="POST"
+      <DialogBackdrop className="fixed inset-0 bg-gray-500/75" />
+      <div className="fixed inset-0 z-50 overflow-y-auto">
+        <div className="flex min-h-full items-center justify-center p-4">
+          <DialogPanel className="relative w-full max-w-3xl rounded-2xl bg-white p-6 shadow-xl max-h-[90vh] overflow-y-auto">
+            <button
+              type="button"
+              onClick={handleClose}
+              className="absolute right-4 top-4 text-gray-400 hover:text-gray-600"
             >
-              <div className="grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2">
-                <div>
-                  <label
-                    htmlFor="name"
-                    className="block text-sm/6 font-semibold text-gray-900"
-                  >
-                    Name
-                  </label>
-                  <div className="mt-2.5">
-                    {isDataPopulated ? (
-                      <Skeleton height={40} width="100%" borderRadius={5} />
-                    ) : (
-                      <input
-                        {...register("name", {
-                          required: "Name is required",
-                        })}
-                        id="name"
-                        name="name"
-                        type="text"
-                        className="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-1 focus:-outline-offset-1 focus:outline-primary-50 border-dark_gray border"
-                        defaultValue={data?.name}
-                      />
-                    )}
+              <X className="size-5" />
+            </button>
+
+            <h2 className="text-xl font-bold text-gray-900 mb-6">
+              {memberId ? "Edit Team Member" : "Add Team Member"}
+            </h2>
+
+            {isDataPopulated ? (
+              <div className="py-10 text-center text-gray-500">Loading...</div>
+            ) : (
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">
+                      Name
+                    </label>
+                    <input
+                      {...register("name", { required: "Name is required" })}
+                      className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2"
+                    />
                   </div>
-                  {errors.name && (
-                    <p className="text-red-500 mt-1 text-sm">
-                      {errors.name.message as string}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">
+                      Slug
+                    </label>
+                    <input
+                      {...register("slug", { required: "Slug is required" })}
+                      onChange={(event) => {
+                        slugTouchedRef.current = true;
+                        setValue("slug", event.target.value);
+                      }}
+                      className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2"
+                    />
+                    <p className="mt-1 text-xs text-gray-500">
+                      Used internally. Example: jawid-amani
                     </p>
-                  )}
-                </div>
-                <div>
-                  <label
-                    htmlFor="position"
-                    className="block text-sm/6 font-semibold text-gray-900"
-                  >
-                    Position
-                  </label>
-                  <div className="mt-2.5">
-                    {isDataPopulated ? (
-                      <Skeleton height={40} width="100%" borderRadius={5} />
-                    ) : (
-                      <input
-                        {...register("position", {
-                          required: "Position is required",
-                        })}
-                        id="position"
-                        name="position"
-                        type="text"
-                        className="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-1 focus:-outline-offset-1 focus:outline-primary-50 border-dark_gray border"
-                      />
-                    )}
                   </div>
-                  {errors.position && (
-                    <p className="text-red-500 mt-1 text-sm">
-                      {errors.position.message as string}
-                    </p>
-                  )}
                 </div>
 
-                <div className="sm:col-span-2">
-                  <p className="block text-sm/6 font-semibold text-gray-900">
-                    Avatar
-                  </p>
-                  {isDataPopulated ? (
-                    <Skeleton height={100} width="100%" borderRadius={5} />
-                  ) : (
-                    <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10 ">
-                      <div className="text-center">
-                        <PhotoIcon
-                          aria-hidden="true"
-                          className="mx-auto size-12 text-dark_gray"
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">
+                      Role (optional)
+                    </label>
+                    <input
+                      {...register("role")}
+                      placeholder="Programs Director"
+                      className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">
+                      Sort order
+                    </label>
+                    <input
+                      type="number"
+                      {...register("sortOrder")}
+                      className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Bio
+                  </label>
+                  <textarea
+                    {...register("bio", { required: "Bio is required" })}
+                    rows={5}
+                    className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2"
+                  />
+                </div>
+
+                <ImageUploadField
+                  label="Photo"
+                  hint="Shown on the About page team cards"
+                  preview={photoPreview}
+                  inputKey={fileInputKey}
+                  onFileSelect={(file) =>
+                    setPhotoState({
+                      file,
+                      url: null,
+                      preview: URL.createObjectURL(file),
+                    })
+                  }
+                />
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Image position (optional)
+                  </label>
+                  <input
+                    {...register("imageObjectPosition")}
+                    placeholder="50% 22%"
+                    className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2"
+                  />
+                </div>
+
+                <LinearWithValueLabel isLoading={isLoading} progress={0} />
+
+                <div>
+                  <div className="flex items-center justify-between">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Social links
+                    </label>
+                    <button
+                      type="button"
+                      onClick={addSocial}
+                      className="inline-flex items-center gap-1 text-sm font-medium text-primary-50"
+                    >
+                      <Plus className="size-4" />
+                      Add link
+                    </button>
+                  </div>
+
+                  <div className="mt-3 space-y-3">
+                    {socials.map((social, index) => (
+                      <div
+                        key={`${social.type}-${index}`}
+                        className="grid grid-cols-1 md:grid-cols-[160px_1fr_auto] gap-3"
+                      >
+                        <select
+                          value={social.type}
+                          onChange={(event) =>
+                            updateSocial(
+                              index,
+                              "type",
+                              event.target.value as LeadershipSocialType
+                            )
+                          }
+                          className="rounded-md border border-gray-300 px-3 py-2"
+                        >
+                          {SOCIAL_TYPES.map((type) => (
+                            <option key={type} value={type}>
+                              {type}
+                            </option>
+                          ))}
+                        </select>
+                        <input
+                          value={social.href}
+                          onChange={(event) =>
+                            updateSocial(index, "href", event.target.value)
+                          }
+                          placeholder="https://"
+                          className="rounded-md border border-gray-300 px-3 py-2"
                         />
-                        <div className="mt-4 flex text-sm/6 text-gray-600">
-                          <label
-                            htmlFor="avatar"
-                            className="relative cursor-pointer rounded-md bg-white font-semibold text-primary-50 focus-within:outline-none focus-within:ring-2 focus-within:ring-primary-100 focus-within:ring-offset-2 hover:text-primary-50"
-                          >
-                            <span className="text-center block">
-                              Click to select a file
-                            </span>
-                            <input
-                              {...register("avatar", {
-                                required: !memberId
-                                  ? "Avatar is required"
-                                  : false,
-                              })}
-                              id="avatar"
-                              name="avatar"
-                              type="file"
-                              className="sr-only"
-                              multiple={false}
-                              accept=".jpg,.jpeg,.png, gif"
-                              onChange={(e) => {
-                                const files = e.target.files;
-                                if (files) {
-                                  const newPreviews = Array.from(files).map(
-                                    (file) => ({
-                                      url: URL.createObjectURL(file),
-                                      file,
-                                    })
-                                  );
-                                  setMemberImagePreview(newPreviews);
-                                }
-                              }}
-                            />
-                          </label>
-                        </div>
-                        {memberImagePreview.length > 0 && (
-                          <div className="mt-2 flex flex-wrap gap-2">
-                            {memberImagePreview.map((preview, index) => (
-                              <div key={index} className="relative">
-                                <Image
-                                  src={preview.url}
-                                  alt={`Preview ${index + 1}`}
-                                  className="w-24 h-24 object-cover"
-                                  width={96}
-                                  height={96}
-                                />
-                                <button
-                                  type="button"
-                                  onClick={() => handleImageRemove(index)}
-                                  className="absolute top-0 right-0 bg-red-500 text-white p-1 rounded-full"
-                                >
-                                  <X size={16} />
-                                </button>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                        {isSubmitting && (
-                          <LinearWithValueLabel
-                            isLoading={memberImageIsLoading}
-                            progress={memberImageProgress}
-                          />
-                        )}
-                        <p className="text-xs/5 text-gray-600">
-                          PNG, JPG, GIF up to 10MB
-                        </p>
+                        <button
+                          type="button"
+                          onClick={() => removeSocial(index)}
+                          className="inline-flex items-center justify-center rounded-md border border-gray-300 px-3 py-2 text-red-500"
+                        >
+                          <Trash2 className="size-4" />
+                        </button>
                       </div>
-                    </div>
-                  )}
-
-                  {errors.avatar && (
-                    <p className="text-red-500 mt-1 text-sm">
-                      {errors.avatar.message as string}
-                    </p>
-                  )}
-                </div>
-
-                <div className="sm:col-span-2">
-                  <label
-                    htmlFor="description"
-                    className="block text-sm/6 font-semibold text-gray-900"
-                  >
-                    Description
-                  </label>
-                  <div className="mt-2.5">
-                    {isDataPopulated ? (
-                      <Skeleton height={200} width="100%" borderRadius={5} />
-                    ) : (
-                      <Controller
-                        name="description"
-                        control={control}
-                        defaultValue=""
-                        render={({ field }) => (
-                          <ReactQuill
-                            theme="snow"
-                            value={field.value}
-                            onChange={field.onChange}
-                            className="quill-editor"
-                          />
-                        )}
-                      />
-                    )}
-
-                    {errors.description && (
-                      <p className="text-red-500 mt-1 text-sm">
-                        {errors?.description.message as string}
-                      </p>
-                    )}
+                    ))}
                   </div>
                 </div>
-                <div className="md:mt-10 mt-20">
+
+                <label className="flex items-center gap-2 text-sm text-gray-700">
+                  <input type="checkbox" {...register("published")} />
+                  Show on About page
+                </label>
+
+                <div className="flex justify-end gap-3 pt-4">
+                  <button
+                    type="button"
+                    onClick={handleClose}
+                    className="rounded-md border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700"
+                  >
+                    Cancel
+                  </button>
                   <button
                     type="submit"
-                    className="block w-full rounded-md bg-primary-50 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-primary-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-50 col-span-2 disabled:cursor-not-allowed disabled:bg-dark_gray"
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || isLoading}
+                    className="rounded-md bg-primary-50 px-4 py-2 text-sm font-semibold text-white hover:bg-primary-100 disabled:opacity-50"
                   >
-                    {isSubmitting ? "Submitting..." : "Submit"}
+                    {isSubmitting ? "Saving..." : "Save Member"}
                   </button>
                 </div>
-              </div>
-            </form>
+              </form>
+            )}
           </DialogPanel>
         </div>
       </div>

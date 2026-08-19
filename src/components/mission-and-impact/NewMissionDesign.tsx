@@ -1,11 +1,12 @@
 "use client";
 import React from "react";
+import { SITE_CONTAINER_CLASS } from "@/constant/siteContainer";
 import { Award, BookOpen, FileText, ShieldCheck } from "lucide-react";
 
 export default function NewMissionDesign() {
   return (
     <section className="mt-8">
-      <div className="max-w-screen-2xl mx-auto px-4">
+      <div className={SITE_CONTAINER_CLASS}>
 
         <div className="grid gap-6 mt-6 lg:grid-cols-2">
           <article className="bg-white rounded-xl shadow-lg p-6 flex gap-4">

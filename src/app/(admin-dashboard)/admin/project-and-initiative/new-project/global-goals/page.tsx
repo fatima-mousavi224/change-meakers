@@ -1,5 +1,7 @@
 "use client";
 
+import { useProjectId } from "@/hooks/useProjectId";
+
 import { useForm, Controller } from "react-hook-form";
 import { useRef, useState } from "react";
 import Tabs from "@/components/create-project-tabs/Tabs";
@@ -23,8 +25,7 @@ export default function GlobalGoalsSection() {
   const [imagePreviews, setImagePreviews] = useState<{ [key: string]: string }>(
     {}
   );
-
-  const projectId = localStorage.getItem("projectId");
+  const projectId = useProjectId();
   const searchParams = useSearchParams();
   const isEdit = searchParams?.get("edit") === "1";
   const router = useRouter();

@@ -1,4 +1,6 @@
 import Banner from '@/components/common/Banner';
+import ScrollReveal from '@/components/common/ScrollReveal';
+import SiteContainer from '@/components/common/SiteContainer';
 
 import { Metadata } from 'next';
 
@@ -17,14 +19,16 @@ export const metadata: Metadata = {
 const MissionAndImpact = () => {
   return (
     <section className=''>
-      <div className='mt-4 max-w-screen-2xl px-4 mx-auto'>
-        <Banner>
-          <span>Mission & Impact</span>
-        </Banner>
-        {/* <OurMission /> */}
-        {/* <OurVision /> */}
-        <NewMissionDesign />
-      </div>
+      <SiteContainer className="mt-4">
+        <ScrollReveal>
+          <Banner>
+            <span>Mission & Impact</span>
+          </Banner>
+        </ScrollReveal>
+        <ScrollReveal delay={0.08}>
+          <NewMissionDesign />
+        </ScrollReveal>
+      </SiteContainer>
       {/* <Participants /> */}
     </section>
   );

@@ -25,7 +25,7 @@ const ProjectAndInitiative = ({
   const [sort, setSort] = useState("All");
   const [filter, setFilter] = useState("Projects");
   const [openModal, setOpenModal] = useState(false);
-  const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   const router = useRouter();
@@ -59,22 +59,22 @@ const ProjectAndInitiative = ({
     return items;
   }, [data, search, sort]);
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
     setLoading(true);
-    const url = filter === "Projects" ? "/api/projects" : "/api/impact";
     try {
-      const response = await fetch(`${url}/${id}`, {
+      const response = await fetch(`/api/projects/${id}`, {
         method: "DELETE",
       });
       if (!response.ok) {
-        toast.error("Failed to delete item");
+        toast.error("Failed to delete project");
+        return;
       }
-      toast.success("Item deleted successfully");
+      toast.success("Project deleted successfully");
       setOpenModal(false);
       setSelectedId(null);
       router.refresh();
-    } catch (error) {
-      toast.error("Error deleting item");
+    } catch {
+      toast.error("Error deleting project");
     } finally {
       setLoading(false);
     }
@@ -158,8 +158,12 @@ const ProjectAndInitiative = ({
                   {/* Project images rendering logic here, adjust as needed */}
 
                   <Image
-                    src={item.heroImage?.[0]}
-                    alt={`${item.title} slide1`}
+                    src={
+                      item.heroImage?.[0] ||
+                      item.uploadCardImage ||
+                      "/images/logo.jpg"
+                    }
+                    alt={`${item.projectTitle || item.title || "Project"} card`}
                     className="w-full h-32 object-cover rounded-md"
                     width={300}
                     height={300}
@@ -181,11 +185,7 @@ const ProjectAndInitiative = ({
                 <div className="flex space-x-2 justify-end items-center   text-xs  bg-sky-100 text-blue-700 px-2 py-1 rounded-full w-max">
                   <span className="w-2 h-2 bg-sky-700 rounded-full"></span>
                   {filter === "Projects" ? (
-                    <Link
-                      href={`/admin/project-and-initiative/impact/${item.id}`}
-                    >
-                      Project
-                    </Link>
+                    <span>Project</span>
                   ) : (
                     <span>Impact</span>
                   )}
