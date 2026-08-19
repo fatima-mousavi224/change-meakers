@@ -15,7 +15,14 @@ export type Initiative = {
   donateUrl?: string;
 };
 
-export const INITIATIVE_DETAIL_BASE = "/updates";
+export const INITIATIVE_PUBLIC_SLUGS: Record<string, string> = {
+  "afghan-girls-tech-academy": "girls-tech",
+  "afghan-youth-coalition": "youth-coalition",
+  "change-digital-library": "digital-library",
+  "maktab-dar-khana": "maktab-dar-khana",
+  "additional-learning-programs": "additional-learning",
+  nycp: "youth-consensus",
+};
 
 export const INITIATIVES: Initiative[] = [
   {
@@ -80,19 +87,35 @@ export const INITIATIVE_GRADIENT =
 
 export const INITIATIVES_PER_PAGE = 4;
 
+export function getInitiativePublicSlug(id: string) {
+  return INITIATIVE_PUBLIC_SLUGS[id] ?? id;
+}
+
+export function getInitiativeIdFromSlug(slug: string) {
+  const matchedEntry = Object.entries(INITIATIVE_PUBLIC_SLUGS).find(
+    ([, publicSlug]) => publicSlug === slug,
+  );
+
+  if (matchedEntry) {
+    return matchedEntry[0];
+  }
+
+  return getInitiativeById(slug)?.id ?? null;
+}
+
 export function getInitiativeDetailPath(id: string) {
-  return `${INITIATIVE_DETAIL_BASE}/${id}`;
+  return `/${getInitiativePublicSlug(id)}`;
 }
 
 export function isInitiativeDetailPath(pathname: string) {
-  if (!pathname.startsWith(`${INITIATIVE_DETAIL_BASE}/`)) {
-    return false;
-  }
-
-  const id = pathname.slice(`${INITIATIVE_DETAIL_BASE}/`.length).split("/")[0];
-  return Boolean(getInitiativeById(id));
+  const slug = pathname.replace(/^\//, "").split("/")[0];
+  return Boolean(getInitiativeIdFromSlug(slug));
 }
 
 export function getInitiativeById(id: string) {
   return INITIATIVES.find((initiative) => initiative.id === id) ?? null;
+}
+
+export function resolveInitiativeId(param: string) {
+  return getInitiativeIdFromSlug(param) ?? param;
 }

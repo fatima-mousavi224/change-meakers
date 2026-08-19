@@ -15,7 +15,7 @@ export const GET_INVOLVED_ITEMS: GetInvolvedItem[] = [
     title: "Join Our Programs",
     description:
       "Students can register to receive information about classes, opportunities, and upcoming programs.",
-    href: "/get-involved/join-our-programs",
+    href: "/join",
     icon: UserRound,
   },
   {
@@ -23,7 +23,7 @@ export const GET_INVOLVED_ITEMS: GetInvolvedItem[] = [
     title: "Partner with Us",
     description:
       "We work with organizations and institutions to expand education and youth initiatives.",
-    href: "/get-involved/partner-with-us",
+    href: "/partner",
     icon: Handshake,
   },
   {
@@ -31,7 +31,7 @@ export const GET_INVOLVED_ITEMS: GetInvolvedItem[] = [
     title: "Volunteer with Us",
     description:
       "Join our network of volunteers supporting programs, mentoring, and activities.",
-    href: "/get-involved/volunteer-with-us",
+    href: "/volunteer",
     icon: HeartHandshake,
   },
 ];

@@ -36,7 +36,7 @@ export const GET_INVOLVED_FORM_CONFIGS: Record<
     title: "Join Our Programs",
     description:
       "If you are a student interested in joining our educational programs, classes, or initiatives, you can register here. Please complete the form below to receive information about available opportunities and upcoming programs.",
-    href: "/get-involved/join-our-programs",
+    href: "/join",
     emailSubject: "Join Our Programs registration",
     fields: [
       {
@@ -76,7 +76,7 @@ export const GET_INVOLVED_FORM_CONFIGS: Record<
     title: "Partner with Us",
     description:
       "If you are an organization or company interested in supporting education and youth opportunities in Afghanistan, we welcome collaboration. Please complete the form below and briefly tell us about your organization and how you would like to work with us.",
-    href: "/get-involved/partner-with-us",
+    href: "/partner",
     emailSubject: "Partner with Us inquiry",
     fields: [
       {
@@ -132,7 +132,7 @@ export const GET_INVOLVED_FORM_CONFIGS: Record<
     title: "Volunteer with Us",
     description:
       "If you are interested in volunteering with Change Makers of the World, we welcome your support. Please complete the form below and tell us about your background and how you would like to contribute.",
-    href: "/get-involved/volunteer-with-us",
+    href: "/volunteer",
     emailSubject: "Volunteer with Us application",
     fields: [
       {

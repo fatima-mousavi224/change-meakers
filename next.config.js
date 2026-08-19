@@ -1,6 +1,15 @@
 /** @type {import('next').NextConfig} */
 const path = require("path");
 
+const initiativeRoutes = [
+  ["afghan-girls-tech-academy", "girls-tech"],
+  ["afghan-youth-coalition", "youth-coalition"],
+  ["change-digital-library", "digital-library"],
+  ["maktab-dar-khana", "maktab-dar-khana"],
+  ["additional-learning-programs", "additional-learning"],
+  ["nycp", "youth-consensus"],
+];
+
 const nextConfig = {
   eslint: {
     dirs: ["src"],
@@ -16,40 +25,57 @@ const nextConfig = {
   async redirects() {
     return [
       {
-        source: "/programs",
-        destination: "/current-programs",
+        source: "/current-programs",
+        has: [{ type: "query", key: "tab", value: "girls-education" }],
+        destination: "/girls-education",
         permanent: true,
       },
       {
-        source: "/programs/:path*",
-        destination: "/current-programs",
+        source: "/current-programs",
+        has: [{ type: "query", key: "tab", value: "advocacy" }],
+        destination: "/advocacy",
         permanent: true,
       },
       {
-        source: "/girls-education",
-        destination: "/current-programs?tab=girls-education",
-        permanent: true,
-      },
-      {
-        source: "/advocacy",
-        destination: "/current-programs?tab=advocacy",
+        source: "/current-programs",
+        destination: "/programs",
         permanent: true,
       },
       {
         source: "/current-programs/girls-education",
-        destination: "/current-programs?tab=girls-education",
+        destination: "/girls-education",
         permanent: true,
       },
       {
         source: "/current-programs/advocacy",
-        destination: "/current-programs?tab=advocacy",
+        destination: "/advocacy",
         permanent: true,
       },
       {
         source: "/current-programs/youth-empowerment",
-        destination: "/current-programs",
+        destination: "/programs",
         permanent: true,
       },
+      {
+        source: "/get-involved/join-our-programs",
+        destination: "/join",
+        permanent: true,
+      },
+      {
+        source: "/get-involved/partner-with-us",
+        destination: "/partner",
+        permanent: true,
+      },
+      {
+        source: "/get-involved/volunteer-with-us",
+        destination: "/volunteer",
+        permanent: true,
+      },
+      ...initiativeRoutes.map(([legacyId, slug]) => ({
+        source: `/updates/${legacyId}`,
+        destination: `/${slug}`,
+        permanent: true,
+      })),
       {
         source: "/apply",
         destination: "/opportunities",
@@ -59,6 +85,19 @@ const nextConfig = {
         source: "/apply/:id",
         destination: "/opportunities/:id",
         permanent: true,
+      },
+    ];
+  },
+
+  async rewrites() {
+    return [
+      {
+        source: "/girls-education",
+        destination: "/current-programs?tab=girls-education",
+      },
+      {
+        source: "/advocacy",
+        destination: "/current-programs?tab=advocacy",
       },
     ];
   },

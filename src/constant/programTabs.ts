@@ -21,14 +21,22 @@ export type ProgramCategory = {
   activities: ProgramSection;
 };
 
-export const PROGRAMS_BASE_PATH = "/current-programs";
+export const PROGRAMS_BASE_PATH = "/programs";
 
 export function getProgramCategoryHref(id: ProgramCategoryId): string {
   if (id === "youth-empowerment") {
     return PROGRAMS_BASE_PATH;
   }
 
-  return `${PROGRAMS_BASE_PATH}?tab=${id}`;
+  if (id === "girls-education") {
+    return "/girls-education";
+  }
+
+  if (id === "advocacy") {
+    return "/advocacy";
+  }
+
+  return PROGRAMS_BASE_PATH;
 }
 
 export function resolveProgramCategoryId(

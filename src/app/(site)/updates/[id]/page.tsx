@@ -6,7 +6,12 @@ import UpdateDetails, {
   loadUpdateDetails,
 } from "@/components/updates/UpdateDetails";
 import { siteConfig } from "@/constant/config";
-import { INITIATIVES } from "@/constant/initiatives";
+import {
+  getInitiativeDetailPath,
+  getInitiativePublicSlug,
+  INITIATIVES,
+  resolveInitiativeId,
+} from "@/constant/initiatives";
 import { getInitiativeDetail } from "@/lib/initiativeDetails";
 import { getUpdateByParam } from "@/lib/updateDetails";
 import {
@@ -32,7 +37,8 @@ export function generateStaticParams() {
 export async function generateMetadata({
   params,
 }: UpdateDetailPageProps): Promise<Metadata> {
-  const initiative = getInitiativeDetail(params.id);
+  const initiativeId = resolveInitiativeId(params.id);
+  const initiative = getInitiativeDetail(initiativeId);
 
   if (initiative) {
     return {
@@ -74,10 +80,17 @@ export default async function UpdateDetailPage({
   params,
   searchParams,
 }: UpdateDetailPageProps) {
-  const initiative = getInitiativeDetail(params.id);
+  const initiativeId = resolveInitiativeId(params.id);
+  const initiative = getInitiativeDetail(initiativeId);
 
   if (initiative) {
-    return <InitiativeDetails id={params.id} />;
+    const publicSlug = getInitiativePublicSlug(initiativeId);
+
+    if (params.id !== publicSlug) {
+      redirect(getInitiativeDetailPath(initiativeId));
+    }
+
+    return <InitiativeDetails id={initiativeId} />;
   }
 
   const update = await loadUpdateDetails(params.id);

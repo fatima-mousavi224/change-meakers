@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import {
   getProgramCategoryHref,
   isProgramCategoryId,
+  PROGRAMS_BASE_PATH,
 } from "@/constant/programTabs";
 
 type ProgramCategoryPageProps = {
@@ -13,7 +14,7 @@ type ProgramCategoryPageProps = {
 
 export default function ProgramCategoryPage({ params }: ProgramCategoryPageProps) {
   if (!isProgramCategoryId(params.category)) {
-    redirect("/current-programs");
+    redirect(PROGRAMS_BASE_PATH);
   }
 
   redirect(getProgramCategoryHref(params.category));

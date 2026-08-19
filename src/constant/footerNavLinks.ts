@@ -3,7 +3,7 @@ import { DONATE_URL } from "@/constant/donate";
 export const FOOTER_NAV_LINKS = [
   { label: "Home", href: "/" },
   { label: "About", href: "/about" },
-  { label: "Programs", href: "/current-programs" },
+  { label: "Programs", href: "/programs" },
   { label: "Opportunities", href: "/opportunities" },
   { label: "Updates", href: "/updates" },
   { label: "Contact", href: "/contact" },
@@ -12,7 +12,7 @@ export const FOOTER_NAV_LINKS = [
 export const FOOTER_MOBILE_NAV_LINKS = [
   { label: "Home", href: "/" },
   { label: "About", href: "/about" },
-  { label: "Program", href: "/current-programs" },
+  { label: "Program", href: "/programs" },
   { label: "Opportunities", href: "/opportunities" },
   { label: "Updates", href: "/updates" },
   { label: "Contact", href: "/contact" },
