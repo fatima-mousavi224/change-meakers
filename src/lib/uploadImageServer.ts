@@ -4,6 +4,11 @@ import path from "path";
 
 import sharp from "sharp";
 
+import {
+  isFirebaseAdminConfigured,
+  uploadBufferToFirebaseStorage,
+} from "@/lib/firebaseAdminStorage";
+
 const ALLOWED_TYPES = new Set([
   "image/jpeg",
   "image/jpg",
@@ -34,7 +39,7 @@ function inferMimeType(file: File) {
     case "gif":
       return "image/gif";
     default:
-      return file.type || "";
+      return file.type || "application/octet-stream";
   }
 }
 
@@ -103,19 +108,35 @@ export async function saveUploadedImage(
   file: File,
   folder = "uploads"
 ): Promise<string> {
-  const optimized = await optimizeImage(file);
   const safeFolder = sanitizeFolder(folder);
+  const mimeType = inferMimeType(file);
   const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.webp`;
+  const originalBuffer = Buffer.from(await file.arrayBuffer());
+
+  if (!ALLOWED_TYPES.has(mimeType)) {
+    throw new Error("Invalid file type. Use JPG, PNG, WEBP, or GIF.");
+  }
 
   if (process.env.BLOB_READ_WRITE_TOKEN) {
+    const optimized = await optimizeImage(file);
     return saveToBlob(optimized, safeFolder, fileName);
+  }
+
+  if (isFirebaseAdminConfigured()) {
+    return uploadBufferToFirebaseStorage(
+      originalBuffer,
+      safeFolder,
+      file.name,
+      mimeType
+    );
   }
 
   if (process.env.VERCEL === "1") {
     throw new Error(
-      "Server upload is unavailable in production. Images should upload through Firebase Storage from the admin panel. If this keeps happening, ask your developer to check Firebase Storage rules."
+      "Image upload is not configured for production. Add FIREBASE_SERVICE_ACCOUNT_KEY or BLOB_READ_WRITE_TOKEN in Vercel environment variables, redeploy, then try again."
     );
   }
 
+  const optimized = await optimizeImage(file);
   return saveToLocalDisk(optimized, safeFolder, fileName);
 }
