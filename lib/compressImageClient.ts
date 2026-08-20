@@ -1,6 +1,7 @@
-const MAX_UPLOAD_BYTES = 3.5 * 1024 * 1024;
-const MAX_DIMENSION = 1920;
-const WEBP_QUALITY = 0.82;
+/** Vercel API routes reject request bodies larger than ~4.5MB. */
+const VERCEL_API_BODY_LIMIT = 4 * 1024 * 1024;
+const MAX_DIMENSION = 3840;
+const WEBP_QUALITY = 0.92;
 
 function extensionMimeType(fileName: string): string | null {
   const extension = fileName.split(".").pop()?.toLowerCase();
@@ -24,8 +25,11 @@ function shouldSkipCompression(file: File) {
   const mime = file.type || extensionMimeType(file.name) || "";
 
   return (
-    file.size <= MAX_UPLOAD_BYTES &&
-    (mime === "image/jpeg" || mime === "image/webp")
+    file.size <= VERCEL_API_BODY_LIMIT &&
+    (mime === "image/jpeg" ||
+      mime === "image/webp" ||
+      mime === "image/png" ||
+      mime === "image/gif")
   );
 }
 
@@ -88,7 +92,13 @@ async function compressWithCanvas(file: File): Promise<File> {
   }
 }
 
+/** Primary admin uploads: keep the original file (Firebase has no app size cap). */
 export async function compressImageForUpload(file: File): Promise<File> {
+  return file;
+}
+
+/** Only used when Firebase fails and the file must go through /api/upload. */
+export async function compressImageForApiFallback(file: File): Promise<File> {
   if (typeof window === "undefined") {
     return file;
   }

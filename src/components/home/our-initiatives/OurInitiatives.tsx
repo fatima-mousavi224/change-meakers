@@ -39,6 +39,7 @@ export default function OurInitiatives({
   const [isPaused, setIsPaused] = useState(false);
   const [desktopStepPx, setDesktopStepPx] = useState(0);
   const [desktopCardWidthPx, setDesktopCardWidthPx] = useState(0);
+  const [activeCardId, setActiveCardId] = useState<string | null>(null);
   const mobileScrollRef = useRef<HTMLDivElement>(null);
   const desktopViewportRef = useRef<HTMLDivElement>(null);
   const isSyncingScrollRef = useRef(false);
@@ -159,6 +160,37 @@ export default function OurInitiatives({
     return () => window.clearTimeout(timeout);
   }, [currentPage, isMobile]);
 
+  const handleCardHover = (id: string) => {
+    setActiveCardId(id);
+  };
+
+  const handleCardTap = (id: string, index: number) => {
+    if (activeCardId === id) {
+      setActiveCardId(null);
+      return;
+    }
+
+    setActiveCardId(id);
+
+    if (isMobile) {
+      setCurrentPage(index);
+    }
+  };
+
+  const clearActiveCard = () => {
+    setActiveCardId(null);
+  };
+
+  const renderInitiativeCard = (initiative: Initiative, index: number) => (
+    <InitiativeCard
+      key={initiative.id}
+      initiative={initiative}
+      isActive={activeCardId === initiative.id}
+      onHover={() => handleCardHover(initiative.id)}
+      onTap={() => handleCardTap(initiative.id, index)}
+    />
+  );
+
   const pauseCarousel = () => setIsPaused(true);
   const resumeCarousel = () => setIsPaused(false);
 
@@ -168,7 +200,10 @@ export default function OurInitiatives({
 
       <div
         onMouseEnter={pauseCarousel}
-        onMouseLeave={resumeCarousel}
+        onMouseLeave={() => {
+          resumeCarousel();
+          clearActiveCard();
+        }}
         onTouchStart={pauseCarousel}
         onTouchEnd={resumeCarousel}
         onTouchCancel={resumeCarousel}
@@ -179,13 +214,13 @@ export default function OurInitiatives({
             ref={mobileScrollRef}
             className="flex snap-x snap-mandatory gap-4 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
           >
-            {initiatives.map((initiative) => (
+            {initiatives.map((initiative, index) => (
               <div
                 key={initiative.id}
                 data-initiative-slide
                 className="w-[calc((100%-1rem)/1.3)] shrink-0 snap-start"
               >
-                <InitiativeCard initiative={initiative} />
+                {renderInitiativeCard(initiative, index)}
               </div>
             ))}
           </div>
@@ -203,7 +238,7 @@ export default function OurInitiatives({
                 transform: `translate3d(-${currentPage * desktopStepPx}px, 0, 0)`,
               }}
             >
-              {initiatives.map((initiative) => (
+              {initiatives.map((initiative, index) => (
                 <div
                   key={initiative.id}
                   className="shrink-0"
@@ -213,15 +248,21 @@ export default function OurInitiatives({
                       : undefined
                   }
                 >
-                  <InitiativeCard initiative={initiative} />
+                  {renderInitiativeCard(initiative, index)}
                 </div>
               ))}
             </div>
           </div>
         ) : (
           <div className="hidden lg:grid lg:grid-cols-4 lg:gap-5 lg:min-h-[390px]">
-            {initiatives.map((initiative) => (
-              <InitiativeCard key={initiative.id} initiative={initiative} />
+            {initiatives.map((initiative, index) => (
+              <InitiativeCard
+                key={initiative.id}
+                initiative={initiative}
+                isActive={activeCardId === initiative.id}
+                onHover={() => handleCardHover(initiative.id)}
+                onTap={() => handleCardTap(initiative.id, index)}
+              />
             ))}
           </div>
         )}

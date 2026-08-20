@@ -217,7 +217,7 @@ export default function CardComponentsForm() {
                 Drag & Drop your Photo
               </p>
               <p className="text-gray-500 text-sm">
-                here or browse up to 10 MB
+                here or browse images
               </p>
             </div>
           </div>

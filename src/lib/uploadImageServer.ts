@@ -4,7 +4,6 @@ import path from "path";
 
 import sharp from "sharp";
 
-const MAX_FILE_SIZE = 10 * 1024 * 1024;
 const ALLOWED_TYPES = new Set([
   "image/jpeg",
   "image/jpg",
@@ -40,10 +39,6 @@ function inferMimeType(file: File) {
 }
 
 async function optimizeImage(file: File) {
-  if (file.size > MAX_FILE_SIZE) {
-    throw new Error("File exceeds 10MB limit");
-  }
-
   const mimeType = inferMimeType(file);
 
   if (!ALLOWED_TYPES.has(mimeType)) {
@@ -56,12 +51,12 @@ async function optimizeImage(file: File) {
     const optimized = await sharp(buffer)
       .rotate()
       .resize({
-        width: 1920,
-        height: 1920,
+        width: 3840,
+        height: 3840,
         fit: "inside",
         withoutEnlargement: true,
       })
-      .webp({ quality: 82 })
+      .webp({ quality: 88 })
       .toBuffer();
 
     return optimized;
@@ -114,6 +109,12 @@ export async function saveUploadedImage(
 
   if (process.env.BLOB_READ_WRITE_TOKEN) {
     return saveToBlob(optimized, safeFolder, fileName);
+  }
+
+  if (process.env.VERCEL === "1") {
+    throw new Error(
+      "Server upload is unavailable in production. Images should upload through Firebase Storage from the admin panel. If this keeps happening, ask your developer to check Firebase Storage rules."
+    );
   }
 
   return saveToLocalDisk(optimized, safeFolder, fileName);

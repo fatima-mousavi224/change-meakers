@@ -6,42 +6,38 @@ import {
 } from "firebase/storage";
 
 import firebaseApp from "./firebase";
+import { compressImageForApiFallback } from "./compressImageClient";
 import { uploadImageViaApi } from "./uploadImageViaApi";
 
-const USE_FIREBASE_UPLOAD =
-  process.env.NEXT_PUBLIC_USE_FIREBASE_UPLOAD === "true";
-
-function shouldUseLocalFallback(error: unknown) {
-  if (!error || typeof error !== "object") return true;
-
-  const code = "code" in error ? String(error.code) : "";
-  return code.startsWith("storage/") || code.length === 0;
+function sanitizeFileName(name: string) {
+  return name.replace(/\s+/g, "-").replace(/[^a-zA-Z0-9._-]/g, "") || "image";
 }
 
-async function uploadViaFirebase(file: File): Promise<string> {
+async function uploadViaFirebase(file: File, folder: string): Promise<string> {
   const storage = getStorage(firebaseApp);
   const storageRef = ref(
     storage,
-    `card-images/${Date.now()}-${file.name.replace(/\s+/g, "-")}`
+    `${folder}/${Date.now()}-${sanitizeFileName(file.name)}`
   );
   await uploadBytes(storageRef, file);
   return getDownloadURL(storageRef);
 }
 
-export async function uploadCardImage(file: File): Promise<string> {
-  if (USE_FIREBASE_UPLOAD) {
+export async function uploadCardImage(
+  file: File,
+  folder = "card-images"
+): Promise<string> {
+  if (typeof window !== "undefined") {
     try {
-      return await uploadViaFirebase(file);
+      return await uploadViaFirebase(file, folder);
     } catch (error) {
-      if (!shouldUseLocalFallback(error)) {
-        throw error;
-      }
-
       console.warn(
-        "Firebase upload unavailable, saving image via /api/upload instead."
+        "Firebase upload unavailable, saving image via /api/upload instead.",
+        error
       );
     }
   }
 
-  return uploadImageViaApi(file, "card-images");
+  const preparedFile = await compressImageForApiFallback(file);
+  return uploadImageViaApi(preparedFile, folder);
 }

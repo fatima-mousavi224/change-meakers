@@ -67,19 +67,7 @@ export const resetPasswordSchema = Yup.object().shape({
 export type TResetPasswordSchema = Yup.InferType<typeof resetPasswordSchema>;
 
 export const editProfileSchema = Yup.object().shape({
-  image: Yup.mixed().test(
-    'fileSize',
-    'Image size should be less than 10MB',
-    (value) => {
-      if (!value) return true; // If no file is selected, skip validation
-
-      if (value instanceof File) {
-        return value.size <= 10 * 1024 * 1024; // 10MB in bytes
-      }
-
-      return true; // For existing images or other valid cases
-    }
-  ),
+  image: Yup.mixed(),
   firstName: Yup.string()
     .min(3, 'First name must be at least 3 characters')
     .required('First name is required'),

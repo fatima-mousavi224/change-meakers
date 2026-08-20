@@ -124,10 +124,6 @@ export default function TeamSectionForm() {
   ) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (file.size > 10 * 1024 * 1024) {
-      alert("Max file size is 10MB");
-      return;
-    }
     // Preview
     const reader = new FileReader();
     reader.onloadend = () => {
@@ -429,7 +425,7 @@ export default function TeamSectionForm() {
                     <p className="mt-4 font-semibold text-blue-500">
                       Drag & Drop your Photo
                     </p>
-                    <p className="text-gray-500">here or Browse up to 10 MB</p>
+                    <p className="text-gray-500">here or browse images</p>
                   </div>
                 </div>
 

@@ -231,7 +231,7 @@ export default function HeroPage() {
                     Drag & Drop your Photos
                   </p>
                   <p className="text-gray-500 text-sm">
-                    here or browse up to 10 MB each
+                    here or browse images
                   </p>
                 </div>
               </div>

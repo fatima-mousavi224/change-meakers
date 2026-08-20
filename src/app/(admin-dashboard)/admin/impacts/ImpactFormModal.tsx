@@ -165,16 +165,12 @@ export default function ImpactFormModal({
 
   const validateFile = (file: File): boolean => {
     const validTypes = ["image/jpeg", "image/jpg", "image/png", "image/gif", "image/webp"];
-    const maxSize = 10 * 1024 * 1024; // 10MB
 
     if (!validTypes.includes(file.type)) {
       toast.error(`Invalid file type: ${file.type}. Only JPG, PNG, GIF, or WebP files are allowed`);
       return false;
     }
-    if (file.size > maxSize) {
-      toast.error(`File size (${(file.size / 1024 / 1024).toFixed(2)}MB) exceeds 10MB limit`);
-      return false;
-    }
+
     return true;
   };
 
@@ -528,7 +524,7 @@ export default function ImpactFormModal({
                       {isSubmitting && progress > 0 && (
                         <LinearWithValueLabel isLoading={isLoading} progress={progress} />
                       )}
-                      <p className="text-xs/5 text-gray-600">PNG, JPG, GIF up to 10MB</p>
+                      <p className="text-xs/5 text-gray-600">PNG, JPG, GIF, or WebP</p>
                     </div>
                   </div>
                   {errors.authorPhoto && (
@@ -593,7 +589,7 @@ export default function ImpactFormModal({
                       {isSubmitting && progress > 0 && (
                         <LinearWithValueLabel isLoading={isLoading} progress={progress} />
                       )}
-                      <p className="text-xs/5 text-gray-600">PNG, JPG, GIF up to 10MB</p>
+                      <p className="text-xs/5 text-gray-600">PNG, JPG, GIF, or WebP</p>
                     </div>
                   </div>
                   {errors.coverPhoto && (
@@ -667,7 +663,7 @@ export default function ImpactFormModal({
                       {isSubmitting && progress > 0 && (
                         <LinearWithValueLabel isLoading={isLoading} progress={progress} />
                       )}
-                      <p className="text-xs/5 text-gray-600">PNG, JPG, GIF up to 10MB</p>
+                      <p className="text-xs/5 text-gray-600">PNG, JPG, GIF, or WebP</p>
                     </div>
                   </div>
                   {errors.galleryPhoto && (

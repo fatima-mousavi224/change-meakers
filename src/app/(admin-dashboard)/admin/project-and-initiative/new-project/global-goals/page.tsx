@@ -264,7 +264,7 @@ export default function GlobalGoalsSection() {
                   <p className="mt-4 font-semibold text-blue-500">
                     Drag & Drop your Photo
                   </p>
-                  <p className="text-gray-500">here or Browse up to 10 MB</p>
+                  <p className="text-gray-500">here or browse images</p>
                 </div>
               </div>
             ))}

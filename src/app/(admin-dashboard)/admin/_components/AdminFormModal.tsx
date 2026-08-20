@@ -383,7 +383,7 @@ export default function AdminFormModal({ open, setOpen }: AdminFormModalProps) {
                           />
                         )}
                         <p className="text-xs/5 text-gray-600">
-                          PNG, JPG, GIF up to 10MB
+                          PNG, JPG, GIF, or WebP
                         </p>
                       </div>
                     </div>
