@@ -31,7 +31,10 @@ export async function uploadImageViaApi(
       );
     }
 
-    throw new Error(serverError || "Failed to upload image");
+    throw new Error(
+      serverError ||
+        "Failed to upload image. If this is the live site, create a Vercel Blob store and redeploy."
+    );
   }
 
   return data.url as string;

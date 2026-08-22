@@ -10,16 +10,10 @@ import {
 import SimpleMDE from 'react-simplemde-editor';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import { useRouter } from 'next/navigation';
-import {
-  getDownloadURL,
-  getStorage,
-  ref,
-  uploadBytesResumable
-} from 'firebase/storage';
+import { uploadCardImage } from 'lib/uploadCardImage';
 import { Member } from '@prisma/client';
 import { useState } from 'react';
-import firebaseApp from '@/lib/firebase';
+import { useRouter } from 'next/navigation';
 import Heading from '@/components/Heading';
 import { cn } from '@/utilities/cn';
 import LinearWithValueLabel from '@/components/common/LinearProgressWithLabel';
@@ -50,54 +44,15 @@ export default function MemberForm({ member }: MemberFormProps) {
 
     async function handleMemeberAvatarUpload() {
       const item = data.avatar[0];
+      setMemeberAvatarLoading(true);
       try {
-        const fileName = new Date().getTime() + item.name;
-        const storage = getStorage(firebaseApp);
-        const storageRef = ref(storage, `MemberAvatar/${fileName}`);
-        const uploadTask = uploadBytesResumable(storageRef, item);
-        await new Promise<void>((resolve, reject) => {
-          uploadTask.on(
-            'state_changed',
-            (snapshot) => {
-              const progress =
-                (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-              setMemberAvatarProgress(progress);
-              console.log('Upload is ' + progress + '% done');
-              switch (snapshot.state) {
-                case 'paused':
-                  console.log('Upload is paused');
-                  setMemeberAvatarLoading(false);
-                  break;
-                case 'running':
-                  console.log('Upload is running');
-                  setMemeberAvatarLoading(true);
-                  break;
-              }
-            },
-            (error) => {
-              console.log('Error uploading image', error);
-              reject(error);
-              setMemeberAvatarLoading(false);
-            },
-            () => {
-              getDownloadURL(uploadTask.snapshot.ref)
-                .then((downloadURL) => {
-                  uploadedMemberAvatar.push({ image: downloadURL });
-                  console.log('File available at', downloadURL);
-                  setMemeberAvatarLoading(false);
-                  resolve();
-                })
-                .catch((err) => {
-                  console.log('Error getting the downloadURL');
-                  reject(err);
-                  setMemeberAvatarLoading(false);
-                });
-            }
-          );
-        });
+        const downloadURL = await uploadCardImage(item, 'member-avatar');
+        uploadedMemberAvatar.push({ image: downloadURL });
+        setMemberAvatarProgress(100);
       } catch (error) {
         console.log('Error in uploading image', error);
         toast.error('Error in uploading image');
+      } finally {
         setMemeberAvatarLoading(false);
       }
     }

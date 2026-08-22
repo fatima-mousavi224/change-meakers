@@ -3,8 +3,6 @@ import React, { useState, useMemo } from "react";
 import { Impact } from "@/types/impact";
 
 import { useRouter } from "next/navigation";
-import { getStorage, ref, deleteObject } from "firebase/storage";
-import firebaseApp from "@/lib/firebase";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { Pencil, Trash2 } from "lucide-react";
 import Image from "next/image";
@@ -21,7 +19,6 @@ interface ManageImpactsTableProps {
 
 export default function ManageImpactsTable({ impacts }: ManageImpactsTableProps) {
   const router = useRouter();
-  const storage = getStorage(firebaseApp);
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<"Date" | "Title" | "">("");
   const [showModal, setShowModal] = useState(false);
@@ -51,23 +48,8 @@ export default function ManageImpactsTable({ impacts }: ManageImpactsTableProps)
     return filteredImpacts;
   }, [impacts, search, sort]);
 
-  const handleDeleteImpact = async (id: string, images: string[]) => {
+  const handleDeleteImpact = async (id: string) => {
     toast.success("Deleting impact please wait...");
-
-    async function deleteImpactImages() {
-      try {
-        for (const image of images) {
-          if (image) {
-            const imageRef = ref(storage, image);
-            await deleteObject(imageRef);
-          }
-        }
-      } catch (error: any) {
-        console.log("Error deleting image from Firebase Storage: ", error.message);
-      }
-    }
-
-    await deleteImpactImages();
 
     await fetch(`/api/impact/${id}`, {
       method: "DELETE",
@@ -191,13 +173,7 @@ export default function ManageImpactsTable({ impacts }: ManageImpactsTableProps)
                       </span>
                       <Trash2
                         className="w-5 h-5 text-red-500 cursor-pointer"
-                        onClick={() =>
-                          handleDeleteImpact(impact.id, [
-                            impact.authorPhoto,
-                            impact.coverPhoto,
-                            ...(impact.galleryPhoto || []),
-                          ].filter(Boolean) as string[])
-                        }
+                        onClick={() => handleDeleteImpact(impact.id)}
                       />
                     </td>
                   </tr>

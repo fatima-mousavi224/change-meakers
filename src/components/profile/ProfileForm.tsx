@@ -1,16 +1,10 @@
 'use client';
 import { UserProfile } from '@prisma/client';
-import {
-  getDownloadURL,
-  getStorage,
-  ref,
-  uploadBytesResumable
-} from 'firebase/storage';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
+import { uploadCardImage } from 'lib/uploadCardImage';
 import { countryData } from '@/lib/data';
-import firebaseApp from '../../lib/firebase';
 import LinearWithValueLabel from '../common/LinearProgressWithLabel';
 import Input from './Input';
 import Select from './Select';
@@ -33,115 +27,35 @@ export default function ProfileForm({ userProfile }: ProfileFormProps) {
   const [profilePhotoProgress, setProfilePhotoProgress] = useState(0);
 
   const handleUploadCoverPhoto = async (
-    item: any,
-    uploadedCoverImage: any[]
+    item: File,
+    uploadedCoverImage: { image: string }[]
   ) => {
     setCoverPhotoLoading(true);
     try {
-      IsCoverPhotoLoading && toast.loading('Uploading Cover Photo');
-      const fileName = new Date().getTime() + item.name;
-      const storage = getStorage(firebaseApp);
-      const storageRef = ref(storage, `ProfileCoverImage/${fileName}`);
-      const uploadTask = uploadBytesResumable(storageRef, item);
-      await new Promise<void>((resolve, reject) => {
-        uploadTask.on(
-          'state_changed',
-          (snapshot) => {
-            const progress =
-              (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            setCoverPhotoProgress(progress);
-            console.log('Upload is ' + progress + '% done');
-            switch (snapshot.state) {
-              case 'paused':
-                console.log('Upload is paused');
-                setCoverPhotoLoading(false);
-                break;
-              case 'running':
-                console.log('Upload is running');
-                setCoverPhotoLoading(true);
-                break;
-            }
-          },
-          (error) => {
-            console.log('Error uploading image', error);
-            setCoverPhotoLoading(false);
-            reject(error);
-          },
-          () => {
-            getDownloadURL(uploadTask.snapshot.ref)
-              .then((downloadURL) => {
-                uploadedCoverImage.push({ image: downloadURL });
-                setCoverPhotoLoading(false);
-                console.log('File available at', downloadURL);
-                resolve();
-              })
-              .catch((err) => {
-                console.log('Error getting the downloadURL');
-                reject(err);
-              });
-          }
-        );
-      });
+      const downloadURL = await uploadCardImage(item, 'profile-cover');
+      uploadedCoverImage.push({ image: downloadURL });
+      setCoverPhotoProgress(100);
     } catch (error) {
       console.log('Error in uploading image', error);
       toast.error('Error in uploading image');
+    } finally {
       setCoverPhotoLoading(false);
     }
   };
 
   const handleUploadProfilePhoto = async (
-    item: any,
-    uploadedProfileImage: any[]
+    item: File,
+    uploadedProfileImage: { image: string }[]
   ) => {
     setProfilePhotoLoading(true);
     try {
-      IsProfilePhotoLoading && toast.loading('Uploading Profile Photo');
-      const fileName = new Date().getTime() + item.name;
-      const storage = getStorage(firebaseApp);
-      const storageRef = ref(storage, `ProfileImage/${fileName}`);
-      const uploadTask = uploadBytesResumable(storageRef, item);
-      await new Promise<void>((resolve, reject) => {
-        uploadTask.on(
-          'state_changed',
-          (snapshot) => {
-            const progress =
-              (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            setProfilePhotoProgress(progress);
-            console.log('Upload is ' + progress + '% done');
-            switch (snapshot.state) {
-              case 'paused':
-                console.log('Upload is paused');
-                setProfilePhotoLoading(false);
-                break;
-              case 'running':
-                console.log('Upload is running');
-                setProfilePhotoLoading(true);
-                break;
-            }
-          },
-          (error) => {
-            console.log('Error uploading image', error);
-            setProfilePhotoLoading(false);
-            reject(error);
-          },
-          () => {
-            getDownloadURL(uploadTask.snapshot.ref)
-              .then((downloadURL) => {
-                uploadedProfileImage.push({ image: downloadURL });
-                setProfilePhotoLoading(false);
-                console.log('File available at', downloadURL);
-                resolve();
-              })
-              .catch((err) => {
-                console.log('Error getting the downloadURL');
-                reject(err);
-              });
-          }
-        );
-      });
+      const downloadURL = await uploadCardImage(item, 'profile-photo');
+      uploadedProfileImage.push({ image: downloadURL });
+      setProfilePhotoProgress(100);
     } catch (error) {
       console.log('Error in uploading image', error);
       toast.error('Error in uploading image');
+    } finally {
       setProfilePhotoLoading(false);
     }
   };

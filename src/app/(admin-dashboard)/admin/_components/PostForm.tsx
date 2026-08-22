@@ -2,12 +2,7 @@
 import { Post } from '@prisma/client';
 import axios from 'axios';
 import 'easymde/dist/easymde.min.css';
-import {
-  getDownloadURL,
-  getStorage,
-  ref,
-  uploadBytesResumable
-} from 'firebase/storage';
+import { uploadCardImage } from 'lib/uploadCardImage';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
@@ -18,7 +13,6 @@ import {
   useForm
 } from 'react-hook-form';
 import toast from 'react-hot-toast';
-import firebaseApp from '@/lib/firebase';
 import Heading from '@/components/Heading';
 import { cn } from '@/utilities/cn';
 import LinearWithValueLabel from '@/components/common/LinearProgressWithLabel';
@@ -64,39 +58,9 @@ export default function PostForm({ post }: { post?: Post | null }) {
         try {
           const newPostImages: UploadImageType[] = [];
           for (const item of data.postImages) {
-            console.table('Uploading image', item);
-
-            const fileName = new Date().getTime() + item.name;
-            const storage = getStorage(firebaseApp);
-            const storageRef = ref(storage, `postImages/${fileName}`);
-            const uploadTask = uploadBytesResumable(storageRef, item);
-            await new Promise<void>((resolve, reject) => {
-              uploadTask.on(
-                'state_changed',
-                (snapshot) => {
-                  const progress =
-                    (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                  setPostImagesProgress(progress);
-                  console.log('Upload is ' + progress + '% done');
-                },
-                (error) => {
-                  console.log('Error uploading image', error);
-                  reject(error);
-                },
-                () => {
-                  getDownloadURL(uploadTask.snapshot.ref)
-                    .then((downloadURL) => {
-                      newPostImages.push({ image: downloadURL });
-                      console.log('File available at', downloadURL);
-                      resolve();
-                    })
-                    .catch((err) => {
-                      console.log('Error getting the downloadURL');
-                      reject(err);
-                    });
-                }
-              );
-            });
+            const downloadURL = await uploadCardImage(item, 'postImages');
+            newPostImages.push({ image: downloadURL });
+            setPostImagesProgress(100);
           }
           postImages = newPostImages;
         } catch (error) {

@@ -4,11 +4,6 @@ import path from "path";
 
 import sharp from "sharp";
 
-import {
-  isFirebaseAdminConfigured,
-  uploadBufferToFirebaseStorage,
-} from "@/lib/firebaseAdminStorage";
-
 const ALLOWED_TYPES = new Set([
   "image/jpeg",
   "image/jpg",
@@ -111,7 +106,6 @@ export async function saveUploadedImage(
   const safeFolder = sanitizeFolder(folder);
   const mimeType = inferMimeType(file);
   const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.webp`;
-  const originalBuffer = Buffer.from(await file.arrayBuffer());
 
   if (!ALLOWED_TYPES.has(mimeType)) {
     throw new Error("Invalid file type. Use JPG, PNG, WEBP, or GIF.");
@@ -122,18 +116,9 @@ export async function saveUploadedImage(
     return saveToBlob(optimized, safeFolder, fileName);
   }
 
-  if (isFirebaseAdminConfigured()) {
-    return uploadBufferToFirebaseStorage(
-      originalBuffer,
-      safeFolder,
-      file.name,
-      mimeType
-    );
-  }
-
   if (process.env.VERCEL === "1") {
     throw new Error(
-      "Image upload is not configured for production. Add FIREBASE_SERVICE_ACCOUNT_KEY or BLOB_READ_WRITE_TOKEN in Vercel environment variables, redeploy, then try again."
+      "Image upload is not set up yet. In Vercel → your project → Storage → Create Blob store (Public) → Redeploy production, then try again."
     );
   }
 

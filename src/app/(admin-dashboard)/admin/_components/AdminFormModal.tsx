@@ -1,16 +1,11 @@
 "use client";
 
 import LinearWithValueLabel from "../../../../components/common/LinearProgressWithLabel";
-import firebaseApp from "@/lib/firebase";
 import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react";
 import { PhotoIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
-import {
-  getDownloadURL,
-  getStorage,
-  ref,
-  uploadBytesResumable,
-} from "firebase/storage";
+import toast from "react-hot-toast";
+import { uploadCardImage } from "lib/uploadCardImage";
 import { X } from "lucide-react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
@@ -22,7 +17,6 @@ import {
   SubmitHandler,
   useForm,
 } from "react-hook-form";
-import toast from "react-hot-toast";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import "react-quill/dist/quill.snow.css";
@@ -121,35 +115,9 @@ export default function AdminFormModal({ open, setOpen }: AdminFormModalProps) {
         const newPostImages: UploadImageType[] = [];
         const filesArray = Array.from(data.avatar);
         for (const item of filesArray) {
-          const fileName = new Date().getTime() + "-" + item.name;
-          const storage = getStorage(firebaseApp);
-          const storageRef = ref(storage, `avatar/${fileName}`);
-          const uploadTask = uploadBytesResumable(storageRef, item);
-          await new Promise<void>((resolve, reject) => {
-            uploadTask.on(
-              "state_changed",
-              (snapshot) => {
-                const progress =
-                  (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                setMemberImageProgress(progress);
-              },
-              (error) => {
-                reject(error);
-              },
-              () => {
-                getDownloadURL(uploadTask.snapshot.ref)
-                  .then((downloadURL) => {
-                    newPostImages.push({ image: downloadURL });
-                    console.log("File available at", downloadURL);
-                    resolve();
-                  })
-                  .catch((err) => {
-                    console.log("Error getting the downloadURL");
-                    reject(err);
-                  });
-              }
-            );
-          });
+          const downloadURL = await uploadCardImage(item, "avatar");
+          newPostImages.push({ image: downloadURL });
+          setMemberImageProgress(100);
         }
         postImages = newPostImages;
       } catch (error) {

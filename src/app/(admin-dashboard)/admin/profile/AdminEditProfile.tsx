@@ -5,13 +5,7 @@ import Image from "next/image";
 import ToggleShowPassword from "@/components/common/ToggleShowPassword";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import {
-  getDownloadURL,
-  getStorage,
-  ref,
-  uploadBytesResumable,
-} from "firebase/storage";
-import firebaseApp from "@/lib/firebase";
+import { uploadCardImage } from "lib/uploadCardImage";
 import { CameraIcon, UserIcon } from "lucide-react";
 import LinearWithValueLabel from "@/components/common/LinearProgressWithLabel";
 
@@ -53,37 +47,11 @@ export default function AdminEditProfile({ user }: { user: any }) {
     try {
       let uploadedImageUrl = data.image; // Default to the existing value
       if (image) {
-        // Upload the image if there's a new file
-        const fileName = `${Date.now()}-${image.name}`;
-        const storage = getStorage(firebaseApp);
-        const storageRef = ref(storage, `profile/${fileName}`);
-        const uploadTask = uploadBytesResumable(storageRef, image);
-
-        await new Promise<void>((resolve, reject) => {
-          uploadTask.on(
-            "state_changed",
-            (snapshot) => {
-              const progress =
-                (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-              setProgress(progress);
-              setLoading(snapshot.state === "running");
-            },
-            (error) => {
-              console.error("Error uploading image:", error);
-              reject(error);
-            },
-            async () => {
-              try {
-                uploadedImageUrl = await getDownloadURL(
-                  uploadTask.snapshot.ref
-                );
-                resolve();
-              } catch (err) {
-                reject(err);
-              }
-            }
-          );
-        });
+        setLoading(true);
+        setProgress(30);
+        uploadedImageUrl = await uploadCardImage(image, "profile");
+        setProgress(100);
+        setLoading(false);
       }
 
       // Prepare the payload for the API

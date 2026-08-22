@@ -9,15 +9,9 @@ import dynamic from "next/dynamic";
 import "react-quill/dist/quill.snow.css";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import {
-  getStorage,
-  ref,
-  uploadBytesResumable,
-  getDownloadURL,
-} from "firebase/storage";
-import firebaseApp from "@/lib/firebase";
 import toast from "react-hot-toast";
 import axios from "axios";
+import { uploadCardImage } from "lib/uploadCardImage";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import LinearWithValueLabel from "@/components/common/LinearProgressWithLabel";
@@ -178,29 +172,18 @@ export default function ImpactFormModal({
     if (!file || !file.name) {
       throw new Error(`Invalid file for ${fieldName}`);
     }
-    const storage = getStorage(firebaseApp);
-    const extension = file.name.split(".").pop() || "jpg";
-    const fileName = `${fieldName}_${new Date().getTime()}.${extension}`;
-    const storageRef = ref(storage, `impacts/${fileName}`);
-    const uploadTask = uploadBytesResumable(storageRef, file);
 
-    return new Promise((resolve, reject) => {
-      uploadTask.on(
-        "state_changed",
-        (snapshot) => {
-          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          setProgress(progress);
-        },
-        (error) => {
-          toast.error(`Failed to upload ${fieldName}: ${error.message}`);
-          reject(error);
-        },
-        async () => {
-          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-          resolve(downloadURL);
-        }
-      );
-    });
+    setProgress(30);
+    try {
+      const url = await uploadCardImage(file, `impacts/${fieldName}`);
+      setProgress(100);
+      return url;
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : `Failed to upload ${fieldName}`;
+      toast.error(message);
+      throw error;
+    }
   };
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
